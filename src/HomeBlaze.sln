@@ -55,7 +55,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Gardena", "HomeBl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Logitech", "HomeBlaze.Logitech\HomeBlaze.Logitech.csproj", "{83A8AA4D-046E-41A8-A168-558CDA6A6BA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeBlaze.Logitech.Harmony", "HomeBlaze.Logitech.Harmony\HomeBlaze.Logitech.Harmony.csproj", "{1F6DE970-E0D9-4BDC-BF8B-E10922A8EF62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Logitech.Harmony", "HomeBlaze.Logitech.Harmony\HomeBlaze.Logitech.Harmony.csproj", "{1F6DE970-E0D9-4BDC-BF8B-E10922A8EF62}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Zwave", "HomeBlaze.Zwave\HomeBlaze.Zwave.csproj", "{FD4887D3-9F63-44CE-9777-A3C157B5281A}"
 EndProject
