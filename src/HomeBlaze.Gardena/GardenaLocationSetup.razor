@@ -1,0 +1,109 @@
+﻿@using HomeBlaze.Components;
+@using Microsoft.Extensions.DependencyInjection;
+@using MudBlazor
+@using System.Threading
+@using System.Net.Http
+
+@inject IDialogService DialogService
+@inject IServiceProvider ServiceProvider
+
+@inherits ThingSetupComponentBase<GardenaLocation>
+
+<MudTextField @bind-Value="@_username" Label="Username" FullWidth="true"></MudTextField>
+<MudTextField @bind-Value="@_password" Label="Password" FullWidth="true" InputType="InputType.Password"></MudTextField>
+<MudTextField @bind-Value="@_clientId" Label="Client ID" FullWidth="true"></MudTextField>
+
+<br />
+<a href="https://developer.husqvarnagroup.cloud/docs/getting-started" target="_blank" style="text-decoration: underline">
+    How to create Gardena Application (Client ID)
+</a>
+
+<br />
+<br />
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@LoadLocations" Disabled="_loading">Load Locations</MudButton>
+<br />
+<br />
+
+@if (_locations == null && _loading)
+{
+    <MudItem>
+        Searching for Gardena Locations...
+    </MudItem>
+}
+else if (_locations != null)
+{
+    <MudItem>
+        Select the Gardena Locations to add.
+    </MudItem>
+
+    <MudItem>
+        <MudList Clickable="true" @bind-SelectedValue="_selectedLocation">
+            <MudDivider />
+            @foreach (var location in _locations)
+            {
+                <MudListItem Value="location">
+                    @location.Name (@location.Id)
+                </MudListItem>
+
+                <MudDivider />
+            }
+        </MudList>
+    </MudItem>
+}
+
+@code {
+    private string? _username = null;
+    private string? _password = null;
+    private string? _clientId = null;
+
+    private Location[]? _locations = null;
+    private object? _selectedLocation;
+
+    private bool _loading;
+
+    public override bool IsValid => _selectedLocation != null;
+
+    private async void LoadLocations()
+    {
+        try
+        {
+            _locations = null;
+            _loading = true;
+
+            var gardenaClient = new GardenaRestClient(_clientId!, _username!, _password!);
+            _locations = await gardenaClient.GetLocationsAsync(CancellationToken.None);
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Failed to load locations", e.ToString());
+        }
+        finally
+        {
+            _loading = false;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public override async Task<GardenaLocation?> CreateThingAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (_selectedLocation is Location selectedLocation)
+            {
+                var thing = (GardenaLocation)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(GardenaLocation));
+                thing.Username = _username;
+                thing.Password = _password;
+                thing.LocationId = selectedLocation.Id;
+                return thing;
+            }
+
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Failed to add Location", e.ToString());
+        }
+
+        return null;
+    }
+}

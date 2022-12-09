@@ -1,0 +1,26 @@
+{
+	"manufacturer": "Remotec",
+	"manufacturerId": "0x5254",
+	"label": "ZRC-100",
+	"description": "Remote Control",
+	"devices": [
+		{
+			"productType": "0x0000",
+			"productId": "0x8380",
+			"zwaveAllianceId": 640
+		},
+		{
+			"productType": "0x0001",
+			"productId": "0x8380",
+			"zwaveAllianceId": 1639
+		},
+		{
+			"productType": "0x0002",
+			"productId": "0x8380"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

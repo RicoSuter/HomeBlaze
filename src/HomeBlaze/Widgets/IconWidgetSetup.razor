@@ -1,0 +1,54 @@
+﻿@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Components
+@using HomeBlaze.Components.Inputs
+@using HomeBlaze.Json;
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using MudBlazor
+@using System.Threading
+@using HomeBlaze.Abstractions.Services
+@using static HomeBlaze.Widgets.IconWidget;
+
+@inject IThingManager ThingManager
+
+@inherits ThingSetupComponent<IconWidget>
+
+<MudTextField @bind-Value="@Thing.Scale" Label="Scale" />
+<MudTextField @bind-Value="@Thing.Size" Label="Size" />
+
+<br />
+<p>
+    The first icon from the left with a valid condition is rendered.
+</p>
+
+<br />
+<MudDynamicTabs 
+    CloseTab="@(x => Thing.Conditions.Remove((IconCondition)x.Tag))" 
+    AddTab="@(() => Thing.Conditions.Add(new IconCondition()))">
+
+    @foreach (var condition in Thing.Conditions)
+    {
+        <MudTabPanel Icon="@("fas fa-" + condition.Icon)" Text="@("Opacity: " + condition.Opacity)" Tag="condition">
+            <br />
+
+            <IconTextField Label="Icon" @bind-Value="condition.Icon" />
+            <MudTextField Label="Opacity" @bind-Value="@condition.Opacity" />
+
+            <br />
+            <h3>Condition</h3>
+            <ThingSelect Label="Thing ID" ThingId="@condition.ThingId" 
+                ThingIdChanged="@(thingId => { condition.ThingId = thingId; condition.Property = null; })" />
+                   
+            @if (condition.ThingId != null)
+            {
+                <ThingPropertySelect Label="Property" @bind-PropertyName="@condition.Property" ThingId="@condition.ThingId" />
+                <MudTextField Label="Value" @bind-Value="@condition.Value" />
+            }
+        </MudTabPanel>
+    }
+</MudDynamicTabs>
+
+@code {
+    public override bool IsValid => Thing.Conditions.Any();
+}

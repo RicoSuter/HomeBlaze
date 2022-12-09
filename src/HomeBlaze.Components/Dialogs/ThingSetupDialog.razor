@@ -1,0 +1,236 @@
+﻿@using System.Reflection
+@using System.ComponentModel
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Abstractions.Services
+@using HomeBlaze.Abstractions
+@using HomeBlaze.Components;
+@using MudBlazor;
+@using System.Threading;
+
+@inject IThingManager ThingManager
+@inject ITypeManager TypeManager
+@inject IThingStorage ThingStorage
+@inject IDialogService DialogService
+
+<MudDialog ClassContent="edit-dialog">
+    <TitleContent>@(Thing == null ? "Add Thing" : "Edit Thing")</TitleContent>
+    <DialogContent>
+        @if (Thing == null)
+        {
+            <MudSelect T="string" Label="Thing Type" ValueChanged="type => OnThingTypeChanged(type)">
+                @foreach (var thingType in _thingTypes)
+                {
+                    <MudSelectItem T="string" Value="@thingType.FullName">
+                        @(thingType.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? thingType.Name)
+                    </MudSelectItem>
+                }
+            </MudSelect>
+            <br />
+
+            @if (_selectedThingType != null)
+            {
+                <h1>@(_selectedThingType.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? _selectedThingType.Name)</h1>
+                <div>
+                    @(_selectedThingType.GetCustomAttribute<DescriptionAttribute>()?.Description)
+                </div>
+            }
+        }
+        else
+        {
+            <h1>@Thing.Title</h1>
+            <div>
+                @(Thing.GetType().GetCustomAttribute<DescriptionAttribute>()?.Description)
+            </div>
+        }
+
+        <br />
+        @if (Thing == null)
+        {
+            @if (_thingSetupFragment != null && _selectedThingType != null)
+            {
+                @_thingSetupFragment
+            }
+        }
+        else
+        {
+            @if (_thingSetupFragment != null)
+            {
+                @_thingSetupFragment
+            }
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => DialogInstance?.Close(null))" Color="Color.Primary">Close</MudButton>
+        <MudButton OnClick="@Upsert" Disabled="@(_processing || _component?.IsValid != true)" Variant="Variant.Filled" Color="Color.Primary">
+            @if (_processing)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                <MudText Class="ms-2">@(Thing == null ? "Adding" : "Updating") Thing...</MudText>
+            }
+            else
+            {
+                <MudText>@(Thing == null ? "Add" : "Update") Thing</MudText>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private bool _processing = false;
+    private IThingSetupComponent? _component;
+
+    private Type[] _thingTypes = new Type[0];
+    private RenderFragment? _thingSetupFragment;
+    private Type? _selectedThingType;
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public IThing? ExtendedThing { get; set; }
+
+    [Parameter]
+    public Func<Type, bool>? TypeFilter { get; set; }
+
+    [Parameter]
+    public CancellationToken DialogClosed { get; set; }
+
+    public static async Task<IThing?> AddThingAsync(IDialogService dialogService, Func<Type, bool>? typeFilter = null, IThing? extendedThing = null)
+    {
+        var cancellationTokenSource = new CancellationTokenSource();
+        var result = await dialogService.Show<ThingSetupDialog>(string.Empty,
+            new DialogParameters
+            {
+                { "TypeFilter", typeFilter },
+                { "ExtendedThing", extendedThing },
+                { "DialogClosed", cancellationTokenSource.Token }
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium,
+            }).Result;
+
+        cancellationTokenSource.Cancel();
+        return result?.Data as IThing;
+    }
+
+    public static async Task<bool> EditThingAsync(IDialogService dialogService, IThing thing)
+    {
+        var result = await dialogService.Show<ThingSetupDialog>(string.Empty,
+            new DialogParameters
+            {
+                { "Thing", thing }
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium
+            }).Result;
+
+        return result?.Data != null;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _thingTypes = TypeManager
+            .ThingTypes
+            .Where(t => TypeFilter == null || TypeFilter(t))
+            .Where(t => t.GetCustomAttribute<ThingSetupAttribute>() != null)
+            .ToArray();
+
+        if (Thing != null)
+        {
+            var thingType = _thingTypes.SingleOrDefault(f => f.FullName == Thing.GetType().FullName);
+            var attribute = thingType?.GetCustomAttribute<ThingSetupAttribute>();
+            if (attribute != null && attribute.ComponentType.GetProperty(nameof(ThingSetupComponentBase<IThing>.EditedThing)) != null)
+            {
+                _thingSetupFragment = builder =>
+                {
+                    builder.OpenComponent(0, attribute.ComponentType);
+                    builder.AddAttribute(1, nameof(ThingSetupComponentBase<IThing>.EditedThing), Thing);
+                    builder.AddAttribute(2, "Dialog", this);
+                    builder.CloseComponent();
+                };
+            }
+        }
+    }
+
+    private void OnThingTypeChanged(string deviceTypeFullName)
+    {
+        _component = null;
+
+        _selectedThingType = _thingTypes?.SingleOrDefault(f => f.FullName == deviceTypeFullName);
+        if (_selectedThingType != null)
+        {
+            var attribute = _selectedThingType.GetCustomAttribute<ThingSetupAttribute>();
+            if (attribute != null)
+            {
+                _thingSetupFragment = builder =>
+                {
+                    builder.OpenComponent(0, attribute.ComponentType);
+                    builder.AddAttribute(1, "Dialog", this);
+                    builder.AddAttribute(2, nameof(ThingSetupComponentBase<IThing>.ExtendedThing), ExtendedThing);
+                    builder.CloseComponent();
+                };
+            }
+        }
+        else
+        {
+            _thingSetupFragment = null;
+        }
+    }
+
+    public void RegisterComponent(IThingSetupComponent component)
+    {
+        _component = component;
+    }
+
+    public async Task RefreshAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Upsert()
+    {
+        if (_component != null && DialogInstance != null)
+        {
+            try
+            {
+                _processing = true;
+                await InvokeAsync(StateHasChanged);
+
+                if (Thing == null)
+                {
+                    var thing = await _component.CreateThingAsync(DialogClosed);
+                    if (thing != null)
+                    {
+                        DialogInstance.Close(thing);
+                    }
+                }
+                else
+                {
+                    var result = await _component.UpdateEditedThingAsync(DialogClosed);
+                    if (result)
+                    {
+                        DialogInstance.Close(Thing);
+                    }
+                }
+            }
+            catch (Exception e) when (e is not TaskCanceledException)
+            {
+                await DialogService.ShowMessageBox("Error", e.ToString());
+            }
+            finally
+            {
+                _processing = false;
+            }
+        }
+    }
+}

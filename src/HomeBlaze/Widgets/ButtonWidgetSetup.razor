@@ -1,0 +1,18 @@
+﻿@using HomeBlaze.Components;
+@using HomeBlaze.Dynamic
+@using MudBlazor
+
+@inherits ThingSetupComponent<ButtonWidget>
+
+<MudTextField @bind-Value="@Thing.Label" Label="Title" />
+
+<MudTextField @bind-Value="@Thing.Width" Label="Width" />
+<MudTextField @bind-Value="@Thing.Height" Label="Height" />
+
+<br />
+<h2>Operation</h2>
+<OperationEditor Operation="@Thing.Operation" />
+
+@code {
+    public override bool IsValid => true;
+}

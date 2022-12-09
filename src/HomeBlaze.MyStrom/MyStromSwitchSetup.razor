@@ -1,0 +1,61 @@
+﻿@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Components
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using MudBlazor
+@using System.Threading
+@using HomeBlaze.Abstractions.Services
+@using HomeBlaze.MyStrom
+
+@inject IServiceProvider ServiceProvider
+
+@inherits ThingSetupComponentBase<MyStromSwitch>
+
+<MudItem>
+    <MudTextField @bind-Value="@_title" Label="Title" FullWidth="true"></MudTextField>
+</MudItem>
+<MudItem>
+    <MudTextField @bind-Value="@_ipAddress" Label="IP Address" FullWidth="true"></MudTextField>
+</MudItem>
+<MudItem>
+    <MudTextField @bind-Value="@_refreshInterval" Label="Refresh Interval (Milliseconds)" FullWidth="true"></MudTextField>
+</MudItem>
+
+@code {
+    string? _title;
+    string? _ipAddress;
+    int _refreshInterval = 15 * 1000;
+
+    public override bool IsValid => !string.IsNullOrEmpty(_ipAddress);
+
+    protected override void OnInitialized()
+    {
+        if (IsEditing)
+        {
+            _title = EditedThing!.DisplayTitle;
+            _ipAddress = EditedThing.IpAddress;
+            _refreshInterval = EditedThing.RefreshInterval;
+        }
+    }
+
+    public override Task<MyStromSwitch?> CreateThingAsync(CancellationToken cancellationToken)
+    {
+        var thing = (MyStromSwitch)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(MyStromSwitch));
+        UpdateThing(thing);
+        return Task.FromResult<MyStromSwitch?>(thing);
+    }
+
+    public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
+    {
+        UpdateThing(EditedThing!);
+        return Task.FromResult(true);
+    }
+
+    private void UpdateThing(MyStromSwitch thing)
+    {
+        thing.DisplayTitle = _title;
+        thing.IpAddress = _ipAddress;
+        thing.RefreshInterval = _refreshInterval;
+    }
+}

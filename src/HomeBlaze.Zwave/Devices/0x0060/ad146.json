@@ -1,0 +1,99 @@
+{
+	"manufacturer": "Everspring",
+	"manufacturerId": "0x0060",
+	"label": "AD146-0",
+	"description": "In-Wall Dimmer Module",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0002",
+			"zwaveAllianceId": 1057
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": {
+		"1": {
+			"label": "Basic Set Command value",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 255
+		},
+		"2": {
+			"label": "Report time delay group 1",
+			"description": "Delaying time to report to group 1.",
+			"valueSize": 1,
+			"minValue": 3,
+			"maxValue": 25,
+			"defaultValue": 3
+		},
+		"3": {
+			"label": "Remember last status",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Do not remember",
+					"value": 0
+				},
+				{
+					"label": "Remember",
+					"value": 1
+				}
+			]
+		},
+		"4": {
+			"label": "Switching type",
+			"description": "Edge or toogle switch mode.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Edge Mode",
+					"value": 0
+				},
+				{
+					"label": "Toogle Mode",
+					"value": 1
+				}
+			]
+		},
+		"5": {
+			"label": "Output mode setting",
+			"description": "Dimming or On/Off Switch",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Dimming",
+					"value": 0
+				},
+				{
+					"label": "On/Off",
+					"value": 1
+				}
+			]
+		}
+	},
+	"metadata": {
+		"inclusion": "1. Put the Z-Wave Controller into inclusion mode.\n2. Press the link key three times within 1.5 seconds to put the unit into inclusion mode.",
+		"exclusion": "1. Put the Z-Wave Controller into exclusion mode.\n2. Press the link key three times within 1.5 seconds to put the unit into exclusion mode.",
+		"reset": "(This procedure should only be used when the primary controller is no longer operational.)\n1. Press the link key three times within 1.5 seconds to put the unit into exclusion mode.\n2. Within 1 second of step 1, press link key again and hold until LED is off (about 5 sec.).\n3. Node ID is excluded, and the unit is returned to the factory default state.",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/1057/Manual_AD146-0_20140728.pdf"
+	}
+}

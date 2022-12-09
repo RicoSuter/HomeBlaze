@@ -1,0 +1,21 @@
+﻿@using HomeBlaze.Abstractions.Devices.Light;
+@using HomeBlaze.Components;
+@using HomeBlaze.Components.Inputs
+@using HomeBlaze.Dynamic
+@using MudBlazor
+
+@inherits ThingSetupComponent<ToggleButtonWidget>
+
+<MudTextField @bind-Value="@Thing.Label" Label="Label" />
+<MudTextField @bind-Value="@Thing.Description" Label="Description" />
+<MudTextField @bind-Value="@Thing.VerticalTextPosition" Label="Vertical Text Position" />
+
+<MudTextField @bind-Value="@Thing.Width" Label="Width" />
+<MudTextField @bind-Value="@Thing.Height" Label="Height" />
+
+<ThingSelect @bind-ThingId="@Thing.ThingId" Label="Lightbulb" Required="true"
+    ThingFilter="@(thing => thing is ILightbulb)" />
+
+@code {
+    public override bool IsValid => true;
+}

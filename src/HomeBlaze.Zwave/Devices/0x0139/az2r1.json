@@ -1,0 +1,17 @@
+{
+	"manufacturer": "KlickH Pvt Ltd.",
+	"manufacturerId": "0x0139",
+	"label": "AZ2R1",
+	"description": "ZHOME Combo Switch",
+	"devices": [
+		{
+			"productType": "0x0444",
+			"productId": "0x0415",
+			"zwaveAllianceId": 875
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

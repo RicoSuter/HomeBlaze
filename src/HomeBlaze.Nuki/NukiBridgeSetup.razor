@@ -1,0 +1,124 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components;
+@using HomeBlaze.Nuki.Model;
+@using Microsoft.Extensions.DependencyInjection;
+@using Microsoft.Extensions.Logging;
+@using MudBlazor
+@using System.Threading;
+@using System.Net.Http
+@using System.Text.Json;
+
+@inject IDialogService DialogService
+@inject IServiceProvider ServiceProvider
+@inject IHttpClientFactory HttpClientFactory
+
+@inherits ThingSetupComponentBase<NukiBridge>
+
+@if (Bridges == null)
+{
+    <MudItem>
+        Searching for Nuki Bridges...
+    </MudItem>
+}
+else if (Bridges.Any())
+{
+    <MudItem>
+        Select the Bridge and then press the button on the Bridge.
+    </MudItem>
+
+    <MudItem>
+        <MudList Clickable="true" @bind-SelectedValue="_selectedBridge">
+            <MudDivider />
+            @foreach (var bridge in Bridges)
+            {
+                <MudListItem Value="bridge">
+                    @bridge.BridgeId (@bridge.Host)
+                </MudListItem>
+
+                <MudDivider />
+            }
+        </MudList>
+    </MudItem>
+
+    @if (IsWaitingForButton)
+    {
+        <MudItem>
+            <br />
+            <br />
+            <big>Please press the Nuki Bridge button within the next 30 seconds.</big>
+        </MudItem>
+    }
+}
+else
+{
+    <MudItem>
+        No Nuki Bridges found.
+    </MudItem>
+}
+
+@code {
+    private object? _selectedBridge;
+
+    private BridgeModel[]? Bridges { get; set; }
+
+    private bool IsWaitingForButton { get; set; }
+
+    public override bool IsValid => _selectedBridge != null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            using var httpClient = HttpClientFactory.CreateClient();
+
+            var response = await httpClient.GetAsync("https://api.nuki.io/discover/bridges");
+            var result = JsonSerializer.Deserialize<DiscoverResult>(await response.Content.ReadAsStringAsync());
+
+            Bridges = result?.Bridges ?? new BridgeModel[0];
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Failed to discover Nuki Bridges", e.ToString());
+        }
+    }
+
+    public override async Task<NukiBridge?> CreateThingAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (_selectedBridge is BridgeModel selectedBridge)
+            {
+                IsWaitingForButton = true;
+                await InvokeAsync(StateHasChanged);
+
+                using var httpClient = HttpClientFactory.CreateClient();
+
+                var response = await httpClient.GetAsync($"http://{selectedBridge.Host}/auth", cancellationToken);
+                var result = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
+
+                if (result.RootElement.TryGetProperty("token", out var property))
+                {
+                    var bridge = (NukiBridge)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(NukiBridge));
+                    bridge.Host = selectedBridge.Host;
+                    bridge.AuthToken = property.GetString();
+                    return bridge;
+                }
+                else
+                {
+                    await DialogService.ShowMessageBox("Failed to add Nuki Bridge", 
+                        "Bridge could not be authenticated, please press the button while adding.");
+                }
+            }
+        }
+        catch (Exception e) when (e is not TaskCanceledException)
+        {
+            await DialogService.ShowMessageBox("Failed to add Nuki Bridge", e.ToString());
+        }
+        finally
+        {
+            IsWaitingForButton = false;
+        }
+
+        return null;
+    }
+}

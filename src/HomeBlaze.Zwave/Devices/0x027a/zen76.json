@@ -1,0 +1,316 @@
+{
+	"manufacturer": "Zooz",
+	"manufacturerId": "0x027a",
+	"label": "ZEN76",
+	"description": "Z-Wave Plus 700 Series S2 ON/OFF Switch",
+	"devices": [
+		{
+			"productType": "0x7000",
+			"productId": "0xa006"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 1,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "On/Off",
+			"maxNodes": 5
+		}
+	},
+	"paramInformation": {
+		"1": {
+			"label": "Paddle Orientation",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 2,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Top on, bottom off",
+					"value": 0
+				},
+				{
+					"label": "Top off, bottom on",
+					"value": 1
+				},
+				{
+					"label": "Toggle",
+					"value": 2
+				}
+			]
+		},
+		"2": {
+			"label": "LED Indicator Control",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 3,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "LED is on when switch is off",
+					"value": 0
+				},
+				{
+					"label": "LED is on when switch is off",
+					"value": 1
+				},
+				{
+					"label": "LED is always off",
+					"value": 2
+				},
+				{
+					"label": "LED is always on",
+					"value": 3
+				}
+			]
+		},
+		"14": {
+			"label": "LED Indicator Color",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 3,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "White",
+					"value": 0
+				},
+				{
+					"label": "Blue",
+					"value": 1
+				},
+				{
+					"label": "Green",
+					"value": 2
+				},
+				{
+					"label": "Red",
+					"value": 3
+				}
+			]
+		},
+		"15": {
+			"label": "LED Indicator Brightness",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 2,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "100%",
+					"value": 0
+				},
+				{
+					"label": "60%",
+					"value": 1
+				},
+				{
+					"label": "30%",
+					"value": 2
+				}
+			]
+		},
+		"3": {
+			"label": "Auto Turn-Off Timer",
+			"description": "Set the number of minutes to automatically turn off switch once it has been turned on (0 to disable).",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 65535,
+			"defaultValue": 0,
+			"unit": "minutes"
+		},
+		"5": {
+			"label": "Auto Turn-On Timer",
+			"description": "Set the number of minutes to automatically turn on switch once it has been turned off (0 to disable).",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 65535,
+			"defaultValue": 0,
+			"unit": "minutes"
+		},
+		"7[0x01]": {
+			"label": "Control Group 2 With Physical Switch",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 1
+				}
+			]
+		},
+		"7[0x02]": {
+			"label": "Control Group 2 With Connected 3-Way Switch",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 1
+				}
+			]
+		},
+		"7[0x04]": {
+			"label": "Control Group 2 With Z-Wave Commands",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 1
+				}
+			]
+		},
+		"7[0x08]": {
+			"label": "Control Group 2 With On/Off Timers",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 1
+				}
+			]
+		},
+		"8": {
+			"label": "Switch State After Power Failure",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 2,
+			"defaultValue": 2,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Off",
+					"value": 0
+				},
+				{
+					"label": "On",
+					"value": 1
+				},
+				{
+					"label": "Previous State",
+					"value": 2
+				}
+			]
+		},
+		"10": {
+			"label": "Scene Control",
+			"description": "Send scene commands to hub on physical paddle presses.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 1
+				}
+			]
+		},
+		"12": {
+			"label": "Enable Local and Z-Wave Control",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 2,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Local control disabled, Z-Wave control enabled",
+					"value": 0
+				},
+				{
+					"label": "Local control and Z-Wave control enabled",
+					"value": 1
+				},
+				{
+					"label": "Local control and Z-Wave control disabled",
+					"value": 2
+				}
+			]
+		},
+		"13": {
+			"label": "Reporting Behavior When Physical Control Is Disabled",
+			"description": "Enable or disable reporting on/off status and changing LED indicator state even if physical and Z-Wave control is disabled.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Enabled",
+					"value": 0
+				},
+				{
+					"label": "Disabled",
+					"value": 1
+				}
+			]
+		},
+		"16": {
+			"label": "Association Reports",
+			"description": "Report type for paddle control.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Basic report",
+					"value": 0
+				},
+				{
+					"label": "Binary switch report",
+					"value": 1
+				}
+			]
+		}
+	}
+}

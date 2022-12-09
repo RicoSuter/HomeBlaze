@@ -1,0 +1,16 @@
+{
+	"manufacturer": "Fakro",
+	"manufacturerId": "0x0085",
+	"label": "ARZ Solar",
+	"description": "Roller Shutter",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0112"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

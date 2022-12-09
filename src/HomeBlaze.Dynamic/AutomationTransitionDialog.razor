@@ -1,0 +1,169 @@
+﻿@using HomeBlaze.Abstractions.Messages;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components.Inputs;
+@using HomeBlaze.Json;
+@using MudBlazor;
+@using System.Text.Json;
+@using System.Reflection;
+
+@inject IThingManager ThingManager
+@inject ITypeManager TypeManager
+@inject IDialogService DialogService
+
+<MudDialog ClassContent="edit-dialog">
+    <TitleContent>@(DialogInstance?.Title)</TitleContent>
+    <DialogContent>
+        @if (Transition != null)
+        {
+            <MudTabs>
+                <MudTabPanel Text="Condition">
+                    <br />
+                    <MudTextField @bind-Value="Transition.Name" Label="Transition Name" />
+                    <br />
+                    <EventTypeSelect @bind-EventTypeName="Transition.Condition.EventTypeName" Label="Trigger Event Type" />
+
+                    <br />
+                    @if (Transition.Condition.EventTypeName == null)
+                    {
+                        <p>Without event type, the condition is evaluated when one of the defined variables change.</p>
+                    }
+                    else
+                    {
+                        <p>The condition is only evaluated when the selected event is published.</p>
+                    }
+
+                    <br />
+                    <MudTextField @bind-Value="Transition.Condition.Expression" Variant="Variant.Outlined" Label="Condition Expression (JavaScript)" Lines="4" />
+                    <p>
+                        <br />
+                        <strong>Current Evaluation:</strong> @EvaluateCurrentExpression()
+                    </p>
+
+                    <br />
+                    <h2>Available Variables</h2>
+                    @if (Transition.Condition.EventTypeName == typeof(TimerEvent).FullName)
+                    {
+                        <div>@AutomationCondition.TimeInCurrentStateVariableName (example: '00:01:03')</div>
+                    }
+                    @foreach (var property in TypeManager.EventTypes
+                        .FirstOrDefault(e => e.FullName == Transition.Condition.EventTypeName)?
+                        .GetProperties() ?? Enumerable.Empty<PropertyInfo>())
+                    {
+                        <div>event.@property.Name</div>
+                    }
+                    @foreach (var variable in Transition!.Condition.Variables)
+                    {
+                        <div>@variable.Name (@(variable.ThingId).@(variable.Property))</div>
+                    }
+
+                    <br />
+                    <h2>Available Functions</h2>
+                    <div><strong>toSeconds(timeSpan):</strong> Converts a time span (string) to seconds (number)</div>
+                </MudTabPanel>
+                <MudTabPanel Text="Variables">
+                    <br />
+
+                    @foreach (var variable in Transition!.Condition.Variables)
+                    {
+                        <br />
+                        <MudField Label="@("Variable " + variable.Name)" Variant="Variant.Outlined" InnerPadding="true">
+                            <MudTextField @bind-Value="@variable.Name" Label="Variable"></MudTextField>
+
+                            <ThingSelect Label="Thing ID" ThingId="@variable.ThingId" ThingIdChanged="@(thingId => { variable.ThingId = thingId; variable.Property = null; })" Required="true" />
+                            <ThingPropertySelect Label="Property" @bind-PropertyName="@variable.Property" ThingId="@variable.ThingId" Disabled="@(variable.ThingId == null)" Required="true" />
+
+                            <br />
+                            <MudButton OnClick="@(() => RemoveVariable(variable))" Variant="Variant.Filled" Size="Size.Small" Color="Color.Error">Delete</MudButton>
+                        </MudField>
+                    }
+
+                    <br />
+                    <MudButton OnClick="AddVariable" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Add Variable</MudButton>
+                </MudTabPanel>
+                <MudTabPanel Text="Operation">
+                    <br />
+                    <MudButton Variant="@(Transition.Operation == null ? Variant.Filled : Variant.Outlined)" Color="Color.Primary" OnClick="DeleteOperation">No Operation</MudButton>
+                    <MudButton Variant="@(Transition.Operation == null ? Variant.Outlined : Variant.Filled)" Color="Color.Primary" OnClick="AddOperation">Execute Operation</MudButton>
+
+                    @if (Transition.Operation != null)
+                    {
+                        <br />
+                        <br />
+                        <OperationEditor Operation="Transition.Operation"></OperationEditor>
+                    }
+                </MudTabPanel>
+            </MudTabs>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => DialogInstance?.Close(null))" Color="Color.Primary">Close</MudButton>
+        <MudButton OnClick="@(() => DialogInstance?.Close(Transition))" Variant="Variant.Filled" Color="Color.Primary">
+            Update Transition
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public AutomationTransition? Transition { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    public static async Task<bool> EditAsync(IDialogService dialogService, AutomationTransition transition)
+    {
+        var result = await dialogService.Show<AutomationTransitionDialog>("Edit Transition",
+            new DialogParameters
+                {
+                { "Transition", JsonUtilities.Clone(transition)}
+                },
+            new DialogOptions
+                {
+                    FullWidth = true,
+                    MaxWidth = MaxWidth.Medium
+                }).Result;
+
+        if (result?.Cancelled == false && result.Data != null)
+        {
+            JsonUtilities.PopulateObject(JsonSerializer.Serialize<AutomationTransition>((AutomationTransition)result.Data), transition!);
+            return true;
+        }
+
+        return false;
+    }
+
+    public void AddVariable()
+    {
+        Transition!.Condition.Variables.Add(new PropertyVariable());
+    }
+
+    public void RemoveVariable(PropertyVariable property)
+    {
+        Transition!.Condition.Variables.Remove(property);
+    }
+
+    public void AddOperation()
+    {
+        if (Transition!.Operation == null)
+        {
+            Transition.Operation = new Operation();
+        }
+    }
+
+    public void DeleteOperation()
+    {
+        Transition!.Operation = null;
+    }
+
+    private string EvaluateCurrentExpression()
+    {
+        try
+        {
+            return Transition?.Condition?.EvaluateExpression(null, null, ThingManager).ToString() ?? "null";
+        }
+        catch (Exception e)
+        {
+            return "Error: " + e.Message;
+        }
+    }
+}

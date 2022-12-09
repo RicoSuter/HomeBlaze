@@ -1,0 +1,17 @@
+{
+	"manufacturer": "TKB Home",
+	"manufacturerId": "0x0118",
+	"label": "TZ56",
+	"description": "TKB Switch D",
+	"devices": [
+		{
+			"productType": "0x0102",
+			"productId": "0x2056",
+			"zwaveAllianceId": 1413
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

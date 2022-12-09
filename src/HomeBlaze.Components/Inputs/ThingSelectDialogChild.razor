@@ -1,0 +1,33 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Presentation;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+
+@if (Thing != null)
+{
+    var hasChildren = ThingManager.GetState(Thing, true).Any(p => p.Value.HasThingChildren);
+    var canBeSelcted = ThingFilter == null || ThingFilter(Thing!);
+    if (hasChildren || canBeSelcted)
+    {
+        <MudTreeViewItem T="IThing" Text="@(Thing.Title ?? Thing.Id)" Style="cursor: pointer"
+            ExpandedIconColor="@(hasChildren ? Color.Default : Color.Transparent)"
+            Icon="@(Thing is IIconProvider iconProvider ? iconProvider.IconName : Icons.Material.Filled.Help)"
+                OnClick="@(() => { if (canBeSelcted) { DialogInstance?.Close(new Tuple<bool, IThing?>(true, Thing)); } })">
+
+            <ThingSelectDialogThing Thing="@Thing" ThingFilter="ThingFilter!" />
+        </MudTreeViewItem>
+    }
+}
+
+@code {
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public Func<IThing, bool>? ThingFilter { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+}

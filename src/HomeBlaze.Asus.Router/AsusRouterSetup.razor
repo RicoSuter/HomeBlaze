@@ -1,0 +1,13 @@
+﻿@using HomeBlaze.AsusRouter
+@using HomeBlaze.Components
+@using MudBlazor
+
+@inherits ThingSetupComponent<AsusRouter>
+
+<MudTextField @bind-Value="@Thing.Host" Label="Host" />
+<MudTextField @bind-Value="@Thing.Username" Label="Username" />
+<MudTextField @bind-Value="@Thing.Password" Label="Password" InputType="InputType.Password" />
+
+@code {
+    public override bool IsValid => !string.IsNullOrEmpty(Thing.Host);
+}

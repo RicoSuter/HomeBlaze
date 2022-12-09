@@ -1,0 +1,17 @@
+{
+	"manufacturer": "Trane Corporation",
+	"manufacturerId": "0x008b",
+	"label": "ACONT850AC52UA",
+	"description": "XL850",
+	"devices": [
+		{
+			"productType": "0x4138",
+			"productId": "0x3530",
+			"zwaveAllianceId": 1157
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

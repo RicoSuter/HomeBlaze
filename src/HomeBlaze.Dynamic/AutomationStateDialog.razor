@@ -1,0 +1,95 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components.Inputs;
+@using HomeBlaze.Json;
+@using MudBlazor;
+@using System.Text.Json;
+
+@inject IThingManager ThingManager
+@inject IDialogService DialogService
+
+<MudDialog ClassContent="edit-dialog">
+    <TitleContent>@(DialogInstance?.Title)</TitleContent>
+    <DialogContent>
+        @if (State != null)
+        {
+            <MudTextField @bind-Value="State.Name" Label="State Name" Required="true" />
+            <br />
+
+            <MudButton Variant="@(State.Operation == null ? Variant.Filled : Variant.Outlined)" Color="Color.Primary" OnClick="DeleteOperation">No Operation</MudButton>
+            <MudButton Variant="@(State.Operation == null ? Variant.Outlined : Variant.Filled)" Color="Color.Primary" OnClick="AddOperation">Execute Operation</MudButton>
+
+            @if (State.Operation != null)
+            {
+                <br />
+                <br />
+                <OperationEditor Operation="State.Operation"></OperationEditor>
+            }
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => DialogInstance?.Close(null))" Color="Color.Primary">Close</MudButton>
+        <MudButton OnClick="@(() => DialogInstance?.Close(State))" Disabled="string.IsNullOrEmpty(State?.Name)" 
+            Variant="Variant.Filled" Color="Color.Primary">
+            Update State
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public AutomationState? State { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    public static async Task<AutomationState?> CreateAsync(IDialogService dialogService)
+    {
+        var state = new AutomationState();
+        if (await ShowAsync(dialogService, state, "Add State"))
+        {
+            return state;
+        }
+
+        return null;
+    }
+
+    public static async Task<bool> EditAsync(IDialogService dialogService, AutomationState state)
+    {
+        return await ShowAsync(dialogService, state, "Edit State");
+    }
+
+    private static async Task<bool> ShowAsync(IDialogService dialogService, AutomationState state, string title)
+    {
+        var result = await dialogService.Show<AutomationStateDialog>(title,
+            new DialogParameters
+            {
+                { "State", JsonUtilities.Clone(state)}
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium
+            }).Result;
+
+        if (result?.Cancelled == false && result.Data != null)
+        {
+            JsonUtilities.PopulateObject(JsonSerializer.Serialize<AutomationState>((AutomationState)result.Data), state!);
+            return true;
+        }
+
+        return false;
+    }
+
+    public void AddOperation()
+    {
+        if (State!.Operation == null)
+        {
+            State!.Operation = new Operation();
+        }
+    }
+
+    public void DeleteOperation()
+    {
+        State!.Operation = null;
+    }
+}

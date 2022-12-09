@@ -1,0 +1,10 @@
+﻿@using HomeBlaze.Abstractions.Devices.Light;
+@using HomeBlaze.Components;
+@using HomeBlaze.Components.Inputs
+@using HomeBlaze.Dynamic
+@using MudBlazor
+
+@inherits ThingSetupComponent<PowerConsumersWidget>
+
+<MudTextField @bind-Value="@Thing.Width" Label="Width" Required="true" />
+<MudTextField @bind-Value="@Thing.Height" Label="Height" Required="true" />

@@ -1,0 +1,24 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Presentation;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+
+@if (Thing != null)
+{
+    @foreach (var property in ThingManager
+       .GetState(Thing, true)
+       .Where(p => p.Value.HasThingChildren))
+    {
+        <ThingSelectDialogProperty Property="property" ThingFilter="ThingFilter!" />
+    }
+}
+
+@code {
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public Func<IThing, bool>? ThingFilter { get; set; }
+}

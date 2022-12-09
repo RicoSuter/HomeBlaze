@@ -1,0 +1,223 @@
+{
+	"manufacturer": "SimonTech S.L.U",
+	"manufacturerId": "0x0267",
+	"label": "10002080-13x",
+	"description": "Simon IO: Roller Blind",
+	"devices": [
+		{
+			"productType": "0x0004",
+			"productId": "0x0000"
+		},
+		{
+			"productType": "0x0004",
+			"productId": "0x0022"
+		},
+		{
+			"productType": "0x0004",
+			"productId": "0x0063"
+		},
+		{
+			"productType": "0x0004",
+			"productId": "0x0091"
+		},
+		{
+			"productType": "0x0004",
+			"productId": "0x0092"
+		},
+		{
+			"productType": "0x0004",
+			"productId": "0x0093"
+		},
+		{
+			"productType": "0x0004",
+			"productId": "0x0094"
+		},
+		{
+			"productType": "0x0004",
+			"productId": "0x0177"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"supportsZWavePlus": true,
+	"paramInformation": {
+		"1": {
+			"label": "Association LED",
+			"description": "Activates the Central LED.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Turns the LED OFF (default)",
+					"value": 0
+				},
+				{
+					"label": "Turns the LED ON",
+					"value": 255
+				}
+			]
+		},
+		"4": {
+			"label": "Up Time",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 120,
+			"defaultValue": 60,
+			"readOnly": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Sets the UP time in seconds",
+					"value": 1
+				},
+				{
+					"label": "Default",
+					"value": 60
+				}
+			]
+		},
+		"5": {
+			"label": "Down Time",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 120,
+			"defaultValue": 60,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Sets the DOWN time in seconds",
+					"value": 1
+				},
+				{
+					"label": "Default",
+					"value": 60
+				}
+			]
+		},
+		"9": {
+			"label": "Calibration",
+			"valueSize": 1,
+			"minValue": 255,
+			"maxValue": 255,
+			"defaultValue": 255,
+			"unsigned": true,
+			"writeOnly": true
+		},
+		"12": {
+			"label": "Behavior of LED in Repose",
+			"description": "Configuration of Main LED as identification at 20%.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "LED OFF",
+					"value": 0
+				},
+				{
+					"label": "LED ON at 20% of maximum level",
+					"value": 255
+				}
+			]
+		},
+		"13": {
+			"label": "Lock Input",
+			"description": "Unlock/lock the direct control of load.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Unlock the direct control of load.",
+					"value": 0
+				},
+				{
+					"label": "Lock the direct control of load.",
+					"value": 255
+				}
+			]
+		},
+		"21[0xff00]": {
+			"label": "Blind State: Direction",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 2,
+			"defaultValue": 0,
+			"readOnly": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Stopped",
+					"value": 0
+				},
+				{
+					"label": "Moving down",
+					"value": 1
+				},
+				{
+					"label": "Moving up",
+					"value": 2
+				}
+			]
+		},
+		"21[0xff]": {
+			"label": "Blind State: Position",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 99,
+			"defaultValue": 0,
+			"readOnly": true
+		},
+		"23": {
+			"label": "Calibration Required",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true,
+			"readOnly": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Calibration is not required.",
+					"value": 0
+				},
+				{
+					"label": "It is necessary to calibrate the device.",
+					"value": 255
+				}
+			]
+		},
+		"27": {
+			"label": "Lock long press",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Long press works as default.",
+					"value": 0
+				},
+				{
+					"label": "Long press works as overview.",
+					"value": 255
+				}
+			]
+		}
+	}
+}

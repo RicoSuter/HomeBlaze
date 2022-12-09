@@ -1,0 +1,348 @@
+﻿@page "/things"
+
+@using HomeBlaze
+@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Abstractions.Services
+@using HomeBlaze.Abstractions.Messages
+@using HomeBlaze.Components.Dialogs;
+@using HomeBlaze.Things
+@using Namotion.Reflection
+@using System.Collections;
+
+@inject IThingManager ThingManager
+@inject IDialogService DialogService
+@inject IEventManager EventManager
+@inject ILogger<Index> Logger
+@inject IJSRuntime JsRuntime
+
+@implements IDisposable
+
+<PageTitle>Index</PageTitle>
+
+<div id="scrollContainer" style="height: calc(100% - 15px); width: calc(100% - 15px); overflow-y: scroll; overflow-x: hidden; display: flex; margin-left: 15px; margin-top: 15px">
+    @for (int i = 0; i < _openedThings.Count; i++)
+    {
+        var thing = _openedThings[i];
+        var parentThing = i > 0 ? _openedThings[i - 1] : null;
+        var selectedThing = _openedThings.Count - 1 > i ? _openedThings[i + 1] : null;
+        var isLastThing = _openedThings.Count - 1 == i;
+
+        <MudPaper Width="360px" Style="min-width: 360px; float: left; margin-right: 15px; height: calc(100% - 15px);">
+            @{
+                var metadata = ThingManager.TryGetMetadata(thing);
+
+                var stateGroups = ThingManager
+                    .GetState(thing, true)
+                    .GroupBy(p => p.Value.SourceThing);
+
+                var operations = ThingManager.GetOperations(thing, true);
+            }
+
+            <MudListSubheader>
+                @if (isLastThing && thing != ThingManager.RootThing && _selectedProperty == null)
+                {
+                    <MudFab OnClick="@(() => ShowChild(parentThing, null, null))" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Style="float: right" />
+                }
+
+                <h1 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <MudIcon Size="Size.Small"
+                         Color="@(thing is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)"
+                         Icon="@(thing is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"></MudIcon>
+                    @thing.Title
+                </h1>
+            </MudListSubheader>
+
+            <div style="height: calc(100% - 70px);  overflow-x: scroll;">
+                <MudListSubheader>
+                    <MudText>
+                        <small>
+                            <p>
+                                <strong>ID:</strong> @(thing.Id ?? "Loading...")
+                            </p>
+                            <p>
+                                <strong>Type:</strong> @(thing.GetType().FullName)
+                            </p>
+                            <br />
+                        </small>
+                    </MudText>
+
+                    @foreach (var group in stateGroups.Where(g => g.Any(p => !p.Value.HasThingChildren)))
+                    {
+                        @if (group.Key != thing)
+                        {
+                            <p><small><br />@group.Key.Title</small></p>
+                        }
+
+                        @foreach (var value in group.Where(p => !p.Value.HasThingChildren))
+                        {
+                            <MudText @onclick="@(() => ShowChild(parentThing, thing, value.Value.Name))"
+                                 Color="isLastThing && _selectedProperty == value.Key ? Color.Primary : Color.Default"
+                                 Style="cursor: pointer">
+                                <strong>@(value.Key): </strong>
+                                @if (value.Value.Value is IEnumerable enumerable && !(value.Value.Value is string))
+                                {
+                                    foreach (var item in enumerable)
+                                    {
+                                        <br />
+                                        @item
+                                    }
+                                }
+                                else
+                                {
+                                    @value.Value.GetDisplayText()
+                                }
+                            </MudText>
+                        }
+                    }
+
+                    <br />
+                    @if (operations.Any() == true)
+                    {
+                        foreach (var operation in operations)
+                        {
+                            <MudButton OnClick="() => ExecuteOperation(operation)"
+                                Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">
+                                @(operation.Title ?? operation.Name)
+                            </MudButton>
+                        }
+                    }
+
+                    @if (ThingManager.RootThing is SystemThing systemThing && 
+                        (metadata?.CanEdit == true || metadata?.CanDelete == true))
+                    {
+                        @if (metadata?.CanEdit == true)
+                        {
+                            <MudButton OnClick="@(() => systemThing.EditThingAsync(thing, DialogService, CancellationToken.None))"
+                                Variant="Variant.Filled" Color="Color.Warning" Class="ma-2">Edit</MudButton>
+                        }
+
+                        @if (metadata?.CanDelete == true)
+                        {
+                            <MudButton OnClick="@(() => systemThing.DeleteThingAsync(thing, DialogService, CancellationToken.None))"
+                                Variant="Variant.Filled" Color="Color.Error" Class="ma-2">Delete</MudButton>
+                        }
+                    }
+
+                    @if (thing is not SystemThing && thing is not IExtensionThing)
+                    {
+                        <MudButton OnClick="@(() => AddThingExtension(thing))" Variant="Variant.Filled" Color="Color.Info" Class="ma-2">Extend</MudButton>
+                    }
+                </MudListSubheader>
+
+                <MudExpansionPanels MultiExpansion="true" DisableBorders="true" Elevation="0" DisableGutters="true" Dense="true">
+                    @foreach (var group in stateGroups)
+                    {
+                        foreach (var pair in group.Where(p => p.Value.HasThingChildren))
+                        {
+                            <MudExpansionPanel Text="@(pair.Key + (group.Key != thing ? " (" + group.Key.Title + ")" : ""))"
+                                   IsInitiallyExpanded="thing == ThingManager.RootThing || pair.Value.Property?.PropertyType.Type.IsAssignableTo(typeof(IThing)) == true"
+                                   DisableGutters="true" Dense="true">
+                                <MudList Clickable="true" SelectedValue="selectedThing">
+                                    @foreach (var child in pair.Value.Children)
+                                    {
+                                        <MudListItem Value="@child"
+                                             OnClick="@(() => ShowChild(thing, child))"
+                                             Icon="@(child is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"
+                                             IconColor="@(child is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)">
+                                            <strong>@child.Title</strong><br />
+                                            <small>@(child.Id ?? "...")</small>
+                                        </MudListItem>
+                                    }
+                                </MudList>
+                            </MudExpansionPanel>
+                        }
+                    }
+                </MudExpansionPanels>
+            </div>
+        </MudPaper>
+    }
+
+    @if (_selectedProperty != null)
+    {
+        var state = ThingManager.GetState(_openedThings.Last(), true);
+        var property = state[_selectedProperty];
+
+        <MudPaper Width="360px" Style="min-width: 360px; float: left; margin-right: 15px; height: calc(100% - 15px);">
+            <MudListSubheader>
+                <MudFab OnClick="@(() => ShowChild(_openedThings.Last(), null, null))" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Style="float: right" />
+                <h1 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@property.Name</h1>
+
+                <br />
+                <MudText>
+                    <strong>Current Value: </strong>
+                    @property.GetDisplayText()
+                </MudText>
+
+                @if (property.LastUpdated.HasValue)
+                {
+                    <MudText>
+                        <strong>Updated: </strong>
+                        @property.LastUpdated
+                    </MudText>
+                }
+
+                <br />
+                <MudText>
+                    <strong>Previous Value: </strong>
+                    @property.GetPreviousDisplayText()
+                </MudText>
+
+                @if (property.LastUpdated.HasValue)
+                {
+                    <MudText>
+                        <strong>Changed: </strong>
+                        @property.LastChanged
+                    </MudText>
+                }
+
+                <br />
+                <MudButton OnClick="@(() => ShowHistory(_openedThings.Last(), _selectedProperty))" Variant="Variant.Filled">History</MudButton>
+                <br />
+
+                <br />
+                <h2>Metadata</h2>
+                <br />
+
+                @if (property.Property != null)
+                {
+                    <MudText>
+                        <strong>Type: </strong>
+                        @(property.Property.PropertyType.Type.GetDisplayName())
+                    </MudText>
+                    <MudText>
+                        <strong>Nullable: </strong>
+                        @property.Property.PropertyType.IsNullableType
+                    </MudText>
+                }
+
+                <MudText>
+                    <strong>Unit: </strong>
+                    @property.Attribute?.Unit
+                </MudText>
+            </MudListSubheader>
+        </MudPaper>
+    }
+
+    <div style="width: 360px; min-width: 360px">
+    </div>
+</div>
+
+@code {
+    List<IThing> _openedThings = new List<IThing>();
+    string? _selectedProperty;
+
+    IDisposable? _eventSubscription;
+
+    protected override void OnInitialized()
+    {
+        _eventSubscription = EventManager.Subscribe(message =>
+        {
+            if (_openedThings.Count == 0 && ThingManager.RootThing != null)
+            {
+                _openedThings = new List<IThing> { ThingManager.RootThing };
+            }
+
+            InvokeAsync(StateHasChanged);
+        });
+
+        if (ThingManager.RootThing != null)
+        {
+            _openedThings = new List<IThing> { ThingManager.RootThing };
+        }
+    }
+
+    private async void ShowChild(IThing? parent, IThing? child, string? propertyName = null)
+    {
+        if (parent == null)
+        {
+            _openedThings = new List<IThing> { ThingManager.RootThing! };
+        }
+        else
+        {
+            var columns = _openedThings
+                .TakeWhile(c => c.Id != parent?.Id)
+                .ToList();
+
+            if (parent != null)
+            {
+                columns.Add(parent);
+            }
+
+            if (child != null)
+            {
+                columns.Add(child);
+            }
+
+            _openedThings = columns;
+        }
+
+        _selectedProperty = propertyName;
+
+        await InvokeAsync(StateHasChanged);
+        await InvokeAsync(async () =>
+        {
+            await JsRuntime.InvokeAsync<object>("ScrollIntoView", new object[]
+            {
+                "scrollContainer", (15 + 360) * (_openedThings.Count - (propertyName == null ? 1 : 0))
+            });
+        });
+    }
+
+    private async void ExecuteOperation(ThingOperation operation)
+    {
+        try
+        {
+            var parameters = operation.CreateParameters();
+
+            foreach (var parameter in operation.Method
+                .GetParameters()
+                .Where(p => p.Name != null))
+            {
+                if (parameter.ParameterType == typeof(IDialogService))
+                {
+                    parameters[parameter.Name!] = DialogService;
+                }
+            }
+
+            if (parameters.Any(p => p.Value == null))
+            {
+                var result = await OperationParametersDialog.ShowAsync(DialogService, "Parameters", parameters);
+                if (result != null && !result.Cancelled)
+                {
+                    await operation.ExecuteAsync(parameters, Logger, CancellationToken.None);
+                }
+            }
+            else
+            {
+                await operation.ExecuteAsync(parameters, Logger, CancellationToken.None);
+            }
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Error", e.ToString());
+        }
+    }
+
+    private async void AddThingExtension(IThing extendedThing)
+    {
+        var thing = await ThingSetupDialog.AddThingAsync(DialogService, t => t.IsAssignableTo(typeof(IExtensionThing)), extendedThing);
+        if (thing != null && ThingManager.RootThing is SystemThing systemThing)
+        {
+            systemThing.Things.Add(thing);
+            await ThingManager.WriteConfigurationAsync(CancellationToken.None);
+
+            ThingManager.DetectChanges(thing);
+        }
+    }
+
+    private async void ShowHistory(IThing thing, string property)
+    {
+        await StateHistoryDialog.ShowAsync(DialogService, thing, property);
+    }
+
+    public void Dispose()
+    {
+        _eventSubscription?.Dispose();
+    }
+}

@@ -1,0 +1,18 @@
+﻿@using System.Threading;
+@using HomeBlaze.OpenWeatherMap;
+@using HomeBlaze.Components;
+@using MudBlazor;
+
+@inherits ThingSetupComponent<OpenWeatherMapTemperature>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.ApiKey" Label="API Key" />
+    <MudTextField @bind-Value="@Thing.Location" Label="Location" />
+    <MudTextField @bind-Value="@Thing.RefreshInterval" Label="Refresh Interval (Milliseconds)" InputType="InputType.Number" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

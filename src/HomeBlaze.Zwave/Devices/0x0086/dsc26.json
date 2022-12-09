@@ -1,0 +1,54 @@
+{
+	"manufacturer": "AEON Labs",
+	"manufacturerId": "0x0086",
+	"label": "DSC26",
+	"description": "Micro Switch G2",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x001a",
+			"zwaveAllianceId": [709, 768, 776]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 1,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Group 2",
+			"maxNodes": 5
+		}
+	},
+	"paramInformation": {
+		"2[0xff]": {
+			"$import": "templates/aeotec_template.json#blink_duration"
+		},
+		"2[0xff00]": {
+			"$import": "templates/aeotec_template.json#blink_length"
+		},
+		"80": {
+			"$import": "templates/aeotec_template.json#enable_notifications"
+		},
+		"120": {
+			"$import": "templates/aeotec_template.json#external_switch_3way"
+		},
+		"200": {
+			"$import": "templates/aeotec_template.json#partner_id_att"
+		},
+		"252": {
+			"$import": "templates/aeotec_template.json#lock_configuration"
+		},
+		"254": {
+			"$import": "templates/aeotec_template.json#device_tag"
+		},
+		"255": {
+			"$import": "templates/aeotec_template.json#factory_reset"
+		}
+	}
+}

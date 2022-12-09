@@ -1,0 +1,92 @@
+{
+	"manufacturer": "Everspring",
+	"manufacturerId": "0x0060",
+	"label": "HAN02",
+	"description": "In-Wall Switch Module",
+	"devices": [
+		{
+			"productType": "0x0004",
+			"productId": "0x0008",
+			"zwaveAllianceId": 1058
+		},
+		{
+			"productType": "0x0011",
+			"productId": "0x0001",
+			"zwaveAllianceId": 695
+		},
+		{
+			"productType": "0x0011",
+			"productId": "0x0002",
+			"zwaveAllianceId": 696
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": {
+		"1": {
+			"label": "Basic Set Command Value",
+			"description": "Allowable Range: 0-99",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 255,
+			"unsigned": true,
+			"options": [
+				{
+					"label": "On",
+					"value": 255
+				}
+			]
+		},
+		"2": {
+			"label": "Group 1: Report Delay",
+			"description": "Delaying time to report to group 1",
+			"valueSize": 1,
+			"minValue": 3,
+			"maxValue": 25,
+			"defaultValue": 3,
+			"unit": "seconds",
+			"unsigned": true
+		},
+		"3": {
+			"label": "Restore State After Power Loss",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "Enable",
+					"value": 1
+				}
+			]
+		},
+		"4": {
+			"label": "Switching type",
+			"description": "Edge or toogle switch mode.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Edge Mode",
+					"value": 0
+				},
+				{
+					"label": "Toogle Mode",
+					"value": 1
+				}
+			]
+		}
+	}
+}

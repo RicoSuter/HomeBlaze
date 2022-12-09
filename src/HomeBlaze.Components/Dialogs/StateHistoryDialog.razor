@@ -1,0 +1,233 @@
+﻿@using System.Threading
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using MudBlazor
+@using Radzen.Blazor
+
+@inject IStateManager StateManager
+
+<MudDialog>
+    <TitleContent>@(Thing?.Title): @Property</TitleContent>
+    <DialogContent>
+        <MudSelect T="int" Label="Type" ValueChanged="(value) => RefreshAsync(value)" Value="NumberOfHours">
+            <MudSelectItem Value="1" T="int">1 Hour</MudSelectItem>
+            <MudSelectItem Value="4" T="int">4 Hours</MudSelectItem>
+            <MudSelectItem Value="6" T="int">6 Hours</MudSelectItem>
+            <MudSelectItem Value="12" T="int">12 Hours</MudSelectItem>
+            <MudSelectItem Value="24" T="int">1 Day</MudSelectItem>
+            <MudSelectItem Value="48" T="int">2 Days</MudSelectItem>
+            <MudSelectItem Value="168" T="int">7 Days</MudSelectItem>
+            <MudSelectItem Value="720" T="int">30 Days</MudSelectItem>
+        </MudSelect>
+        <br />
+
+        <div style="height: 400px; overflow-y: auto;">
+            @if (IsLoading)
+            {
+                <span>Loading data...</span>
+            }
+            else
+            {
+                @if (ChartItems.Length > 0)
+                {
+                    <RadzenChart Style="width: 100%; height: 350px">
+                        <RadzenLegend Visible="false" Position="LegendPosition.Bottom"></RadzenLegend>
+                        <RadzenLineSeries Smooth="false"
+                                  Data="@ChartItems"
+                                  CategoryProperty="Date"
+                                  Title="@Property"
+                                  LineType="LineType.Solid"
+                                  ValueProperty="Value">
+                            <RadzenMarkers MarkerType="MarkerType.None" />
+                        </RadzenLineSeries>
+                        <RadzenValueAxis>
+                            <RadzenGridLines Visible="true" />
+                        </RadzenValueAxis>
+                        <RadzenCategoryAxis Formatter="@FormatTime">
+                        </RadzenCategoryAxis>
+                    </RadzenChart>
+
+                    <MudItem>
+                        <strong>Average: </strong>@Math.Round(Average, 2)&nbsp;&nbsp;&nbsp;
+                        <strong>Max: </strong>@Math.Round(Maximum, 2)&nbsp;&nbsp;&nbsp;
+                        <strong>Min: </strong>@Math.Round(Minimum, 2)&nbsp;&nbsp;&nbsp;
+                        <strong>Diff: </strong>@Math.Round(Difference, 2)
+                    </MudItem>
+                }
+                else if (Values.Any())
+                {
+                    <pre>
+                        @foreach (var val in Values.Reverse())
+                        {
+                            @($"{val.DateTime.ToString("O")}\n    {val.RawValue}\n")
+                        }
+                    </pre>
+                }
+            }
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(null))" Class="px-10">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private bool IsInitialized { get; set; } = false;
+    private bool IsLoading { get; set; } = true;
+
+    private int NumberOfHours { get; set; } = 24;
+    private bool IsBoolean { get; set; } = false;
+
+    private decimal Average { get; set; } = 0;
+    private decimal Minimum { get; set; } = 0;
+    private decimal Maximum { get; set; } = 0;
+    private decimal Difference { get; set; } = 0;
+
+    private ChartItem[] ChartItems { get; set; } = new ChartItem[0];
+    private ChartItem[] Values { get; set; } = new ChartItem[0];
+
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public string? Property { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    public static async Task ShowAsync(IDialogService dialogService, IThing thing, string property)
+    {
+        await dialogService.Show<StateHistoryDialog>(string.Empty,
+            new DialogParameters
+            {
+                { "Thing", thing },
+                { "Property", property }
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Large
+            }).Result;
+    }
+
+    string FormatTime(object value)
+    {
+        return ((DateTime)value).ToString("HH:mm");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsInitialized = true;
+        await RefreshAsync(24);
+    }
+
+    private async Task RefreshAsync(int numberOfHours)
+    {
+        if (!IsInitialized)
+        {
+            return;
+        }
+
+        NumberOfHours = numberOfHours;
+        IsLoading = true;
+
+        var delay = Task.Delay(500);
+
+        var startDate = DateTimeOffset.Now.AddHours(numberOfHours * -1);
+        var endDate = DateTimeOffset.Now;
+        var duration = endDate - startDate;
+
+        var rawValues = await StateManager.ReadStateAsync<object>(
+            Thing!.Id!, Property!, startDate, endDate, CancellationToken.None);
+
+        Values = rawValues
+            .Select((v, i) => new ChartItem
+                {
+                    Index = i,
+                    DateTime = v.Item1,
+                    RawValue = v.Item2
+                })
+            .OrderBy(v => v.DateTime)
+            .ToArray();
+
+        await delay;
+
+        try
+        {
+            var chartItems = new List<ChartItem>();
+
+            if (Values.Length > 720)
+            {
+                var numberOfValues = numberOfHours < 24 * 2 ? 24 * 2 : numberOfHours;
+                var valueDuration = duration / numberOfValues;
+
+                for (int i = 0; i < numberOfValues; i++)
+                {
+                    var start = startDate + valueDuration * i;
+                    var end = startDate + valueDuration * (i + 1);
+
+                    var values = Values
+                        .Where(v => v.DateTime >= start && v.DateTime < end)
+                        .ToArray();
+
+                    chartItems.Add(new ChartItem
+                    {
+                        Index = i,
+                        DateTime = start + valueDuration / 2,
+                        RawValue =
+                            values.Any() ?
+                            values
+                                .Select(v => v.Value)
+                                .Average() : null
+                    });
+                }
+            }
+            else
+            {
+                chartItems = Values.ToList();
+            }
+
+            chartItems = chartItems
+                .Where(v => v.RawValue != null)
+                .ToList();
+
+            if (chartItems.Any())
+            {
+                Minimum = (decimal)chartItems.Select(v => v.Value).Min();
+                Maximum = (decimal)chartItems.Select(v => v.Value).Max();
+                Average = chartItems.GetSegments().WeightedAverage(
+                    s => (decimal)((s.First.Value + s.Second.Value) / 2.0),
+                    s => (decimal)(s.Second.Date - s.First.Date).TotalMilliseconds);
+                Difference = Maximum - Minimum;
+
+                ChartItems = chartItems.ToArray();
+            }
+        }
+        catch
+        {
+            ChartItems = new ChartItem[0];
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    class ChartItem
+    {
+        public int Index { get; set; }
+
+        public DateTimeOffset DateTime { get; set; }
+
+        public DateTime Date => DateTime.DateTime;
+
+        public object? RawValue { get; set; }
+
+        public double Value => Double
+            .TryParse(RawValue is string trueString && trueString == "true" ? "1" :
+                      RawValue is string falseString && falseString == "false" ? "0" :
+                      RawValue?.ToString() ?? "", out var number) ? Math.Round(number, 2) : 0;
+    }
+}

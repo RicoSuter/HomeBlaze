@@ -1,0 +1,88 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components.Inputs;
+@using HomeBlaze.Json;
+@using MudBlazor;
+@using System.Text.Json;
+
+@inject IThingManager ThingManager
+@inject IDialogService DialogService
+
+<MudDialog ClassContent="edit-dialog">
+    <TitleContent>@(DialogInstance?.Title)</TitleContent>
+    <DialogContent>
+        @if (Dashboard != null)
+        {
+            <MudForm @bind-IsValid="_isFormValid">
+                <MudTextField @bind-Value="Dashboard.Name" Label="Name ([a-z]+)" Required="true" Pattern="[a-z]+" />
+                <IconTextField @bind-Value="Dashboard.Icon" Label="Icon" Required="true" />
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => DialogInstance?.Close(null))" Color="Color.Primary">Close</MudButton>
+        <MudButton OnClick="@(() => DialogInstance?.Close(Dashboard))" Disabled="!_isFormValid"
+                   Variant="Variant.Filled" Color="Color.Primary">
+            @SaveButtonText
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private bool _isFormValid;
+
+    [Parameter]
+    public HomeBlaze.Things.Dashboard? Dashboard { get; set; }
+
+    [Parameter]
+    public string? SaveButtonText { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    public static async Task<HomeBlaze.Things.Dashboard?> CreateAsync(IDialogService dialogService)
+    {
+        var dashboard = new HomeBlaze.Things.Dashboard();
+        if (await ShowAsync(dialogService, dashboard, "Add Dashboard", "Create Dashboard"))
+        {
+            return dashboard;
+        }
+
+        return null;
+    }
+
+    public static async Task<bool> EditAsync(IDialogService dialogService, HomeBlaze.Things.Dashboard dashboard)
+    {
+        return await ShowAsync(dialogService, dashboard, "Edit Dashboard", "Update Dashboard");
+    }
+
+    private static async Task<bool> ShowAsync(IDialogService dialogService, HomeBlaze.Things.Dashboard dashboard, string title, string button)
+    {
+        var result = await dialogService.Show<DashboardDialog>(title,
+            new DialogParameters
+            {
+                { 
+                    "Dashboard",
+                    new HomeBlaze.Things.Dashboard
+                    {
+                        Name = dashboard.Name,
+                        Icon = dashboard.Icon,
+                    }
+                },
+                { "SaveButtonText", button }
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Small
+            }).Result;
+
+        if (result?.Cancelled == false && result.Data is HomeBlaze.Things.Dashboard clonedDashboard)
+        {
+            dashboard.Name = clonedDashboard.Name;
+            dashboard.Icon = clonedDashboard.Icon;
+            return true;
+        }
+
+        return false;
+    }
+}

@@ -1,0 +1,97 @@
+{
+	"manufacturer": "Nortek Security & Control LLC",
+	"manufacturerId": "0x014f",
+	"label": "WD500Z5-1",
+	"description": "An in-wall lighting dimmer",
+	"devices": [
+		{
+			"productType": "0x5744",
+			"productId": "0x3530"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"supportsZWavePlus": true,
+	"paramInformation": {
+		"3": {
+			"label": "Night Light",
+			"description": "Control the LED on the device.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 4,
+			"defaultValue": 0
+		},
+		"4": {
+			"label": "Invert Switch",
+			"description": "Invert the operation of the paddle.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0
+		},
+		"5": {
+			"label": "Ignore Start Level in Dim Command",
+			"description": "The Start Level sent in a Dim command can be ignored or not.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 1
+		},
+		"7": {
+			"label": "Dim Remote On/Off Steps",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 99,
+			"defaultValue": 3
+		},
+		"8": {
+			"label": "Dim Remote On/Off Timer",
+			"unit": "ms",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 255,
+			"defaultValue": 10,
+			"unsigned": true
+		},
+		"9": {
+			"label": "Dim Local On/Off Step",
+			"description": "Dim Local On/Off Step (default = 10, 10 steps)",
+			"unit": "Step(s)",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 99,
+			"defaultValue": 10
+		},
+		"10": {
+			"label": "Dim Local On/Off Timer",
+			"description": "Dim Local On/Off Timer (default = 10, 10 ms)",
+			"unit": "ms",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 255,
+			"defaultValue": 10,
+			"unsigned": true
+		},
+		"11": {
+			"label": "Dim ALL On/Off Step",
+			"description": "Dim ALL On/Off Step (default = 10, 10 steps)",
+			"unit": "Step(s)",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 99,
+			"defaultValue": 10
+		},
+		"12": {
+			"label": "Dim ALL On/Off Timer",
+			"description": "Dim ALL On/Off Timer (default = 3, 3 ms)",
+			"unit": "ms",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 255,
+			"defaultValue": 3,
+			"unsigned": true
+		}
+	}
+}

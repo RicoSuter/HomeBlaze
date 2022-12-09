@@ -1,0 +1,162 @@
+{
+	"manufacturer": "Zooz",
+	"manufacturerId": "0x027a",
+	"label": "ZSE40",
+	"description": "4-in-1 Sensor",
+	"devices": [
+		{
+			"productType": "0x2021",
+			"productId": "0x2101"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"supportsZWavePlus": true,
+	"paramInformation": {
+		"1": {
+			"label": "Temperature Scale",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Celsius",
+					"value": 0
+				},
+				{
+					"label": "Fahrenheit",
+					"value": 1
+				}
+			]
+		},
+		"2": {
+			"label": "Temperature offset",
+			"description": "temperature change to be reported",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 50,
+			"defaultValue": 1
+		},
+		"3": {
+			"label": "Humidity",
+			"description": "Configure Relative Humidity",
+			"unit": "percent",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 50,
+			"defaultValue": 10
+		},
+		"4": {
+			"label": "Light Sensor",
+			"unit": "percent",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 50,
+			"defaultValue": 10
+		},
+		"5": [
+			{
+				"$if": "firmwareVersion < 17.9",
+				"label": "Trigger Interval",
+				"description": "Set the trigger interval for motion sensor re-activation.",
+				"unit": "minutes",
+				"valueSize": 1,
+				"minValue": 1,
+				"maxValue": 255,
+				"defaultValue": 3,
+				"unsigned": true
+			},
+			{
+				"$if": "firmwareVersion >= 17.9 && firmwareVersion < 24.2",
+				"label": "Trigger Interval",
+				"description": "Set the trigger interval for motion sensor re-activation.",
+				"unit": "seconds",
+				"valueSize": 1,
+				"minValue": 15,
+				"maxValue": 60,
+				"defaultValue": 15,
+				"unsigned": true
+			},
+			{
+				"$if": "firmwareVersion >= 24.2",
+				"label": "Trigger Interval",
+				"description": "Set the trigger interval for motion sensor re-activation.",
+				"unit": "seconds",
+				"valueSize": 1,
+				"minValue": 15,
+				"maxValue": 255,
+				"defaultValue": 15,
+				"unsigned": true
+			}
+		],
+		"6": {
+			"label": "Motion Sensor Sensitivity",
+			"description": "Adjust sensitivity of the motion sensor.",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 7,
+			"defaultValue": 4,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "highest",
+					"value": 1
+				},
+				{
+					"label": "higher",
+					"value": 2
+				},
+				{
+					"label": "high",
+					"value": 3
+				},
+				{
+					"label": "normal",
+					"value": 4
+				},
+				{
+					"label": "low",
+					"value": 5
+				},
+				{
+					"label": "lower",
+					"value": 6
+				},
+				{
+					"label": "lowest",
+					"value": 7
+				}
+			]
+		},
+		"7": {
+			"label": "LED indicator mode",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 4,
+			"defaultValue": 3,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Off",
+					"value": 1
+				},
+				{
+					"label": "Pulsing Temperature, Flashing Motion",
+					"value": 2
+				},
+				{
+					"label": "Flashing Temperature and Motion",
+					"value": 3
+				},
+				{
+					"label": "No Temperature, Flashing Motion",
+					"value": 4
+				}
+			]
+		}
+	}
+}

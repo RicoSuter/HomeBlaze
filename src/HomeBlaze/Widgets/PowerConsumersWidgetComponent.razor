@@ -1,0 +1,42 @@
+﻿@using HomeBlaze.Abstractions.Devices.Energy;
+@using HomeBlaze.Abstractions.Devices.Light;
+@using HomeBlaze.Abstractions.Sensors;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+
+@if (Thing != null)
+{
+    <div style="width: @(Thing?.Width + "px"); padding: 10px">
+        <MudTable T="IPowerConsumptionSensor" Items="Consumers" FixedHeader="true" Height="@(Thing?.Height + "px")">
+            <HeaderContent>
+                <MudTh>Total Power Consumption</MudTh>
+                <MudTh Style="width: 170px; text-align: right">
+                    @Math.Round(TotalPowerConsumption ?? 0m) W/h
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Title">@context.Title</MudTd>
+                <MudTd DataLabel="PowerConsumption" Style="text-align: right">
+                    @(context.PowerConsumption ?? 0m) W/h
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </div>
+}
+
+@code {
+    public IEnumerable<IPowerConsumptionSensor> Consumers => ThingManager
+        .AllThings
+        .OfType<IPowerConsumptionSensor>()
+        .Where(c => c.PowerConsumption > 0)
+        .OrderByDescending(c => c.PowerConsumption);
+
+    public decimal? TotalPowerConsumption => Consumers
+        .Select(c => c.PowerConsumption)
+        .Sum();
+
+    [Parameter]
+    public PowerConsumersWidget? Thing { get; set; }
+}

@@ -1,0 +1,84 @@
+{
+	"manufacturer": "AEON Labs",
+	"manufacturerId": "0x0086",
+	"label": "DSC14",
+	"description": "Micro Motor Controller",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x000e",
+			"zwaveAllianceId": 1623
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": {
+		"4": {
+			"$import": "templates/aeotec_template.json#enable_notifications",
+			"label": "Motor start delay time",
+			"unit": "ms"
+		},
+		"5": {
+			"$import": "templates/aeotec_template.json#enable_notifications",
+			"label": "Opening Time",
+			"unit": "ms"
+		},
+		"6": {
+			"$import": "templates/aeotec_template.json#enable_notifications",
+			"label": "Closing Time",
+			"unit": "ms"
+		},
+		"7": {
+			"$import": "../templates/master_template.json#state_after_power_failure",
+			"options": [
+				{
+					"label": "Stop",
+					"value": 0
+				},
+				{
+					"label": "Open",
+					"value": 1
+				},
+				{
+					"label": "Close",
+					"value": 2
+				}
+			]
+		},
+		"8": {
+			"$import": "../templates/master_template.json#base_0-1_nounit",
+			"label": "Count of External Buttons/Switches",
+			"options": [
+				{
+					"label": "Three buttons",
+					"value": 0
+				},
+				{
+					"label": "One button",
+					"value": 1
+				}
+			]
+		},
+		"80": {
+			"$import": "templates/aeotec_template.json#enable_notifications"
+		},
+		"120": {
+			"$import": "templates/aeotec_template.json#external_switch_two"
+		},
+		"254": {
+			"$import": "templates/aeotec_template.json#device_tag"
+		},
+		"255": {
+			"$import": "templates/aeotec_template.json#factory_reset"
+		}
+	}
+}

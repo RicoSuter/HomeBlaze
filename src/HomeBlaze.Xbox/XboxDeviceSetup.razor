@@ -1,0 +1,128 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components;
+@using HomeBlaze.Components.Inputs
+@using Microsoft.Extensions.DependencyInjection;
+@using MudBlazor
+@using System.Threading
+@using System.Net
+
+@inject IThingManager ThingManager
+@inject IDialogService DialogService
+@inject IServiceProvider ServiceProvider
+
+@inherits ThingSetupComponentBase<XboxDevice>
+
+@if (ThingManager.AllThings.OfType<XboxLiveAccount>().Count() == 0)
+{
+    <MudItem>
+        Please add an Xbox Live Account first.
+    </MudItem>
+}
+else
+{
+    <ThingSelect Label="Xbox Live Account" @bind-ThingId="_xboxLiveAccountId" ThingFilter="@(thing => thing is XboxLiveAccount)" Required="true" />
+    <MudTextField Label="IP Address (optional)" @bind-Value="_ipAddress" />
+
+    <br />
+    <MudButton Variant="Variant.Filled" OnClick="LoadDevicesAsync" Disabled="@(_xboxLiveAccountId == null || _searching)">Search Xbox Devices</MudButton>
+    <br />
+    <br />
+}
+
+@if (_searching)
+{
+    <MudItem>
+        Searching Microsoft Xbox devices...
+    </MudItem>
+}
+else
+{
+    if (_devices?.Any() == true)
+    {
+        <MudItem>
+            <MudList Clickable="true" @bind-SelectedValue="_selectedBridge">
+                <MudDivider />
+                @foreach (var device in _devices)
+                {
+                    <MudListItem Value="device">
+                        Microsoft Xbox @device.Name (@device.LiveId, @device.Address, @device.HardwareId)
+                    </MudListItem>
+
+                    <MudDivider />
+                }
+            </MudList>
+        </MudItem>
+    }
+    else if (_devices != null)
+    {
+        <MudItem>
+            No Microsoft Xbox devices found.
+        </MudItem>
+    }
+}
+
+@code {
+    private string? _ipAddress;
+    private string? _xboxLiveAccountId;
+
+    private bool _searching;
+    private SmartGlass.Device[]? _devices;
+    private object? _selectedBridge;
+
+    public override bool IsValid => _selectedBridge != null;
+
+    private async Task LoadDevicesAsync()
+    {
+        try
+        {
+            _searching = true;
+
+            _devices = null;
+            await InvokeAsync(StateHasChanged);
+
+            if (!string.IsNullOrEmpty(_ipAddress))
+            {
+                SmartGlass.GlobalConfiguration.BindAddress = IPAddress.Parse(_ipAddress);
+            }
+            else
+            {
+                SmartGlass.GlobalConfiguration.BindAddress = IPAddress.Any;
+            }
+
+            _devices = (await SmartGlass.Device.DiscoverAsync()).ToArray();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception e)
+        {
+            _devices = new SmartGlass.Device[0];
+            await DialogService.ShowMessageBox("Failed to load XBox Devices", e.ToString());
+        }
+        finally
+        {
+            _searching = false;
+        }
+    }
+
+    public override async Task<XboxDevice?> CreateThingAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (_selectedBridge is SmartGlass.Device selectedDevice)
+            {
+                var xboxDevice = (XboxDevice)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(XboxDevice));
+
+                xboxDevice.IpAddress = selectedDevice.Address.ToString();
+                xboxDevice.XboxLiveAccountId = _xboxLiveAccountId;
+                xboxDevice.DeviceId = selectedDevice.LiveId;
+
+                return xboxDevice;
+            }
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Failed to add Xbox", e.ToString());
+        }
+
+        return null;
+    }
+}

@@ -1,0 +1,53 @@
+﻿@using MudBlazor;
+
+<MudDialog>
+    <TitleContent>@(DialogInstance?.Title)</TitleContent>
+    <DialogContent>
+        @if (Parameters != null)
+        {
+            @foreach (var parameterName in Parameters.Keys.Where(k => !_excludedParameters.Contains(k)))
+            {
+                <MudTextField T="string" Label="@parameterName" 
+                    Value="@Parameters[parameterName]?.ToString()"
+                    ValueChanged="@(value => Parameters[parameterName] = value)" />
+            }
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(true))">OK</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private string[] _excludedParameters = Array.Empty<string>();
+
+    [Parameter]
+    public Dictionary<string, object?>? Parameters { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _excludedParameters = Parameters!
+            .Where(p => p.Value != null)
+            .Select(p => p.Key)
+            .ToArray();
+    }
+
+    public static async Task<DialogResult> ShowAsync(IDialogService dialogService, string title, Dictionary<string, object?> parameters)
+    {
+        return await dialogService.Show<OperationParametersDialog>(title,
+            new DialogParameters
+            {
+                { "Parameters", parameters }
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium,
+            }).Result;
+    }
+}

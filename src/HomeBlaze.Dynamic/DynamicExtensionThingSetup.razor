@@ -1,0 +1,83 @@
+﻿@using HomeBlaze.Components;
+@using HomeBlaze.Components.Inputs
+@using MudBlazor
+
+@inherits ThingSetupComponent<DynamicExtensionThing>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTabs>
+        <MudTabPanel Text="General">
+            <br />
+            <MudTextField @bind-Value="@Thing.Title" Label="Title (e.g. 'Temperature Sensor Extension')" Required="true" />
+            <MudTextField @bind-Value="@Thing.ThingTitle" Label="Title (e.g. 'Temperature Sensor')" Required="true" />
+            <MudTextField @bind-Value="@Thing.Property" Label="Property Name (e.g. 'TemperatureSensor')" Required="true" />
+
+            <br />
+            <ThingSelect @bind-ThingId="@Thing.ExtendedThingId" Label="Extended Thing ID" Required="true" />
+        </MudTabPanel>
+        <MudTabPanel Text="Properties">
+            <br />
+            <InterfaceSelect @bind-InterfaceName="@Thing.ThingInterface" Label="Thing Interface" Required="true" />
+
+            @foreach (var property in Thing.Properties)
+            {
+                <br />
+                <MudField Label="@property.Name" Variant="Variant.Outlined" InnerPadding="true">
+                    <MudTextField @bind-Value="@property.Name" Label="Property Name"></MudTextField>
+                    <MudTextField @bind-Value="@property.Expression" Lines="4" Label="Expression"></MudTextField>
+
+                    <br />
+                    <MudButton OnClick="@(() => RemoveProperty(property))" Variant="Variant.Filled" Size="Size.Small" Color="Color.Error">Delete</MudButton>
+                </MudField>
+            }
+
+            <br />
+            <MudButton OnClick="AddProperty" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Add Property</MudButton>
+        </MudTabPanel>
+        <MudTabPanel Text="Variables">
+            @foreach (var variable in Thing.Variables)
+            {
+                <br />
+                @* TODO: add windowduration and windowaggregation *@
+                <MudField Label="@variable.Name" Variant="Variant.Outlined" InnerPadding="true">
+                    <MudTextField @bind-Value="@variable.Name" Label="Variable Name" />
+
+                    <ThingSelect Label="Thing ID" ThingId="@variable.ThingId" ThingIdChanged="@(thingId => { variable.ThingId = thingId; variable.Property = null; })" Required="true" />
+                    <ThingPropertySelect Label="Property" @bind-PropertyName="@variable.Property" ThingId="@variable.ThingId" Disabled="@(variable.ThingId == null)" Required="true" />
+
+                    <br />
+                    <MudButton OnClick="@(() => RemoveVariable(variable))" Variant="Variant.Filled" Size="Size.Small" Color="Color.Error">Delete</MudButton>
+                </MudField>
+            }
+
+            <br />
+            <MudButton OnClick="AddVariable" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Add Variable</MudButton>
+        </MudTabPanel>
+    </MudTabs>
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+
+    public void AddProperty()
+    {
+        Thing.Properties.Add(new Property());
+    }
+
+    public void RemoveProperty(Property property)
+    {
+        Thing.Properties.Remove(property);
+    }
+
+    public void AddVariable()
+    {
+        Thing.Variables.Add(new PropertyVariable());
+    }
+
+    public void RemoveVariable(PropertyVariable variable)
+    {
+        Thing.Variables.Remove(variable);
+    }
+}

@@ -1,0 +1,157 @@
+{
+	"manufacturer": "Resideo",
+	"manufacturerId": "0x041b",
+	"label": "39458 / ZW3010",
+	"description": "In-Wall Smart Dimmer",
+	"devices": [
+		{
+			"productType": "0x4944",
+			"productId": "0x3038",
+			"zwaveAllianceId": 3750
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Single Press",
+			"maxNodes": 5
+		},
+		"3": {
+			"label": "Double Tap",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": {
+		"3": {
+			"label": "LED Light",
+			"description": "LED status when device on or off.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 3,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "LED on when load is off",
+					"value": 0
+				},
+				{
+					"label": "LED on when light is turned on",
+					"value": 1
+				},
+				{
+					"label": "LED always off",
+					"value": 2
+				},
+				{
+					"label": "LED Always on",
+					"value": 3
+				}
+			]
+		},
+		"6": {
+			"label": "Dim up/down rate",
+			"description": "Adjust the speed at which the ramps to a specific value",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Dim up/down quickly",
+					"value": 0
+				},
+				{
+					"label": "Dim up/down slowly",
+					"value": 1
+				}
+			]
+		},
+		"16": {
+			"label": "Switch Mode",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "Enable",
+					"value": 1
+				}
+			]
+		},
+		"19": {
+			"label": "Alternate Exclusion",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Press any button on the Dimmer",
+					"value": 0
+				},
+				{
+					"label": "Press on two times, then off two times",
+					"value": 1
+				}
+			]
+		},
+		"30": {
+			"label": "Minimum Dim Threshold",
+			"valueSize": 1,
+			"unit": "%",
+			"minValue": 1,
+			"maxValue": 99,
+			"defaultValue": 1,
+			"unsigned": true
+		},
+		"31": {
+			"label": "Maximum Brightness Threshold",
+			"valueSize": 1,
+			"unit": "%",
+			"minValue": 99,
+			"maxValue": 99,
+			"defaultValue": 99,
+			"unsigned": true
+		},
+		"32": {
+			"label": "Default Brightness Level",
+			"description": "Set the default brightness level that the dimmer will turn on when being turned on manually",
+			"valueSize": 1,
+			"unit": "%",
+			"minValue": 0,
+			"maxValue": 99,
+			"defaultValue": 0,
+			"unsigned": true
+		}
+	},
+	"compat": {
+		"treatBasicSetAsEvent": true
+	},
+	"metadata": {
+		"inclusion": "This dimmer is SmartStart enabled. If your controller supports SmartStart inclusion, this dimmer can be added into the Z-Wave network by following the instructions for your controller or hub and scanning the Z-Wave QR Code on the front or on the package when instructed. No further action is required, and the dimmer will be added automatically within 10 minutes of being powered up while in range Z-Wave network.",
+		"exclusion": "Press on 2 times and off 2 times. LED will flash 5 times if exclusion was successful.",
+		"reset": "Quickly press ON button 3 times then immediately press the Off button 3 times. The LED will flash ON/OFF 5 times when completed successfully"
+	}
+}

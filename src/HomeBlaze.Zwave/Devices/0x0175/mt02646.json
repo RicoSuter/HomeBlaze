@@ -1,0 +1,179 @@
+{
+	"manufacturer": "Devolo",
+	"manufacturerId": "0x0175",
+	"label": "MT02646",
+	"description": "Home Control Metering Plug",
+	"devices": [
+		{
+			"productType": "0x0001",
+			"productId": "0x0011",
+			"zwaveAllianceId": 1129
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"supportsZWavePlus": true,
+	"paramInformation": {
+		"1": {
+			"label": "Watt Meter Report Period",
+			"description": "multiples of 5s",
+			"unit": "seconds",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32767,
+			"defaultValue": 720,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				}
+			]
+		},
+		"2": {
+			"label": "KWH Meter Report Period",
+			"description": "number of 10 minute intervals",
+			"unit": "10m",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32767,
+			"defaultValue": 6,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				}
+			]
+		},
+		"3": {
+			"label": "Threshold of current for Load Caution",
+			"description": "1300*0.01A = 13A",
+			"valueSize": 2,
+			"minValue": 10,
+			"maxValue": 1300,
+			"defaultValue": 1300
+		},
+		"4": {
+			"label": "Threshold of KWh for Load Caution",
+			"description": "load caution threshold",
+			"valueSize": 2,
+			"minValue": 1,
+			"maxValue": 10000,
+			"defaultValue": 10000
+		},
+		"5": {
+			"label": "Restore switch state mode",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Switch OFF after power on",
+					"value": 0
+				},
+				{
+					"label": "resume previous state",
+					"value": 1
+				},
+				{
+					"label": "Switch ON after power on",
+					"value": 2
+				}
+			]
+		},
+		"6": {
+			"label": "Mode of switch off function",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "SWITCH OFF commands received are ignored.",
+					"value": 0
+				},
+				{
+					"label": "SWITCH OFF commands received are honored.",
+					"value": 1
+				}
+			]
+		},
+		"7": {
+			"label": "LED indication mode",
+			"description": "Restore switch state mode.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "The LED follows the state of the switch.",
+					"value": 1
+				},
+				{
+					"label": "LED off with load ON",
+					"value": 2
+				},
+				{
+					"label": "Flash mode",
+					"value": 3
+				}
+			]
+		},
+		"8": {
+			"label": "Auto off timer",
+			"description": "Auto off timer. 0 will disable the auto off function.",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				}
+			]
+		},
+		"9": {
+			"label": "RF off command mode",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "SWITCH ALL OFF turns Switch OFF",
+					"value": 0
+				},
+				{
+					"label": "Ignore ALL OFF",
+					"value": 1
+				},
+				{
+					"label": "If ALL OFF is received, turn ON if it is OFF",
+					"value": 2
+				},
+				{
+					"label": "SWITCH ALL OFF turns Switch ON",
+					"value": 3
+				}
+			]
+		}
+	},
+	"metadata": {
+		"inclusion": "1. Put your Z-Wave controller into inclusion mode by following the instructions provided by the controller manufacturer. \n2. Pressing On/Off button three times within 2 seconds will enter inclusion \n mode on the switch.",
+		"exclusion": "1. Put your Z-Wave controller into exclusion mode by following the instructions provided by the controller manufacturer. \n2. Pressing On/Off button three times within 2 seconds will enter exclusion \n mode on the switch.",
+		"reset": "(Use this procedure only in the event that the primary controller is lost or otherwise inoperable.)\n\n1. Pressing On/Off button three times within 2 seconds will enter inclusion mode on the switch.\n2. Within 1 second, press On/Off button again for 5 seconds.",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/1129/PAN11-1B%20manual-20140816.pdf"
+	}
+}

@@ -1,0 +1,21 @@
+{
+	"manufacturer": "Trane Corporation",
+	"manufacturerId": "0x008b",
+	"label": "AZON1050AC52ZA",
+	"description": "AccuLink II Platinum 1050",
+	"devices": [
+		{
+			"productType": "0x4141",
+			"productId": "0x3530",
+			"zwaveAllianceId": 2056
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"metadata": {
+		"reset": "From the HOME Screen, press MENU on the control, then press NEXIA.\n\nPress ADVANCED, then FACTORY RESET.\n\nIf this bridge is being used as a secondary or inclusion controller in the network, please reset this bridge only in the event that the primary controller is missing or otherwise inoperable",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/2056/AmStd_12-5062-01_final.pdf"
+	}
+}

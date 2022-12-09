@@ -1,0 +1,518 @@
+{
+	"manufacturer": "Trane Corporation",
+	"manufacturerId": "0x008b",
+	"label": "Trane XR524",
+	"description": "Touchscreen Comfort Control Thermostat",
+	"devices": [
+		{
+			"productType": "0x5452",
+			"productId": "0x5442"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": {
+		"1": {
+			"label": "System Type",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Gas/Electric",
+					"value": 0
+				},
+				{
+					"label": "HeatPump",
+					"value": 1
+				}
+			]
+		},
+		"2": {
+			"label": "Fan Type",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Gas",
+					"value": 0
+				},
+				{
+					"label": "Electric",
+					"value": 1
+				}
+			]
+		},
+		"3": {
+			"label": "Change Over Type",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "w/Cool",
+					"value": 0
+				},
+				{
+					"label": "w/Heat",
+					"value": 1
+				}
+			]
+		},
+		"4": {
+			"label": "Units",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Celsius",
+					"value": 0
+				},
+				{
+					"label": "Fahrenheit",
+					"value": 1
+				}
+			]
+		},
+		"9": {
+			"label": "Display Lock",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Unlocked",
+					"value": 0
+				},
+				{
+					"label": "Locked",
+					"value": 1
+				}
+			]
+		},
+		"10": {
+			"label": "Minimum Off Time",
+			"valueSize": 1,
+			"minValue": 5,
+			"maxValue": 9,
+			"defaultValue": 5
+		},
+		"11": {
+			"label": "Minimum Run Time",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 9,
+			"defaultValue": 6
+		},
+		"12": {
+			"label": "Heating Delta Stage 1 ON",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 8,
+			"defaultValue": 1
+		},
+		"13": {
+			"label": "Heating Delta Stage 1 OFF",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 8,
+			"defaultValue": 0
+		},
+		"14": {
+			"label": "Heating Delta Stage 2 ON",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 8,
+			"defaultValue": 2
+		},
+		"15": {
+			"label": "Heating Delta Stage 2 OFF",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 8,
+			"defaultValue": 0
+		},
+		"16": {
+			"label": "Heating Delta Stage 3 ON",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 8,
+			"defaultValue": 3
+		},
+		"17": {
+			"label": "Heating Delta Stage 3 OFF",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 8,
+			"defaultValue": 0
+		},
+		"18": {
+			"label": "Cooling Delta Stage 1 ON",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 8,
+			"defaultValue": 1
+		},
+		"19": {
+			"label": "Cooling Delta Stage 1 OFF",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 8,
+			"defaultValue": 0
+		},
+		"20": {
+			"label": "Cooling Delta Stage 2 ON",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 8,
+			"defaultValue": 2
+		},
+		"21": {
+			"label": "Cooling Delta Stage 2 OFF",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 8,
+			"defaultValue": 0
+		},
+		"24": {
+			"label": "H/C Delta",
+			"unit": "degrees",
+			"valueSize": 1,
+			"minValue": 3,
+			"maxValue": 15,
+			"defaultValue": 3
+		},
+		"25": {
+			"label": "SetBack Mode",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 2,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "No Setback",
+					"value": 0
+				},
+				{
+					"label": "Setback",
+					"value": 1
+				},
+				{
+					"label": "ESM",
+					"value": 2
+				}
+			]
+		},
+		"29": {
+			"label": "ESM Setpoint--Heating",
+			"unit": "degrees",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 100,
+			"defaultValue": 65
+		},
+		"30": {
+			"label": "ESM Setpoint--Cooling",
+			"unit": "degrees",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 100,
+			"defaultValue": 80
+		},
+		"75": {
+			"label": "Fan ON Time",
+			"unit": "minutes",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 120,
+			"defaultValue": 0
+		},
+		"76": {
+			"label": "Fan OFF Time",
+			"unit": "minutes",
+			"valueSize": 1,
+			"minValue": 10,
+			"maxValue": 120,
+			"defaultValue": 10
+		},
+		"77": {
+			"label": "2nd Stage Heat Enable",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "no 2nd stage heat",
+					"value": 0
+				},
+				{
+					"label": "2nd stage heat",
+					"value": 1
+				}
+			]
+		},
+		"78": {
+			"label": "Aux Heat Enable",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "no aux heat",
+					"value": 0
+				},
+				{
+					"label": "aux heat enabled",
+					"value": 1
+				}
+			]
+		},
+		"79": {
+			"label": "2nd Stage Cool Enable",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "no 2nd stage cool",
+					"value": 0
+				},
+				{
+					"label": "2nd stage cool",
+					"value": 1
+				}
+			]
+		},
+		"141": {
+			"label": "Screen Timeout",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 120,
+			"defaultValue": 0
+		},
+		"143": {
+			"label": "Sensor (Internal) Offset",
+			"valueSize": 1,
+			"minValue": -7,
+			"maxValue": 7,
+			"defaultValue": 0
+		},
+		"148": {
+			"label": "Screen Contrast",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 20,
+			"defaultValue": 10
+		},
+		"228": {
+			"label": "Schedule Sun-1",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"229": {
+			"label": "Schedule Sun-2",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"230": {
+			"label": "Schedule Sun-3",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"231": {
+			"label": "Schedule Sun-4",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"232": {
+			"label": "Schedule Mon-1",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"233": {
+			"label": "Schedule Mon-2",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"234": {
+			"label": "Schedule Mon-3",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"235": {
+			"label": "Schedule Mon-4",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"236": {
+			"label": "Schedule Tue-1",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"237": {
+			"label": "Schedule Tue-2",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"238": {
+			"label": "Schedule Tue-3",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"239": {
+			"label": "Schedule Tue-4",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"240": {
+			"label": "Schedule Wed-1",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"241": {
+			"label": "Schedule Wed-2",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"242": {
+			"label": "Schedule Wed-3",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"243": {
+			"label": "Schedule Wed-4",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"244": {
+			"label": "Schedule Thu-1",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"246": {
+			"label": "Schedule Thu-3",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"247": {
+			"label": "Schedule Thu-4",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"248": {
+			"label": "Schedule Fri-1",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"249": {
+			"label": "Schedule Fri-2",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"250": {
+			"label": "Schedule Fri-3",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"251": {
+			"label": "Schedule Fri-4",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"252": {
+			"label": "Schedule Sat-1",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"253": {
+			"label": "Schedule Sat-2",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"254": {
+			"label": "Schedule Sat-3",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		},
+		"255": {
+			"label": "Schedule Sat-4",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0
+		}
+	}
+}

@@ -1,0 +1,84 @@
+﻿@using HomeBlaze.Abstractions.Devices.Energy;
+@using HomeBlaze.Abstractions.Devices.Light;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+@inject ILogger<ToggleButtonWidget> Logger
+
+<div style="width: @(Thing?.Width)px; height: @(Thing?.Height)px">
+    <div style="position: relative; left: 10px; top: 10px;
+                transform-origin: center; @(_mouseDown ? "transform: scale(0.9);" : "")
+                width: @(Thing?.Width - 20)px; height: @(Thing?.Height - 20)px;
+                text-align: center;
+                @(Lightbulb?.IsLightOn == true ? "color: black;" : "")
+                background-color: @(BackgroundColor);"
+
+         @onmousedown="@(() => _mouseDown = true)" 
+         @onmouseout="@(() => _mouseDown = false)" 
+         @onmouseup="@(() => OnClick())"
+
+         @ontouchstart="@(() => _mouseDown = true)" 
+         @ontouchleave="@(() => _mouseDown = false)" 
+         @ontouchcancel="@(() => _mouseDown = false)" 
+         @ontouchmove="@(() => _mouseDown = false)"
+         @ontouchend="@(() => OnClick())">
+
+        <div style="transform: translateY(-50%) translateX(-50%); position: absolute;
+                    top: calc(50% + @(Thing?.VerticalTextPosition)px); left: 50%; width: @(Thing?.Width - 20)px;">
+            <div>
+                <strong>@Thing?.Label</strong>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Thing?.Description))
+            {
+                <div>
+                    @Thing?.Description
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool _mouseDown = false;
+    private bool _executing = false;
+
+    public string BackgroundColor =>
+        Lightbulb?.IsLightOn == true ? "#E5BB00" :
+        PowerRelay?.IsPowerOn == true ? "#E5BB00" :
+        MainLayout.UseDarkTheme ? "#000000" :
+        "#ffffff";
+
+    public ILightbulb? Lightbulb => ThingManager?.TryGetById(Thing?.ThingId) as ILightbulb;
+
+    public IPowerRelay? PowerRelay => ThingManager?.TryGetById(Thing?.ThingId) as IPowerRelay;
+
+    [Parameter]
+    public ToggleButtonWidget? Thing { get; set; }
+
+    public async void OnClick()
+    {
+        if (_mouseDown && !_executing)
+        {          
+            _executing = true;
+            try
+            {
+                if (Lightbulb != null)
+                {
+                    await Lightbulb.ToggleLightAsync(CancellationToken.None);
+                }
+                else if (PowerRelay != null)
+                {
+                    await PowerRelay.TogglePowerAsync(CancellationToken.None);
+                }
+            }
+            finally
+            {
+                _executing = false;
+                _mouseDown = false;
+                StateHasChanged();
+            }
+        }
+    }
+}

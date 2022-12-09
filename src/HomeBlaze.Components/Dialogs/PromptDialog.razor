@@ -1,0 +1,32 @@
+﻿@using MudBlazor;
+
+<MudDialog>
+    <TitleContent>@(DialogInstance?.Title)</TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="Value" FullWidth="true" Label="Value"></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(Value))" Class="px-10">OK</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public string? Value { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    public static async Task<DialogResult> ShowAsync(IDialogService dialogService, string title, string defaultValue)
+    {
+        return await dialogService.Show<PromptDialog>(title,
+            new DialogParameters
+            {
+                { "Value", defaultValue }
+            },
+            new DialogOptions
+            {
+                MaxWidth = MaxWidth.ExtraLarge
+            }).Result;
+    }
+}

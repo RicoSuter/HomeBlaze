@@ -1,0 +1,9 @@
+﻿[
+  {
+    "isEnabled": true,
+    "name": "Namotion.Lights",
+    "path": "Config/Plugins/Namotion.Lights.1.0.0.nupkg",
+    "version": "1.0",
+    "licenseKey": ""
+  }
+]

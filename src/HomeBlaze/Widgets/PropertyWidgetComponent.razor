@@ -1,0 +1,78 @@
+﻿@using System.Reflection
+@using HomeBlaze.Abstractions.Sensors;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Components.Dialogs;
+
+@inject IDialogService DialogService
+@inject IThingManager ThingManager
+
+<div style="padding: 10px; height: @(Thing?.Scale * 100)px">
+    <div style="transform: scale(@(((Thing?.Scale * 100 - 20) / 80) ?? 1.0m)); transform-origin: top left">
+        <div>
+            @if (!string.IsNullOrEmpty(Thing?.Title))
+            {
+                <div style="font-size: 1.3em">
+                    @if (!string.IsNullOrEmpty(FaIcon))
+                    {
+                        <i class="fas fa-@(FaIcon)" aria-hidden="true"></i>
+                        <span>&nbsp;</span>
+                    }
+                    @(Thing?.Title)
+                </div>
+            }
+            <div @onclick="ShowHistory" @ontouchend="ShowHistory" style="font-size: 3.4em">
+                @if (Thing != null && Value?.Value != null)
+                {
+                    try // TODO: Find way to avoid constant exceptions here
+                    {
+                        @Math.Round(Convert.ToDecimal(Value?.Value) * Thing.Multiplier, Thing.Decimals)
+                    }
+                    catch
+                    {
+                        @Value?.Value
+                    }
+
+                    @if (!string.IsNullOrEmpty(Thing.Unit))
+                    {
+                        <small>&nbsp;@Thing.Unit</small>
+                    }
+                }
+                else
+                {
+                    <span>?</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public PropertyWidget? Thing { get; set; }
+
+    public PropertyState? Value =>
+        Thing?.ThingId != null && Thing?.Property != null ?
+        ThingManager.TryGetPropertyState(Thing.ThingId, Thing.Property, true) :
+        null;
+
+    public async void ShowHistory()
+    {
+        var sourceThing = Thing?.Thing;
+        var property = Thing?.Property;
+        if (property != null && sourceThing != null)
+        {
+            await StateHistoryDialog.ShowAsync(DialogService, sourceThing, property);
+        }
+    }
+
+    // TODO: Remove special logic here
+    public string? FaIcon =>
+        Thing?.Thing is ITemperatureSensor temperatureSensor && Thing?.Property == nameof(ITemperatureSensor.Temperature) && string.IsNullOrEmpty(Thing?.Icon) ?
+        (temperatureSensor?.Temperature < 0 ? "thermometer-empty" :
+            temperatureSensor?.Temperature < 10 ? "thermometer-quarter" :
+            temperatureSensor?.Temperature < 20 ? "thermometer-half" :
+            temperatureSensor?.Temperature < 30 ? "thermometer-three-quarters" :
+            "thermometer-full") :
+        Thing?.Icon;
+}

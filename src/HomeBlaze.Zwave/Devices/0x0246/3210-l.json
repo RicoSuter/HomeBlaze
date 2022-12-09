@@ -1,0 +1,23 @@
+{
+	"manufacturer": "CentraLite Systems, Inc",
+	"manufacturerId": "0x0246",
+	"label": "3210-L",
+	"description": "Smart Plug",
+	"devices": [
+		{
+			"productType": "0x0001",
+			"productId": "0x0001",
+			"zwaveAllianceId": 1492
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"metadata": {
+		"inclusion": "The Lowe's IRIS Smart Plug acts as a repeater for other Z-Wave devices",
+		"exclusion": "Power off device by unplugging it from its receptacle",
+		"reset": "Unplug device from the wall. While holding the front button, re-insert device into the receptacle. Once the blue light illuminates, release button to factory reset. Use this procedure only in the event that the network primary controller is missing or otherwise inoperable.",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/1492/InstallationGuide-LowesSmartOutlet.pdf"
+	}
+}

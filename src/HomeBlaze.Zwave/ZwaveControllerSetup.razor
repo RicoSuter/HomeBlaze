@@ -1,0 +1,15 @@
+﻿@using System.Threading;
+@using HomeBlaze.Components;
+@using MudBlazor
+
+@inherits ThingSetupComponent<ZwaveController>
+
+<MudForm @bind-IsTouched="_isFormValid">
+    <MudTextField @bind-Value="@Thing.SerialPort" Label="Serial Port (e.g. COM3, /dev/ttyACM0)" Required="true" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

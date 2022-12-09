@@ -1,0 +1,78 @@
+﻿@using System.Reflection
+@using System.ComponentModel
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Abstractions.Services
+@using HomeBlaze.Abstractions
+@using HomeBlaze.Components;
+@using MudBlazor;
+
+@inject IThingManager ThingManager
+@inject ITypeManager TypeManager
+@inject IThingStorage ThingStorage
+
+<MudDialog>
+    <TitleContent>Select Thing</TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="_filter" Placeholder="Search..." Variant="Variant.Outlined" Immediate="true" AutoFocus="true" />
+        <br />
+        <div style="height: 500px; width: 500px; overflow-y: auto">
+            @if (string.IsNullOrEmpty(_filter))
+            {
+                <MudTreeView T="IThing">
+                    <ThingSelectDialogThing Thing="@ThingManager.RootThing" ThingFilter="ThingFilter!" />
+                </MudTreeView>
+            }
+            else
+            {
+                <MudTreeView T="IThing">
+                    @foreach (var child in FilteredThings)
+                    {
+                        <ThingSelectDialogChild Thing="@child" ThingFilter="ThingFilter!" />
+                    }
+                </MudTreeView>
+            }
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => DialogInstance?.Close(new Tuple<bool, IThing?>(false, null)))" Color="Color.Primary">Close</MudButton>
+        @if (!Required)
+        {
+            <MudButton OnClick="@(() => DialogInstance?.Close(new Tuple<bool, IThing?>(true, null)))" Color="Color.Primary">Clear</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private string _filter = string.Empty;
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    [Parameter]
+    public bool Required { get; set; }
+
+    [Parameter]
+    public Func<IThing, bool>? ThingFilter { get; set; }
+
+    public IEnumerable<IThing> FilteredThings => ThingManager.AllThings
+        .Where(t => ThingFilter == null || ThingFilter(t))
+        .Where(t => t.Title?.ToLowerInvariant().Contains(_filter.ToLowerInvariant()) == true);
+
+    public static async Task<Tuple<bool, IThing?>?> ShowAsync(IDialogService dialogService, 
+        bool required, Func<IThing, bool>? thingFilter)
+    {
+        var result = await dialogService.Show<ThingSelectDialog>(string.Empty,
+            new DialogParameters
+            {
+                { "Required", required },
+                { "ThingFilter", thingFilter }
+            },
+            new DialogOptions
+            {
+                MaxWidth = MaxWidth.Medium
+            }).Result;
+
+        return result?.Data as Tuple<bool, IThing?>;
+    }
+}

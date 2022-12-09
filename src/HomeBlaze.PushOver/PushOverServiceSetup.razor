@@ -1,0 +1,47 @@
+﻿@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Components
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using MudBlazor
+@using System.Threading
+@using HomeBlaze.Abstractions.Services
+@using System.Net.Http;
+
+@inherits ThingSetupComponent<PushOverService>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Title" Label="Title" />
+    <MudTextField @bind-Value="@Thing.Token" Label="Application Token" InputType="InputType.Password" />
+
+    @foreach (var target in Thing.Targets)
+    {
+        <br />
+        <MudField Label="Target" Variant="Variant.Outlined" InnerPadding="true">
+            <MudTextField @bind-Value="@target.Title" Label="Title"></MudTextField>
+            <MudTextField @bind-Value="@target.Token" Label="User/Group Token" InputType="InputType.Password" />
+
+            <br />
+            <MudButton OnClick="@(() => RemoveTarget(target))" Variant="Variant.Filled" Size="Size.Small" Color="Color.Error">Delete</MudButton>
+        </MudField>
+    }
+
+    <br />
+    <MudButton OnClick="AddTarget" Variant="Variant.Filled" Color="Color.Primary">Add Target</MudButton>
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid && Thing?.Targets.Any() == true;
+
+    public void AddTarget()
+    {
+        Thing.Targets.Add(new PushOverTarget());
+    }
+
+    public void RemoveTarget(PushOverTarget target)
+    {
+        Thing.Targets.Remove(target);
+    }
+}

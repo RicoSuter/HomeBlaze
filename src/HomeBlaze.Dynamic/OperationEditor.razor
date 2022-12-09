@@ -1,0 +1,30 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components.Inputs;
+@using MudBlazor;
+@using System.Text.Json;
+
+@inject IThingManager ThingManager
+
+@if (Operation != null)
+{
+    <ThingSelect Label="Thing ID" ThingId="@Operation.ThingId" ThingIdChanged="@(thingId => { Operation.ThingId = thingId; Operation.OperationName = null; })" Required="true" />
+    <ThingOperationSelect Label="Operation" ThingId="@Operation.ThingId" Disabled="@(Operation.ThingId == null)" Required="true"
+        OperationName="@Operation.OperationName" 
+        OperationNameChanged="@(operationName => { Operation.OperationName = operationName; Operation.Parameters = Operation.GetOperation(ThingManager)?.CreateParameters() ?? new Dictionary<string, object?>(); })" />
+
+    @if (Operation.Parameters.Any())
+    {
+        <br />
+        <h3>Parameters</h3>
+        @foreach (var parameterName in Operation.Parameters.Keys)
+        {
+            <MudTextField T="string" Label="@parameterName" Value="@Operation.Parameters[parameterName]?.ToString()"
+                ValueChanged="@(value => Operation.Parameters[parameterName] = value)" />
+        }
+    }
+}
+
+@code {
+    [Parameter]
+    public Operation? Operation { get; set; }
+}

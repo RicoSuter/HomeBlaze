@@ -1,0 +1,76 @@
+{
+	"manufacturer": "Ecolink",
+	"manufacturerId": "0x014a",
+	"label": "DWZWAVE2",
+	"description": "Z-Wave Door/Window Sensor",
+	"devices": [
+		{
+			"productType": "0x0001",
+			"productId": "0x0002",
+			"zwaveAllianceId": [1498, 790]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Group 1",
+			"description": "Association Group 1",
+			"maxNodes": 5,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Group 2",
+			"description": "Association Group 2",
+			"maxNodes": 5
+		}
+	},
+	"paramInformation": {
+		"1": {
+			"label": "Sending Basic Sets to Association group 2",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Off",
+					"value": 0
+				},
+				{
+					"label": "On",
+					"value": 255
+				}
+			]
+		},
+		"2": {
+			"label": "Sending sensor binary report",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Off",
+					"value": 0
+				},
+				{
+					"label": "On",
+					"value": 255
+				}
+			]
+		}
+	},
+	"metadata": {
+		"inclusion": "Once the controller is in inclusion mode, either remove the battery isolation tab, OR insert the battery to power up the sensor",
+		"exclusion": "Once the controller is in exclusion mode, either remove the battery isolation tab, OR insert the battery to power up the sensor",
+		"reset": "To restore this sensor to factory default settings, follow the instructions in the manual to exclude this sensor from the Z-Wave network. Upon completion of removal from the network the sensor will restore itself to factory default settings automatically. Use this procedure only in the event that the network primary controller is missing or otherwise inoperable",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/1498/D.W.%20Zwave%20Manual%20R1.04.docx"
+	}
+}

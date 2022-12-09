@@ -1,0 +1,81 @@
+﻿@using HomeBlaze.Components;
+@using Microsoft.Extensions.DependencyInjection;
+@using MudBlazor
+@using System.Threading;
+
+@inject IDialogService DialogService
+@inject IServiceProvider ServiceProvider
+
+@inherits ThingSetupComponentBase<LogitechHarmonyHub>
+@implements IDisposable
+
+@if (_hubInfos.Any() == false)
+{
+    <MudItem>
+        Searching for Logitech Harmony Hubs...
+    </MudItem>
+}
+else
+{
+    <MudItem>
+        Hubs in your Network
+    </MudItem>
+
+    <MudItem>
+        <MudList Clickable="true" @bind-SelectedValue="_selectedHubInfo">
+            <MudDivider />
+            @foreach (var hub in _hubInfos)
+            {
+                <MudListItem Value="hub">
+                    Logitech Harmony Hub @hub.FriendlyName (@hub.UUID)
+                </MudListItem>
+
+                <MudDivider />
+            }
+        </MudList>
+    </MudItem>
+}
+
+@code {
+    private global::Harmony.DiscoveryService? _discoveryService;
+
+    private global::Harmony.HubInfo[] _hubInfos = Array.Empty<global::Harmony.HubInfo>();
+
+    private object? _selectedHubInfo;
+
+    protected override void OnInitialized()
+    {
+        _discoveryService = new global::Harmony.DiscoveryService();
+        _discoveryService.HubFound += OnHubFound;
+        _discoveryService.StartDiscovery();
+    }
+
+    private void OnHubFound(object? sender, global::Harmony.HubFoundEventArgs e)
+    {
+        _hubInfos = _hubInfos
+            .Concat(new[] { e.HubInfo })
+            .GroupBy(i => i.UUID)
+            .Select(g => g.First())
+            .ToArray();
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public override Task<LogitechHarmonyHub?> CreateThingAsync(CancellationToken cancellationToken)
+    {
+        if (_selectedHubInfo is global::Harmony.HubInfo selectedHubInfo)
+        {
+            var hub = (LogitechHarmonyHub)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(LogitechHarmonyHub));
+            hub.IpAddress = selectedHubInfo.IP;
+            hub.RemoteId = selectedHubInfo.RemoteId;
+            return Task.FromResult<LogitechHarmonyHub?>(hub);
+        }
+
+        return Task.FromResult<LogitechHarmonyHub?>(null);
+    }
+
+    public void Dispose()
+    {
+        _discoveryService?.StopDiscovery();
+    }
+}
