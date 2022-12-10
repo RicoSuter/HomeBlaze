@@ -3,6 +3,7 @@
 @using HomeBlaze.Json;
 @using MudBlazor;
 @using System.Text.Json;
+@using HomeBlaze.Things;
 
 @inject IThingManager ThingManager
 @inject IDialogService DialogService
@@ -31,7 +32,7 @@
     private bool _isFormValid;
 
     [Parameter]
-    public HomeBlaze.Things.Dashboard? Dashboard { get; set; }
+    public Dashboard? Dashboard { get; set; }
 
     [Parameter]
     public string? SaveButtonText { get; set; }
@@ -39,9 +40,9 @@
     [CascadingParameter]
     public MudDialogInstance? DialogInstance { get; set; }
 
-    public static async Task<HomeBlaze.Things.Dashboard?> CreateAsync(IDialogService dialogService)
+    public static async Task<Dashboard?> CreateAsync(IDialogService dialogService)
     {
-        var dashboard = new HomeBlaze.Things.Dashboard();
+        var dashboard = new Dashboard();
         if (await ShowAsync(dialogService, dashboard, "Add Dashboard", "Create Dashboard"))
         {
             return dashboard;
@@ -50,19 +51,19 @@
         return null;
     }
 
-    public static async Task<bool> EditAsync(IDialogService dialogService, HomeBlaze.Things.Dashboard dashboard)
+    public static async Task<bool> EditAsync(IDialogService dialogService, Dashboard dashboard)
     {
         return await ShowAsync(dialogService, dashboard, "Edit Dashboard", "Update Dashboard");
     }
 
-    private static async Task<bool> ShowAsync(IDialogService dialogService, HomeBlaze.Things.Dashboard dashboard, string title, string button)
+    private static async Task<bool> ShowAsync(IDialogService dialogService, Dashboard dashboard, string title, string button)
     {
         var result = await dialogService.Show<DashboardDialog>(title,
             new DialogParameters
             {
                 { 
                     "Dashboard",
-                    new HomeBlaze.Things.Dashboard
+                    new Dashboard
                     {
                         Name = dashboard.Name,
                         Icon = dashboard.Icon,
@@ -76,7 +77,7 @@
                 MaxWidth = MaxWidth.Small
             }).Result;
 
-        if (result?.Cancelled == false && result.Data is HomeBlaze.Things.Dashboard clonedDashboard)
+        if (result?.Cancelled == false && result.Data is Dashboard clonedDashboard)
         {
             dashboard.Name = clonedDashboard.Name;
             dashboard.Icon = clonedDashboard.Icon;

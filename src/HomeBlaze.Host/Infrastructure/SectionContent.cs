@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace HomeBlaze.Infrastructure
+namespace HomeBlaze.Host.Infrastructure
 {
     public class SectionContent : IComponent, IDisposable
     {

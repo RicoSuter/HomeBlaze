@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
+
 @namespace HomeBlaze.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
@@ -7,19 +8,23 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="~/" />
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <base href="~/" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+   
+    @* MudBlazor *@
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+
+    @* FontAwesome *@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
 
     @* RadzenChart *@
     <link rel="stylesheet" href="_content/Radzen.Blazor/css/default-base.css" />
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
 
-    <!-- Z.Blazor.Diagrams -->
+    @* Z.Blazor.Diagrams *@
     <link href="_content/Z.Blazor.Diagrams/style.min.css" rel="stylesheet" />
     <link href="_content/Z.Blazor.Diagrams/default.styles.min.css" rel="stylesheet" />
     <script src="_content/Z.Blazor.Diagrams/script.min.js"></script>

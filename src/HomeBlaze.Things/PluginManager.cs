@@ -18,10 +18,10 @@ namespace HomeBlaze.Things
         public string Title => "Plugin Manager";
 
         [State]
-        public IEnumerable<string> Plugins => (_plugins != null ? _plugins : _plugins = _typeManager
+        public IEnumerable<string> Plugins => _plugins != null ? _plugins : _plugins = _typeManager
             .Plugins
             .Where(p => p.Name != null)
-            .Select(p => p.Name!));
+            .Select(p => p.Name!);
 
         [State]
         public IEnumerable<string> ThingTypes => (_thingTypes != null ? _thingTypes : _thingTypes = _typeManager

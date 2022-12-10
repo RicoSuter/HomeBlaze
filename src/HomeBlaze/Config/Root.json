@@ -1,3 +1,58 @@
 {
-  "discriminator": "HomeBlaze.Things.SystemThing"
+  "discriminator": "HomeBlaze.Things.SystemThing",
+  "internalId": "3cce8857-8f21-4519-a0f4-b0b9b7a29432",
+  "things": [
+    {
+      "discriminator": "HomeBlaze.MyStrom.MyStromSwitch",
+      "title": "test",
+      "ipAddress": "192.168.1.71",
+      "refreshInterval": 15000
+    }
+  ],
+  "dashboards": [
+    {
+      "id": "14c24bf4-f405-4a92-9fb2-06e3e0a95d31",
+      "name": "home",
+      "icon": "home",
+      "widgets": [
+        {
+          "id": "658f5d06-1aaf-4dc8-8fdf-615c6a5a87e4",
+          "x": 0,
+          "y": 0,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.PropertyWidget",
+            "id": "c2c78cbb-6518-48ee-82f8-757892b98c8a",
+            "title": "lj",
+            "thingId": "mystrom.switch.840D8E3D08F4",
+            "property": "PowerConsumption",
+            "icon": null,
+            "unit": null,
+            "scale": 1.0,
+            "multiplier": 1,
+            "decimals": 2
+          }
+        },
+        {
+          "id": "c7b48906-6dc0-4522-9ae1-e0f58ef9af6c",
+          "x": 0,
+          "y": 100,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.IconWidget",
+            "id": "de7f82a8-1b32-4a22-8c82-6b16b696b7ed",
+            "scale": 1.0,
+            "size": 1.0,
+            "conditions": [
+              {
+                "icon": "question-circle",
+                "opacity": 1.0,
+                "thingId": null,
+                "property": null,
+                "value": null
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
 }

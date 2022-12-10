@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace HomeBlaze
+namespace HomeBlaze.Host
 {
     public class MemoryLogger : ILogger
     {
@@ -21,10 +21,10 @@ namespace HomeBlaze
                 return;
             }
 
-            var newOutput = 
+            var newOutput =
                 $"{logLevel.ToString().Substring(0, 4)} - {_name} | {DateTimeOffset.Now.ToString("O")}\n" +
-                $"       {formatter(state, exception)}\n{(exception != null ? (exception.ToString() + "\n") : string.Empty)}" + CurrentOutput;
-           
+                $"       {formatter(state, exception)}\n{(exception != null ? exception.ToString() + "\n" : string.Empty)}" + CurrentOutput;
+
             CurrentOutput = string.Join('\n', newOutput.Split('\n').Take(1000));
         }
     }

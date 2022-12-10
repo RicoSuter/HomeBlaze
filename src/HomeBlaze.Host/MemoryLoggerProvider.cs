@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 
-namespace HomeBlaze
+namespace HomeBlaze.Host
 {
     public sealed class MemoryLoggerProvider : ILoggerProvider
     {

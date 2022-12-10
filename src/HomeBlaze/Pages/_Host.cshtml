@@ -1,4 +1,7 @@
 ﻿@page "/"
+
+@using HomeBlaze.Host;
+
 @namespace HomeBlaze.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -8,15 +11,6 @@
 <component type="typeof(App)" render-mode="ServerPrerendered" />
 
 <script type="text/javascript">
-    window.GetWindowHeight = function () { return window.innerHeight; };
-    window.GetWindowWidth = function () { return window.innerWidth; };
-    window.GetAppBarHeight = function () {
-        try {
-            return Math.ceil(document.querySelector('.mud-appbar').clientHeight + 16);
-        } catch {
-            return 0;
-        }
-    };
     window.ScrollIntoView = function (elementId, left) {
         const element = document.getElementById(elementId);
         element.scrollTo({ left: left, behavior: 'smooth' });

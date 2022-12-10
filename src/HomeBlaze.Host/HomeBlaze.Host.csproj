@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -16,6 +16,6 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />
 	  <ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Core.csproj" />
-	  <ProjectReference Include="..\HomeBlaze.Dynamic\HomeBlaze.Dynamic.csproj" />
+	  <ProjectReference Include="..\HomeBlaze.Things\HomeBlaze.Things.csproj" />
 	</ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.Runtime.CompilerServices;
 
-namespace HomeBlaze.Infrastructure
+namespace HomeBlaze.Host.Infrastructure
 {
     internal class SectionRegistry
     {

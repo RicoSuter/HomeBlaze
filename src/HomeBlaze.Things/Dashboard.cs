@@ -5,7 +5,6 @@ namespace HomeBlaze.Things
 {
     public class Dashboard : IThing
     {
-
         [Configuration(IsIdentifier = true)]
         public string? Id { get; set; } = Guid.NewGuid().ToString();
 

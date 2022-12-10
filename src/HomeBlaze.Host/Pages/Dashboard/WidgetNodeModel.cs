@@ -2,7 +2,7 @@
 using Blazor.Diagrams.Core.Models;
 using HomeBlaze.Things;
 
-namespace HomeBlaze.Pages.Dashboard
+namespace HomeBlaze.Host.Pages.Dashboard
 {
     public class WidgetNodeModel : NodeModel
     {
