@@ -29,6 +29,7 @@
     <ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Core.csproj" />
     <ProjectReference Include="..\HomeBlaze.Dynamic\HomeBlaze.Dynamic.csproj" />
     <ProjectReference Include="..\HomeBlaze.Gardena\HomeBlaze.Gardena.csproj" />
+    <ProjectReference Include="..\HomeBlaze.Host\HomeBlaze.Host.csproj" />
     <ProjectReference Include="..\HomeBlaze.Logitech\HomeBlaze.Logitech.csproj" />
     <ProjectReference Include="..\HomeBlaze.Mqtt\HomeBlaze.Mqtt.csproj" />
     <ProjectReference Include="..\HomeBlaze.MyStrom\HomeBlaze.MyStrom.csproj" />

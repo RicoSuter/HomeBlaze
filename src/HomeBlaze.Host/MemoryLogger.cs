@@ -1,4 +1,6 @@
-﻿namespace HomeBlaze
+﻿using Microsoft.Extensions.Logging;
+
+namespace HomeBlaze
 {
     public class MemoryLogger : ILogger
     {

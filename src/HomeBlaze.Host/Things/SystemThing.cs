@@ -3,6 +3,7 @@ using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Components.Dialogs;
+using Microsoft.Extensions.Logging;
 using MudBlazor;
 using System.Reflection;
 
