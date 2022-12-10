@@ -44,7 +44,7 @@ switch (storageType)
 
     default:
         builder.Services.AddSingleton<IBlobContainer>(s => FileSystemBlobStorage
-            .CreateWithBasePath(builder.Configuration.GetValue<string>("Storage:Path")));
+            .CreateWithBasePath(builder.Configuration.GetValue("Storage:Path", "Config")));
         break;
 }
 
