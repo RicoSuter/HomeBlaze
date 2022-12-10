@@ -1,4 +1,5 @@
 ﻿@using HomeBlaze.Abstractions.Services;
+@using Microsoft.Extensions.Logging;
 @using MudBlazor
 
 @inject IThingManager ThingManager
@@ -9,7 +10,7 @@
                 transform-origin: center; @(_mouseDown ? "transform: scale(0.9);" : "")
                 width: @(Thing?.Width - 20)px; height: @(Thing?.Height - 20)px;
                 text-align: center;
-                background-color: @(MainLayout.UseDarkTheme ? "#000000" : "#ffffff");"
+                background-color: #000000"
 
          @onmousedown="@(() => _mouseDown = true)" 
          @onmouseout="@(() => _mouseDown = false)" 

@@ -1,6 +1,7 @@
 ﻿@using HomeBlaze.Abstractions.Devices.Energy;
 @using HomeBlaze.Abstractions.Devices.Light;
 @using HomeBlaze.Abstractions.Services;
+@using Microsoft.Extensions.Logging;
 @using MudBlazor
 
 @inject IThingManager ThingManager
@@ -47,8 +48,7 @@
     public string BackgroundColor =>
         Lightbulb?.IsLightOn == true ? "#E5BB00" :
         PowerRelay?.IsPowerOn == true ? "#E5BB00" :
-        MainLayout.UseDarkTheme ? "#000000" :
-        "#ffffff";
+        "#000000";
 
     public ILightbulb? Lightbulb => ThingManager?.TryGetById(Thing?.ThingId) as ILightbulb;
 

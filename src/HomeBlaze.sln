@@ -59,6 +59,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Logitech.Harmony"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Zwave", "HomeBlaze.Zwave\HomeBlaze.Zwave.csproj", "{FD4887D3-9F63-44CE-9777-A3C157B5281A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeBlaze.Host", "HomeBlaze.Host\HomeBlaze.Host.csproj", "{11F384B8-01FD-4B9A-9AF8-5EF79F50CA0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeBlaze.Widgets", "HomeBlaze.Widgets\HomeBlaze.Widgets.csproj", "{9220ED43-6E3B-4B61-93D6-79E53157E54C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -165,6 +169,14 @@ Global
 		{FD4887D3-9F63-44CE-9777-A3C157B5281A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD4887D3-9F63-44CE-9777-A3C157B5281A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD4887D3-9F63-44CE-9777-A3C157B5281A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11F384B8-01FD-4B9A-9AF8-5EF79F50CA0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11F384B8-01FD-4B9A-9AF8-5EF79F50CA0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11F384B8-01FD-4B9A-9AF8-5EF79F50CA0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11F384B8-01FD-4B9A-9AF8-5EF79F50CA0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9220ED43-6E3B-4B61-93D6-79E53157E54C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9220ED43-6E3B-4B61-93D6-79E53157E54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9220ED43-6E3B-4B61-93D6-79E53157E54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9220ED43-6E3B-4B61-93D6-79E53157E54C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

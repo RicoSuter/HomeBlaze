@@ -38,6 +38,7 @@
     <ProjectReference Include="..\HomeBlaze.PushOver\HomeBlaze.PushOver.csproj" />
     <ProjectReference Include="..\HomeBlaze.Tesla\HomeBlaze.Tesla.csproj" />
     <ProjectReference Include="..\HomeBlaze.ThanksMister\HomeBlaze.ThanksMister.csproj" />
+    <ProjectReference Include="..\HomeBlaze.Widgets\HomeBlaze.Widgets.csproj" />
     <ProjectReference Include="..\HomeBlaze.Xbox\HomeBlaze.Xbox.csproj" />
     <ProjectReference Include="..\HomeBlaze.Zwave\HomeBlaze.Zwave.csproj" />
   </ItemGroup>
