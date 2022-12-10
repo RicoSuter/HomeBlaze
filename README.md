@@ -21,10 +21,3 @@ docker pull ghcr.io/ricosuter/homeblaze:main
 ```
 
 After this, run the `docker run` command above again.
-
-To stop and remove the image, run: 
-
-```
-docker stop homeblaze
-docker rm homeblaze
-```
