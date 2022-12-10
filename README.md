@@ -2,7 +2,7 @@
 
 ## Installation
 
-**Docker**
+### Docker
 
 To run HomeBlaze on port 9800 via Docker, create a HomeBlaze directory in your C: drive and run:
 
