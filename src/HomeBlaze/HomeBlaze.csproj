@@ -42,4 +42,10 @@
     <ProjectReference Include="..\HomeBlaze.Zwave\HomeBlaze.Zwave.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Config\Plugins\Namotion.Lights.1.0.0.nupkg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
