@@ -39,7 +39,7 @@ namespace HomeBlaze
 
         public async Task<IThing> ReadThingAsync(CancellationToken cancellationToken)
         {
-            var json = await _blobContainer.ReadAllTextAsync("Root.json", cancellationToken);
+            var json = await ReadRootConfigurationAsync(cancellationToken);
 
             var rootThing = JsonSerializer.Deserialize<IThing>(json, _thingSerializerOptions);
             if (rootThing == null)
@@ -48,6 +48,18 @@ namespace HomeBlaze
             }
 
             return rootThing;
+        }
+
+        private async Task<string> ReadRootConfigurationAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                return await _blobContainer.ReadAllTextAsync("Root.json", cancellationToken);
+            }
+            catch (BlobNotFoundException)
+            {
+                return "{\"discriminator\": \"HomeBlaze.Things.SystemThing\"}";
+            }
         }
 
         public async Task WriteThingAsync(IThing thing, CancellationToken cancellationToken)

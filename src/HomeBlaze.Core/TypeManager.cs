@@ -63,13 +63,14 @@ namespace HomeBlaze
                             {
                                 await plugin.LoadAsync(_nuGetPackageLoader, _logger, cancellationToken);
                             }
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "Failed to load plugins from Plugins.json.");
+                        }
 
-                            //JsonInheritanceConverter<Script>.AdditionalKnownTypes[typeof(ConditionalScript).FullName] = typeof(ConditionalScript);
-                            //JsonInheritanceConverter<Script>.AdditionalKnownTypes[typeof(ParallelScript).FullName] = typeof(ParallelScript);
-                            //JsonInheritanceConverter<Script>.AdditionalKnownTypes[typeof(SequentialScript).FullName] = typeof(SequentialScript);
-                            //JsonInheritanceConverter<Script>.AdditionalKnownTypes[typeof(SleepScript).FullName] = typeof(SleepScript);
-                            //JsonInheritanceConverter<Script>.AdditionalKnownTypes[typeof(OperationScript).FullName] = typeof(OperationScript);
-
+                        try
+                        {
                             var assemblies = GetAssemblies();
                            
                             ThingInterfaces = GetThingInterfaces(assemblies);
@@ -83,7 +84,7 @@ namespace HomeBlaze
                         }
                         catch (Exception e)
                         {
-                            _logger.LogError(e, "Failed to load plugins.");
+                            _logger.LogError(e, "Failed to load types.");
                         }
                     }, cancellationToken);
                 }
