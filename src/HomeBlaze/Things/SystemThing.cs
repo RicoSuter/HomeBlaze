@@ -29,7 +29,7 @@ namespace HomeBlaze.Things
         public PluginManager PluginManager { get; }
 
         [Configuration, State]
-        public List<Dashboard> Dashboards { get; set; } = new List<Dashboard> { new Dashboard() };
+        public List<Dashboard> Dashboards { get; set; } = new List<Dashboard> { new Dashboard { Name = "home", Icon = "home" } };
 
         public string IconName => "fab fa-hubspot";
 
