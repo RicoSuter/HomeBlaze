@@ -1,30 +1,422 @@
 {
   "discriminator": "HomeBlaze.Things.SystemThing",
-  "internalId": "3cce8857-8f21-4519-a0f4-b0b9b7a29432",
+  "internalId": "e59753eb-8728-4690-ad93-1ba00869b5f8",
   "things": [
     {
+      "discriminator": "HomeBlaze.Philips.Hue.HueBridge",
+      "bridgeId": "001788fffe20b654",
+      "appKey": "pQipM1Srk7swMjkXbnGqdjEtBSWNldNxzlLQYUm3",
+      "refreshInterval": 250
+    },
+    {
       "discriminator": "HomeBlaze.MyStrom.MyStromSwitch",
-      "title": "test",
-      "ipAddress": "192.168.1.71",
+      "title": "B\u00FCro DG Stromverbrauch",
+      "ipAddress": "192.168.1.104",
+      "refreshInterval": 1000
+    },
+    {
+      "discriminator": "HomeBlaze.MyStrom.MyStromSwitch",
+      "title": "Prusa Stromverbrauch",
+      "ipAddress": "192.168.1.155",
       "refreshInterval": 15000
+    },
+    {
+      "discriminator": "HomeBlaze.MyStrom.MyStromSwitch",
+      "title": "Waschk\u00FCche Tumbler Stromverbrauch",
+      "ipAddress": "192.168.1.192",
+      "refreshInterval": 15000
+    },
+    {
+      "discriminator": "HomeBlaze.MyStrom.MyStromSwitch",
+      "title": "Geschirrsp\u00FCler Stromverbrauch",
+      "ipAddress": "192.168.1.129",
+      "refreshInterval": 15000
+    },
+    {
+      "discriminator": "HomeBlaze.MyStrom.MyStromSwitch",
+      "title": "Wohnzimmer Entertainment Stromverbrauch",
+      "ipAddress": "192.168.1.71",
+      "refreshInterval": 1000
+    },
+    {
+      "discriminator": "HomeBlaze.Dynamic.DynamicExtensionThing",
+      "property": "FooBar",
+      "thingTitle": "Foobar2",
+      "thingInterface": "HomeBlaze.Abstractions.Sensors.ITemperatureSensor",
+      "variables": [
+        {
+          "name": "powerConsumption",
+          "thingId": "mystrom.switch.FCF5C418ADAC",
+          "property": "PowerConsumption",
+          "windowDuration": "00:03:00",
+          "windowAggregation": "Average",
+          "actualName": "powerConsumption"
+        }
+      ],
+      "properties": [
+        {
+          "name": "Temperature",
+          "expression": "const x = powerConsumption * -1;\nconst y = 10;\nreturn x * y;"
+        }
+      ],
+      "id": "cd625745-462d-49c9-88c3-debc502301d2",
+      "title": "ThingExtensionFooBar",
+      "extendedThingId": "mystrom.switch.FCF5C418ADAC"
+    },
+    {
+      "discriminator": "HomeBlaze.PushOver.PushOverService",
+      "id": "6328e01b-96d3-4260-bb18-3d4aa7a2f0e0",
+      "title": "PushOver Service",
+      "token": "a3m7r3ri57efo1dr2gm4f1xqo9mx97",
+      "targets": [
+        {
+          "id": "f5e318ca-9b51-460f-ada9-d33096172b42",
+          "title": "Rico",
+          "token": "uku8yvas6jahharqzrz2n46dgqnqct"
+        },
+        {
+          "id": "b9b5f1a8-a38f-4da1-9d43-f2f1af2fe889",
+          "title": "Corina",
+          "token": "u7imj8ih6fr4xzdm4rb8u21xx5t7v6"
+        }
+      ]
+    },
+    {
+      "discriminator": "HomeBlaze.Dynamic.Automation",
+      "id": "683f027c-6800-47a3-a154-ea148b4bdbd5",
+      "title": "Forgot to turn off Lights",
+      "initialState": "LightOff",
+      "states": [
+        {
+          "x": 73,
+          "y": 154,
+          "name": "LightOff",
+          "operation": null
+        },
+        {
+          "x": 429,
+          "y": 16,
+          "name": "LightOn",
+          "operation": null
+        },
+        {
+          "x": 559,
+          "y": 306,
+          "name": "LightOnAndInformed",
+          "operation": {
+            "thingId": "f5e318ca-9b51-460f-ada9-d33096172b42",
+            "operationName": "SendNotification",
+            "parameters": {
+              "message": "Licht aus!"
+            }
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "name": "LightOff",
+          "toPort": "Bottom",
+          "fromPort": "Bottom",
+          "fromState": "LightOn",
+          "toState": "LightOff",
+          "condition": {
+            "variables": [
+              {
+                "name": "IsLightOn",
+                "thingId": "hue.light.001788fffe20b654.00:17:88:01:10:37:78:d7-0b",
+                "property": "IsLightOn",
+                "windowDuration": null,
+                "windowAggregation": null,
+                "actualName": "IsLightOn"
+              }
+            ],
+            "eventTypeName": null,
+            "expression": "IsLightOn == false"
+          },
+          "operation": null
+        },
+        {
+          "name": "LightOff",
+          "toPort": "Bottom",
+          "fromPort": "Left",
+          "fromState": "LightOnAndInformed",
+          "toState": "LightOff",
+          "condition": {
+            "variables": [
+              {
+                "name": "IsLightOn",
+                "thingId": "hue.light.001788fffe20b654.00:17:88:01:10:37:78:d7-0b",
+                "property": "IsLightOn",
+                "windowDuration": null,
+                "windowAggregation": null,
+                "actualName": "IsLightOn"
+              }
+            ],
+            "eventTypeName": null,
+            "expression": "IsLightOn == false"
+          },
+          "operation": null
+        },
+        {
+          "name": "After1Minute",
+          "toPort": "Top",
+          "fromPort": "Right",
+          "fromState": "LightOn",
+          "toState": "LightOnAndInformed",
+          "condition": {
+            "variables": [],
+            "eventTypeName": "HomeBlaze.Abstractions.Messages.TimerEvent",
+            "expression": "toSeconds(timeInCurrentState) \u003E 60"
+          },
+          "operation": null
+        },
+        {
+          "name": "LightOn",
+          "toPort": "Left",
+          "fromPort": "Top",
+          "fromState": "LightOff",
+          "toState": "LightOn",
+          "condition": {
+            "variables": [
+              {
+                "name": "IsLightOn",
+                "thingId": "hue.light.001788fffe20b654.00:17:88:01:10:37:78:d7-0b",
+                "property": "IsLightOn",
+                "windowDuration": null,
+                "windowAggregation": null,
+                "actualName": "IsLightOn"
+              }
+            ],
+            "eventTypeName": null,
+            "expression": "IsLightOn == true"
+          },
+          "operation": null
+        }
+      ]
+    },
+    {
+      "discriminator": "HomeBlaze.Nuki.NukiBridge",
+      "host": "192.168.1.235:8080",
+      "authToken": "1LtsGD",
+      "refreshInterval": 30000
+    },
+    {
+      "discriminator": "HomeBlaze.AsusRouter.AsusRouter",
+      "host": "192.168.1.1",
+      "username": "admin",
+      "password": "Ks623mV9l68Gjdmc",
+      "refreshInterval": 15000
+    },
+    {
+      "discriminator": "HomeBlaze.Dynamic.Automation",
+      "id": "1a36362a-8967-4b1b-83dd-e3fa5398c536",
+      "title": "Rico (Person)",
+      "initialState": "IsAway",
+      "states": [
+        {
+          "x": 205,
+          "y": 67,
+          "name": "IsHome",
+          "operation": null
+        },
+        {
+          "x": 209,
+          "y": 288,
+          "name": "IsAway",
+          "operation": null
+        }
+      ],
+      "transitions": [
+        {
+          "name": "disconnect",
+          "toPort": "Left",
+          "fromPort": "Left",
+          "fromState": "IsHome",
+          "toState": "IsAway",
+          "condition": {
+            "variables": [
+              {
+                "name": "isConnected",
+                "thingId": "asus.router.client.5E:D2:9F:AF:AF:64",
+                "property": "IsConnected",
+                "windowDuration": null,
+                "windowAggregation": null,
+                "actualName": "isConnected"
+              },
+              {
+                "name": "isConnected5G",
+                "thingId": "asus.router.client.DE:A3:B1:6A:74:36",
+                "property": "IsConnected",
+                "windowDuration": null,
+                "windowAggregation": null,
+                "actualName": "isConnected5G"
+              }
+            ],
+            "eventTypeName": null,
+            "expression": "isConnected == false \u0026\u0026 isConnected5G == false"
+          },
+          "operation": null
+        },
+        {
+          "name": "connect",
+          "toPort": "Right",
+          "fromPort": "Right",
+          "fromState": "IsAway",
+          "toState": "IsHome",
+          "condition": {
+            "variables": [
+              {
+                "name": "isConnected",
+                "thingId": "asus.router.client.5E:D2:9F:AF:AF:64",
+                "property": "IsConnected",
+                "windowDuration": null,
+                "windowAggregation": null,
+                "actualName": "isConnected"
+              },
+              {
+                "name": "isConnected5G",
+                "thingId": "asus.router.client.DE:A3:B1:6A:74:36",
+                "property": "IsConnected",
+                "windowDuration": null,
+                "windowAggregation": null,
+                "actualName": "isConnected5G"
+              }
+            ],
+            "eventTypeName": null,
+            "expression": "isConnected == true || isConnected5G"
+          },
+          "operation": null
+        }
+      ]
+    },
+    {
+      "discriminator": "HomeBlaze.OpenWeatherMap.OpenWeatherMapTemperature",
+      "id": "c613cbfb-bdda-49c7-a120-74c84a93aba8",
+      "apiKey": "5f8f1fc8463a3bc9b437dfbd3932e6df",
+      "location": "Chur, Switzerland",
+      "refreshInterval": 900000
+    },
+    {
+      "discriminator": "HomeBlaze.ThanksMister.ThanksMisterWallPanel",
+      "id": "d23a855b-7375-4184-8724-ecbeae338048",
+      "host": "192.168.1.251",
+      "port": 2971,
+      "relaunchOnStartup": true
+    },
+    {
+      "discriminator": "HomeBlaze.Dynamic.DynamicExtensionThing",
+      "property": "Temperature",
+      "thingTitle": "Foobar",
+      "thingInterface": "HomeBlaze.Abstractions.Sensors.IDoorSensor",
+      "variables": [],
+      "properties": [
+        {
+          "name": "IsDoorClosed",
+          "expression": "true"
+        }
+      ],
+      "id": "c78c46ef-51fb-4b2c-b036-3c04c1f31bf7",
+      "title": "Extension",
+      "extendedThingId": "1a36362a-8967-4b1b-83dd-e3fa5398c536"
+    },
+    {
+      "discriminator": "HomeBlaze.Xbox.XboxLiveAccount",
+      "authenticationJson": "{\r\n  \u0022AccessToken\u0022: {\r\n    \u0022Jwt\u0022: \u0022EwAIA\u002BpvBAAUKods63Ys1fGlwiccIFJ\u002BqE1hANsAAbWiXWsEaQzB3O2kX03gXqQGLgd43YHtIUaiO5Ic1cre45kU41jYC5P4gTougTz3xzSDd4LehMbtgkgRuP3Ft/rA5Tzk5IBNjrpPqXcfJ5zuD1jAWE8Zr3qiYqKX/YeKPHC0eD7/fDtGEG5\u002BxhqmVoyPafo3r6VVR\u002BECaJ7lKm5gaQ1hGzxyF8UzTvU9fTo\u002BNXC0HqsPd1QpI8LGxT3kmGe44scFI3OVs4cRaeIxFRyU8ubb8Imwa3q/nfS49MgyhTQGMydEh1KffTBpX8zv8bRxa2HfCH4BJkohDq5MgJK9a8XuBTePq3rZOus4qkCHcqhn1167kgI6BSfxVhSMqhgDZgAACBby2G/0v7Ca2AFTmxQWoRXhHzZZ0\u002BaZIyA1BhQ00mn9\u002BcxRHtBAnu1xFnjOwqD\u002B869u5iWQcGSB3b90VOJRhzQ7CrzonbbnJDAIm\u002BG5yWDLpE1oZ2wyLz\u002BeB8HCJyjhsLsgMedjHzeTSgHOjlOGpem450t3JCoRI24tzOGaobQo9jqBTEuk8DfG\u002BAea0hNDZeoiTWAp6jLLmbYcxX\u002B1I/Xg7ltBmewqA7oBkd1bRxREGVPgJtVmgZVgVaRtO28cIxlOm\u002B7kqVDMfQoVu3dAB7Bjo6k9VgzGwx2J4g7jR1FSyrfr2L584MaF3N5A5OPIGVQt1ra6cf7i1p5Ie6EegRCrFq4lBdXzx6WwMQ/HxjTZAQ/amTLZpdWeH25Rn6nLOhXka2mynfsxxcRJkeeqXvsbqcAqhth4hrCNr2kuLDMoiE6ewxWjCWVABs5yHO8sisdOC3L7J0/aXbWkmSpv\u002BClxtFMd6qwtqIGWTiYOMYN4\u002BYUcbSZlmeV3t4A0HaDuLiYGDmOAsc54YD9qGhNEqC\u002BicgcRJZHPjT6uD8Dn3o9L6nzCPEue/5YjoAvsM3VNjXZ0HtBtxYUoZA\u002BrPfvDfb5xhm5xZvJtGldiif4ujX5lOM8fzd2CiLuaCCAa6Xm8OMEqIAI=\u0022,\r\n    \u0022Issued\u0022: \u00222022-12-07T23:01:12.1289172\u002B01:00\u0022,\r\n    \u0022Expires\u0022: \u00222022-12-08T23:01:12.1289172\u002B01:00\u0022\r\n  },\r\n  \u0022RefreshToken\u0022: {\r\n    \u0022Jwt\u0022: \u0022M.R3_BL2.-CUesyMythSEXJzZklu4OlINlaXPopAsShwOamMdYx83VrsIzw*hOpzkdI*ng!8aUZSAFdazy2ZS5QFW0qkNvxV3hxCw3PsCabRJProzDbcjWhUtOB6zNxsQyEXlcgyGpvDFvMmQ3s*YdCXb8rMgaOB0AP1wD5P!SH0x3SZUxJtX8ulAO6huf7CsoYX70STjYNpAJpt1b6D7JUwPi9a1BdA!B2JvftJd0jLkFMrBwyJKziBwAmyh6SdE1lPecSCwbtQ2nV0O3iI7VoBLnk2mIrDiOB5jL6!H!!R0qvD1XU6Sw\u0022,\r\n    \u0022Issued\u0022: \u00222022-12-07T23:01:12.1289172\u002B01:00\u0022,\r\n    \u0022Expires\u0022: \u00222022-12-21T23:01:12.1289172\u002B01:00\u0022\r\n  },\r\n  \u0022UserToken\u0022: {\r\n    \u0022Jwt\u0022: \u0022eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkExMjhDQkMtSFMyNTYiLCJ6aXAiOiJERUYiLCJ4NXQiOiJxcEQtU2ZoOUg3NFFHOXlMN1hSZXJ5RmZvbk0iLCJjdHkiOiJKV1QifQ.zKB4ZEAI4o6FDo8W5A9Hax_rkTRfcEvuiuO_jIR_dVSWj39tZ6yiemHMsoc0UM16P1VqvcKkeApFCCYrwOL-M7zakL_k_N1J8dfB246OcU2H9k_gqiZ-ed_wEGORJ9dZgqDaq44oKBHk5qY3NgCI8j-G7R-R7Wyobb6EjPzD6bRFBb1gKhUByzWwdrc81nqWzivHlUCCLnRoqkpfQC6MrBuWSCj5tQt_y75qOr63fp_L-r_qGsFq0eOcOKGkNAvIVEky9I4Sipmo8rwMUmFLZnlH8L0mHTU43AvxLrCzF55U8UQRoFifmVFTQtR9x1K_hUi4uyqTMztt9hTz6llEdw.7a-j6u_r0gK_-15q9AsxSg.YH4x9I_ULmzjvtKHrNHBTwj7a48Dy6SuVjTcZb9b4XZmWgIyrDHNXA2uguCBomPREcDzO-VtRwv4S5jrOBs_IK345SVrW_d0D2RdVLW_gBpuVAdTwtY3wmNzU9k6-hQ3AdTToBBzPQziiOlmQjCinFQmfvKH9J4lFx-o55cZrTfN2CuMFf94HlZI1aZ1obOqVhEaihO1xGeOethwsSqXygmgJIgVSn_69i3pZPQd595VnHyVnRcssGu0X_xVE78b4O8qDDnjL88HI_RTQbKifeFI2ncA9YrrW1MyV1-dBWdIQ1eEIo3USKLKJOmAhpmjIX4vpf6Iq6qlzm96NsVqTIN41B7dkbtKSokYAA3XKmXEeK7Z0I0Mdmm2Q7IStfbNUd3lSEosVBQo9o2m1AzOraGcljkyoj8iNOaZS1fQ5v1TaosQler1IVgN2RUJ8SkxH2Ot1WlFAMruJNxgH_I4SEkNktAwnaS2w-jhdT9QlaxGSzIhymL8-uRQgjSBPdAUlUyz3butfoyo5BKnmSTo6CvjFm0q6zWLFW08JaWfbaL67G-nBJiwv3DTT2cJafIf12YXS-WWyXM3J0kHIYa8AE1cqSTpdHkzCvaEeFZI8yP_dPGzqLgFsVzumZfg0iZDAXbdUrzAv19m84aLOD-JXRNnXo6g07nXh0klEXB67XmDEQ--6cLuA3KCBHTRuWSUVlmuNmjyISM1kSCeuBSsQawte0GIosd6j09OKqE3K7tjoxEx8lIx6v9WckXhJ9mMQBQtHf_Q7HVfXghMr1qFzzZXhnP44q2PISr8QQs92WHkdqhNsTZY0J_kIDJUy21KSGT7zDlfTOfKPL5ahO6SH_HgUJsWh-R6exbyewWUD8jiElH5zVstaC05OTGjKDqv2N_RrijuzaEwrwiBi_U379yjya2T-e5ZUEiJdBnU_QO8-XeV4Sa2M0i09Zf20bCl374ftD_ZIIz5vCVB3l5LRA.arEVL3SuM8RP5_WWU4IM4Q\u0022,\r\n    \u0022Issued\u0022: \u00222022-12-07T22:01:12.5908296Z\u0022,\r\n    \u0022Expires\u0022: \u00222022-12-21T22:01:12.5908296Z\u0022\r\n  },\r\n  \u0022DeviceToken\u0022: null,\r\n  \u0022TitleToken\u0022: null,\r\n  \u0022XToken\u0022: {\r\n    \u0022Jwt\u0022: \u0022eyJlbmMiOiJBMTI4Q0JDK0hTMjU2IiwiYWxnIjoiUlNBLU9BRVAiLCJjdHkiOiJKV1QiLCJ6aXAiOiJERUYiLCJ4NXQiOiIxZlVBejExYmtpWklFaE5KSVZnSDFTdTVzX2cifQ.ZlxrGripukEvQ1NABKzIqmpKP7cfQqowKjLLOG2Km4oCPuCdyL0jEiICosiMNyNFJjYblMZq4tNjc-8l75e6043qN9psuln7S6thtV_b7OkY0bR1SZ5kyYVrg6jevYJdGOA1EHqQ1NI_b-XDTGOG_Qfpk01W2btsEDVYLiAKuSw.gBe93JcPL2gPxa9mvKcqDg._oRjILjE3OBNW3krRRdbLJ4qTbP3wAIARi2UTivydiM7jvrFOIV2KltUYM4C2jQyZXmAzesHjerRBFWTIwUUBubTtwfiApu1z3gl_ezo22DPPB54J0LkW2s9bFl5a4n2QvH1-EMFFh4FXUd6fmNepgHaurgD-Z2_ZrPkjGlf_OJWRKtPy4FmsrlfgtWJE68G--fzrlZG3gOjHw0asVAwgBL34rHOtXTr_1onznGkf-pom6egJIxszkoSCGaIk4TF2oQak5Jeg9Kyta1S5xYThL5HGp6Sc2C9WQbvZq7ygvIi-RWVPRjlFhsreOW66s8j4T5YUiLTvCPHdm9bn65GjytLk6RLnimBYqiNmJA15VUUDAuWUFlnUfLiwALxjmO9hV8xrfwV4dzugXT-zfOoQ9vX7KPWOcdglu5KOMZCRhsWax4pCJY7GmD126CnQpPvMpUferwO-E76we30xyDz28dufMN-tQQZxvDDamAnWj3W9lq5t0dAllXmDzJinvjig56ziiP_PRcazzodUoMLKNnA7n6aNMv1HaXSmeqBdUZMvFjkOC7Sh7CBvy7bDzZ0pNYt3W459tW35YwMuo6GnBu88hn9PesjIfyzb-yXOT2KaT__xmsJABRvnm4OMBoL30gE_elAi3RNl-C3KghhjymtH-ODBD8R5ohbvSBZkeMDiMkuljU1H2EgyfKjzkGTV7bM3yzy9H01j7m_ailj49-OnYgCr18pJQ12WASXSpUaIfYkzgoHy085D9u_2Sv-X8svr7TRdj93J510YK5FBZO3Iu5VN-_3hkgJqGjzbnfvADKROlAZGGZ9d3r3cHS3b05c_zoKdOFi97Z-rmgXZAtgKp0qxe34gYgKxE6499mtIBSthQWsOYRPqAvVjZQbETYiUSUY01PrxBH22PoYx53a5_WXAPPFMZHsBcZbYvwLz8tywic7gXtw-NheywggbtXFjUGg9WBYsccFHok_-oVH46iCFXeFWNqRiJ6GaIhqTMWXiSfDt3m4tySkx8EyTwCq-OzBfk0iJsE84Af0Rb5e1afZPuH7GNU2De6gc5yI1QvICdlAapXo1_5zyv88reHzxDNNMu6FI3ygBODVQI3NZbAxcWiVMp-Y88nF1cqvQPaZAVv0lXM1-rKmT50xY0Bcb6bd9ShvyGkT2_rNGrrrSkQ-an4QMRTElUT4JS4W73SvBvp65s9rMgsY_xzuii1cpF_kBGfS1UhNFHOPuSoN7ZcEozsatFSyO9hBg3JtaxQux6ibGWkNd9o7s501WzItfQWWZLx5G7Z47GusiV4DVTNLjXUz0BXBEgxTyCRP5ZAWli0KY8SJ1uNtrvE1ZCTTVag_73litzPIWlMLaA0hd3sKei3MOZ8R8lMmucrHGBdyOXcvEygt4kAU9XmkmPQqBuuSoayNkKrfdUnl0TRXfuWzgtNDSY3V6RvbYX8Glax1NHD3-14qT8bYjdAy6o-nad1jIqb6cNEgBJwdLQ.uzYLHfgjOCI5IV3dS8E_tNnplnOnpt8BkykZLIq2HVo\u0022,\r\n    \u0022Issued\u0022: \u00222022-12-07T22:01:13.2408395Z\u0022,\r\n    \u0022Expires\u0022: \u00222022-12-08T14:01:13.2408395Z\u0022\r\n  },\r\n  \u0022UserInformation\u0022: {\r\n    \u0022agg\u0022: \u0022Adult\u0022,\r\n    \u0022gtg\u0022: \u0022Xantoshi\u0022,\r\n    \u0022prv\u0022: \u0022184 185 186 187 188 191 192 193 194 196 198 199 200 201 203 204 205 206 207 208 211 214 215 216 217 220 224 227 228 235 238 245 247 249 252 254 255\u0022,\r\n    \u0022usr\u0022: \u0022195 229 230 234 243\u0022,\r\n    \u0022utr\u0022: \u0022190\u0022,\r\n    \u0022xid\u0022: 2533274892824707,\r\n    \u0022uhs\u0022: \u00222756104324231501958\u0022\r\n  }\r\n}"
+    },
+    {
+      "discriminator": "HomeBlaze.Xbox.XboxDevice",
+      "ipAddress": "192.168.1.240",
+      "xboxLiveAccountId": "microsoft.xbox.account.2533274892824707",
+      "deviceId": "F4000E1FE1289365"
+    },
+    {
+      "discriminator": "HomeBlaze.Tesla.WallConnector.TeslaWallConnector",
+      "host": "192.168.1.160",
+      "refreshInterval": 30000
+    },
+    {
+      "discriminator": "HomeBlaze.Gardena.GardenaLocation",
+      "username": "mail@rsuter.com",
+      "password": "2u27d2*kNkd1",
+      "clientId": "288ee657-3d33-44cc-ad78-0559cbdd3bee",
+      "locationId": "52d31ff7-60f0-4e13-8b84-57b5b8b4784c"
+    },
+    {
+      "discriminator": "HomeBlaze.Mqtt.MqttBroker",
+      "id": "e14313d6-e757-4b8b-bafb-0879daea19a7",
+      "title": "MQTT Broker"
+    },
+    {
+      "discriminator": "HomeBlaze.Dynamic.DynamicExtensionThing",
+      "property": "Battery",
+      "thingTitle": "WallPanel Battery",
+      "thingInterface": "HomeBlaze.Abstractions.Devices.Energy.IBatteryDevice",
+      "variables": [
+        {
+          "name": "battery",
+          "thingId": "e14313d6-e757-4b8b-bafb-0879daea19a7/wallpanel/mywallpanel/sensor/battery",
+          "property": "value",
+          "windowDuration": null,
+          "windowAggregation": null,
+          "actualName": "battery"
+        }
+      ],
+      "properties": [
+        {
+          "name": "BatteryLevel",
+          "expression": "battery / 100"
+        }
+      ],
+      "id": "a068520d-b6fe-49c5-a396-d25de763ce28",
+      "title": "WallPanel Battery Extension",
+      "extendedThingId": "e14313d6-e757-4b8b-bafb-0879daea19a7/wallpanel/mywallpanel/sensor/battery"
+    },
+    {
+      "discriminator": "HomeBlaze.Logitech.LogitechHarmonyHub",
+      "ipAddress": "192.168.1.202",
+      "remoteId": "4205081"
+    },
+    {
+      "discriminator": "HomeBlaze.Zwave.ZwaveController",
+      "id": "cb84704a-0a4a-40bc-bb63-097c4315c8d8",
+      "serialPort": "COM7;/dev/ttyACM1"
     }
   ],
   "dashboards": [
     {
-      "id": "14c24bf4-f405-4a92-9fb2-06e3e0a95d31",
-      "name": "home",
+      "id": "6ce629fd-1d67-4771-8429-1937fa2d6c44",
+      "name": null,
       "icon": "home",
       "widgets": [
         {
-          "id": "658f5d06-1aaf-4dc8-8fdf-615c6a5a87e4",
-          "x": 0,
-          "y": 0,
+          "id": "9ef7f582-7d50-4199-96b2-4bade582d2f0",
+          "x": 300,
+          "y": 200,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ButtonWidget",
+            "id": "b7a83c5d-4f6b-446d-93cc-7b6393ff90b3",
+            "label": "",
+            "width": 100,
+            "height": 100,
+            "operation": {
+              "thingId": "f5e318ca-9b51-460f-ada9-d33096172b42",
+              "operationName": "SendNotification",
+              "parameters": {
+                "message": "test12"
+              }
+            }
+          }
+        },
+        {
+          "id": "e9d752a4-e8ac-42a9-9137-fded9968d3ce",
+          "x": 250,
+          "y": -100,
           "thing": {
             "discriminator": "HomeBlaze.Widgets.PropertyWidget",
-            "id": "c2c78cbb-6518-48ee-82f8-757892b98c8a",
-            "title": "lj",
-            "thingId": "mystrom.switch.840D8E3D08F4",
-            "property": "PowerConsumption",
+            "id": "63abaefd-6385-4793-94af-ca1e065a882f",
+            "title": "test",
+            "thingId": "mystrom.switch.A4CF124512E4",
+            "property": "MacAddress",
             "icon": null,
             "unit": null,
             "scale": 1.0,
@@ -33,15 +425,184 @@
           }
         },
         {
-          "id": "c7b48906-6dc0-4522-9ae1-e0f58ef9af6c",
+          "id": "7b518999-b851-4428-9e76-6934d312adbd",
+          "x": 200,
+          "y": 300,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.PropertyWidget",
+            "id": "62c8dbf1-59d1-4329-b13f-68595fe03ad4",
+            "title": "Stromverbrauch",
+            "thingId": "mystrom.switch.A4CF124518E8",
+            "property": "Temperature",
+            "icon": "bolt-lightning",
+            "unit": "kW/h",
+            "scale": 1.0,
+            "multiplier": 1,
+            "decimals": 3
+          }
+        },
+        {
+          "id": "bfda0862-fd44-48d7-94b7-123560326934",
+          "x": 700,
+          "y": 300,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.PropertyWidget",
+            "id": "ba7e87bd-14a2-4a37-b1eb-30ed7147d813",
+            "title": "Schopf",
+            "thingId": "gardena.sensor.f55372e2-4628-4e26-a6ea-f8d3eb83bddc",
+            "property": "SoilHumidity",
+            "icon": "leaf",
+            "unit": "%",
+            "scale": 0.5,
+            "multiplier": 100,
+            "decimals": 2
+          }
+        },
+        {
+          "id": "3d4f2fa3-0268-4e0f-a510-ef214455b3be",
+          "x": 305,
+          "y": 220,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.IconWidget",
+            "id": "f2fbf7e3-9daa-4619-9105-00f6c71e9c51",
+            "scale": 0.75,
+            "size": 0.6,
+            "conditions": [
+              {
+                "icon": "door-closed",
+                "opacity": 1.0,
+                "thingId": "nuki.smartlock.534482365",
+                "property": "IsDoorClosed",
+                "value": "True"
+              },
+              {
+                "icon": "door-closed",
+                "opacity": 1.0,
+                "thingId": "nuki.smartlock.534482365",
+                "property": "IsDoorClosed",
+                "value": "False"
+              }
+            ]
+          }
+        },
+        {
+          "id": "10a258f8-b6d0-42da-aed8-d9293a7093a8",
+          "x": 345,
+          "y": 205,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.IconWidget",
+            "id": "bef27ada-94e6-4f98-93dd-124282f4a367",
+            "scale": 0.5,
+            "size": 0.5,
+            "conditions": [
+              {
+                "icon": "lock",
+                "opacity": 1.0,
+                "thingId": "nuki.smartlock.534482365",
+                "property": "DoorLockState",
+                "value": "Locked"
+              },
+              {
+                "icon": "lock-open",
+                "opacity": 1.0,
+                "thingId": "nuki.smartlock.534482365",
+                "property": "DoorLockState",
+                "value": "Unlocked"
+              },
+              {
+                "icon": "hourglass",
+                "opacity": 1.0,
+                "thingId": null,
+                "property": null,
+                "value": null
+              }
+            ]
+          }
+        },
+        {
+          "id": "685a670b-bd7d-4cb2-bd9f-1e27e855d6d5",
           "x": 0,
           "y": 100,
           "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "54265286-22cc-4fb2-b97e-164767596ce6",
+            "label": "Wohnen",
+            "description": "Decke",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.23"
+          }
+        },
+        {
+          "id": "50cfd410-b3de-4434-84b0-ab6343ced2a1",
+          "x": 0,
+          "y": 0,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "e5434944-df63-4a64-acf1-b71aebab1e81",
+            "label": "B\u00FCro DG",
+            "description": "Decke",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.29"
+          }
+        },
+        {
+          "id": "5dc67e16-92d5-42ce-bf3b-73b40dd54b1d",
+          "x": 100,
+          "y": 0,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "628892e5-eccd-4a19-bb80-1d5c2739c79d",
+            "label": "B\u00FCro DG",
+            "description": "PC",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.light.001788fffe20b654.00:17:88:01:10:37:78:d7-0b"
+          }
+        },
+        {
+          "id": "0c2a3cfb-4f7e-4fe9-8300-ba4ff19cf5be",
+          "x": 500,
+          "y": 100,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "b8fe06f8-7e71-4194-a4cc-cdb1aa96f2b9",
+            "label": "Gang OG",
+            "description": "",
+            "verticalTextPosition": -20,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.18"
+          }
+        },
+        {
+          "id": "d8fd4ae5-39f7-4b5a-9963-62d6333e2f2e",
+          "x": 510,
+          "y": 140,
+          "thing": {
             "discriminator": "HomeBlaze.Widgets.IconWidget",
-            "id": "de7f82a8-1b32-4a22-8c82-6b16b696b7ed",
-            "scale": 1.0,
-            "size": 1.0,
+            "id": "b8cde3ce-12fc-4a6e-8d25-ccb48472c240",
+            "scale": 0.5,
+            "size": 1,
             "conditions": [
+              {
+                "icon": "running",
+                "opacity": 0.4,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:08:67:63:3f-02-0406",
+                "property": "IsPresent",
+                "value": "False"
+              },
+              {
+                "icon": "running",
+                "opacity": 1.0,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:08:67:63:3f-02-0406",
+                "property": "IsPresent",
+                "value": "True"
+              },
               {
                 "icon": "question-circle",
                 "opacity": 1.0,
@@ -50,6 +611,581 @@
                 "value": null
               }
             ]
+          }
+        },
+        {
+          "id": "61fbc611-2b96-4383-8222-66c3b4e5ba91",
+          "x": 200,
+          "y": 0,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "6a2d2dad-1940-4077-9284-56c1a572f396",
+            "label": "Schlafen",
+            "description": "",
+            "verticalTextPosition": 0,
+            "width": 200,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.16"
+          }
+        },
+        {
+          "id": "2b1edc40-1592-4577-833b-35c4727b312b",
+          "x": 700,
+          "y": 350,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.PropertyWidget",
+            "id": "7e49806d-230a-4414-b98f-768ba0d969eb",
+            "title": "Schopf",
+            "thingId": "gardena.sensor.bc8d26d9-a4ba-49cc-bf9c-1eb050add344",
+            "property": "SoilHumidity",
+            "icon": "leaf",
+            "unit": "%",
+            "scale": 0.5,
+            "multiplier": 100,
+            "decimals": 0
+          }
+        },
+        {
+          "id": "a429151e-a6a9-4a87-bf13-16e9d6de701f",
+          "x": 500,
+          "y": 200,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "d2e6664f-cbe4-4e94-8ae6-afca1f5f8a9b",
+            "label": "Gang UG",
+            "description": "",
+            "verticalTextPosition": -20,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.12"
+          }
+        },
+        {
+          "id": "9f993f84-dcb4-4345-993f-eb6b03cc5f36",
+          "x": 600,
+          "y": 200,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "baa73e5f-de92-492d-a20a-50ea245e57a3",
+            "label": "Sauna",
+            "description": "",
+            "verticalTextPosition": -20,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.10"
+          }
+        },
+        {
+          "id": "886bc7ce-6e8a-4498-a61e-7615d7d7b1fb",
+          "x": 700,
+          "y": 200,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "1c8219cd-0973-457c-92b9-e23e81f01b0f",
+            "label": "Haus",
+            "description": "",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.2"
+          }
+        },
+        {
+          "id": "11975191-4ede-4abd-ab39-bb3be6af51a6",
+          "x": 200,
+          "y": 200,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "2c37080f-8477-4d8c-8af8-d5348e4e52e3",
+            "label": "Sitzplatz",
+            "description": "",
+            "verticalTextPosition": -20,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.25"
+          }
+        },
+        {
+          "id": "d4b2612e-8668-4393-b6f9-5dfb2bfb1641",
+          "x": 300,
+          "y": 100,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "8becf8ce-5d28-4007-ae35-8d2a706c6d90",
+            "label": "K\u00FCch",
+            "description": "Decke",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.light.001788fffe20b654.cc:86:ec:ff:fe:ef:12:f0-02"
+          }
+        },
+        {
+          "id": "8b627064-313c-4dd5-aadf-2c22dbdbd91c",
+          "x": 400,
+          "y": 100,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "c17fd51f-a2c2-4820-9e84-045608727560",
+            "label": "K\u00FCch",
+            "description": "Spots",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.light.001788fffe20b654.cc:86:ec:ff:fe:ef:12:f0-01"
+          }
+        },
+        {
+          "id": "a5d2f99a-98a6-478c-96cf-d44ccb0bfbd2",
+          "x": 100,
+          "y": 100,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "6b3ff149-f38b-4aef-b236-fddc30e679d0",
+            "label": "Wohnen",
+            "description": "Sofa",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.light.001788fffe20b654.00:17:88:01:03:64:ab:3f-0b"
+          }
+        },
+        {
+          "id": "1d10a814-394e-43db-b579-f0168fe42311",
+          "x": 200,
+          "y": 100,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "01b8252a-a873-47c2-a4b2-f93b469bfd76",
+            "label": "Wohnen",
+            "description": "Sofa",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.30"
+          }
+        },
+        {
+          "id": "df102814-1f59-4357-9d45-70c57aa7ddf6",
+          "x": 0,
+          "y": 200,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "76c975f4-1f49-41b0-a0ca-47febe951cf8",
+            "label": "Esszimmer",
+            "description": "",
+            "verticalTextPosition": 0,
+            "width": 200,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.1"
+          }
+        },
+        {
+          "id": "fb27f349-1502-416a-800f-23f66a4bd969",
+          "x": 400,
+          "y": 0,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "e98b1884-6cf7-47b2-960f-631fe021bba5",
+            "label": "Schrank",
+            "description": "",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.13"
+          }
+        },
+        {
+          "id": "8f214507-f2ea-47d7-8736-627adbcbfc9a",
+          "x": 500,
+          "y": 0,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "00119422-3e70-4db3-beae-d49250cb6628",
+            "label": "Gang DG",
+            "description": "",
+            "verticalTextPosition": -20,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.19"
+          }
+        },
+        {
+          "id": "8af00fd2-3cbc-4102-b58e-662be14351db",
+          "x": 600,
+          "y": 0,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "12151de9-7267-4f34-ac6b-aa95d83c7016",
+            "label": "G\u00E4ste",
+            "description": "",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.7"
+          }
+        },
+        {
+          "id": "f8c67519-c448-47aa-9899-3ef774fb4585",
+          "x": 700,
+          "y": 0,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "91d64ed6-9f34-4a58-8eaf-5f76256afdaa",
+            "label": "Dusche",
+            "description": "",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.14"
+          }
+        },
+        {
+          "id": "5bd20c94-e72c-40ee-a7f9-a3511ad4623c",
+          "x": 600,
+          "y": 100,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "00d11352-9111-41e2-b48a-0300329e243a",
+            "label": "B\u00FCro OG",
+            "description": "",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.17"
+          }
+        },
+        {
+          "id": "055e9f39-459f-4865-856e-9dec9c16296d",
+          "x": 700,
+          "y": 100,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "57695bb3-1d14-42e4-8462-f9d91fec9b37",
+            "label": "Bad",
+            "description": "",
+            "verticalTextPosition": 0,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.15"
+          }
+        },
+        {
+          "id": "ca53125c-33a1-4903-bdbb-7b4914d04c1f",
+          "x": 400,
+          "y": 200,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "39c5ee2e-f75e-4349-9c22-473e2952f3c5",
+            "label": "Garderobe",
+            "description": "",
+            "verticalTextPosition": -20,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.20"
+          }
+        },
+        {
+          "id": "4603c5b3-62f4-4e07-8c61-4e23b73e7ce6",
+          "x": 0,
+          "y": 300,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "1f2b8e06-c4d3-4655-accf-8b4062b42364",
+            "label": "Parkplatz",
+            "description": "",
+            "verticalTextPosition": -20,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.28"
+          }
+        },
+        {
+          "id": "d375199f-96a0-4bfc-9d48-1eff99217ea0",
+          "x": 100,
+          "y": 300,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.ToggleButtonWidget",
+            "id": "4c0df519-ae0d-4f8a-86dc-5ad67dc9ea5c",
+            "label": "Schopf",
+            "description": "",
+            "verticalTextPosition": -20,
+            "width": 100,
+            "height": 100,
+            "thingId": "hue.group.001788fffe20b654.24"
+          }
+        },
+        {
+          "id": "2f798eab-8ee8-44e2-9b4b-97c942507211",
+          "x": 10,
+          "y": 340,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.IconWidget",
+            "id": "a37b24a9-73ed-42ff-8dbd-67580af599ea",
+            "scale": 0.5,
+            "size": 1,
+            "conditions": [
+              {
+                "icon": "running",
+                "opacity": 0.4,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:0b:d2:28:01-02-0406",
+                "property": "IsPresent",
+                "value": "False"
+              },
+              {
+                "icon": "running",
+                "opacity": 1.0,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:0b:d2:28:01-02-0406",
+                "property": "IsPresent",
+                "value": "True"
+              },
+              {
+                "icon": "question-circle",
+                "opacity": 1.0,
+                "thingId": null,
+                "property": null,
+                "value": null
+              }
+            ]
+          }
+        },
+        {
+          "id": "7f5be7d8-348e-4e4e-91fe-1219c2567359",
+          "x": 410,
+          "y": 240,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.IconWidget",
+            "id": "18d2e499-fc85-4829-b543-d2f4952ba088",
+            "scale": 0.5,
+            "size": 1,
+            "conditions": [
+              {
+                "icon": "running",
+                "opacity": 0.4,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:0b:cf:7e:aa-02-0406",
+                "property": "IsPresent",
+                "value": "False"
+              },
+              {
+                "icon": "running",
+                "opacity": 1.0,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:0b:cf:7e:aa-02-0406",
+                "property": "IsPresent",
+                "value": "True"
+              },
+              {
+                "icon": "question-circle",
+                "opacity": 1.0,
+                "thingId": null,
+                "property": null,
+                "value": null
+              }
+            ]
+          }
+        },
+        {
+          "id": "7a31d46a-91ff-497a-807c-7f9af1ac3a50",
+          "x": 510,
+          "y": 240,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.IconWidget",
+            "id": "fdcf6358-8f75-43ed-829e-101cd4e81b27",
+            "scale": 0.5,
+            "size": 1,
+            "conditions": [
+              {
+                "icon": "running",
+                "opacity": 0.4,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:08:66:c5:ff-02-0406",
+                "property": "IsPresent",
+                "value": "False"
+              },
+              {
+                "icon": "running",
+                "opacity": 1.0,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:08:66:c5:ff-02-0406",
+                "property": "IsPresent",
+                "value": "True"
+              },
+              {
+                "icon": "question-circle",
+                "opacity": 1.0,
+                "thingId": null,
+                "property": null,
+                "value": null
+              }
+            ]
+          }
+        },
+        {
+          "id": "411ff6bc-a3ec-4c46-a50c-11bb4a2ad28b",
+          "x": 610,
+          "y": 240,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.IconWidget",
+            "id": "49059651-67e9-4442-b692-105bf509ceb5",
+            "scale": 0.5,
+            "size": 1,
+            "conditions": [
+              {
+                "icon": "running",
+                "opacity": 0.4,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:0b:d0:68:16-02-0406",
+                "property": "IsPresent",
+                "value": "False"
+              },
+              {
+                "icon": "running",
+                "opacity": 1.0,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:0b:d0:68:16-02-0406",
+                "property": "IsPresent",
+                "value": "True"
+              },
+              {
+                "icon": "question-circle",
+                "opacity": 1.0,
+                "thingId": null,
+                "property": null,
+                "value": null
+              }
+            ]
+          }
+        },
+        {
+          "id": "e4c32a50-3c93-47d5-bd1a-b03a763317f9",
+          "x": 510,
+          "y": 40,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.IconWidget",
+            "id": "28a4c790-d507-43e6-ad5c-03bb970728b0",
+            "scale": 0.5,
+            "size": 1,
+            "conditions": [
+              {
+                "icon": "running",
+                "opacity": 0.4,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:09:15:8d:2a-02-0406",
+                "property": "IsPresent",
+                "value": "False"
+              },
+              {
+                "icon": "running",
+                "opacity": 1.0,
+                "thingId": "hue.presence.001788fffe20b654.00:17:88:01:09:15:8d:2a-02-0406",
+                "property": "IsPresent",
+                "value": "True"
+              },
+              {
+                "icon": "question-circle",
+                "opacity": 1.0,
+                "thingId": null,
+                "property": null,
+                "value": null
+              }
+            ]
+          }
+        },
+        {
+          "id": "0d846ad0-e332-4876-abad-02c1a5be8011",
+          "x": 0,
+          "y": 400,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.PropertyWidget",
+            "id": "771907b4-730d-49b8-833b-3c9fbdc9275d",
+            "title": "B\u00FCro DG",
+            "thingId": "hue.temperature.001788fffe20b654.00:17:88:01:09:15:8d:2a-02-0402",
+            "property": "Temperature",
+            "icon": null,
+            "unit": "\u00B0C",
+            "scale": 0.5,
+            "multiplier": 1,
+            "decimals": 2
+          }
+        },
+        {
+          "id": "dd87de09-c9c1-489f-bf90-66e7ffb76ef7",
+          "x": 300,
+          "y": 400,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.PropertyWidget",
+            "id": "5f4c0a3a-1941-40db-8a0f-7360ff0e0e49",
+            "title": "Gang OG",
+            "thingId": "hue.temperature.001788fffe20b654.00:17:88:01:08:67:63:3f-02-0402",
+            "property": "Temperature",
+            "icon": null,
+            "unit": "\u00B0C",
+            "scale": 0.5,
+            "multiplier": 1,
+            "decimals": 2
+          }
+        },
+        {
+          "id": "7f68c488-4a6c-4282-86b0-c4c63127c23f",
+          "x": 400,
+          "y": 400,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.PropertyWidget",
+            "id": "3e851806-7079-4690-b78a-0007736cb7d0",
+            "title": "Gang OG",
+            "thingId": "mystrom.switch.840D8E3D08F4",
+            "property": "Temperature",
+            "icon": null,
+            "unit": "\u00B0C",
+            "scale": 0.5,
+            "multiplier": 1,
+            "decimals": 2
+          }
+        },
+        {
+          "id": "60c62c35-97e4-497a-876a-9c2a38ea6673",
+          "x": 500,
+          "y": 400,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.PropertyWidget",
+            "id": "6d965a0a-4782-43ce-9b54-a4865b293cb0",
+            "title": "Gang UG",
+            "thingId": "hue.temperature.001788fffe20b654.00:17:88:01:08:66:c5:ff-02-0402",
+            "property": "Temperature",
+            "icon": null,
+            "unit": "\u00B0C",
+            "scale": 0.5,
+            "multiplier": 1,
+            "decimals": 2
+          }
+        },
+        {
+          "id": "3d7eb5a3-d507-4385-aeb6-b6f49229f457",
+          "x": 600,
+          "y": 400,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.PropertyWidget",
+            "id": "d8078175-2f3b-418a-a90a-5efa90afc01f",
+            "title": "Waschk\u00FCche",
+            "thingId": "mystrom.switch.246F28A91B34",
+            "property": "Temperature",
+            "icon": null,
+            "unit": "\u00B0C",
+            "scale": 0.5,
+            "multiplier": 1,
+            "decimals": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "6931f79a-959a-473d-ae50-a6dcf740e635",
+      "name": "power",
+      "icon": "bolt-lightning",
+      "widgets": [
+        {
+          "id": "858e1fd6-fc14-431e-bae7-6633d439b7fc",
+          "x": 0,
+          "y": 0,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.PowerConsumersWidget",
+            "id": "67e2ff88-8ff8-4f35-87fc-2a4962789f1f",
+            "width": 800,
+            "height": 450
           }
         }
       ]

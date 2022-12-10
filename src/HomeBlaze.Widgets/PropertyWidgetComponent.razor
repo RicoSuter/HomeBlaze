@@ -22,7 +22,7 @@
                     @(Thing?.Title)
                 </div>
             }
-            <div style="font-size: 3.4em">
+            <div @onclick="ShowHistory" @ontouchend="ShowHistory" style="font-size: 3.4em">
                 @if (Thing != null && Value?.Value != null)
                 {
                     try // TODO: Find way to avoid constant exceptions here

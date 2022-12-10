@@ -1,6 +1,7 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Dynamic;
+using System;
 using System.ComponentModel;
 
 namespace HomeBlaze.Widgets
