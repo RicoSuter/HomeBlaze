@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
@@ -13,9 +15,11 @@
 		<PackageReference Include="MudBlazor" Version="6.1.2" />
 		<PackageReference Include="Z.Blazor.Diagrams" Version="2.1.6" />
 	</ItemGroup>
+
 	<ItemGroup>
-	  <ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />
-	  <ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Core.csproj" />
-	  <ProjectReference Include="..\HomeBlaze.Things\HomeBlaze.Things.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Core.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Things\HomeBlaze.Things.csproj" />
 	</ItemGroup>
+
 </Project>

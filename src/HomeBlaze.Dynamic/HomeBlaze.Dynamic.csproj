@@ -1,9 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
+
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Castle.Core" Version="5.1.0" />
 		<PackageReference Include="Jint" Version="3.0.0-beta-2044" />
@@ -12,9 +14,11 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
 	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Core.csproj" />
 	</ItemGroup>
+
 </Project>

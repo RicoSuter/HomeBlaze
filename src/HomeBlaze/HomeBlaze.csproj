@@ -1,53 +1,53 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-	  <TargetFramework>net7.0</TargetFramework>
-	  <Nullable>enable</Nullable>
-	  <ImplicitUsings>enable</ImplicitUsings>
-	  <UserSecretsId>ffa65cd9-fd7a-4494-8709-3eabea0eb9f5</UserSecretsId>
-	  <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	  <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>ffa65cd9-fd7a-4494-8709-3eabea0eb9f5</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
-    <PackageReference Include="Namotion.Storage.Azure.Storage.Blob" Version="0.9.0" />
-    <PackageReference Include="Serilog" Version="2.12.0" />
-    <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
-    <PackageReference Include="Seq.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="MudBlazor" Version="6.1.2" />
-    <PackageReference Include="Z.Blazor.Diagrams" Version="2.1.6" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0" />
+		<PackageReference Include="Namotion.Storage.Azure.Storage.Blob" Version="0.9.0" />
+		<PackageReference Include="Serilog" Version="2.12.0" />
+		<PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
+		<PackageReference Include="Seq.Extensions.Logging" Version="6.0.0" />
+		<PackageReference Include="MudBlazor" Version="6.1.2" />
+		<PackageReference Include="Z.Blazor.Diagrams" Version="2.1.6" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Asus.Router\HomeBlaze.Asus.Router.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Core.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Dynamic\HomeBlaze.Dynamic.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Gardena\HomeBlaze.Gardena.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Host\HomeBlaze.Host.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Logitech\HomeBlaze.Logitech.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Mqtt\HomeBlaze.Mqtt.csproj" />
-    <ProjectReference Include="..\HomeBlaze.MyStrom\HomeBlaze.MyStrom.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Nuki\HomeBlaze.Nuki.csproj" />
-    <ProjectReference Include="..\HomeBlaze.OpenWeatherMap\HomeBlaze.OpenWeatherMap.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Philips.Hue\HomeBlaze.Philips.Hue.csproj" />
-    <ProjectReference Include="..\HomeBlaze.PushOver\HomeBlaze.PushOver.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Tesla\HomeBlaze.Tesla.csproj" />
-    <ProjectReference Include="..\HomeBlaze.ThanksMister\HomeBlaze.ThanksMister.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Widgets\HomeBlaze.Widgets.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Xbox\HomeBlaze.Xbox.csproj" />
-    <ProjectReference Include="..\HomeBlaze.Zwave\HomeBlaze.Zwave.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Asus.Router\HomeBlaze.Asus.Router.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Core.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Dynamic\HomeBlaze.Dynamic.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Gardena\HomeBlaze.Gardena.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Host\HomeBlaze.Host.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Logitech\HomeBlaze.Logitech.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Mqtt\HomeBlaze.Mqtt.csproj" />
+		<ProjectReference Include="..\HomeBlaze.MyStrom\HomeBlaze.MyStrom.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Nuki\HomeBlaze.Nuki.csproj" />
+		<ProjectReference Include="..\HomeBlaze.OpenWeatherMap\HomeBlaze.OpenWeatherMap.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Philips.Hue\HomeBlaze.Philips.Hue.csproj" />
+		<ProjectReference Include="..\HomeBlaze.PushOver\HomeBlaze.PushOver.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Tesla\HomeBlaze.Tesla.csproj" />
+		<ProjectReference Include="..\HomeBlaze.ThanksMister\HomeBlaze.ThanksMister.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Widgets\HomeBlaze.Widgets.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Xbox\HomeBlaze.Xbox.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Zwave\HomeBlaze.Zwave.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="Config\Plugins\Namotion.Lights.1.0.0.nupkg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="Config\Plugins\Namotion.Lights.1.0.0.nupkg">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
