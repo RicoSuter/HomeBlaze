@@ -33,9 +33,6 @@ namespace HomeBlaze.Things
         [State]
         public PluginManager PluginManager { get; }
 
-        [Configuration, State]
-        public List<Dashboard> Dashboards { get; set; } = new List<Dashboard> { new Dashboard { Name = "home", Icon = "home" } };
-
         public string IconName => "fab fa-hubspot";
 
         public SystemThing(IThingManager thingManager, ITypeManager typeManager, IEventManager eventManager, ILogger<PollingThing> logger)

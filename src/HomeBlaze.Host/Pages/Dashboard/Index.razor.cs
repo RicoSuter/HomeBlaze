@@ -73,10 +73,15 @@ namespace HomeBlaze.Host.Pages.Dashboard
             _eventSubscription = EventManager
                 .Subscribe(message =>
                 {
-                    if (_selectedDashboard == null &&
-                        message is RootThingLoadedEvent)
+                    if (message is ThingRegisteredEvent thingRegisteredEvent &&
+                        thingRegisteredEvent.Thing is HomeBlaze.Things.Dashboard)
                     {
-                        InvokeAsync(() => TryLoadDashboard());
+                        InvokeAsync(() => RefreshDashboard());
+                    }
+                    else if (message is ThingUnregisteredEvent thingUnregisteredEvent &&
+                        thingUnregisteredEvent.Thing is HomeBlaze.Things.Dashboard)
+                    {
+                        InvokeAsync(() => RefreshDashboard());
                     }
                     else if (message is ThingStateChangedEvent)
                     {
@@ -94,44 +99,47 @@ namespace HomeBlaze.Host.Pages.Dashboard
                     }
                 });
 
-            Navigation.LocationChanged += TryLoadDashboard;
-            TryLoadDashboard();
+            Navigation.LocationChanged += RefreshDashboard;
+            RefreshDashboard();
         }
 
-        private void TryLoadDashboard(object? sender, LocationChangedEventArgs e)
+        private void RefreshDashboard(object? sender, LocationChangedEventArgs e)
         {
-            TryLoadDashboard();
+            RefreshDashboard();
         }
 
-        private void TryLoadDashboard()
+        private void RefreshDashboard()
         {
-            var systemThing = ThingManager?.RootThing as SystemThing;
-            if (systemThing != null)
+            if (ThingManager != null)
             {
-                _dashboards = systemThing.Dashboards.ToArray();
+                _dashboards = ThingManager.AllThings.OfType<HomeBlaze.Things.Dashboard>().ToArray();
                 _selectedDashboard = null;
 
                 var selectedDashboard = _dashboards
-                    .FirstOrDefault(d => d.Name == Name) ?? _dashboards.First();
+                    .FirstOrDefault(d => d.Name == Name) ?? _dashboards.FirstOrDefault();
 
-                _diagram?.Batch(() =>
+                if (selectedDashboard != null && 
+                    selectedDashboard != _selectedDashboard)
                 {
-                    _diagram?.Nodes.Clear();
-
-                    foreach (var widget in selectedDashboard.Widgets)
+                    _diagram?.Batch(() =>
                     {
-                        var node = new WidgetNodeModel(widget)
+                        _diagram?.Nodes.Clear();
+
+                        foreach (var widget in selectedDashboard.Widgets)
                         {
-                            Locked = !_isEditMode
-                        };
+                            var node = new WidgetNodeModel(widget)
+                            {
+                                Locked = !_isEditMode
+                            };
 
-                        _diagram?.Nodes.Add(node);
-                        node.Refresh();
-                    }
-                });
+                            _diagram?.Nodes.Add(node);
+                            node.Refresh();
+                        }
+                    });
 
-                _selectedDashboard = selectedDashboard;
-                _diagram?.Refresh();
+                    _selectedDashboard = selectedDashboard;
+                    _diagram?.Refresh();
+                }
             }
 
             StateHasChanged();
@@ -159,13 +167,13 @@ namespace HomeBlaze.Host.Pages.Dashboard
         public async void AddDashboard(MouseEventArgs args)
         {
             var dashboard = await DashboardDialog.CreateAsync(DialogService);
-            if (dashboard != null)
+            if (dashboard != null && ThingManager != null)
             {
-                var systemThing = ThingManager?.RootThing as SystemThing;
+                var systemThing = ThingManager.RootThing as SystemThing;
                 if (systemThing != null)
                 {
-                    systemThing.Dashboards.Add(dashboard);
-                    TryLoadDashboard();
+                    systemThing.Things.Add(dashboard);
+                    ThingManager.DetectChanges(systemThing);
                 }
             }
         }
@@ -182,10 +190,10 @@ namespace HomeBlaze.Host.Pages.Dashboard
         public void DeleteDashboard(MouseEventArgs args)
         {
             var systemThing = ThingManager?.RootThing as SystemThing;
-            if (systemThing != null && _selectedDashboard != null)
+            if (systemThing != null && _selectedDashboard != null && ThingManager != null)
             {
-                systemThing.Dashboards.Remove(_selectedDashboard);
-                TryLoadDashboard();
+                systemThing.Things.Remove(_selectedDashboard);
+                ThingManager.DetectChanges(systemThing);
             }
         }
 
@@ -316,7 +324,7 @@ namespace HomeBlaze.Host.Pages.Dashboard
 
         public void Dispose()
         {
-            Navigation.LocationChanged -= TryLoadDashboard;
+            Navigation.LocationChanged -= RefreshDashboard;
             _eventSubscription?.Dispose();
         }
     }

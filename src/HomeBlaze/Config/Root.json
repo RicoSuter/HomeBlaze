@@ -380,12 +380,11 @@
       "discriminator": "HomeBlaze.Zwave.ZwaveController",
       "id": "cb84704a-0a4a-40bc-bb63-097c4315c8d8",
       "serialPort": "COM7;/dev/ttyACM1"
-    }
-  ],
-  "dashboards": [
+    },
     {
       "id": "6ce629fd-1d67-4771-8429-1937fa2d6c44",
-      "name": null,
+      "discriminator": "HomeBlaze.Things.Dashboard",
+      "name": "home",
       "icon": "home",
       "widgets": [
         {
@@ -1174,6 +1173,7 @@
     },
     {
       "id": "6931f79a-959a-473d-ae50-a6dcf740e635",
+      "discriminator": "HomeBlaze.Things.Dashboard",
       "name": "power",
       "icon": "bolt-lightning",
       "widgets": [

@@ -329,6 +329,7 @@ namespace HomeBlaze
 
             Task.Run(async () => await StopAndDisposeThingAsync(thing));
 
+            _eventManager.Publish(new ThingUnregisteredEvent(thing));
             _logger.LogInformation("Thing {ThingId} unregistered.", thing.Id);
         }
 
