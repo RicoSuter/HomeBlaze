@@ -8,6 +8,7 @@ using HomeBlaze.Abstractions;
 
 namespace HomeBlaze.Dynamic
 {
+    // TODO: Move to HB.Components to avoid dependency of Widgets to Dynamic?
     public class Operation
     {
         public string? ThingId { get; set; }
