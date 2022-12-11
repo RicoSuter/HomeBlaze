@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace HomeBlaze.Host.Infrastructure
+namespace HomeBlaze.Host.Components
 {
     internal class SectionRegistry
     {

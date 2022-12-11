@@ -24,4 +24,8 @@
 		<ProjectReference Include="..\Namotion.NuGetPlugins\Namotion.NuGetPlugins.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Helpers\" />
+	</ItemGroup>
+
 </Project>

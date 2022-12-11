@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace HomeBlaze.Host.Infrastructure
+namespace HomeBlaze.Host.Components
 {
     public class SectionContent : IComponent, IDisposable
     {
