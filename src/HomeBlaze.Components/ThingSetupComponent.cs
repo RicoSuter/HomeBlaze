@@ -6,7 +6,7 @@ using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
-using HomeBlaze.Things;
+using HomeBlaze.Services.Things;
 
 namespace HomeBlaze.Components
 {

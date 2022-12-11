@@ -5,7 +5,7 @@ using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Inputs;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.Things;
+using HomeBlaze.Services.Things;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

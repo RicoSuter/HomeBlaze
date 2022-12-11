@@ -3,7 +3,7 @@ using Namotion.NuGetPlugins;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
-namespace HomeBlaze
+namespace HomeBlaze.Services
 {
     public class NuGetPlugin
     {

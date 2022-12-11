@@ -2,7 +2,7 @@
 using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.Hosting;
 
-namespace HomeBlaze
+namespace HomeBlaze.Services
 {
     public class TimeMessagePublisher : BackgroundService
     {

@@ -1,10 +1,10 @@
 ﻿using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.Components;
-using Newtonsoft.Json;
+using HomeBlaze.Components.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace HomeBlaze.Dynamic
 {
@@ -30,7 +30,6 @@ namespace HomeBlaze.Dynamic
         [JsonIgnore]
         public string ActualName => Name ?? Property ?? "unnamed";
 
-        [JsonIgnore]
         private Dictionary<DateTimeOffset, object?> _values = new();
 
         public object? TryGetValue(IThingManager thingManager)

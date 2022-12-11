@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
-namespace HomeBlaze.Json
+namespace HomeBlaze.Services.Json
 {
     public class ThingTypeInfoResolver : DefaultJsonTypeInfoResolver
     {

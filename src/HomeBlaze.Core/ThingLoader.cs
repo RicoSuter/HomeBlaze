@@ -1,11 +1,11 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.Json;
+using HomeBlaze.Services.Json;
 using Namotion.Storage;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace HomeBlaze
+namespace HomeBlaze.Services
 {
     public class ThingRepository : IThingStorage
     {

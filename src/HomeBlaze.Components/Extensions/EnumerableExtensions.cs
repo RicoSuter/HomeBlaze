@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 
-namespace HomeBlaze.Components
+namespace HomeBlaze.Components.Extensions
 {
     public static class EnumerableExtensions
     {

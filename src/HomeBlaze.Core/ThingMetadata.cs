@@ -1,7 +1,7 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 
-namespace HomeBlaze
+namespace HomeBlaze.Services
 {
     public class ThingMetadata : IThingMetadata
     {

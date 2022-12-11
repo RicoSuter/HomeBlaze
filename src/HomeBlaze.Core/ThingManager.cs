@@ -9,7 +9,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
 
-namespace HomeBlaze
+namespace HomeBlaze.Services
 {
     public class ThingManager : BackgroundService, IThingManager
     {
@@ -385,7 +385,7 @@ namespace HomeBlaze
                 var stateAttribute = property.GetCustomAttribute<StateAttribute>(true);
                 var scanForStateAttribute = property.GetCustomAttribute<ScanForStateAttribute>(true);
                 var parentThingAttribute = property.GetCustomAttribute<ParentThingAttribute>(true);
-                
+
                 var newValue = TryGetPropertyValue(obj, property);
 
                 if (stateAttribute != null)

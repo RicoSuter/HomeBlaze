@@ -1,6 +1,6 @@
 ﻿using HomeBlaze.Abstractions;
 
-namespace HomeBlaze
+namespace HomeBlaze.Services
 {
     public interface IUpdateThing<T>
     {
@@ -12,7 +12,7 @@ namespace HomeBlaze
         public static IEnumerable<TThing> CreateOrUpdate<TThing, TInput>(
             this IEnumerable<TInput> newThings,
             IEnumerable<IThing> existingThings,
-            Func<TInput, TThing, bool> compare, 
+            Func<TInput, TThing, bool> compare,
             Func<TInput, TThing> create)
             where TThing : IThing, IUpdateThing<TInput>
         {
@@ -22,7 +22,7 @@ namespace HomeBlaze
                     var existingThing = existingThings
                         .OfType<TThing>()
                         .SingleOrDefault(t => compare(d, t));
-                    
+
                     if (existingThing != null)
                     {
                         existingThing.Update(d);

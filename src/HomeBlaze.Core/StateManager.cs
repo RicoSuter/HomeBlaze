@@ -6,7 +6,7 @@ using System.Text.Json;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Abstractions.Messages;
 
-namespace HomeBlaze
+namespace HomeBlaze.Services
 {
     public class StateManager : BackgroundService, IDisposable, IStateManager
     {

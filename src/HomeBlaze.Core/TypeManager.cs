@@ -11,7 +11,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace HomeBlaze
+namespace HomeBlaze.Services
 {
     public class TypeManager : ITypeManager
     {
@@ -72,7 +72,7 @@ namespace HomeBlaze
                         try
                         {
                             var assemblies = GetAssemblies();
-                           
+
                             ThingInterfaces = GetThingInterfaces(assemblies);
                             ThingTypes = GetThingTypes(assemblies);
                             EventTypes = GetEventTypes(assemblies);

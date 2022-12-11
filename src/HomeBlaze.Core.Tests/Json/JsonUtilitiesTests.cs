@@ -1,4 +1,4 @@
-﻿using HomeBlaze.Json;
+﻿using HomeBlaze.Services.Json;
 using System.Text.Json;
 
 namespace HomeBlaze.Core.Tests.Json

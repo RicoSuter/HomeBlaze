@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using System.Collections.Concurrent;
 using System.Reactive.Subjects;
 
-namespace HomeBlaze
+namespace HomeBlaze.Services
 {
     public class EventManager : BackgroundService, IEventManager
     {

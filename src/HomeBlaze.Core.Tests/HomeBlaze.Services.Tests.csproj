@@ -22,7 +22,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Core.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Services.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Services;
+using HomeBlaze.Services.Things;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

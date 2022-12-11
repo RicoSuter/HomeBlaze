@@ -2,8 +2,9 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
+using HomeBlaze.Services;
 
-namespace HomeBlaze.Things
+namespace HomeBlaze.Services.Things
 {
     public abstract class ExtensionThing<TFor> : ExtensionThing
        where TFor : IThing
@@ -39,7 +40,7 @@ namespace HomeBlaze.Things
 
         protected override Task HandleMessageAsync(IEvent @event, CancellationToken cancellationToken)
         {
-            if (@event is ThingStateChangedEvent stateChangedEvent && 
+            if (@event is ThingStateChangedEvent stateChangedEvent &&
                 stateChangedEvent.Thing.Id == ExtendedThingId)
             {
                 _thingManager.DetectChanges(this);

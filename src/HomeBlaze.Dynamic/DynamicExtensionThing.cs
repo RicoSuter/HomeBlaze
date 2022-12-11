@@ -3,7 +3,6 @@ using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.Things;
 using Jint;
 using Microsoft.Extensions.Logging;
 using System;
@@ -15,6 +14,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Diagnostics.CodeAnalysis;
+using HomeBlaze.Services.Things;
 
 namespace HomeBlaze.Dynamic
 {

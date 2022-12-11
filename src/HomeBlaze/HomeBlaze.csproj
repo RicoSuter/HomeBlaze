@@ -26,7 +26,7 @@
 		<ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Asus.Router\HomeBlaze.Asus.Router.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />
-		<ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Core.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Services.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Dynamic\HomeBlaze.Dynamic.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Gardena\HomeBlaze.Gardena.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Host\HomeBlaze.Host.csproj" />

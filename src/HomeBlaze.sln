@@ -5,9 +5,9 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze", "HomeBlaze\HomeBlaze.csproj", "{8F77A432-8CE3-4D0D-A390-A06A0E0353DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Core", "HomeBlaze.Core\HomeBlaze.Core.csproj", "{1C63E210-5922-46A4-9758-CB00ED9B57C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Services", "HomeBlaze.Core\HomeBlaze.Services.csproj", "{1C63E210-5922-46A4-9758-CB00ED9B57C2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Core.Tests", "HomeBlaze.Core.Tests\HomeBlaze.Core.Tests.csproj", "{6BE0BB84-2F02-4488-8D95-44767D189680}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Services.Tests", "HomeBlaze.Core.Tests\HomeBlaze.Services.Tests.csproj", "{6BE0BB84-2F02-4488-8D95-44767D189680}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Abstractions", "HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj", "{8694C9A8-6C21-4A4E-961C-E5CB2CAC1B2A}"
 EndProject

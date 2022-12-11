@@ -6,7 +6,7 @@ using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.MyStrom.Model;
-using HomeBlaze.Things;
+using HomeBlaze.Services.Things;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
 using System;

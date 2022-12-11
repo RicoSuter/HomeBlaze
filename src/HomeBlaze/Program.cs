@@ -2,14 +2,13 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 
 using MudBlazor.Services;
 using Namotion.Storage;
-
-using HomeBlaze;
 using HomeBlaze.Abstractions.Services;
 using Namotion.NuGetPlugins;
 using Serilog;
 using Namotion.Storage.Azure.Storage.Blob;
 using HomeBlaze.Host;
 using HomeBlaze.Host.Logging;
+using HomeBlaze.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
