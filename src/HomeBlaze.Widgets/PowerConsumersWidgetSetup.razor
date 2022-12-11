@@ -6,5 +6,13 @@
 
 @inherits ThingSetupComponent<PowerConsumersWidget>
 
-<MudTextField @bind-Value="@Thing.Width" Label="Width" Required="true" />
-<MudTextField @bind-Value="@Thing.Height" Label="Height" Required="true" />
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Width" Label="Width" Required="true" />
+    <MudTextField @bind-Value="@Thing.Height" Label="Height" Required="true" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

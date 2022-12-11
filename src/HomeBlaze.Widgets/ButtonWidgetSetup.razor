@@ -4,15 +4,19 @@
 
 @inherits ThingSetupComponent<ButtonWidget>
 
-<MudTextField @bind-Value="@Thing.Label" Label="Title" />
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Label" Label="Title" />
 
-<MudTextField @bind-Value="@Thing.Width" Label="Width" />
-<MudTextField @bind-Value="@Thing.Height" Label="Height" />
+    <MudTextField @bind-Value="@Thing.Width" Label="Width" />
+    <MudTextField @bind-Value="@Thing.Height" Label="Height" />
 
-<br />
-<h2>Operation</h2>
-<OperationEditor Operation="@Thing.Operation" />
+    <br />
+    <h2>Operation</h2>
+    <OperationEditor Operation="@Thing.Operation" />
+</MudForm>
 
 @code {
-    public override bool IsValid => true;
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
 }

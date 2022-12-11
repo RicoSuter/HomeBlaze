@@ -6,16 +6,20 @@
 
 @inherits ThingSetupComponent<ToggleButtonWidget>
 
-<MudTextField @bind-Value="@Thing.Label" Label="Label" />
-<MudTextField @bind-Value="@Thing.Description" Label="Description" />
-<MudTextField @bind-Value="@Thing.VerticalTextPosition" Label="Vertical Text Position" />
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Label" Label="Label" />
+    <MudTextField @bind-Value="@Thing.Description" Label="Description" />
+    <MudTextField @bind-Value="@Thing.VerticalTextPosition" Label="Vertical Text Position" />
 
-<MudTextField @bind-Value="@Thing.Width" Label="Width" />
-<MudTextField @bind-Value="@Thing.Height" Label="Height" />
+    <MudTextField @bind-Value="@Thing.Width" Label="Width" />
+    <MudTextField @bind-Value="@Thing.Height" Label="Height" />
 
-<ThingSelect @bind-ThingId="@Thing.ThingId" Label="Lightbulb" Required="true"
-    ThingFilter="@(thing => thing is ILightbulb)" />
+    <ThingSelect @bind-ThingId="@Thing.ThingId" Label="Lightbulb" Required="true"
+                 ThingFilter="@(thing => thing is ILightbulb)" />
+</MudForm>
 
 @code {
-    public override bool IsValid => true;
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
 }
