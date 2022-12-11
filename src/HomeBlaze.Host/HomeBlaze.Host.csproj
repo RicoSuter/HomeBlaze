@@ -19,7 +19,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Core.csproj" />
-		<ProjectReference Include="..\HomeBlaze.Things\HomeBlaze.Things.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -63,8 +63,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Host", "HomeBlaze
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Widgets", "HomeBlaze.Widgets\HomeBlaze.Widgets.csproj", "{9220ED43-6E3B-4B61-93D6-79E53157E54C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Things", "HomeBlaze.Things\HomeBlaze.Things.csproj", "{9831D652-DA03-4C1A-8439-70C589EEB445}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -179,10 +177,6 @@ Global
 		{9220ED43-6E3B-4B61-93D6-79E53157E54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9220ED43-6E3B-4B61-93D6-79E53157E54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9220ED43-6E3B-4B61-93D6-79E53157E54C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9831D652-DA03-4C1A-8439-70C589EEB445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9831D652-DA03-4C1A-8439-70C589EEB445}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9831D652-DA03-4C1A-8439-70C589EEB445}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9831D652-DA03-4C1A-8439-70C589EEB445}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

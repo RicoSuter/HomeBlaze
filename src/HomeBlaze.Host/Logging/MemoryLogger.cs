@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace HomeBlaze.Host
+namespace HomeBlaze.Host.Logging
 {
     public class MemoryLogger : ILogger
     {

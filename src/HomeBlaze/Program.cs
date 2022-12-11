@@ -9,6 +9,7 @@ using Namotion.NuGetPlugins;
 using Serilog;
 using Namotion.Storage.Azure.Storage.Blob;
 using HomeBlaze.Host;
+using HomeBlaze.Host.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
