@@ -7,7 +7,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Services.csproj" />
+    <ProjectReference Include="..\HomeBlaze.Services\HomeBlaze.Services.csproj" />
     <ProjectReference Include="..\HomeBlaze.Philips.Hue\HomeBlaze.Philips.Hue.csproj" />
   </ItemGroup>
 </Project>

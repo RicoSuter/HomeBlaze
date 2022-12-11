@@ -1,4 +1,4 @@
-namespace HomeBlaze.Core.Tests
+namespace HomeBlaze.Services.Tests
 {
     public class UnitTest1
     {

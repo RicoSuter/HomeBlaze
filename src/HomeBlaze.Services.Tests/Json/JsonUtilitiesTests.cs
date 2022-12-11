@@ -1,7 +1,7 @@
 ﻿using HomeBlaze.Services.Json;
 using System.Text.Json;
 
-namespace HomeBlaze.Core.Tests.Json
+namespace HomeBlaze.Services.Tests.Json
 {
     public class JsonUtilitiesTests
     {

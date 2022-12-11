@@ -12,6 +12,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />
-	  <ProjectReference Include="..\HomeBlaze.Core\HomeBlaze.Services.csproj" />
+	  <ProjectReference Include="..\HomeBlaze.Services\HomeBlaze.Services.csproj" />
 	</ItemGroup>
 </Project>
