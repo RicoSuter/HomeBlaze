@@ -14,7 +14,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Diagnostics.CodeAnalysis;
-using HomeBlaze.Services.Things;
+using HomeBlaze.Services.Abstractions;
 
 namespace HomeBlaze.Dynamic
 {

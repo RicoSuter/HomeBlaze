@@ -3,7 +3,7 @@ using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Inputs;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.Services.Things;
+using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.Logging;
 using SmartGlass;
 using System;

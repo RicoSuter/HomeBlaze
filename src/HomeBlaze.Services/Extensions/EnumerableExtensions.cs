@@ -1,6 +1,6 @@
 ﻿using HomeBlaze.Abstractions;
 
-namespace HomeBlaze.Services
+namespace HomeBlaze.Services.Extensions
 {
     public interface IUpdateThing<T>
     {

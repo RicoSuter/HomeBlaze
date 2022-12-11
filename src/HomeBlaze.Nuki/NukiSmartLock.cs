@@ -5,7 +5,7 @@ using HomeBlaze.Abstractions.Devices.Energy;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Nuki.Model;
-using HomeBlaze.Services;
+using HomeBlaze.Services.Extensions;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;

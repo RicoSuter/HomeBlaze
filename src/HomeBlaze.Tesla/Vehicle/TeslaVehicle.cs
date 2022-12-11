@@ -1,7 +1,7 @@
 ﻿using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.Services.Things;
+using HomeBlaze.Services.Abstractions;
 using HomeBlaze.Tesla.Vehicle.Models;
 using Microsoft.Extensions.Logging;
 using System;

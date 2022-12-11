@@ -2,9 +2,8 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.Services;
 
-namespace HomeBlaze.Services.Things
+namespace HomeBlaze.Services.Abstractions
 {
     public abstract class ExtensionThing<TFor> : ExtensionThing
        where TFor : IThing

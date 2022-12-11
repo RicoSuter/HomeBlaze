@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 
 #nullable disable
 
+// TODO: Take from NJS when released
+
 namespace HomeBlaze.Abstractions.Json
 {
     /// <summary>Defines the class as inheritance base class and adds a discriminator property to the serialized object.</summary>

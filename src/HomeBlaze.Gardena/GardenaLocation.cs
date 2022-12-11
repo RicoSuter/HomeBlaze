@@ -5,7 +5,7 @@ using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Security;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.Services.Things;
+using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;

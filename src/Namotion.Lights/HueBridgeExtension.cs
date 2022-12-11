@@ -2,7 +2,7 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Philips.Hue;
-using HomeBlaze.Services.Things;
+using HomeBlaze.Services.Abstractions;
 using System;
 using System.Linq;
 

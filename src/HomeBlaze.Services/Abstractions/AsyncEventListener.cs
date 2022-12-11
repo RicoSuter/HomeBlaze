@@ -3,7 +3,7 @@ using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Concurrent;
 
-namespace HomeBlaze.Services
+namespace HomeBlaze.Services.Abstractions
 {
     /// <summary>
     /// An event listener which receives all events and processes them on another thread (non-blocking for other event consumers).

@@ -4,7 +4,7 @@ using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.Services.Things;
+using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.Logging;
 using Q42.HueApi;
 using Q42.HueApi.Models.Bridge;

@@ -2,7 +2,7 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Presentation;
-using HomeBlaze.Services;
+using HomeBlaze.Services.Extensions;
 using MudBlazor;
 using PixelByProxy.Asus.Router.Models;
 

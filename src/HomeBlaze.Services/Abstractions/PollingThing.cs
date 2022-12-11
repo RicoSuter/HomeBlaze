@@ -3,7 +3,7 @@ using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace HomeBlaze.Services.Things
+namespace HomeBlaze.Services.Abstractions
 {
     public abstract class PollingThing : BackgroundService, IThing
     {
