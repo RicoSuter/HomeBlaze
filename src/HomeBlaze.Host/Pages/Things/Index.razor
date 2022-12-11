@@ -335,9 +335,9 @@
     private async void AddThingExtension(IThing extendedThing)
     {
         var thing = await ThingSetupDialog.AddThingAsync(DialogService, t => t.IsAssignableTo(typeof(IExtensionThing)), extendedThing);
-        if (thing != null && ThingManager.RootThing is SystemThing systemThing)
+        if (thing != null && ThingManager.RootThing != null)
         {
-            systemThing.Things.Add(thing);
+            ThingManager.RootThing.Things.Add(thing);
             await ThingManager.WriteConfigurationAsync(CancellationToken.None);
 
             ThingManager.DetectChanges(thing);
@@ -352,12 +352,12 @@
     public async Task AddThingAsync()
     {
         var thing = await ThingSetupDialog.AddThingAsync(DialogService, t => t.GetCustomAttribute<ThingWidgetAttribute>() == null);
-        if (thing != null && ThingManager.RootThing is SystemThing systemThing)
+        if (thing != null && ThingManager.RootThing != null)
         {
-            systemThing.Things.Add(thing);
+            ThingManager.RootThing.Things.Add(thing);
             await ThingManager.WriteConfigurationAsync(CancellationToken.None);
 
-            ThingManager.DetectChanges(systemThing);
+            ThingManager.DetectChanges(ThingManager.RootThing);
         }
     }
 
@@ -374,12 +374,12 @@
     public async Task DeleteThingAsync(IThing thing, IDialogService dialogService, CancellationToken cancellationToken)
     {
         var delete = await dialogService.ShowMessageBox("Delete Thing", "Do you really want to delete this Thing?", "Delete", "No");
-        if (delete == true && ThingManager.RootThing is SystemThing systemThing)
+        if (delete == true && ThingManager.RootThing != null)
         {
-            systemThing.Things.Remove(thing);
+            ThingManager.RootThing.Things.Remove(thing);
             await ThingManager.WriteConfigurationAsync(cancellationToken);
 
-            ThingManager.DetectChanges(systemThing);
+            ThingManager.DetectChanges(ThingManager.RootThing);
         }
     }
 
