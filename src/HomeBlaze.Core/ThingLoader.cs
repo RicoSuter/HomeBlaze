@@ -37,17 +37,17 @@ namespace HomeBlaze
             };
         }
 
-        public async Task<IThing> ReadThingAsync(CancellationToken cancellationToken)
+        public async Task<IRootThing> ReadRootThingAsync(CancellationToken cancellationToken)
         {
             var json = await ReadRootConfigurationAsync(cancellationToken);
 
             var rootThing = JsonSerializer.Deserialize<IThing>(json, _thingSerializerOptions);
-            if (rootThing == null)
+            if (rootThing is not IRootThing)
             {
                 throw new InvalidOperationException("Could not deserialize root.");
             }
 
-            return rootThing;
+            return (IRootThing)rootThing;
         }
 
         private async Task<string> ReadRootConfigurationAsync(CancellationToken cancellationToken)
@@ -62,9 +62,9 @@ namespace HomeBlaze
             }
         }
 
-        public async Task WriteThingAsync(IThing thing, CancellationToken cancellationToken)
+        public async Task WriteRootThingAsync(IRootThing thing, CancellationToken cancellationToken)
         {
-            var json = JsonSerializer.Serialize(thing, _thingSerializerOptions);
+            var json = JsonSerializer.Serialize<IThing>(thing, _thingSerializerOptions);
             await _blobContainer.WriteAllTextAsync("Root.json", json, cancellationToken);
         }
 

@@ -2,9 +2,9 @@
 {
     public interface IThingStorage
     {
-        Task<IThing> ReadThingAsync(CancellationToken cancellationToken);
+        Task<IRootThing> ReadRootThingAsync(CancellationToken cancellationToken);
 
-        Task WriteThingAsync(IThing thing, CancellationToken cancellationToken);
+        Task WriteRootThingAsync(IRootThing thing, CancellationToken cancellationToken);
 
         T CloneThing<T>(T thing) where T : IThing;
 

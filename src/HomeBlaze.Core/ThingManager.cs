@@ -35,7 +35,7 @@ namespace HomeBlaze
             _logger = thingManager;
         }
 
-        public IThing? RootThing { get; private set; }
+        public IRootThing? RootThing { get; private set; }
 
         public IEnumerable<IThing> AllThings
         {
@@ -163,7 +163,7 @@ namespace HomeBlaze
         {
             if (RootThing != null)
             {
-                await _thingStorage.WriteThingAsync(RootThing, cancellationToken);
+                await _thingStorage.WriteRootThingAsync(RootThing, cancellationToken);
             }
         }
 
@@ -177,7 +177,7 @@ namespace HomeBlaze
         {
             await _typeManager.InitializeAsync(stoppingToken);
 
-            RootThing = await _thingStorage.ReadThingAsync(stoppingToken);
+            RootThing = await _thingStorage.ReadRootThingAsync(stoppingToken);
 
             Register(RootThing);
             DetectChanges(RootThing);

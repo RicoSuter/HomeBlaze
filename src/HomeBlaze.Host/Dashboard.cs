@@ -11,7 +11,7 @@ namespace HomeBlaze.Things
         [Configuration(IsIdentifier = true)]
         public string? Id { get; set; } = Guid.NewGuid().ToString();
 
-        public string? Title => Name;
+        public string? Title => "Dashboard (" + Name + ")";
 
         public string IconName => "fa-solid fa-table-columns";
 

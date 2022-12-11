@@ -2,7 +2,7 @@
 {
     public interface IThingManager
     {
-        IThing? RootThing { get; }
+        IRootThing? RootThing { get; }
 
         IEnumerable<IThing> AllThings { get; }
 

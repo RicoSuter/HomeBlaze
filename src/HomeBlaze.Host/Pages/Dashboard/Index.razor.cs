@@ -167,14 +167,10 @@ namespace HomeBlaze.Host.Pages.Dashboard
         public async void AddDashboard(MouseEventArgs args)
         {
             var dashboard = await DashboardDialog.CreateAsync(DialogService);
-            if (dashboard != null && ThingManager != null)
+            if (dashboard != null && ThingManager?.RootThing != null)
             {
-                var systemThing = ThingManager.RootThing as SystemThing;
-                if (systemThing != null)
-                {
-                    systemThing.Things.Add(dashboard);
-                    ThingManager.DetectChanges(systemThing);
-                }
+                ThingManager.RootThing.Things.Add(dashboard);
+                ThingManager.DetectChanges(ThingManager.RootThing);
             }
         }
 
@@ -189,11 +185,10 @@ namespace HomeBlaze.Host.Pages.Dashboard
 
         public void DeleteDashboard(MouseEventArgs args)
         {
-            var systemThing = ThingManager?.RootThing as SystemThing;
-            if (systemThing != null && _selectedDashboard != null && ThingManager != null)
+            if (_selectedDashboard != null && ThingManager?.RootThing != null)
             {
-                systemThing.Things.Remove(_selectedDashboard);
-                ThingManager.DetectChanges(systemThing);
+                ThingManager.RootThing.Things.Remove(_selectedDashboard);
+                ThingManager.DetectChanges(ThingManager.RootThing);
             }
         }
 

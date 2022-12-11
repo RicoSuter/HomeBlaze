@@ -35,6 +35,6 @@
     {
         _isExpanded =
             Property?.Value.Name == "Things" &&
-            Property?.Value.SourceThing?.GetType().Name == "SystemThing";
+            Property?.Value.SourceThing is IRootThing;
     }
 }

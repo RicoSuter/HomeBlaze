@@ -382,8 +382,8 @@
       "serialPort": "COM7;/dev/ttyACM1"
     },
     {
-      "id": "6ce629fd-1d67-4771-8429-1937fa2d6c44",
       "discriminator": "HomeBlaze.Things.Dashboard",
+      "id": "6ce629fd-1d67-4771-8429-1937fa2d6c44",
       "name": "home",
       "icon": "home",
       "widgets": [
@@ -1168,12 +1168,32 @@
             "multiplier": 1,
             "decimals": 2
           }
+        },
+        {
+          "id": "b09578de-a675-4fb9-bab1-460c886d1a6b",
+          "x": 975,
+          "y": 300,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.IconWidget",
+            "id": "2749a6ce-d7ff-4be1-9f03-74239cb7dfbf",
+            "scale": 1.0,
+            "size": 1.0,
+            "conditions": [
+              {
+                "icon": "question-circle",
+                "opacity": 1.0,
+                "thingId": null,
+                "property": null,
+                "value": null
+              }
+            ]
+          }
         }
       ]
     },
     {
-      "id": "6931f79a-959a-473d-ae50-a6dcf740e635",
       "discriminator": "HomeBlaze.Things.Dashboard",
+      "id": "6931f79a-959a-473d-ae50-a6dcf740e635",
       "name": "power",
       "icon": "bolt-lightning",
       "widgets": [
@@ -1186,6 +1206,34 @@
             "id": "67e2ff88-8ff8-4f35-87fc-2a4962789f1f",
             "width": 800,
             "height": 450
+          }
+        }
+      ]
+    },
+    {
+      "discriminator": "HomeBlaze.Things.Dashboard",
+      "id": "6a03a31b-9596-4990-92d6-4001fe3806b8",
+      "name": "person",
+      "icon": "person",
+      "widgets": [
+        {
+          "id": "56280288-a802-4321-9a76-c6f1d7f1860f",
+          "x": 175,
+          "y": 100,
+          "thing": {
+            "discriminator": "HomeBlaze.Widgets.IconWidget",
+            "id": "589998a2-45b6-4109-ae6c-b15ca36f2847",
+            "scale": 1.0,
+            "size": 1.0,
+            "conditions": [
+              {
+                "icon": "question-circle",
+                "opacity": 1.0,
+                "thingId": null,
+                "property": null,
+                "value": null
+              }
+            ]
           }
         }
       ]

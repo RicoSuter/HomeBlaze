@@ -2,15 +2,18 @@
 
 @using HomeBlaze
 @using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Attributes;
 @using HomeBlaze.Abstractions.Presentation
 @using HomeBlaze.Abstractions.Services
 @using HomeBlaze.Abstractions.Messages
 @using HomeBlaze.Components.Dialogs;
+@using HomeBlaze.Host.Infrastructure
 @using HomeBlaze.Things
 @using Microsoft.Extensions.Logging;
 @using Namotion.Reflection
 @using System.Collections;
 @using System.Threading;
+@using System.Reflection;
 
 @inject IThingManager ThingManager
 @inject IDialogService DialogService
@@ -21,6 +24,10 @@
 @implements IDisposable
 
 <PageTitle>Index</PageTitle>
+
+<SectionContent Name="AppBar">
+    <MudButton StartIcon="@Icons.Filled.Add" OnClick="AddThingAsync" Color="Color.Primary">Add Thing</MudButton>
+</SectionContent>
 
 <div id="scrollContainer" style="height: calc(100% - 15px); width: calc(100% - 15px); overflow-y: scroll; overflow-x: hidden; display: flex; margin-left: 15px; margin-top: 15px">
     @for (int i = 0; i < _openedThings.Count; i++)
@@ -110,18 +117,17 @@
                         }
                     }
 
-                    @if (ThingManager.RootThing is SystemThing systemThing && 
-                        (metadata?.CanEdit == true || metadata?.CanDelete == true))
+                    @if (metadata?.CanEdit == true || metadata?.CanDelete == true)
                     {
                         @if (metadata?.CanEdit == true)
                         {
-                            <MudButton OnClick="@(() => systemThing.EditThingAsync(thing, DialogService, CancellationToken.None))"
+                            <MudButton OnClick="@(() => EditThingAsync(thing, DialogService, CancellationToken.None))"
                                 Variant="Variant.Filled" Color="Color.Warning" Class="ma-2">Edit</MudButton>
                         }
 
                         @if (metadata?.CanDelete == true)
                         {
-                            <MudButton OnClick="@(() => systemThing.DeleteThingAsync(thing, DialogService, CancellationToken.None))"
+                            <MudButton OnClick="@(() => DeleteThingAsync(thing, DialogService, CancellationToken.None))"
                                 Variant="Variant.Filled" Color="Color.Error" Class="ma-2">Delete</MudButton>
                         }
                     }
@@ -341,6 +347,40 @@
     private async void ShowHistory(IThing thing, string property)
     {
         await StateHistoryDialog.ShowAsync(DialogService, thing, property);
+    }
+
+    public async Task AddThingAsync()
+    {
+        var thing = await ThingSetupDialog.AddThingAsync(DialogService, t => t.GetCustomAttribute<ThingWidgetAttribute>() == null);
+        if (thing != null && ThingManager.RootThing is SystemThing systemThing)
+        {
+            systemThing.Things.Add(thing);
+            await ThingManager.WriteConfigurationAsync(CancellationToken.None);
+
+            ThingManager.DetectChanges(systemThing);
+        }
+    }
+
+    public async Task EditThingAsync(IThing thing, IDialogService dialogService, CancellationToken cancellationToken)
+    {
+        var hasChanged = await ThingSetupDialog.EditThingAsync(dialogService, thing);
+        if (hasChanged)
+        {
+            await ThingManager.WriteConfigurationAsync(cancellationToken);
+            ThingManager.DetectChanges(thing);
+        }
+    }
+
+    public async Task DeleteThingAsync(IThing thing, IDialogService dialogService, CancellationToken cancellationToken)
+    {
+        var delete = await dialogService.ShowMessageBox("Delete Thing", "Do you really want to delete this Thing?", "Delete", "No");
+        if (delete == true && ThingManager.RootThing is SystemThing systemThing)
+        {
+            systemThing.Things.Remove(thing);
+            await ThingManager.WriteConfigurationAsync(cancellationToken);
+
+            ThingManager.DetectChanges(systemThing);
+        }
     }
 
     public void Dispose()
