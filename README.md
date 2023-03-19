@@ -9,7 +9,7 @@ HomeBlaze is built as a Blazor Server-Side application using the [MudBlazor](htt
 Currently the software supports the following devices:
 
 - ASUS Routers
-- Gardena Irrigation Control
+- Gardena Irrigation Control (control garden watering)
 - Logitech Harmony Hub
 - Luxtronik Heaters
 - **MQTT**
@@ -22,7 +22,7 @@ Currently the software supports the following devices:
 - Tesla Wall Connector (Gen 3)
 - ThanksMister WallPanel (Android app for wall panels)
 - Microsoft Xbox
-- **Z-Wave Controllers**
+- **Z-Wave Controllers** (door sensors, temperature sensors, smoke detectors, etc.)
 
 We hope to find more people from the .NET community to provide support for more devices, new widgets, bug fixes and new features. 
 
