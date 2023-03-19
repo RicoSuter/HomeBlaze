@@ -58,6 +58,10 @@ State machine automation to change light brightness at night:
 
 ![192 168 1 200_9800_](https://user-images.githubusercontent.com/2603405/226211066-abd3bfd4-a412-41b4-9fa7-ba8a5cb366de.png)
 
+Custom script to be used in an automation (blinking lights can be used as alarm):
+
+![192 168 1 200_9800_](https://user-images.githubusercontent.com/2603405/226211732-40d14b67-f1f0-40f5-9496-87e5864c8ac7.png)
+
 ## Installation
 
 ### Docker
