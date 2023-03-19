@@ -1,0 +1,62 @@
+{
+	"manufacturer": "Nortek Security & Control LLC",
+	"manufacturerId": "0x014f",
+	"label": "PD300EMZ5-1",
+	"description": "300 Watt, Plug-In Dimmer Series 500",
+	"devices": [
+		{
+			"productType": "0x5044",
+			"productId": "0x3533"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "2",
+			"$import": "templates/config_template.json#led_brightness"
+		},
+		{
+			"#": "3",
+			"$import": "templates/config_template.json#night_light_4"
+		},
+		{
+			"#": "7",
+			"$import": "templates/config_template.json#dim_step_zwave"
+		},
+		{
+			"#": "8",
+			"$import": "templates/config_template.json#dim_rate_zwave"
+		},
+		{
+			"#": "9",
+			"$import": "templates/config_template.json#dim_step_manual"
+		},
+		{
+			"#": "11",
+			"$import": "templates/config_template.json#power_monitor"
+		},
+		{
+			"#": "12",
+			"$import": "templates/config_template.json#energy_display_duration"
+		},
+		{
+			"#": "13",
+			"$import": "templates/config_template.json#report_interval"
+		},
+		{
+			"#": "16",
+			"$import": "templates/config_template.json#dim_rate_manual"
+		},
+		{
+			"#": "17",
+			"$import": "templates/config_template.json#dim_step_all"
+		},
+		{
+			"#": "18",
+			"$import": "templates/config_template.json#dim_rate_all"
+		}
+	]
+}

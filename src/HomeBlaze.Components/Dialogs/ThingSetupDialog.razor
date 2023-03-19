@@ -1,0 +1,292 @@
+﻿@using System.Reflection
+@using System.ComponentModel
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Abstractions.Services
+@using HomeBlaze.Abstractions
+@using HomeBlaze.Components;
+@using MudBlazor;
+@using System.Threading;
+
+@implements IThingEditPage
+
+@inject IThingManager ThingManager
+@inject ITypeManager TypeManager
+@inject IThingStorage ThingStorage
+@inject IDialogService DialogService
+@inject IThingSerializer ThingSerializer
+
+<MudDialog ClassContent="edit-dialog">
+    <TitleContent>
+        @if (Thing != null)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="@(() => ToggleJson())"
+                       Style="float: right">@(_json == null ? "JSON" : "Thing")</MudButton>
+        }
+        @(Thing == null ? null : ("Edit " + (Thing.GetType().GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? Thing.GetType().Name)))
+    </TitleContent>
+    <DialogContent>
+        @if (Thing == null)
+        {
+            @if (_thingTypes.Length > 1)
+            {
+                <MudSelect T="Type" Label="Thing Type" Value="_selectedThingType" ValueChanged="type => OnThingTypeChanged(type)" Style="margin-top: -28px">
+                    @foreach (var thingType in _thingTypes)
+                    {
+                        <MudSelectItem Value="@thingType">
+                            @(thingType.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? thingType.Name)
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+                <br />
+            }
+
+            @if (_selectedThingType != null)
+            {
+                <div>
+                    @(_selectedThingType.GetCustomAttribute<DescriptionAttribute>()?.Description)
+                </div>
+            }
+        }
+        else
+        {
+            <h1 style="margin-top: -8px">@Thing.Title</h1>
+            <div>
+                @(Thing.GetType().GetCustomAttribute<DescriptionAttribute>()?.Description)
+            </div>
+        }
+
+        <br />
+
+        @if (_json == null)
+        {
+            <div>
+                @if (Thing == null)
+                {
+                    @if (_thingSetupFragment != null && _selectedThingType != null)
+                    {
+                        @_thingSetupFragment
+                    }
+                }
+                else
+                {
+                    @if (_thingSetupFragment != null)
+                    {
+                        @_thingSetupFragment
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <MudTextField T="string" Variant="Variant.Text" @bind-Text="_json" Lines="20" />
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => DialogInstance?.Close(null))" Color="Color.Primary">Close</MudButton>
+        @if (_json == null)
+        {
+            <MudButton OnClick="@Upsert" Disabled="@(_processing || _component?.IsValid != true)"
+                   Variant="Variant.Filled" Color="Color.Primary">
+                @if (_processing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">@(Thing == null ? "Adding" : "Updating") Thing...</MudText>
+                }
+                else
+                {
+                    <MudText>@(Thing == null ? "Add" : "Update") Thing</MudText>
+                }
+            </MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private string? _json = null;
+    private bool _processing = false;
+    private IThingSetupComponent? _component;
+
+    private Type[] _thingTypes = new Type[0];
+    private RenderFragment? _thingSetupFragment;
+    private Type? _selectedThingType;
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public IThing? ExtendedThing { get; set; }
+
+    [Parameter]
+    public Func<Type, bool>? TypeFilter { get; set; }
+
+    [Parameter]
+    public CancellationToken DialogClosed { get; set; }
+
+    public void ToggleJson()
+    {
+        if (Thing != null)
+        {
+            try
+            {
+                if (_json != null)
+                {
+                    ThingSerializer.PopulateThing(Thing, _json);
+                    _json = null;
+                    InvokeAsync(StateHasChanged);
+                }
+                else
+                {
+                    _json = ThingSerializer.SerializeThing(Thing);
+                    InvokeAsync(StateHasChanged);
+                }
+            }
+            catch (Exception e)
+            {
+                DialogService.ShowMessageBox("Failed", e.ToString());
+            }
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _thingTypes = TypeManager
+            .ThingTypes
+            .Where(t => TypeFilter == null || TypeFilter(t))
+            .Where(t => t.GetCustomAttribute<ThingSetupAttribute>() != null)
+            .ToArray();
+
+        if (Thing != null)
+        {
+            var thingType = _thingTypes.SingleOrDefault(f => f.FullName == Thing.GetType().FullName);
+            var attribute = thingType?.GetCustomAttribute<ThingSetupAttribute>();
+            if (attribute != null && attribute.ComponentType.GetProperty(nameof(ThingSetupComponentBase<IThing>.EditedThing)) != null)
+            {
+                _thingSetupFragment = builder =>
+                {
+                    builder.OpenComponent(0, attribute.ComponentType);
+                    builder.AddAttribute(1, nameof(IThingSetupComponent.Page), this);
+                    builder.AddAttribute(2, nameof(ThingSetupComponentBase<IThing>.EditedThing), Thing);
+                    builder.CloseComponent();
+                };
+            }
+        }
+        else if (_thingTypes.Length == 1)
+        {
+            OnThingTypeChanged(_thingTypes.First());
+        }
+    }
+
+    public static async Task<IThing?> AddThingAsync(IDialogService dialogService, Func<Type, bool>? typeFilter = null, IThing? extendedThing = null)
+    {
+        var cancellationTokenSource = new CancellationTokenSource();
+        var result = await dialogService.Show<ThingSetupDialog>(string.Empty,
+            new DialogParameters
+                    {
+                { "TypeFilter", typeFilter },
+                { "ExtendedThing", extendedThing },
+                { "DialogClosed", cancellationTokenSource.Token }
+                    },
+            new DialogOptions
+                {
+                    FullWidth = true,
+                    MaxWidth = MaxWidth.Medium,
+                }).Result;
+
+        cancellationTokenSource.Cancel();
+        return result?.Data as IThing;
+    }
+
+    public static async Task<bool> EditThingAsync(IDialogService dialogService, IThing thing)
+    {
+        var result = await dialogService.Show<ThingSetupDialog>(string.Empty,
+            new DialogParameters
+            {
+                { "Thing", thing }
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium
+            }).Result;
+
+        return result?.Data != null;
+    }
+
+    private void OnThingTypeChanged(Type thingType)
+    {
+        _component = null;
+
+        _selectedThingType = thingType;
+        if (_selectedThingType != null)
+        {
+            var attribute = _selectedThingType.GetCustomAttribute<ThingSetupAttribute>();
+            if (attribute != null)
+            {
+                _thingSetupFragment = builder =>
+                {
+                    builder.OpenComponent(0, attribute.ComponentType);
+                    builder.AddAttribute(1, nameof(IThingSetupComponent.Page), this);
+                    builder.AddAttribute(2, nameof(ThingSetupComponentBase<IThing>.ExtendedThing), ExtendedThing);
+                    builder.CloseComponent();
+                };
+            }
+        }
+        else
+        {
+            _thingSetupFragment = null;
+        }
+    }
+
+    public void RegisterComponent(IThingSetupComponent component)
+    {
+        _component = component;
+    }
+
+    public async Task RefreshAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Upsert()
+    {
+        if (_component != null && DialogInstance != null)
+        {
+            try
+            {
+                _processing = true;
+                await InvokeAsync(StateHasChanged);
+
+                if (Thing == null)
+                {
+                    var thing = await _component.CreateThingAsync(DialogClosed);
+                    if (thing != null)
+                    {
+                        DialogInstance.Close(thing);
+                    }
+                }
+                else
+                {
+                    var isSuccessful = await _component.UpdateEditedThingAsync(DialogClosed);
+                    if (isSuccessful)
+                    {
+                        DialogInstance.Close(Thing);
+                    }
+                }
+            }
+            catch (Exception e) when (e is not TaskCanceledException)
+            {
+                await DialogService.ShowMessageBox("Error", e.ToString());
+            }
+            finally
+            {
+                _processing = false;
+            }
+        }
+    }
+}

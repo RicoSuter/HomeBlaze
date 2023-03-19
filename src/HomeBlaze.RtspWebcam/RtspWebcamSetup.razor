@@ -1,0 +1,33 @@
+﻿@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Components
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using MudBlazor
+@using System.Threading
+@using HomeBlaze.Abstractions.Services
+@using System.Net.Http;
+
+@inherits ThingSetupComponent<Baflux.RtspWebcam.RtspWebcam>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.InternalTitle" Label="Title" Required="true" />
+    <MudTextField @bind-Value="@Thing.ServerUrl" Label="Server URL" Required="true" />
+
+    <MudTextField @bind-Value="@Thing.UserName" Label="Username" />
+    <MudTextField @bind-Value="@Thing.Password" Label="Password" InputType="InputType.Password" />
+
+    <p>
+        <br />
+        <strong>Sample URLs:</strong><br />
+        Tapo Webcams:<br />
+        rtsp://192.168.1.123:554/stream1<br />
+        rtsp://192.168.1.123:554/stream2
+    </p>
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

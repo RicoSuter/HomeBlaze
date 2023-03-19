@@ -1,0 +1,30 @@
+{
+	"manufacturer": "Inovelli",
+	"manufacturerId": "0x0312",
+	"label": "NZW30S",
+	"description": "In-Wall Switch (On/Off) Scene Enabled",
+	"devices": [
+		{
+			"productType": "0x1e00",
+			"productId": "0x1e00"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "3",
+			"$import": "~/templates/master_template.json#led_indicator_three_options_inverted"
+		},
+		{
+			"#": "4",
+			"$import": "~/templates/master_template.json#orientation"
+		},
+		{
+			"#": "5",
+			"$import": "templates/minoston_template.json#auto_off_timer_32767s"
+		}
+	]
+}

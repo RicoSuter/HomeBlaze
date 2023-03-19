@@ -1,0 +1,15 @@
+﻿@using System.Threading
+@using HomeBlaze.Components
+@using MudBlazor
+
+@inherits ThingSetupComponent<TeslaWallConnector>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Host" Label="Host" Required="true" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

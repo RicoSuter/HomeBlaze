@@ -1,0 +1,90 @@
+{
+	"manufacturer": "Zooz",
+	"manufacturerId": "0x027a",
+	"label": "ZW6302",
+	"description": "Portable Smart Motion Sensor",
+	"devices": [
+		{
+			"productType": "0x4953",
+			"productId": "0x3133"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "ZW6302",
+			"description": "Portable Smart Motion Sensor",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "13",
+			"label": "Motion Sensor",
+			"valueSize": 1,
+			"defaultValue": 3,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Low Sensitivity",
+					"value": 1
+				},
+				{
+					"label": "Medium Sensitivity",
+					"value": 2
+				},
+				{
+					"label": "High Sensitivity",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "18",
+			"label": "PIR Timeout Duration",
+			"valueSize": 1,
+			"unit": "minutes",
+			"minValue": 1,
+			"maxValue": 255,
+			"defaultValue": 60,
+			"unsigned": true,
+			"options": [
+				{
+					"label": "Test Mode [5 seconds]",
+					"value": 255
+				}
+			]
+		},
+		{
+			"#": "20",
+			"label": "Basic Set, Notification and Basic Report",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Motion Sensor will send out Notification",
+					"value": 1
+				},
+				{
+					"label": "Motion Sensor will send out Basic Set",
+					"value": 2
+				},
+				{
+					"label": "Motion Sensor will sendout Basic Report",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "28",
+			"$import": "~/templates/master_template.json#enable_led_indicator",
+			"defaultValue": 1
+		}
+	]
+}

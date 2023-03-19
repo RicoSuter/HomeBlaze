@@ -1,0 +1,293 @@
+{
+	"manufacturer": "Devolo",
+	"manufacturerId": "0x0175",
+	"label": "MT2759",
+	"description": "Home Control Wall Mounted Switch",
+	"devices": [
+		{
+			"productType": "0x0002",
+			"productId": "0x0052",
+			"zwaveAllianceId": 2645
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "(I1) Input 1 switch type",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "mono stable switch type (push button)",
+					"value": 0
+				},
+				{
+					"label": "bi-stable switch type (default)",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "2",
+			"label": "(I2) Input 2 contact type",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "NO (normally open) input type (default)",
+					"value": 0
+				},
+				{
+					"label": "NC (normally close) input type",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "3",
+			"label": "(I3) Input 3 contact type",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "NO (normally open) input type (default)",
+					"value": 0
+				},
+				{
+					"label": "NC (normally close) input type",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "10",
+			"label": "ALL ON/ALL OFF",
+			"description": "Activate / deactivate functions ALL ON/ALL OFF",
+			"valueSize": 1,
+			"defaultValue": 255,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "NONE",
+					"value": 0
+				},
+				{
+					"label": "ALL OFF",
+					"value": 1
+				},
+				{
+					"label": "ALL ON",
+					"value": 2
+				},
+				{
+					"label": "ALL ON / ALL OFF",
+					"value": 255
+				}
+			]
+		},
+		{
+			"#": "11",
+			"label": "Automatic turning off",
+			"description": "Automatic turning off output after set time",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32535,
+			"defaultValue": 0,
+			"options": [
+				{
+					"label": "AUTO OFF disabled",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "12",
+			"label": "Automatic turning on",
+			"description": "Automatic turning on output after set time",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32535,
+			"defaultValue": 0,
+			"options": [
+				{
+					"label": "AUTO ON disabled",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "15",
+			"label": "Auto off / on, s or ms selection",
+			"description": "Automatic turning off / on seconds or milliseconds selection",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "seconds selected (default)",
+					"value": 0
+				},
+				{
+					"label": "milliseconds selected",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "30",
+			"$import": "~/templates/master_template.json#state_after_power_failure_prev_off"
+		},
+		{
+			"#": "40",
+			"label": "Power reporting (W) on power change",
+			"valueSize": 1,
+			"unit": "%",
+			"minValue": 0,
+			"maxValue": 100,
+			"defaultValue": 10,
+			"options": [
+				{
+					"label": "Reporting disabled",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "42",
+			"label": "Power reporting (W) by time interval",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32535,
+			"defaultValue": 300,
+			"options": [
+				{
+					"label": "Reporting disabled",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "63",
+			"label": "Output Switch selection",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "(NC) output is 0V (default)",
+					"value": 0
+				},
+				{
+					"label": "(NO) output is 230V / 24V",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "100",
+			"label": "Enable / Disable Endpoint I2",
+			"description": "Enable / Disable Endpoint I2 or select Notification Type and Event",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Endpoint I2 disabled",
+					"value": 0
+				},
+				{
+					"label": "Home Security: Motion Detection",
+					"value": 1
+				},
+				{
+					"label": "Carbon Monoxide",
+					"value": 2
+				},
+				{
+					"label": "Carbon Dioxide",
+					"value": 3
+				},
+				{
+					"label": "Water Alarm",
+					"value": 4
+				},
+				{
+					"label": "Heat Alarm",
+					"value": 5
+				},
+				{
+					"label": "Smoke Alarm",
+					"value": 6
+				}
+			]
+		},
+		{
+			"#": "101",
+			"label": "Enable / Disable Endpoint I3",
+			"description": "Enable / Disable Endpoint I3 or select Notification Type and Event",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Endpoint I3 disabled",
+					"value": 0
+				},
+				{
+					"label": "Home Security: Motion Detection",
+					"value": 1
+				},
+				{
+					"label": "Carbon Monoxide",
+					"value": 2
+				},
+				{
+					"label": "Carbon Dioxide",
+					"value": 3
+				},
+				{
+					"label": "Water Alarm",
+					"value": 4
+				},
+				{
+					"label": "Heat Alarm",
+					"value": 5
+				},
+				{
+					"label": "Smoke Alarm",
+					"value": 6
+				}
+			]
+		},
+		{
+			"#": "110",
+			"label": "Temperature sensor offset settings",
+			"valueSize": 2,
+			"minValue": 1,
+			"maxValue": 32536,
+			"defaultValue": 32536
+		},
+		{
+			"#": "120",
+			"label": "Temperature sensor reporting",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 5
+		}
+	],
+	"metadata": {
+		"inclusion": "AUTOMATICALLY ADDING THE DEVICE TO A Z-WAVE NETWORK\n\n1. Enable add/remove mode on your Z-Wave gateway (hub)\n2. Connect the device to the power supply (with the temperature sensor already connected – sold separately*).\n3. Auto-inclusion will be initiated within 5 seconds of connection to the power supply and the device will automatically enroll in your network\n\nMANUALLY ADDING THE DEVICE TO A Z-WAVE NETWORK\n\n1. Enable add/remove mode on your Z-Wave gateway (hub)\n2. Connect the device to the power supply (with the temperature sensor already connected*)\n3. Toggle the switch connected to the I1 terminal 3 times within 3 seconds\nOR\nIf the device is powered by 24 V SELV supply, press and hold the S (Service) button for at least 2 seconds\n4. A new multi-channel device will appear on your dashboard\n\n*If connecting the temperature sensor, switch off the power supply and make sure the device is excluded from your network BEFORE connecting the sensor.\n\nMake sure the device is excluded from your network before connecting the temperature sensor. Switch off the power supply, connect the temperature sensor, and re-include the device to your network",
+		"exclusion": "REMOVAL FROM A Z-WAVE NETWORK\n\n• Connect module to power supply\n• bring module within maximum 1 meter (3 feet) of the main controller,\n• enable add/remove mode on main controller\n\nIf push button I1 is pressed three times within 5s (or service button S is pressed more than 2 and less than 6 seconds) module is excluded, but configuration parameters are not set to default values",
+		"reset": "FACTORY RESET\n\n• Connect module to power supply\n• bring module within maximum 1 meter (3 feet) of the main controller,\n• enable add/remove mode on main controller\n• press push button I1 five times within 5s (5 times change switch state within 5 seconds) in the first 60 seconds after the module is connected to the power supply or\n• press service button S (only applicable for 24 V SELV supply voltage) for more than 6 second.\nBy this function all parameters of the module are set to default values and own ID is deleted.\n\n*Please use this procedure only when the network primary controller is missing or otherwise inoperable",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/2645/Manual_Devolo_HCswitch_FM.pdf"
+	}
+}

@@ -1,0 +1,25 @@
+﻿@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Components
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using MudBlazor
+@using System.Threading
+@using HomeBlaze.Abstractions.Services
+@using HomeBlaze.MyStrom
+
+@inherits ThingSetupComponent<MyStromSwitch>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.DisplayTitle" Label="Title" Required="true" />
+    <MudTextField @bind-Value="@Thing.IpAddress" Label="IP Address" Required="true" />
+    <MudTextField @bind-Value="@Thing.RefreshInterval" Label="Refresh Interval (Milliseconds)" Required="true" />
+    <br />
+    <MudSwitch @bind-Checked="@Thing.AllowTurnOff" Label="Allow to turn off the Switch" Color="Color.Info" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

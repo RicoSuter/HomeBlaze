@@ -1,0 +1,72 @@
+{
+	"manufacturer": "AEON Labs",
+	"manufacturerId": "0x0086",
+	"label": "ZW097",
+	"description": "Dry Contact Sensor",
+	"devices": [
+		{
+			"productType": "0x0002",
+			"productId": "0x0061"
+		},
+		{
+			"productType": "0x0102",
+			"productId": "0x0061",
+			"zwaveAllianceId": 1495
+		},
+		{
+			"productType": "0x0202",
+			"productId": "0x0061"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Group 1",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "templates/aeotec_template.json#invert_state_report"
+		},
+		{
+			"#": "2",
+			"$import": "templates/aeotec_template.json#wake_up_10_minutes"
+		},
+		{
+			"#": "3",
+			"$import": "templates/aeotec_template.json#invert_basic_set"
+		},
+		{
+			"#": "39",
+			"$import": "templates/aeotec_template.json#low_battery_threshold"
+		},
+		{
+			"#": "111",
+			"$import": "templates/aeotec_template.json#low_battery_interval"
+		},
+		{
+			"#": "121",
+			"$import": "templates/aeotec_template.json#sensor_report_type"
+		},
+		{
+			"#": "122",
+			"$import": "templates/aeotec_template.json#notification_type"
+		},
+		{
+			"#": "255",
+			"$import": "templates/aeotec_template.json#factory_reset_exclude"
+		}
+	],
+	"metadata": {
+		"inclusion": "Turn the primary controller of Z-Wave network into inclusion mode, short press the product’s Action Button that you can find in the back of the product",
+		"exclusion": "Turn the primary controller of Z-Wave network into exclusion mode, short press the product’s Action Button that you can find in back of the product",
+		"reset": "Press the Action Button once that you can find in back of the product for 20 seconds and then release. This procedure should only be used when the primary controller is inoperable",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/1495/Dry%20Contact%20Sensor%20Gen5%20manual.pdf"
+	}
+}

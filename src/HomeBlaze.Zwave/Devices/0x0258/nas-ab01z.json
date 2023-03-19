@@ -1,0 +1,261 @@
+{
+	"manufacturer": "Shenzhen Neo Electronics Co., Ltd.",
+	"manufacturerId": "0x0258",
+	"label": "NAS-AB01Z",
+	"description": "Siren Alarm",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0088"
+		},
+		{
+			"productType": "0x0003",
+			"productId": "0x1088"
+		},
+		{
+			"productType": "0x0003",
+			"productId": "0x2088"
+		},
+		{
+			"productType": "0x0003",
+			"productId": "0x6088"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Group 1",
+			"maxNodes": 5
+		},
+		"2": {
+			"label": "Group 2",
+			"maxNodes": 1,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Alarm Volume",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 3,
+			"defaultValue": 2,
+			"options": [
+				{
+					"label": "Low",
+					"value": 1
+				},
+				{
+					"label": "Middle",
+					"value": 2
+				},
+				{
+					"label": "High",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "2",
+			"label": "Alarm Duration",
+			"valueSize": 1,
+			"defaultValue": 2,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Off",
+					"value": 0
+				},
+				{
+					"label": "30 seconds",
+					"value": 1
+				},
+				{
+					"label": "1 minute",
+					"value": 2
+				},
+				{
+					"label": "5 minutes",
+					"value": 3
+				},
+				{
+					"label": "Always on",
+					"value": 255
+				}
+			]
+		},
+		{
+			"#": "3",
+			"label": "Doorbell Duration",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 1,
+			"unsigned": true,
+			"options": [
+				{
+					"label": "Off",
+					"value": 0
+				},
+				{
+					"label": "Always",
+					"value": 255
+				}
+			]
+		},
+		{
+			"#": "4",
+			"label": "Doorbell Volume",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 3,
+			"defaultValue": 2,
+			"options": [
+				{
+					"label": "Low",
+					"value": 1
+				},
+				{
+					"label": "Middle",
+					"value": 2
+				},
+				{
+					"label": "High",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "5",
+			"label": "Alarm Sound Selection",
+			"valueSize": 1,
+			"defaultValue": 10,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Doorbell",
+					"value": 1
+				},
+				{
+					"label": "Für Elise",
+					"value": 2
+				},
+				{
+					"label": "Westminster Chimes",
+					"value": 3
+				},
+				{
+					"label": "Ding Dong",
+					"value": 4
+				},
+				{
+					"label": "William Tell",
+					"value": 5
+				},
+				{
+					"label": "Rondo Alla Turca",
+					"value": 6
+				},
+				{
+					"label": "Police Siren",
+					"value": 7
+				},
+				{
+					"label": "Evacuation",
+					"value": 8
+				},
+				{
+					"label": "Beep Beep",
+					"value": 9
+				},
+				{
+					"label": "Beep",
+					"value": 10
+				}
+			]
+		},
+		{
+			"#": "6",
+			"label": "Doorbell Sound Selection",
+			"valueSize": 1,
+			"defaultValue": 9,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Doorbell",
+					"value": 1
+				},
+				{
+					"label": "Für Elise",
+					"value": 2
+				},
+				{
+					"label": "Westminster Chimes",
+					"value": 3
+				},
+				{
+					"label": "Ding Dong",
+					"value": 4
+				},
+				{
+					"label": "William Tell",
+					"value": 5
+				},
+				{
+					"label": "Rondo Alla Turca",
+					"value": 6
+				},
+				{
+					"label": "Police Siren",
+					"value": 7
+				},
+				{
+					"label": "Evacuation",
+					"value": 8
+				},
+				{
+					"label": "Beep Beep",
+					"value": 9
+				},
+				{
+					"label": "Beep",
+					"value": 10
+				}
+			]
+		},
+		{
+			"#": "7",
+			"label": "Default Siren Sound",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 2,
+			"defaultValue": 1,
+			"options": [
+				{
+					"label": "Alarm Sound",
+					"value": 1
+				},
+				{
+					"label": "Doorbell Sound",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "8",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Alarm LED",
+			"defaultValue": 1
+		},
+		{
+			"#": "9",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Doorbell LED"
+		}
+	]
+}

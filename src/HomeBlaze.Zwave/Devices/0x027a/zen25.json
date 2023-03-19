@@ -1,0 +1,186 @@
+{
+	"manufacturer": "Zooz",
+	"manufacturerId": "0x027a",
+	"label": "ZEN25",
+	"description": "Double Plug",
+	"devices": [
+		{
+			"productType": "0xa000",
+			"productId": "0xa003"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "~/templates/master_template.json#state_after_power_failure_prev_on_off"
+		},
+		{
+			"#": "2",
+			"label": "Power (W) Report Threshold",
+			"unit": "W",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 65535,
+			"defaultValue": 10,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "3",
+			"label": "Power (W) Report Frequency",
+			"unit": "seconds",
+			"valueSize": 4,
+			"minValue": 30,
+			"maxValue": 2678400,
+			"defaultValue": 30
+		},
+		{
+			"#": "4",
+			"label": "Energy (kWh) Report Frequency",
+			"unit": "seconds",
+			"valueSize": 4,
+			"minValue": 5,
+			"maxValue": 2678400,
+			"defaultValue": 300
+		},
+		{
+			"#": "5",
+			"label": "Voltage (V) Report Frequency",
+			"unit": "seconds",
+			"valueSize": 4,
+			"minValue": 5,
+			"maxValue": 2678400,
+			"defaultValue": 300
+		},
+		{
+			"#": "6",
+			"label": "Current (A) Report Frequency",
+			"unit": "seconds",
+			"valueSize": 4,
+			"minValue": 5,
+			"maxValue": 2678400,
+			"defaultValue": 300
+		},
+		{
+			"#": "7",
+			"label": "Overload Protection",
+			"unit": "A",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 10,
+			"defaultValue": 10
+		},
+		{
+			"#": "8",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-Off Timer (Left Outlet)"
+		},
+		{
+			"#": "9",
+			"$import": "templates/zooz_template.json#auto_off_timer_duration",
+			"label": "Auto Turn-Off Timer Duration (Left Outlet)"
+		},
+		{
+			"#": "10",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-On Timer (Left Outlet)"
+		},
+		{
+			"#": "11",
+			"$import": "templates/zooz_template.json#auto_on_timer_duration",
+			"label": "Auto Turn-On Timer Duration (Left Outlet)"
+		},
+		{
+			"#": "12",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-Off Timer (Right Outlet)"
+		},
+		{
+			"#": "13",
+			"$import": "templates/zooz_template.json#auto_off_timer_duration",
+			"label": "Auto Turn-Off Timer Duration (Right Outlet)"
+		},
+		{
+			"#": "14",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-On Timer (Right Outlet)"
+		},
+		{
+			"#": "15",
+			"$import": "templates/zooz_template.json#auto_on_timer_duration",
+			"label": "Auto Turn-On Timer Duration (Right Outlet)"
+		},
+		{
+			"#": "16",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Manual Control",
+			"defaultValue": 1
+		},
+		{
+			"#": "17",
+			"label": "LED Indicator Mode",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Always On",
+					"value": 0
+				},
+				{
+					"label": "Follow Outlet",
+					"value": 1
+				},
+				{
+					"label": "Momentary",
+					"value": 2
+				},
+				{
+					"label": "Always Off",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "18",
+			"$if": "firmwareVersion >= 2.0",
+			"label": "Enable/Disable Power Reports",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Enable all power monitoring and reporting",
+					"value": 0
+				},
+				{
+					"label": "Disable all power monitoring and reporting",
+					"value": 1
+				},
+				{
+					"label": "Disable power reporting of left outlet",
+					"value": 2
+				},
+				{
+					"label": "Disable power reporting of right outlet",
+					"value": 3
+				},
+				{
+					"label": "Disable power reporting of USB port",
+					"value": 4
+				}
+			]
+		}
+	],
+	"compat": {
+		"preserveRootApplicationCCValueIDs": true
+	}
+}

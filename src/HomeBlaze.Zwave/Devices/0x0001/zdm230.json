@@ -1,0 +1,50 @@
+{
+	"manufacturer": "HomePro",
+	"manufacturerId": "0x0001",
+	"label": "ZDM230",
+	"description": "Wall Dimmer",
+	"devices": [
+		{
+			"productType": "0x444d",
+			"productId": "0x3330",
+			"zwaveAllianceId": 478
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Left Paddle",
+			"maxNodes": 5
+		},
+		"2": {
+			"label": "Right Paddle",
+			"maxNodes": 5
+		},
+		"3": {
+			"label": "Right Paddle Double Tap",
+			"maxNodes": 5
+		},
+		"4": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "templates/act_template.json#ignore_start_level_transmitting"
+		},
+		{
+			"#": "2",
+			"$import": "templates/act_template.json#suspend_group_4"
+		},
+		{
+			"#": "3",
+			"$import": "~/templates/master_template.json#led_indicator_two_options_inverted"
+		}
+	]
+}

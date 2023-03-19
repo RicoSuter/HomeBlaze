@@ -1,0 +1,45 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Presentation;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+
+@if (Property != null)
+{
+    var children = Property.Value.Value.Children
+        .Where(c => ThingFilter == null || ThingFilter(c))
+        .Where(c => c.Id != null)
+        .ToArray();
+
+    if (children.Any())
+    {
+        <MudTreeViewItem T="IThing" Text="@Property.Value.Key" Icon="@Icons.Custom.Uncategorized.Folder" @bind-Expanded="_isExpanded">
+            @if (_isExpanded)
+            {
+                // render only when expanded (performance)
+                foreach (var child in children)
+                {
+                    <ThingSelectDialogChild Thing="@child" ThingFilter="ThingFilter!" />
+                }
+            }
+        </MudTreeViewItem>
+    }
+}
+
+@code {
+    private bool _isExpanded = false;
+
+    [Parameter]
+    public KeyValuePair<string, PropertyState>? Property { get; set; }
+
+    [Parameter]
+    public Func<IThing, bool>? ThingFilter { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _isExpanded =
+            Property?.Value.Name == "Things" &&
+            Property?.Value.SourceThing is IGroupThing;
+    }
+}

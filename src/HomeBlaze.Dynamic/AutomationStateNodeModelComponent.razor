@@ -1,0 +1,30 @@
+﻿@using Blazor.Diagrams.Components.Renderers
+@using Blazor.Diagrams.Core.Models;
+
+@if (Node != null)
+{
+    <div class="default-node @(Node.Group != null ? "grouped" : "") @(Node.Selected ? "selected" : "")">
+        @(Node.State.Name)
+        
+        @if (Node.State.Operations.Count == 1)
+        {
+            <br />
+            <small>with Operation</small>
+        }
+        else if (Node.State.Operations.Count > 1)
+        {
+            <br />
+            <small>with Operations</small>
+        }
+
+        @foreach (var port in Node.Ports)
+        {
+            <PortRenderer Port="port" Class="default"></PortRenderer>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public AutomationStateNodeModel? Node { get; set; }
+}

@@ -1,0 +1,75 @@
+﻿@using System.Reflection
+@using HomeBlaze.Abstractions.Presentation;
+@using HomeBlaze.Abstractions.Sensors;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Components.Dialogs;
+@using MudBlazor;
+
+@inject IDialogService DialogService
+@inject IThingManager ThingManager
+
+<div style="padding: 10px; height: @(Thing?.Scale * 100)px">
+    <div style="transform: scale(@(((Thing?.Scale * 100 - 20) / 80) ?? 1.0m)); transform-origin: top left">
+        <div>
+            @if (!string.IsNullOrEmpty(Thing?.Title))
+            {
+                <div style="font-size: 1.3em; white-space: nowrap;">
+                    @if (!string.IsNullOrEmpty(Thing?.Icon))
+                    {
+                        <i class="@Thing.Icon" aria-hidden="true"></i>
+                        <span>&nbsp;</span>
+                    }
+                    else if (Thing?.Thing is IIconProvider iconProvider)
+                    {
+                        <i class="@iconProvider.IconName" aria-hidden="true"></i>
+                        <span>&nbsp;</span>
+                    }
+                    @(Thing?.Title)
+                </div>
+            }
+            <div @onclick="ShowHistory" @ontouchend="ShowHistory" style="font-size: 3.4em; white-space: nowrap;">
+                @if (Thing != null && Value?.Value != null)
+                {
+                    if (Value?.Value is decimal number || (Value?.Value != null && decimal.TryParse(Value?.Value.ToString(), out number)))
+                    {
+                        @Math.Round(number * Thing.Multiplier, Thing.Decimals)
+                    }
+                    else
+                    {
+                        @Value?.Value
+                    }
+
+                    @if (!string.IsNullOrEmpty(Thing.Unit))
+                    {
+                        <small>&nbsp;@Thing.Unit</small>
+                    }
+                }
+                else
+                {
+                    <span>?</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public PropertyWidget? Thing { get; set; }
+
+    public PropertyState? Value =>
+        Thing?.ThingId != null && Thing?.PropertyName != null ?
+        ThingManager.TryGetPropertyState(Thing.ThingId, Thing.PropertyName, true) :
+        null;
+
+    public async void ShowHistory()
+    {
+        var sourceThing = Thing?.Thing;
+        var property = Thing?.PropertyName;
+        if (property != null && sourceThing != null)
+        {
+            await StateHistoryDialog.ShowAsync(DialogService, sourceThing, property);
+        }
+    }
+}

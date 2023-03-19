@@ -1,0 +1,17 @@
+{
+	"manufacturer": "Monoprice",
+	"manufacturerId": "0x0202",
+	"label": "10798",
+	"description": "Monoprice, P/N , Door Lock",
+	"devices": [
+		{
+			"productType": "0x2006",
+			"productId": "0x0621",
+			"zwaveAllianceId": 1118
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

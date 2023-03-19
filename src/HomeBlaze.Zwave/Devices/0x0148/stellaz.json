@@ -1,0 +1,17 @@
+{
+	"manufacturer": "Eurotronics",
+	"manufacturerId": "0x0148",
+	"label": "STELLA Z",
+	"description": "Thermostatic Valve",
+	"devices": [
+		{
+			"productType": "0x0001",
+			"productId": "0x0001",
+			"zwaveAllianceId": 826
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"manufacturer": "Leviton",
+	"manufacturerId": "0x001d",
+	"label": "DZS15",
+	"description": "Scene Capable Push On/Off",
+	"devices": [
+		{
+			"productType": "0x1c02",
+			"productId": "0x0334"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"compat": {
+		// The device needs a bit of delay until it is ready to answer GET requests after sending a NIF
+		"manualValueRefreshDelayMs": 1000
+	}
+}

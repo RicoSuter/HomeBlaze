@@ -1,0 +1,48 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Components.Inputs
+@using MudBlazor
+
+@inject IThingManager ThingManager;
+
+@if (Variable != null)
+{
+    <MudTextField @bind-Value="@Variable.Name" Label="Variable Name" />
+    <ThingSelect Label="Thing ID" ThingId="@Variable.ThingId" 
+    ThingIdChanged="@(thingId => { Variable.ThingId = thingId; })" Required="true" />
+
+    @if (ThingManager?.TryGetById(Variable?.ThingId) is IThing thing)
+    {
+        <MudGrid>
+            <MudItem lg="6" md="6" sm="12" xs="12">
+                @foreach (var property in ThingManager
+                   .GetState(Variable?.ThingId, false)
+                   .Where(p => !p.Value.HasThingChildren))
+                {
+                    <br />
+                    <strong>@property.Key:</strong>
+                    <span>&nbsp;</span>
+                    @property.Value.Value
+                }
+            </MudItem>
+            <MudItem lg="6" md="6" sm="12" xs="12">
+                <hr />
+                @foreach (var operation in ThingManager.GetOperations(Variable?.ThingId, false))
+                {
+                    <br />
+                    <strong>@operation.Method.Name</strong><span>(@string.Join(", ", operation.Method
+                        .GetParameters()
+                        .Select(p => p.HasDefaultValue ? $"[{p.Name}]" : p.Name)))
+                    </span>
+                }
+            </MudItem>
+        </MudGrid>
+
+        <br />
+    }
+}
+
+@code {
+    [Parameter]
+    public ThingVariable? Variable { get; set; }
+}

@@ -1,0 +1,22 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using static HomeBlaze.Widgets.IconWidget;
+
+@inject IThingManager ThingManager
+
+<div style="padding: 10px; height: @(Thing?.Scale * 100)px; width: @(Thing?.Scale * 100)px">
+    <div style="transform: scale(@(((Thing?.Scale * 100 - 20) / 80) ?? 1.0m)); transform-origin: top left">
+        @if (Thing?.Conditions.FirstOrDefault(c => c.IsActive(ThingManager)) is IconCondition iconCondition)
+        {
+            <i class="@(iconCondition.Icon ?? "fas fa-question")"
+                style="font-size: @(5.7m * Thing?.Size)em; text-align: center; 
+                       width: 80px; height: 80px; line-height: 80px; 
+                       color: @(iconCondition.Color);
+                       opacity: @(iconCondition.Opacity)"></i>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public IconWidget? Thing { get; set; }
+}

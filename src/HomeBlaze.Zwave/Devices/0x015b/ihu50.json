@@ -1,0 +1,21 @@
+{
+	"manufacturer": "LG Electronics",
+	"manufacturerId": "0x015b",
+	"label": "IHU50",
+	"description": "Home IoT Hub",
+	"devices": [
+		{
+			"productType": "0x0001",
+			"productId": "0x0001",
+			"zwaveAllianceId": 1457
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"metadata": {
+		"reset": "Select ‘setDefault’ in [Command List]\n Click Send(Default) button.",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/1457/APP%20Manual.pdf"
+	}
+}

@@ -1,0 +1,88 @@
+{
+	"manufacturer": "BeNext",
+	"manufacturerId": "0x008a",
+	"label": "Alarm Sound",
+	"description": "Alarm sound",
+	"devices": [
+		{
+			"productType": "0x0005",
+			"productId": "0x0101"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Association group 1",
+			"description": "Changes the LED on the device",
+			"maxNodes": 1
+		},
+		"2": {
+			"label": "Association group 2",
+			"description": "The alarm sound reports it status to the associated devices",
+			"maxNodes": 1,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Set to Default",
+			"description": "Set all configuration values to default values (factory settings)",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 255,
+			"defaultValue": 1,
+			"unsigned": true
+		},
+		{
+			"#": "2",
+			"label": "Destination routine on/off",
+			"description": "Test connection by sending a periodic test with sound on failure",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 255,
+			"unsigned": true
+		},
+		{
+			"#": "3",
+			"label": "Desitnation routine success time",
+			"description": "Time it takes to send a new frame after the last frame has successfully send",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 60,
+			"defaultValue": 60
+		},
+		{
+			"#": "4",
+			"label": "Destination routine failed time",
+			"description": "Time elapsed between failing to end a frame and sending a new frame.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 240,
+			"defaultValue": 240,
+			"unsigned": true
+		},
+		{
+			"#": "7",
+			"label": "Select index sound/light mode",
+			"description": "The index of the sound mode when a switch binary/basic set frame been received",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 6,
+			"defaultValue": 1
+		},
+		{
+			"#": "8",
+			"label": "power offline sound/light mode",
+			"description": "The sound and light mode that will be used when the device gets unplugged.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 6,
+			"defaultValue": 6
+		}
+	]
+}

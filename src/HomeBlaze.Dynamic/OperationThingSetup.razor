@@ -1,0 +1,42 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors
+@using HomeBlaze.Components.Inputs
+@using Microsoft.Extensions.Logging;
+@using MudBlazor
+@using System.Threading;
+
+@inject IThingManager ThingManager;
+@inject ILogger<OperationThingSetup> Logger;
+@inject IDialogService DialogService;
+
+@inherits ThingSetupComponent<OperationThing>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Title" Label="Title" Required="true" />
+    <br />
+    <OperationEditor Operation="Thing.Operation" Required="true"></OperationEditor>
+    <br />
+    <MudButton OnClick="async () => await ExecuteOperationAsync()" Variant="Variant.Filled" Color="Color.Primary">Execute</MudButton>
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+
+    public async Task ExecuteOperationAsync(CancellationToken cancellationToken = default)
+    {
+        if (Thing.Operation != null)
+        {
+            try
+            {
+                await Thing.Operation.ExecuteAsync(ThingManager, Logger, cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                await DialogService.ShowMessageBox("Error", exception.ToString());
+            }
+        }
+    }
+}

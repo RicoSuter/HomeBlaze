@@ -1,0 +1,253 @@
+{
+	"manufacturer": "Philio Technology Corp",
+	"manufacturerId": "0x013c",
+	"label": "PAN04",
+	"description": "In Wall Dual Relay Switch Module 2x1.5kW with power meter",
+	"devices": [
+		{
+			"productType": "0x0001",
+			"productId": "0x0003"
+		},
+		{
+			"productType": "0x0001",
+			"productId": "0x0012"
+		},
+		{
+			"productType": "0x0001",
+			"productId": "0x0014"
+		},
+		{
+			"productType": "0x0001",
+			"productId": "0x0061"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Meter Report Period (W)",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 65535,
+			"defaultValue": 720,
+			"unit": "5 seconds",
+			"unsigned": true
+		},
+		{
+			"#": "2",
+			"label": "kWh Meter Report Period (kWh)",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 65535,
+			"defaultValue": 6,
+			"unit": "10 minutes",
+			"unsigned": true
+		},
+		{
+			"#": "3",
+			"label": "Selected Relay",
+			"description": "Which relay is addressed by the BASIC command class",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Relay 1",
+					"value": 1
+				},
+				{
+					"label": "Relay 2",
+					"value": 2
+				},
+				{
+					"label": "Relay 1 + 2",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "4",
+			"label": "External Switch Mode",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Edge mode",
+					"value": 1
+				},
+				{
+					"label": "Pulse mode",
+					"value": 2
+				},
+				{
+					"label": "Edge-Toggle mode",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "5",
+			"label": "Threshold for Load Caution (A)",
+			"description": "When this threshold is surpassed, a Meter Report will be sent.",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 65535,
+			"defaultValue": 750,
+			"unit": "0.01 A",
+			"unsigned": true
+		},
+		{
+			"#": "6",
+			"label": "Threshold for Load Caution (kWh)",
+			"description": "When this threshold is surpassed, a Meter Report will be sent.",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 65535,
+			"defaultValue": 10000,
+			"unit": "kWh",
+			"unsigned": true
+		},
+		{
+			"#": "7",
+			"label": "State after Power Loss",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Switch off",
+					"value": 0
+				},
+				{
+					"label": "Last state",
+					"value": 1
+				},
+				{
+					"label": "Switch on",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "8",
+			"label": "Auto Off Timer",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32767,
+			"defaultValue": 0,
+			"unit": "seconds",
+			"unsigned": true,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "9",
+			"label": "RF Off Command Mode",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Switch off",
+					"value": 0
+				},
+				{
+					"label": "Ignore",
+					"value": 1
+				},
+				{
+					"label": "Switch toggle",
+					"value": 2
+				},
+				{
+					"label": "Switch on",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "10",
+			"label": "Endpoint 3",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Exists",
+					"value": 1
+				},
+				{
+					"label": "Doesn't Exist",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "14",
+			"label": "Differential Report Threshold (W)",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "5 %",
+					"value": 1
+				},
+				{
+					"label": "10 %",
+					"value": 2
+				},
+				{
+					"label": "15 %",
+					"value": 3
+				},
+				{
+					"label": "20 %",
+					"value": 4
+				}
+			]
+		},
+		{
+			"#": "31",
+			"label": "Send Reports From Endpoints",
+			"description": "Enable this to distinguish between the relays.",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 1
+				},
+				{
+					"label": "Enable",
+					"value": 2
+				}
+			]
+		}
+	],
+	"metadata": {
+		"inclusion": "1. Put your Z-Wave controller into inclusion mode by following the instructions provided by the controller manufacturer.\n2. Pressing INCLUDE_BUTTON three times within 2 seconds will enter inclusion mode",
+		"exclusion": "1. Put your Z-Wave controller into exclusion mode by following the instructions provided by the controller manufacturer.\n2. Pressing INCLUDE_BUTTON three times within 2 seconds will enter exclusion mode.",
+		"reset": "1. Pressing INCLUDE_BUTTON three times within 2 seconds will enter inclusion mode.\n2. Within 1 second, press On/Off button again for 5 seconds.\nUse this procedure only in the event that the primary controller is lost or otherwise inoperable.",
+		"manual": "https://www.zwavetaiwan.com.tw/s/PAN04-manual-20181015-1.pdf"
+	}
+}

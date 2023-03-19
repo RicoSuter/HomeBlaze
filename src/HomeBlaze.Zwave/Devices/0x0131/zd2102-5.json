@@ -1,0 +1,37 @@
+{
+	"manufacturer": "Zipato",
+	"manufacturerId": "0x0131",
+	"label": "ZD2102-5",
+	"description": "Door Window Sensor",
+	"devices": [
+		{
+			"productType": "0x2001",
+			"productId": "0x0106"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "External switch",
+			"description": "Determines if external switch can be used.",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 255
+				}
+			]
+		}
+	]
+}

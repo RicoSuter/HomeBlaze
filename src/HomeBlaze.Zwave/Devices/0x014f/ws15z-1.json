@@ -1,0 +1,35 @@
+{
+	"manufacturer": "Nortek Security & Control LLC",
+	"manufacturerId": "0x014f",
+	"label": "WS15Z-1",
+	"description": "In-wall Switch",
+	"devices": [
+		{
+			"productType": "0x5257",
+			"productId": "0x3533"
+		},
+		{
+			"productType": "0x5753",
+			"productId": "0x3535"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "3",
+			"$import": "templates/config_template.json#night_light_5"
+		},
+		{
+			"#": "4",
+			"$import": "~/templates/master_template.json#orientation"
+		}
+	],
+	"metadata": {
+		"inclusion": "With the controller in inclusion mode, press the top of the switch two times.",
+		"exclusion": "With the controller in exclusion mode, press the top of the switch two times.",
+		"manual": "https://www.nortekcontrol.com/wp-content/uploads/WS15Z1_manual.pdf"
+	}
+}

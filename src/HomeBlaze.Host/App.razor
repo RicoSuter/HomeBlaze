@@ -1,0 +1,44 @@
+﻿@using HomeBlaze.Host.Shared;
+@using Microsoft.Extensions.Logging;
+
+@inject IJSRuntime JsRuntime
+@inject ILogger<App> Logger
+
+@if (_areFunctionsLoaded)
+{
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+}
+
+@code {
+    private bool _areFunctionsLoaded = false;
+
+    private IJSObjectReference? JsFunctions { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // See https://stackoverflow.com/questions/67406662/call-javascript-function-from-external-library-with-blazor
+                JsFunctions = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/_content/HomeBlaze.Host/App.razor.js");
+                _areFunctionsLoaded = true;
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to load JS module.");
+            }
+        }
+    }
+}

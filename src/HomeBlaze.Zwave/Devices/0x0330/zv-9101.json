@@ -1,0 +1,72 @@
+{
+	"manufacturer": "Sunricher",
+	"manufacturerId": "0x0330",
+	"label": "ZV-9101",
+	"description": "In-Wall Dimmer Module",
+	"devices": [
+		{
+			"productType": "0x0200",
+			"productId": "0xd005"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "2",
+			"label": "Saving load state",
+			"description": "Saving load state before power failure",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 2,
+			"defaultValue": 0
+		},
+		{
+			"#": "3",
+			"label": "Enable/disable to send report",
+			"description": "basic report to the Lifeline when the load state changed",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 1
+		},
+		{
+			"#": "4",
+			"label": "Default fade time",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 1,
+			"unsigned": true,
+			"unit": "seconds"
+		},
+		{
+			"#": "5",
+			"label": "Minimum Brightness",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 50,
+			"defaultValue": 0
+		},
+		{
+			"#": "6",
+			"label": "MOSFET",
+			"description": "Choose MOSFET",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 0
+		},
+		{
+			"#": "7",
+			"label": "removal from network",
+			"description": "Enable/disable external switch to be added to and removed from a network",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 1
+		}
+	]
+}

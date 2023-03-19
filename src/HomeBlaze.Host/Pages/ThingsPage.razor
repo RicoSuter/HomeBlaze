@@ -1,0 +1,203 @@
+﻿@page "/things"
+
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Host.Components
+@using Microsoft.Extensions.Logging;
+
+@inject IThingManager ThingManager
+@inject IDialogService DialogService
+@inject IEventManager EventManager
+@inject ILogger<ThingsPage> Logger
+@inject IJSRuntime JsRuntime
+@inject NavigationManager Navigation
+
+@implements IDisposable
+
+<PageTitle>Things</PageTitle>
+
+<SectionContent Name="AppBar">
+    Things
+
+    @foreach (var thing in _openedThings)
+    {
+        <span>&nbsp;/&nbsp;</span>
+        <a onclick="@(() => Navigation.NavigateToThing(thing))" href="javascript:void(0)">@thing.Title </a>
+    }
+
+    @if (_selectedProperty != null)
+    {
+        <span>&nbsp;/&nbsp;</span>
+        <a onclick="@(() => Navigation.NavigateToThingProperty(_openedThings.Last(), _selectedProperty))" href="javascript:void(0)">@_selectedProperty </a>
+    }
+</SectionContent>
+
+<div id="scrollContainer" style="height: calc(100% - 15px);
+                                 width: calc(100% - 20px);
+                                 overflow-y: scroll; overflow-x: hidden; display: flex;
+                                 margin-left: 15px; margin-top: 15px">
+
+    @for (int i = 0; i < _openedThings.Count; i++)
+    {
+        var thing = _openedThings[i];
+        var parentThing = i > 0 ? _openedThings[i - 1] : null;
+        var selectedThing = _openedThings.Count - 1 > i ? _openedThings[i + 1] : null;
+        var isLastThing = _openedThings.Count - 1 == i;
+        var isFirstThing = i == 0;
+
+        <ThingPane Thing="thing"
+               ParentThing="parentThing"
+               SelectedThing="selectedThing"
+               SelectedProperty="@(isLastThing ? _selectedProperty : null)"
+               CanClose="@(!isFirstThing && thing != ThingManager.RootThing)"
+               PaneWidth="_paneWidth" />
+    }
+
+    @if (_selectedProperty != null && _openedThings.Last() is IThing lastThing && lastThing.Id is string lastThingId)
+    {
+        var state = ThingManager.TryGetPropertyState(lastThingId, _selectedProperty, true);
+        if (state.HasValue)
+        {
+            <ThingPropertyPane Thing="lastThing"
+                       PropertyState="state.Value"
+                       PaneWidth="_paneWidth" />
+        }
+    }
+</div>
+
+@code {
+    private decimal? _paneWidth;
+    private bool _scrollToLastPane;
+
+    private List<IThing> _openedThings = new List<IThing>();
+    private string? _selectedProperty;
+
+    private IDisposable? _eventSubscription;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "thingId")]
+    public string? ThingId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "propertyName")]
+    public string? PropertyName { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _eventSubscription = EventManager.Subscribe(message =>
+        {
+            if (_openedThings.Count == 0 && ThingManager.RootThing != null)
+            {
+                _openedThings = new List<IThing> { ThingManager.RootThing };
+            }
+
+            InvokeAsync(StateHasChanged);
+        });
+
+        if (ThingManager.RootThing != null)
+        {
+            _openedThings = new List<IThing> { ThingManager.RootThing };
+        }
+    }
+
+    public void ShowThing(IThing? thing = null, string? propertyName = null)
+    {
+        if (thing == null)
+        {
+            _openedThings = new List<IThing> { ThingManager.RootThing! };
+        }
+        else
+        {
+            var openedThings = _openedThings
+                .TakeWhile(c => c.Id != thing?.Id)
+                .ToList();
+
+            if (ThingManager
+                .GetState(openedThings.LastOrDefault()?.Id, true)
+                .Any(s => s.Value.Children.Contains(thing)))
+            {
+                // is child of last pane
+
+                if (thing != null)
+                {
+                    openedThings.Add(thing);
+                }
+
+                _openedThings = openedThings;
+            }
+            else
+            {
+                // child parent not found in opened panes, recreating all panes
+
+                var things = new List<IThing> { thing };
+
+                var parent = ThingManager.TryGetParent(thing);
+                while (parent != null)
+                {
+                    things.Add(parent);
+                    parent = ThingManager.TryGetParent(parent);
+                }
+
+                things.Reverse();
+                _openedThings = things;
+            }
+        }
+
+        _selectedProperty = propertyName;
+        _scrollToLastPane = true;
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // refresh pane width
+        if (_paneWidth == null || _scrollToLastPane)
+        {
+            try
+            {
+                _paneWidth = Math.Min(await JsRuntime.InvokeAsync<decimal>("GetWindowWidth"), 480);
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception)
+            {
+            }
+        }
+        
+        // handle thing navigation
+        if (!string.IsNullOrEmpty(ThingId))
+        {
+            var thing = ThingManager.TryGetById(ThingId);
+            var propertyName = PropertyName;
+
+            if (thing != null)
+            {
+                ThingId = null;
+                PropertyName = null;
+
+                ShowThing(thing, propertyName);
+            }
+        }
+
+        // handle thing scrolling
+        if (_scrollToLastPane)
+        {
+            _scrollToLastPane = false;
+
+            await InvokeAsync(async () =>
+            {
+                await JsRuntime.InvokeAsync<object>("ScrollIntoView", new object[]
+                {
+                    "scrollContainer", _paneWidth! * (_openedThings.Count - (_selectedProperty == null ? 1 : 0))
+                });
+            });
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public void Dispose()
+    {
+        _eventSubscription?.Dispose();
+    }
+}

@@ -1,0 +1,34 @@
+﻿@page "/logs"
+@using System.Threading;
+@using HomeBlaze.Host.Logging;
+
+@implements IDisposable
+
+<PageTitle>Logs</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+    <div style="margin: 20px;">
+<pre>
+@(MemoryLogger.CurrentOutput)
+</pre>
+    </div>
+</MudContainer>
+
+@code {
+    private Timer? _timer = null;
+
+    protected override void OnInitialized()
+    {
+        _timer = new Timer(OnTimer!, null, 5000, 5000);
+    }
+
+    private void OnTimer(object o)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}

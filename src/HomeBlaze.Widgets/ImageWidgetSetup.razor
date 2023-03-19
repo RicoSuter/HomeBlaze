@@ -1,0 +1,38 @@
+﻿@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Components
+@using HomeBlaze.Components.Inputs
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using MudBlazor
+@using System.Threading
+@using HomeBlaze.Abstractions.Services
+@using System.Diagnostics.CodeAnalysis;
+
+@inherits ThingSetupComponent<ImageWidget>
+
+<MudForm @bind-IsValid="@_isFormValid">
+    <MudTextField Label="Title" @bind-Value="@Thing!.Title" />
+
+    <br />
+    <h2>Source</h2>
+    <MudTextField Label="Image URL" @bind-Value="@Thing!.ImageUrl" Disabled="@(Thing.Thing != null)" />
+
+    <br />
+    <ThingSelect Label="Source Thing ID"
+                 Disabled="@(!string.IsNullOrEmpty(Thing.ImageUrl))"
+                 ThingId="@Thing.ThingId" ThingIdChanged="@(thingId => { Thing.ThingId = thingId; Thing.PropertyName = null; })" />
+    <ThingPropertySelect Label="Property" @bind-PropertyName="@Thing.PropertyName"
+                         ThingId="@Thing.ThingId" Disabled="@(Thing.Thing == null)" />
+
+    <br />
+    <h2>Size</h2>
+    <MudTextField Label="Width" @bind-Value="@Thing.Width" InputType="InputType.Number" />
+    <MudTextField Label="Height" @bind-Value="@Thing.Height" InputType="InputType.Number" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

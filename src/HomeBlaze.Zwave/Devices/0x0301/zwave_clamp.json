@@ -1,0 +1,108 @@
+{
+	"manufacturer": "Seco",
+	"manufacturerId": "0x0301",
+	"label": "Zwave Clamp",
+	"description": "Clamp Energy Meter",
+	"devices": [
+		{
+			"productType": "0x0048",
+			"productId": "0x010f"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "2",
+			"label": "MEAS_PERIOD",
+			"unit": "s",
+			"valueSize": 1,
+			"minValue": 30,
+			"maxValue": 120,
+			"defaultValue": 30
+		},
+		{
+			"#": "3",
+			"label": "MAX_REP_INTERVAL",
+			"valueSize": 1,
+			"minValue": 3,
+			"maxValue": 60,
+			"defaultValue": 6
+		},
+		{
+			"#": "4",
+			"label": "RES_ACTIVE_POWER",
+			"unit": "W",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 100,
+			"defaultValue": 4
+		},
+		{
+			"#": "5",
+			"label": "RES_RMS_VOLTAGE",
+			"valueSize": 2,
+			"minValue": 1,
+			"maxValue": 1000,
+			"defaultValue": 10
+		},
+		{
+			"#": "6",
+			"label": "RES_RMS_CURRENT",
+			"valueSize": 2,
+			"minValue": 1,
+			"maxValue": 1000,
+			"defaultValue": 10
+		},
+		{
+			"#": "8",
+			"label": "CLAMP_REVERSED",
+			"valueSize": 1,
+			"defaultValue": 255,
+			"unsigned": true,
+			"readOnly": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Clamp placed Correctly",
+					"value": 0
+				},
+				{
+					"label": "Clamp is REVERSED",
+					"value": 1
+				},
+				{
+					"label": "Could not detect position",
+					"value": 255
+				}
+			]
+		},
+		{
+			"#": "9",
+			"label": "ENABLE_CRC16",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "False",
+					"value": 0
+				},
+				{
+					"label": "True",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "10",
+			"label": "AVG_PERIOD",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 6,
+			"defaultValue": 1
+		}
+	]
+}

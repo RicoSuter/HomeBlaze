@@ -1,0 +1,23 @@
+{
+	"manufacturer": "Vitrum",
+	"manufacturerId": "0x010a",
+	"label": "Scenario",
+	"description": "Scenario Controller",
+	"devices": [
+		{
+			"productType": "0x1500",
+			"productId": "0x6900"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Group 1",
+			"maxNodes": 8,
+			"isLifeline": true
+		}
+	}
+}

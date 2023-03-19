@@ -1,0 +1,65 @@
+{
+	"manufacturer": "Jasco",
+	"manufacturerId": "0x0063",
+	"label": "24770 / ZW4006",
+	"description": "In-Wall Motion Switch, 500S",
+	"devices": [
+		{
+			"productType": "0x494d",
+			"productId": "0x3031",
+			"zwaveAllianceId": 2126
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "templates/jasco_template.json#timeout_duration"
+		},
+		{
+			"#": "2",
+			"$import": "templates/jasco_template.json#dim_level"
+		},
+		{
+			"#": "3",
+			"$import": "templates/jasco_template.json#operation_mode"
+		},
+		{
+			"#": "4",
+			"$import": "templates/jasco_template.json#association_mode"
+		},
+		{
+			"#": "5",
+			"$import": "~/templates/master_template.json#orientation"
+		},
+		{
+			"#": "6",
+			"$import": "templates/jasco_template.json#motion_sensor"
+		},
+		{
+			"#": "13",
+			"$import": "templates/jasco_template.json#motion_sensitivity"
+		},
+		{
+			"#": "14",
+			"$import": "templates/jasco_template.json#light_sensor"
+		},
+		{
+			"#": "15",
+			"$import": "templates/jasco_template.json#reset_cycle"
+		},
+		{
+			"#": "19",
+			"$import": "templates/jasco_template.json#alternate_exclusion_m"
+		}
+	],
+	"metadata": {
+		"inclusion": "1. Follow the instructions for your Z-Wave certified\ncontroller to include the smart switch to the\nZ-Wave network.\n2. Once the controller is ready to include your smart\nswitch, press and release the top or bottom button\non the smart switch to include it in the network",
+		"exclusion": "1. Follow the instructions for your Z-Wave certified\ncontroller to exclude a device from the Z-Wave\nnetwork.\n2. Once the controller is ready to exclude your device,\npress and release the top or bottom button on the\nsmart switch to exclude it from the network",
+		"reset": "Press and release the top button ten times.\nNote: This should only be used in the event your\nnetwork’s primary controller is missing or otherwise\ninoperable",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/2126/24770%20EnFrSp%20QSG%20v1.3.pdf"
+	}
+}

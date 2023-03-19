@@ -1,0 +1,72 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components.Inputs;
+@using MudBlazor;
+@using System.Text.Json;
+
+@inject IThingManager ThingManager
+
+<div>
+    @if (Operation != null)
+    {
+        <MudSelect T="OperationType" Label="Operation Type" @bind-Value="Operation.Type">
+            <MudSelectItem T="OperationType" Value="@(OperationType.ThingOperation)">Thing Operation</MudSelectItem>
+            <MudSelectItem T="OperationType" Value="@(OperationType.CSharp)">CSharp</MudSelectItem>
+        </MudSelect>
+        <br />
+
+        @if (Operation.Type == OperationType.ThingOperation)
+        {
+            <div class="d-flex gap-4">
+                <ThingSelect Label="Thing ID" ThingId="@Operation.ThingId" ThingIdChanged="@(thingId => { Operation.ThingId = thingId; Operation.Name = null; })" Required="true" />
+                <ThingOperationSelect Label="Operation" ThingId="@Operation.ThingId" Disabled="@(Operation.ThingId == null)" Required="true"
+                              OperationName="@Operation.Name" OperationNameChanged="@(operationName => { Operation.Initialize(operationName, ThingManager); })" />
+            </div>
+
+            @if (Operation.Parameters.Any())
+            {
+                <br />
+                <h3>Parameters</h3>
+                <OperationParametersEditor ThingId="@Operation.ThingId" OperationName="@Operation.Name" Parameters="@Operation.Parameters" />
+            }
+        }
+        else
+        {
+            <MudGrid>
+                <MudItem lg="5" md="6" sm="12" xs="12">
+                    <h1>Variables</h1>
+                    <br />
+                    <ThingVariableListEditor Variables="Operation.Variables" />
+                </MudItem>
+                <MudItem lg="7" md="6" sm="12" xs="12">
+                    <h1>Code</h1>
+                    <MudTextField @bind-Value="@Operation.Code" Required="true" Lines="17" Style="font-family: monospace" />
+                </MudItem>
+            </MudGrid>
+        }
+
+        @if (!Required)
+        {
+            <br />
+            <MudButton StartIcon="@Icons.Filled.Delete"
+               OnClick="@(() => { Operation = null; OperationChanged.InvokeAsync(null); })"
+               Variant="Variant.Filled" Color="Color.Error" Size="Size.Small">Delete</MudButton>
+        }
+    }
+    else
+    {
+        <MudButton StartIcon="@Icons.Filled.Add"
+               OnClick="@(() => { Operation = new Operation(); OperationChanged.InvokeAsync(Operation); })"
+               Variant="Variant.Filled" Color="Color.Primary">Add Operation</MudButton>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public bool Required { get; set; }
+
+    [Parameter]
+    public Operation? Operation { get; set; }
+
+    [Parameter]
+    public EventCallback<Operation?> OperationChanged { get; set; }
+}

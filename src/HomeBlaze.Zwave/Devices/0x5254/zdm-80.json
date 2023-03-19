@@ -1,0 +1,102 @@
+{
+	"manufacturer": "Remotec",
+	"manufacturerId": "0x5254",
+	"label": "ZDM-80",
+	"description": "Wall plug dimmer switch",
+	"devices": [
+		{
+			"productType": "0x8201",
+			"productId": "0x8021",
+			"zwaveAllianceId": 1155
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Group 1",
+			"maxNodes": 1,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Group 2",
+			"maxNodes": 4
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "All On/All Off",
+			"valueSize": 1,
+			"defaultValue": 255,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "All On active, All Off active",
+					"value": 255
+				},
+				{
+					"label": "All On is not active, All Off is not active",
+					"value": 0
+				},
+				{
+					"label": "All On is not active, All Off active",
+					"value": 1
+				},
+				{
+					"label": "All On active, All Off is not active",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "5",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_prev"
+		},
+		{
+			"#": "13",
+			"label": "Double click option",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "17",
+			"label": "Dimming time frame",
+			"valueSize": 1,
+			"unit": "seconds",
+			"minValue": 0,
+			"maxValue": 5,
+			"defaultValue": 3
+		},
+		{
+			"#": "18",
+			"label": "Maximum Dimmer level control",
+			"valueSize": 1,
+			"minValue": 2,
+			"maxValue": 99,
+			"defaultValue": 99
+		},
+		{
+			"#": "19",
+			"label": "Minimum Dimmer level control",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 98,
+			"defaultValue": 13
+		}
+	]
+}

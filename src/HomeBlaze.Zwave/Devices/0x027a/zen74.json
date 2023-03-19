@@ -1,0 +1,130 @@
+{
+	"manufacturer": "Zooz",
+	"manufacturerId": "0x027a",
+	"label": "ZEN74",
+	"description": "700 Toggle Dimmer",
+	"devices": [
+		{
+			"productType": "0x7000",
+			"productId": "0xa004",
+			"zwaveAllianceId": 4164
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 3,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Group 2",
+			"maxNodes": 5
+		},
+		"3": {
+			"label": "Group 3",
+			"maxNodes": 5
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "~/templates/master_template.json#orientation_momentary"
+		},
+		{
+			"#": "3",
+			"$import": "templates/zooz_template.json#auto_off_timer"
+		},
+		{
+			"#": "5",
+			"$import": "templates/zooz_template.json#auto_on_timer"
+		},
+		{
+			"#": "8",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_on_prev"
+		},
+		{
+			"#": "9",
+			"$import": "templates/zooz_template.json#dimmer_ramp_rate",
+			"defaultValue": 0
+		},
+		{
+			"#": "10",
+			"$import": "templates/zooz_template.json#min_brightness"
+		},
+		{
+			"#": "11",
+			"$import": "templates/zooz_template.json#max_brightness"
+		},
+		{
+			"#": "25",
+			"$import": "templates/zooz_template.json#single_tap_up_behavior"
+		},
+		{
+			"#": "12",
+			"$import": "templates/zooz_template.json#zen7x_double_tap_up_behavior"
+		},
+		{
+			"#": "18",
+			"$import": "templates/zooz_template.json#custom_brightness"
+		},
+		{
+			"#": "13",
+			"$import": "templates/zooz_template.json#enable_scene_control"
+		},
+		{
+			"#": "15",
+			"$import": "~/templates/master_template.json#smart_switch_mode_0-2"
+		},
+		{
+			"#": "16",
+			"$import": "templates/zooz_template.json#local_dimming_speed"
+		},
+		{
+			"#": "20",
+			"$import": "templates/zooz_template.json#smart_switch_mode_dimming_reporting_3_options"
+		},
+		{
+			"#": "21",
+			"$import": "templates/zooz_template.json#smart_switch_mode_reporting"
+		},
+		{
+			"#": "22",
+			"$import": "templates/zooz_template.json#night_light_mode"
+		},
+		{
+			"#": "26",
+			"$if": "firmwareVersion >= 10.0",
+			"$import": "templates/zooz_template.json#local_programming"
+		},
+		{
+			"#": "27",
+			"$if": "firmwareVersion >= 10.10",
+			"$import": "templates/zooz_template.json#dimmer_off_ramp_rate"
+		},
+		{
+			"#": "28",
+			"$if": "firmwareVersion >= 10.10",
+			"$import": "templates/zooz_template.json#zwave_on_dimmer_ramp_rate"
+		},
+		{
+			"#": "29",
+			"$if": "firmwareVersion >= 10.10",
+			"$import": "templates/zooz_template.json#zwave_off_dimmer_ramp_rate"
+		}
+	],
+	"compat": {
+		// The device sends Configuration CC info reports in 4-byte chunks, causing each query to block the network for roughly 1.5 seconds.
+		"skipConfigurationNameQuery": true,
+		"skipConfigurationInfoQuery": true
+	},
+	"metadata": {
+		"inclusion": "1. Initiate inclusion (pairing) in the app (or web interface).\n2. TAP UP 3 TIMES QUICKLY if using traditional Z-Wave inclusion.\n3. The LED indicator will blink blue to signal communication and turn green for 3 seconds if inclusion is successful or turn red for 3 seconds if the pairing attempt fails.",
+		"exclusion": "1. Bring your Z-Wave gateway (hub) close to the switch if possible\n2. Put the Z-Wave hub into exclusion mode (not sure how to do that? ask@getzooz.com) \n3. Toggle the switch down 3 times quickly (the LED indicator will start blinking blue)\n4. Your hub will confirm exclusion, the LED indicator on the switch will turn green for 3 seconds, and the device will disappear from your controller's device list",
+		"reset": "If your primary controller is missing or inoperable, you may need to reset the device to factory settings. To reset the switch, press and hold the toggle down for 10 seconds until the LED indicator starts blinking. Release toggle, and immediately after, toggle the switch down 5 times to complete the reset. The LED indicator will flash blue 3 times and turn red for 3 seconds to confirm successful reset",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=product_documents/4164/zooz-700-series-toggle-dimmer-zen74-manual-online.pdf"
+	}
+}

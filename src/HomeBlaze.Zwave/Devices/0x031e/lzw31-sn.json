@@ -1,0 +1,613 @@
+{
+	"manufacturer": "Inovelli",
+	"manufacturerId": "0x031e",
+	"label": "LZW31-SN",
+	"description": "Red Series Dimmer",
+	"devices": [
+		{
+			"productType": "0x0001",
+			"productId": "0x0001",
+			"zwaveAllianceId": 4206
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Dimming Speed (Z-Wave)",
+			"unit": "seconds",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 100,
+			"defaultValue": 3,
+			"options": [
+				{
+					"label": "Immediate",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "2",
+			"label": "Dimming Speed (Manual)",
+			"unit": "seconds",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 101,
+			"defaultValue": 101,
+			"options": [
+				{
+					"label": "Immediate",
+					"value": 0
+				},
+				{
+					"label": "Synced with Parameter 1",
+					"value": 101
+				}
+			]
+		},
+		{
+			"#": "3",
+			"label": "Ramp Rate (Z-Wave)",
+			"unit": "seconds",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 101,
+			"defaultValue": 101,
+			"options": [
+				{
+					"label": "Immediate",
+					"value": 0
+				},
+				{
+					"label": "Synced with Parameter 1",
+					"value": 101
+				}
+			]
+		},
+		{
+			"#": "4",
+			"label": "Ramp Rate (Manual)",
+			"unit": "seconds",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 101,
+			"defaultValue": 101,
+			"options": [
+				{
+					"label": "Immediate",
+					"value": 0
+				},
+				{
+					"label": "Synced with Parameter 1",
+					"value": 101
+				}
+			]
+		},
+		{
+			"#": "5",
+			"$if": "firmwareVersion < 1.57",
+			"label": "Minimum Dim Level",
+			"unit": "%",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 45,
+			"defaultValue": 1
+		},
+		{
+			"#": "5",
+			"$if": "firmwareVersion >= 1.57",
+			"label": "Minimum Dim Level",
+			"unit": "%",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 98,
+			"defaultValue": 1
+		},
+		{
+			"#": "6",
+			"label": "Maximum Dim Level",
+			"unit": "%",
+			"valueSize": 1,
+			"minValue": 55,
+			"maxValue": 99,
+			"defaultValue": 99
+		},
+		{
+			"#": "7",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Invert Switch"
+		},
+		{
+			"#": "8",
+			"label": "Auto-off Timer",
+			"unit": "seconds",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32767,
+			"defaultValue": 0,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "9",
+			"$import": "~/templates/master_template.json#base_0-99_nounit",
+			"label": "Default Level (Manual)",
+			"defaultValue": 0,
+			"options": [
+				{
+					"label": "Previous State",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "10",
+			"$import": "~/templates/master_template.json#base_0-99_nounit",
+			"label": "Default Level (Z-Wave)",
+			"defaultValue": 0,
+			"options": [
+				{
+					"label": "Previous State",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "11",
+			"$if": "firmwareVersion >= 1.43",
+			"label": "Brightness After Power Failure",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 100,
+			"defaultValue": 100,
+			"options": [
+				{
+					"label": "Off",
+					"value": 0
+				},
+				{
+					"label": "Previous state",
+					"value": 100
+				}
+			]
+		},
+		{
+			"#": "11",
+			"$if": "firmwareVersion < 1.43",
+			"label": "Brightness After Power Failure",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 101,
+			"defaultValue": 0,
+			"options": [
+				{
+					"label": "Off",
+					"value": 0
+				},
+				{
+					"label": "Previous state",
+					"value": 101
+				}
+			]
+		},
+		{
+			"#": "12[0x01]",
+			"$import": "~/templates/master_template.json#base_0-99_nounit",
+			"label": "Association Behavior: Local",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "12[0x02]",
+			"label": "Association Behavior: 3-Way",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "12[0x04]",
+			"label": "Association Behavior: Z-Wave Hub",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "12[0x08]",
+			"label": "Association Behavior: Timer",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "13",
+			"label": "LED Indicator: Color",
+			"description": "Uses a scaled hue value (realHue / 360 * 255).",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 170,
+			"unsigned": true,
+			"options": [
+				{
+					"label": "Red",
+					"value": 0
+				},
+				{
+					"label": "Orange",
+					"value": 21
+				},
+				{
+					"label": "Yellow",
+					"value": 42
+				},
+				{
+					"label": "Green",
+					"value": 85
+				},
+				{
+					"label": "Cyan",
+					"value": 127
+				},
+				{
+					"label": "Blue",
+					"value": 170
+				},
+				{
+					"label": "Violet",
+					"value": 212
+				},
+				{
+					"label": "Pink",
+					"value": 234
+				},
+				{
+					"$if": "firmwareVersion >= 1.45",
+					"label": "White",
+					"value": 255
+				}
+			]
+		},
+		{
+			"#": "14",
+			"label": "LED Indicator: Brightness When On",
+			"valueSize": 1,
+			"defaultValue": 5,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Off",
+					"value": 0
+				},
+				{
+					"label": "10%",
+					"value": 1
+				},
+				{
+					"label": "20%",
+					"value": 2
+				},
+				{
+					"label": "30%",
+					"value": 3
+				},
+				{
+					"label": "40%",
+					"value": 4
+				},
+				{
+					"label": "50%",
+					"value": 5
+				},
+				{
+					"label": "60%",
+					"value": 6
+				},
+				{
+					"label": "70%",
+					"value": 7
+				},
+				{
+					"label": "80%",
+					"value": 8
+				},
+				{
+					"label": "90%",
+					"value": 9
+				},
+				{
+					"label": "100%",
+					"value": 10
+				}
+			]
+		},
+		{
+			"#": "15",
+			"$import": "#paramInformation/14",
+			"label": "LED Indicator: Brightness When Off",
+			"defaultValue": 1
+		},
+		{
+			"#": "16[0xff]",
+			"$import": "#paramInformation/13",
+			"label": "LED Indicator: Effect Color",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true,
+			"options": [
+				{
+					"label": "Red",
+					"value": 0
+				},
+				{
+					"label": "Orange",
+					"value": 21
+				},
+				{
+					"label": "Yellow",
+					"value": 42
+				},
+				{
+					"label": "Green",
+					"value": 85
+				},
+				{
+					"label": "Cyan",
+					"value": 127
+				},
+				{
+					"label": "Blue",
+					"value": 170
+				},
+				{
+					"label": "Violet",
+					"value": 212
+				},
+				{
+					"label": "Pink",
+					"value": 234
+				},
+				{
+					"$if": "firmwareVersion >= 1.47",
+					"label": "White",
+					"value": 255
+				}
+			]
+		},
+		{
+			"#": "16[0xff00]",
+			"$import": "#paramInformation/14",
+			"label": "LED Indicator: Effect Brightness",
+			"valueSize": 4,
+			"defaultValue": 0
+		},
+		{
+			"#": "16[0xff0000]",
+			"label": "LED Indicator: Effect Duration",
+			"description": "0 = disabled, 1 to 60 = seconds, 61 to 120 = minutes (minus 60), 121 - 254 = hours (minus 120), 255 = indefinitely.",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true
+		},
+		{
+			"#": "16[0x7f000000]",
+			"label": "LED Indicator: Effect Type",
+			"valueSize": 4,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Off",
+					"value": 0
+				},
+				{
+					"label": "Solid",
+					"value": 1
+				},
+				{
+					"label": "Chase",
+					"value": 2
+				},
+				{
+					"label": "Fast Blink",
+					"value": 3
+				},
+				{
+					"label": "Slow Blink",
+					"value": 4
+				},
+				{
+					"label": "Pulse",
+					"value": 5
+				}
+			]
+		},
+		{
+			"#": "17",
+			"label": "LED Indicator: Timeout",
+			"unit": "seconds",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 10,
+			"defaultValue": 3
+		},
+		{
+			"#": "18",
+			"$import": "~/templates/master_template.json#base_0-100_nounit",
+			"label": "Power Report Threshold",
+			"unit": "%",
+			"defaultValue": 10
+		},
+		{
+			"#": "19",
+			"label": "Power & Energy Report Interval",
+			"unit": "seconds",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32767,
+			"defaultValue": 3600
+		},
+		{
+			"#": "20",
+			"$if": "firmwareVersion >= 1.43",
+			"label": "Energy Report Threshold",
+			"unit": "0.01 kWh",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 10
+		},
+		{
+			"#": "20",
+			"$if": "firmwareVersion < 1.43",
+			"$import": "~/templates/master_template.json#base_0-100_nounit",
+			"label": "Energy Report Threshold",
+			"unit": "%",
+			"defaultValue": 10
+		},
+		{
+			"#": "21",
+			"label": "AC Power Type",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "No Neutral",
+					"value": 0
+				},
+				{
+					"label": "Neutral",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "22",
+			"label": "Switch Type",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Single-Pole (One Switch)",
+					"value": 0
+				},
+				{
+					"label": "Multi-Switch (Dumb Switch)",
+					"value": 1
+				},
+				{
+					"label": "Multi-Switch (Auxiliary Switch)",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "50",
+			"$if": "firmwareVersion >= 1.49",
+			"label": "Button Delay Period",
+			"unit": "0.1 seconds",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 9,
+			"defaultValue": 7
+		},
+		{
+			"#": "51",
+			"$if": "firmwareVersion >= 1.47",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Button Delay",
+			"description": "Note: Disabling the delay also disables scene control for Buttons 2-6."
+		},
+		{
+			"#": "52",
+			"$if": "firmwareVersion >= 1.54",
+			"label": "Operation Mode",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Normal",
+					"value": 0
+				},
+				{
+					"label": "On/Off Only",
+					"value": 1
+				},
+				{
+					"label": "Smart Bulb",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "52",
+			"$if": "firmwareVersion >= 1.47 && firmwareVersion < 1.54",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Smart Bulb Mode",
+			"description": "Optimize power output to be more compatible with smart bulbs. This prevents the dimmer from being able to dim & makes it act like an ON / OFF switch."
+		}
+	],
+	"metadata": {
+		"inclusion": "Start the inclusion process again on your HUB and tap the Configuration Button three (3) times.\n\nPlease Note: If this doesn't work, you can check to see if your switch is within Z-Wave Range by holding down the Configuration Button for 5-10 seconds (if it's not within range, the LED Bar will indicate Red and if it is within Range, the LED Bar will indicate Green). If your switch indicates Red, please move the switch closer to the HUB. If your switch indicates Green, please try running an Exclusion to reset your switch",
+		"exclusion": "To Exclude your dimmer, put your HUB in exclusion mode and press the Configuration Button three (3) times",
+		"reset": "You may factory reset the switch by holding down the Config Button for twenty (20) or more seconds. The LED Bar will turn Red and blink three (3) times to confirm. \n\nHowever, we recommend using a certified Z-Wave controller to remove the device from your network for factory resetting the switch. \n\nOnly use either of these procedures in the event that the network primary controller is missing or otherwise inoperable",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=product_documents/4206/LZW31-SN%20Manual%20-%20Inovelli%20Dimmer%20Switch%20(Red%20Series)%20-%2006.28.21.pdf"
+	}
+}

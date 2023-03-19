@@ -1,0 +1,45 @@
+{
+	"manufacturer": "Telldus Technologies AB",
+	"manufacturerId": "0x0176",
+	"label": "TZWP-100",
+	"description": "Wall Plug Switch",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0001"
+		},
+		{
+			"productType": "0x0003",
+			"productId": "0x0002"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Countdown timer",
+			"description": "Automatic turning off in minutes, 0 to disable",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 254,
+			"defaultValue": 0,
+			"unsigned": true
+		},
+		{
+			"#": "2",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_prev_on"
+		},
+		{
+			"#": "3",
+			"label": "LED indicator",
+			"description": "Set the intensity of the LED indicator",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 100,
+			"defaultValue": 100
+		}
+	]
+}

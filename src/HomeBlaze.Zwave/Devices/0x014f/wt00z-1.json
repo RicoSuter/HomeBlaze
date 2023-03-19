@@ -1,0 +1,140 @@
+{
+	"manufacturer": "Nortek Security & Control LLC",
+	"manufacturerId": "0x014f",
+	"label": "WT00Z-1",
+	"description": "3-Way Wall Accessory Switch",
+	"devices": [
+		{
+			"productType": "0x5457",
+			"productId": "0x3033"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Controller",
+			"maxNodes": 5,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Associating Group 2",
+			"maxNodes": 5
+		},
+		"3": {
+			"label": "Associating Group 3",
+			"maxNodes": 5
+		},
+		"4": {
+			"label": "Associating Group 4",
+			"maxNodes": 5
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "2",
+			"label": "Group 4: Send Reports",
+			"$import": "~/templates/master_template.json#base_enable_disable_inverted",
+			"defaultValue": 0
+		},
+		{
+			"#": "3",
+			"$import": "~/templates/master_template.json#led_indicator_two_options_inverted",
+			"defaultValue": 0
+		},
+		{
+			"#": "4",
+			"$import": "~/templates/master_template.json#orientation"
+		},
+		{
+			"#": "5",
+			"$import": "templates/config_template.json#ignore_dim_start"
+		},
+		{
+			"#": "7",
+			"$import": "templates/config_template.json#dim_step_zwave"
+		},
+		{
+			"#": "8",
+			"$import": "templates/config_template.json#dim_rate_zwave"
+		},
+		{
+			"#": "9",
+			"$import": "templates/config_template.json#dim_step_manual"
+		},
+		{
+			"#": "10",
+			"$import": "templates/config_template.json#dim_rate_manual"
+		},
+		{
+			"#": "11",
+			"$import": "templates/config_template.json#dim_step_all"
+		},
+		{
+			"#": "12",
+			"$import": "templates/config_template.json#dim_rate_all"
+		},
+		{
+			"#": "13",
+			"label": "Group 4: Send Dimming Commands",
+			"$import": "~/templates/master_template.json#base_enable_disable_inverted",
+			"defaultValue": 0
+		},
+		{
+			"#": "14",
+			"label": "Shade Control Group 2",
+			"description": "Allow the switch to control shade devices",
+			"$import": "~/templates/master_template.json#base_enable_disable"
+		},
+		{
+			"#": "15",
+			"label": "Shade Control Group 3",
+			"description": "Allow the switch to control shade devices",
+			"$import": "~/templates/master_template.json#base_enable_disable"
+		},
+		{
+			"#": "16",
+			"label": "Shade Control Group 1",
+			"description": "Allow the switch to control shade devices",
+			"$import": "~/templates/master_template.json#base_enable_disable"
+		},
+		{
+			"#": "19",
+			"$import": "templates/config_template.json#led_indicator"
+		},
+		{
+			"#": "20",
+			"label": "Poll: minutes",
+			"description": "Frequency that WT00Z-1 will poll first node in Group 1",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 255,
+			"defaultValue": 2,
+			"unsigned": true
+		},
+		{
+			"#": "21",
+			"label": "Poll first node in group 1",
+			"description": "Activate/Deactivate polling of first node in Group 1",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Do not poll first node in group",
+					"value": 0
+				},
+				{
+					"label": "Poll first node in group",
+					"value": 1
+				}
+			]
+		}
+	],
+	"compat": {
+		"treatBasicSetAsEvent": true
+	}
+}

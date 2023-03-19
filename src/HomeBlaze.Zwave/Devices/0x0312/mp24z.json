@@ -1,0 +1,39 @@
+{
+	"manufacturer": "Minoston",
+	"manufacturerId": "0x0312",
+	"label": "MP24Z",
+	"description": "Outdoor Smart Plug - 2 channel",
+	"devices": [
+		{
+			"productType": "0xff00",
+			"productId": "0xff09",
+			"zwaveAllianceId": 3719
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "~/templates/master_template.json#led_indicator_three_options"
+		},
+		{
+			"#": "2",
+			"$import": "templates/minoston_template.json#auto_off_timer",
+			"valueSize": 2
+		},
+		{
+			"#": "3",
+			"$import": "templates/minoston_template.json#auto_on_timer",
+			"valueSize": 2
+		}
+	],
+	"metadata": {
+		"inclusion": "ADD or Remove the MP24Z from the existing Z-Wave home control network with your primary controller.\n---Refer to your primary controller instructions to process the inclusion / exclusion setup procedure.\n---When prompted by your primary controller, click the PROG button five times in one second",
+		"exclusion": "ADD or Remove the MP24Z from the existing Z-Wave home control network with your primary controller.\n---Refer to your primary controller instructions to process the inclusion / exclusion setup procedure.\n---When prompted by your primary controller, click the PROG button five times in one second",
+		"reset": "MANUAL RESET\n ---Power off MP24Z\n ---keep holding the PROG button\n ---Power on,Press and keep holding the PROG button for no less than 10 seconds.\n\"Please use this procedure only when the network primary controller is missing or otherwise inoperable.\"",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=product_documents/3719/MP24Z-Manual171102.pdf"
+	}
+}

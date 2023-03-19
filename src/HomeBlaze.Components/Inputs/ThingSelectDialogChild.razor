@@ -1,0 +1,51 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Presentation;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+
+@if (Thing != null)
+{
+    var iconProvider = Thing as IIconProvider;
+
+    var hasChildren = ThingManager.GetState(Thing.Id, true).Any(p => p.Value.HasThingChildren);
+    var canBeSelected = ThingFilter == null || ThingFilter(Thing!);
+    if (hasChildren || canBeSelected)
+    {
+        <MudTreeViewItem T="IThing" Text="@(Thing.Title ?? Thing.Id)" 
+                 Style="@(canBeSelected ? "cursor: pointer" : "")"
+                 ExpandedIcon="@(hasChildren ? "<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/>" : null)"
+                 @bind-Expanded="_isExpanded"
+                 Icon="@(iconProvider?.IconName ?? Icons.Material.Filled.Help)"
+                 IconColor="@(iconProvider?.IconColor ?? Color.Default)"
+                 OnClick="@(() => { if (canBeSelected) { DialogInstance?.Close(new Tuple<bool, IThing?>(true, Thing)); } })">
+
+            @if (_isExpanded)
+            {
+                <ThingSelectDialogThing Thing="@Thing" ThingFilter="ThingFilter!" />
+            }
+        </MudTreeViewItem>
+    }
+}
+
+@code {
+    private bool _isExpanded;
+
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public Func<IThing, bool>? ThingFilter { get; set; }
+
+    [Parameter]
+    public bool IsInitiallyExpanded { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _isExpanded = IsInitiallyExpanded;
+    }
+}

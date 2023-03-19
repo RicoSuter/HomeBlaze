@@ -1,0 +1,53 @@
+﻿@using System.Reflection
+@using HomeBlaze.Abstractions.Presentation;
+@using HomeBlaze.Abstractions.Sensors;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Components.Dialogs;
+@using MudBlazor;
+
+@inject IDialogService DialogService
+@inject IThingManager ThingManager
+
+<div style="padding: 10px; @("width: " + (Thing?.Width) + "px; " + "height: " + (Thing?.Height) + "px; ")" 
+     @onclick="ShowImage" @ontouchend="ShowImage">
+    @if (Thing != null)
+    {
+        var imageStyle = "width: " + (Thing.Width - 20) + "px; " +
+            "height: " + (Thing.Height - 20) + "px; " +
+            "padding: 0; margin: 0; border: 0; object-fit: cover";
+
+        if (Value?.Value is byte[] bytes)
+        {
+            <img src="data:image/jpeg;base64,@Convert.ToBase64String(bytes)" style="@imageStyle" />
+        }
+        else if (!string.IsNullOrEmpty(Thing.ImageUrl))
+        {
+            <img src="@Thing.ImageUrl" style="@imageStyle" />
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public ImageWidget? Thing { get; set; }
+
+    public PropertyState? Value =>
+        Thing?.ThingId != null && Thing?.PropertyName != null ?
+        ThingManager.TryGetPropertyState(Thing.ThingId, Thing.PropertyName, true) :
+        null;
+
+    public async void ShowImage()
+    {
+        var sourceThing = Thing?.Thing;
+        var propertyName = Thing?.PropertyName;
+        if (propertyName != null && sourceThing != null)
+        {
+            await ImageDialog.ShowAsync(DialogService, sourceThing, propertyName);
+        }
+        else if (!string.IsNullOrEmpty(Thing?.ImageUrl))
+        {
+            await ImageDialog.ShowAsync(DialogService, Thing.ImageUrl);
+        }
+    }
+}

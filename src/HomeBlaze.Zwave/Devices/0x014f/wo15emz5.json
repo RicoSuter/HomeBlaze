@@ -1,0 +1,40 @@
+{
+	"manufacturer": "Nortek Security & Control LLC",
+	"manufacturerId": "0x014f",
+	"label": "WO15EMZ5",
+	"description": "In-Wall Single Outlet",
+	"devices": [
+		{
+			"productType": "0x574f",
+			"productId": "0x3535",
+			"zwaveAllianceId": 2527
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "3",
+			"$import": "templates/config_template.json#night_light_5"
+		},
+		{
+			"#": "13",
+			"$import": "templates/config_template.json#report_interval"
+		}
+	],
+	"metadata": {
+		"inclusion": "Put the controller in to INCLUDE mode. Press the button on the unit once.",
+		"exclusion": "Put the controller in to EXCLUDE mode. Press the button on the unit twice.",
+		"reset": "Press the button on the unit five times then press and hold the button for 15 seconds.",
+		"manual": "https://www.gocontrol.com/manuals/10010070ax2_wo15emz5-1_instructions.pdf"
+	}
+}

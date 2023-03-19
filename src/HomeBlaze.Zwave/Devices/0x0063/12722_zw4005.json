@@ -1,0 +1,27 @@
+{
+	"manufacturer": "GE",
+	"manufacturerId": "0x0063",
+	"label": "12722 / ZW4005",
+	"description": "In-Wall Paddle Switch, 500S",
+	"devices": [
+		{
+			"productType": "0x4952",
+			"productId": "0x3032",
+			"zwaveAllianceId": 1196
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "3",
+			"$import": "~/templates/master_template.json#led_indicator_three_options"
+		},
+		{
+			"#": "4",
+			"$import": "~/templates/master_template.json#orientation"
+		}
+	]
+}

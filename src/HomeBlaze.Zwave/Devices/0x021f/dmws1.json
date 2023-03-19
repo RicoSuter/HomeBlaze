@@ -1,0 +1,127 @@
+{
+	"manufacturer": "Elexa Consumer Products Inc.",
+	"manufacturerId": "0x021f",
+	"label": "DMWS1",
+	"description": "Dome Leak Sensor",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0085"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Basic Set",
+			"maxNodes": 5
+		},
+		"3": {
+			"label": "Notification Report",
+			"maxNodes": 5
+		},
+		"4": {
+			"label": "Binary Sensor Report",
+			"maxNodes": 5
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Total Alarm Duration",
+			"description": "Total time the Leak Sensor will beep and light its LED in the event of a leak",
+			"unit": "Minutes",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 120,
+			"unsigned": true
+		},
+		{
+			"#": "2",
+			"label": "Mute Time",
+			"description": "Quiet time between each Reminder Alarm",
+			"unit": "Minutes",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 255,
+			"defaultValue": 1,
+			"unsigned": true
+		},
+		{
+			"#": "3",
+			"label": "Initial Alarm",
+			"description": "Time the Leak Sensor beeps before it is muted",
+			"unit": "Seconds",
+			"valueSize": 1,
+			"minValue": 10,
+			"maxValue": 255,
+			"defaultValue": 60,
+			"unsigned": true
+		},
+		{
+			"#": "4",
+			"label": "Reminder Alarm",
+			"description": "Length of each beep after the Initial Alarm",
+			"unit": "Seconds",
+			"valueSize": 1,
+			"minValue": 5,
+			"maxValue": 255,
+			"defaultValue": 5,
+			"unsigned": true
+		},
+		{
+			"#": "5",
+			"label": "Enable/Disable Audible Alarm",
+			"description": "Enables or disables the audible alarm (“beeping”)",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Audible Alarm Disabled",
+					"value": 0
+				},
+				{
+					"label": "Audible Alarm Enabled",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "6",
+			"label": "Enable/Disable Water Detection",
+			"description": "If disabled, the device will not respond in any way to detected leaks.",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Water Detection Disabled",
+					"value": 0
+				},
+				{
+					"label": "Water Detection Enabled",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "7",
+			"label": "Basic Set Level",
+			"description": "The value sent by the BASIC_SET command to Association Group 2",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 255,
+			"unsigned": true
+		}
+	]
+}

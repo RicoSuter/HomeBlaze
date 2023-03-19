@@ -1,0 +1,17 @@
+{
+	"manufacturer": "HomePro",
+	"manufacturerId": "0x0001",
+	"label": "ZRW113",
+	"description": "Relay Switch",
+	"devices": [
+		{
+			"productType": "0x5257",
+			"productId": "0x3133",
+			"zwaveAllianceId": 412
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

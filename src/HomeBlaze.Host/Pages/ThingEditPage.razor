@@ -1,0 +1,326 @@
+﻿@using System.Reflection
+@using System.ComponentModel
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Abstractions.Services
+@using HomeBlaze.Abstractions
+@using HomeBlaze.Components;
+@using HomeBlaze.Components.Dialogs;
+@using HomeBlaze.Host.Components
+@using HomeBlaze.Things;
+@using MudBlazor;
+@using System.Threading;
+@using Toolbelt.Blazor.HotKeys2;
+
+@page "/things/{*thingId}"
+@implements IThingEditPage
+@implements IDisposable
+
+@inject IThingManager ThingManager
+@inject ITypeManager TypeManager
+@inject IThingStorage ThingStorage
+@inject IDialogService DialogService
+@inject IThingSerializer ThingSerializer
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject HotKeys HotKeys
+
+<SectionContent Name="AppBar">
+    Things / @(Thing?.Title ?? "Create")
+    &nbsp;
+
+    <MudButton OnClick="@(async () => await GoBackAsync(CancellationToken.None))"
+               Color="Color.Warning" Variant="Variant.Filled"
+               StartIcon="@Icons.Filled.ArrowBack" Class="ma-2">Discard</MudButton>
+    <MudSpacer />
+
+    @if (_json == null)
+    {
+        <MudButton OnClick="@(() => UpsertAsync(CancellationToken.None))"
+               Disabled="@(_processing || _component?.IsValid != true)"
+               Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">
+            @if (_processing)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">@(Thing == null ? "Adding" : "Updating") Thing...</MudText>
+            }
+            else
+            {
+                <MudText>@(Thing == null ? "Add" : "Update") Thing</MudText>
+            }
+        </MudButton>
+    }
+</SectionContent>
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
+    @if (Thing != null)
+    {
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+               OnClick="@(() => ToggleJson())" Class="ma-2" Style="float: right">
+            @(_json == null ? "JSON" : "Thing")
+        </MudButton>
+    }
+
+    <br />
+    @if (Thing == null)
+    {
+        @if (_thingTypes.Length > 1)
+        {
+            <MudSelect T="Type" Label="Thing Type" Value="_selectedThingType" ValueChanged="type => OnThingTypeChanged(type)">
+                @foreach (var thingType in _thingTypes)
+                {
+                    <MudSelectItem Value="@thingType">
+                        @(thingType.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName ?? thingType.Name)
+                    </MudSelectItem>
+                }
+            </MudSelect>
+            <br />
+        }
+
+        @if (_selectedThingType != null)
+        {
+            @if (_selectedThingType.GetCustomAttribute<DescriptionAttribute>(true) is DescriptionAttribute descriptionAttribute)
+            {
+                <p>
+                    <strong>@(descriptionAttribute.Description)</strong>
+                </p>
+            }
+        }
+    }
+    else
+    {
+        <h1>@Thing.Title</h1>
+        @if (Thing.GetType().GetCustomAttribute<DisplayNameAttribute>(true) is DisplayNameAttribute nameAttribute)
+        {
+            <h2>@(nameAttribute.DisplayName)</h2>
+        }
+        @if (Thing.GetType().GetCustomAttribute<DescriptionAttribute>(true) is DescriptionAttribute descriptionAttribute)
+        {
+            <p>
+                <strong>@(descriptionAttribute.Description)</strong>
+            </p>
+        }
+    }
+    <br />
+
+    @if (_json == null)
+    {
+        <div>
+            @if (Thing == null)
+            {
+                @if (_thingSetupFragment != null && _selectedThingType != null)
+                {
+                    @_thingSetupFragment
+                }
+            }
+            else
+            {
+                @if (_thingSetupFragment != null)
+                {
+                    @_thingSetupFragment
+                }
+            }
+        </div>
+    }
+    else
+    {
+        <MudTextField T="string" Variant="Variant.Text" @bind-Text="_json" Lines="20" />
+    }
+</MudContainer>
+
+@code {
+    private string? _json = null;
+    private string? _originalThingJson = null;
+    private HotKeysContext? _hotKeysContext = null;
+
+    private bool _processing = false;
+    private IThingSetupComponent? _component;
+
+    private Type[] _thingTypes = new Type[0];
+    private RenderFragment? _thingSetupFragment;
+    private Type? _selectedThingType;
+
+    [Parameter]
+    public string? ThingId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "parentThingId")]
+    public string? ParentThingId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "extendedThingId")]
+    public string? ExtendedThingId { get; set; }
+
+    public IThing? Thing { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _hotKeysContext = HotKeys
+            .CreateContext()
+            .Add(ModCode.None, Code.Escape, async () => await GoBackAsync(CancellationToken.None))
+            .Add(ModCode.Ctrl, Code.S, async () => await UpsertAsync(CancellationToken.None));
+
+        Thing = ThingManager.TryGetById(ThingId);
+
+        _thingTypes = TypeManager
+            .ThingTypes
+            .Where(t => t.GetCustomAttribute<ThingSetupAttribute>() != null)
+            .Where(t => t.GetCustomAttribute<ThingWidgetAttribute>() == null)
+            .Where(t => string.IsNullOrEmpty(ExtendedThingId) || t.IsAssignableTo(typeof(IExtensionThing)))
+            .ToArray();
+
+        if (Thing != null)
+        {
+            _originalThingJson = ThingSerializer.SerializeThing(Thing);
+
+            var thingType = _thingTypes.SingleOrDefault(f => f.FullName == Thing.GetType().FullName);
+            var attribute = thingType?.GetCustomAttribute<ThingSetupAttribute>();
+            if (attribute != null && attribute.ComponentType.GetProperty(nameof(ThingSetupComponentBase<IThing>.EditedThing)) != null)
+            {
+                _thingSetupFragment = builder =>
+                {
+                    builder.OpenComponent(0, attribute.ComponentType);
+                    builder.AddAttribute(1, nameof(ThingSetupComponentBase<IThing>.EditedThing), Thing);
+                    builder.AddAttribute(2, nameof(IThingSetupComponent.Page), this);
+                    builder.CloseComponent();
+                };
+            }
+        }
+        else if (_thingTypes.Length == 1)
+        {
+            OnThingTypeChanged(_thingTypes.First());
+        }
+    }
+
+    public void ToggleJson()
+    {
+        if (Thing != null)
+        {
+            try
+            {
+                if (_json != null)
+                {
+                    ThingSerializer.PopulateThing(Thing, _json);
+                    _json = null;
+                    InvokeAsync(StateHasChanged);
+                }
+                else
+                {
+                    _json = ThingSerializer.SerializeThing(Thing);
+                    InvokeAsync(StateHasChanged);
+                }
+            }
+            catch (Exception e)
+            {
+                DialogService.ShowMessageBox("Failed", e.ToString());
+            }
+        }
+    }
+
+    private void OnThingTypeChanged(Type thingType)
+    {
+        _component = null;
+
+        _selectedThingType = thingType;
+        if (_selectedThingType != null)
+        {
+            var attribute = _selectedThingType.GetCustomAttribute<ThingSetupAttribute>();
+            if (attribute != null)
+            {
+                _thingSetupFragment = builder =>
+                {
+                    builder.OpenComponent(0, attribute.ComponentType);
+                    builder.AddAttribute(1, nameof(IThingSetupComponent.Page), this);
+                    builder.AddAttribute(2, nameof(ThingSetupComponentBase<IThing>.ExtendedThing), ThingManager.TryGetById(ExtendedThingId));
+                    builder.CloseComponent();
+                };
+            }
+        }
+        else
+        {
+            _thingSetupFragment = null;
+        }
+    }
+
+    public void RegisterComponent(IThingSetupComponent component)
+    {
+        _component = component;
+    }
+
+    public async Task RefreshAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task UpsertAsync(CancellationToken cancellationToken)
+    {
+        if (_component != null)
+        {
+            try
+            {
+                _processing = true;
+                await InvokeAsync(StateHasChanged);
+
+                if (Thing == null)
+                {
+                    var thing = await _component.CreateThingAsync(cancellationToken);
+                    if (thing != null)
+                    {
+                        var parentThing = ThingManager.TryGetById(ParentThingId) as IGroupThing;
+                        if (parentThing != null)
+                        {
+                            parentThing.AddThing(thing);
+
+                            await ThingManager.WriteConfigurationAsync(cancellationToken);
+                            ThingManager.DetectChanges((IThing)parentThing);
+
+                            await GoBackAsync(cancellationToken);
+                        }
+                    }
+                }
+                else
+                {
+                    var isSuccessful = await _component.UpdateEditedThingAsync(cancellationToken);
+                    if (isSuccessful)
+                    {
+                        await ThingManager.WriteConfigurationAsync(cancellationToken);
+                        ThingManager.DetectChanges((IThing)Thing);
+
+                        await GoBackAsync(cancellationToken);
+                    }
+                }
+            }
+            catch (Exception e) when (e is not TaskCanceledException)
+            {
+                await DialogService.ShowMessageBox("Error", e.ToString());
+            }
+            finally
+            {
+                _processing = false;
+            }
+        }
+    }
+
+    private async Task GoBackAsync(CancellationToken cancellationToken)
+    {
+        if (Thing == null || _component?.IsDirty == false)
+        {
+            await JSRuntime.InvokeVoidAsync("history.back");
+        }
+        else
+        {
+            var delete = await DialogService.ShowMessageBox("Discard Changes", "Do you really want to discard all changes?", "Discard", "No");
+            if (delete == true)
+            {
+                await JSRuntime.InvokeVoidAsync("history.back");
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        _hotKeysContext?.Dispose();
+    }
+}

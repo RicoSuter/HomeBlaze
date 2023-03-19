@@ -1,0 +1,50 @@
+﻿@using HomeBlaze.Abstractions.Devices.Light;
+@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors
+@using HomeBlaze.Components.Inputs
+@using MudBlazor
+
+@inherits ThingSetupComponent<SwitchButtonWidget>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTabs>
+        <MudTabPanel Text="General">
+            <br />
+            <MudTextField @bind-Value="@Thing.Label" Label="Label" />
+            <MudTextField @bind-Value="@Thing.Description" Label="Description" />
+            <ThingSelect @bind-ThingId="@Thing.ThingId" Label="Thing to Toggle" Required="true" />
+
+            <br />
+            <div class="d-flex gap-4">
+                <MudTextField @bind-Value="@Thing.Width" Label="Width" />
+                <MudTextField @bind-Value="@Thing.Height" Label="Height" />
+            </div>
+            <MudTextField @bind-Value="@Thing.VerticalTextPosition" Label="Vertical Text Position" />
+
+            <br />
+            <MudSwitch @bind-Checked="@Thing.AllowTurnOn" Label="Allow turning on" Color="Color.Info" />
+            <br />
+            <MudSwitch @bind-Checked="@Thing.AllowTurnOff" Label="Allow turning off" Color="Color.Info" />
+        </MudTabPanel>
+        <MudTabPanel Text="Dynamic">
+            <br />
+            <MudTextField Label="Is On Expression (C#)" @bind-Value="@Thing.IsOnExpression" Variant="Variant.Outlined" Lines="3" />
+
+            <br />
+            <MudField Label="Turn On Operation" Variant="Variant.Outlined">
+                <OperationEditor @bind-Operation="@Thing.TurnOnOperation" />
+            </MudField>
+
+            <br />
+            <MudField Label="Turn Off Operation" Variant="Variant.Outlined">
+                <OperationEditor @bind-Operation="@Thing.TurnOffOperation" />
+            </MudField>
+        </MudTabPanel>
+    </MudTabs>
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

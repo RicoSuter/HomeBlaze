@@ -1,0 +1,17 @@
+{
+	"manufacturer": "Vera Control",
+	"manufacturerId": "0x008c",
+	"label": "VERA 2",
+	"description": "Vera Home Gateway",
+	"devices": [
+		{
+			"productType": "0x0001",
+			"productId": "0x0001",
+			"zwaveAllianceId": [118, 119, 961]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

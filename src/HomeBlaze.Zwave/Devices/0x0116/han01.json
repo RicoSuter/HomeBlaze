@@ -1,0 +1,17 @@
+{
+	"manufacturer": "Chromagic Technologies Corporation",
+	"manufacturerId": "0x0116",
+	"label": "HAN01",
+	"description": "In wall single switch",
+	"devices": [
+		{
+			"productType": "0x0011",
+			"productId": "0x0001",
+			"zwaveAllianceId": 9
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

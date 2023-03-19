@@ -1,0 +1,185 @@
+﻿@using DynamicExpresso;
+@using HomeBlaze.Abstractions.Devices.Energy;
+@using HomeBlaze.Abstractions.Devices.Light;
+@using HomeBlaze.Abstractions.Devices;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components.Dialogs;
+@using HomeBlaze.Messages;
+@using Microsoft.Extensions.Logging;
+@using MudBlazor
+@using System.Threading;
+
+@inject IThingManager ThingManager
+@inject IDialogService DialogService
+@inject IEventManager EventManager
+@inject ILogger<SwitchButtonWidget> Logger
+
+@implements IDisposable
+
+<div style="width: @(Thing?.Width)px; height: @(Thing?.Height)px">
+    <div style="position: relative; left: 10px; top: 10px;
+                transform-origin: center; @(_mouseDown != null ? "transform: scale(0.9);" : "")
+                width: @(Thing?.Width - 20)px; height: @(Thing?.Height - 20)px;
+                text-align: center;
+                @(_isOn == true ? "color: black;" : "")
+                background-color: @(BackgroundColor);"
+         @onmousedown="@(() => OnMouseDown())"
+         @onmouseout="@(() => OnMouseOut())"
+         @onmouseup="@(() => OnClick())"
+         @ontouchstart="@(() => OnMouseDown())"
+         @ontouchleave="@(() => OnMouseOut())"
+         @ontouchcancel="@(() => OnMouseOut())"
+         @ontouchmove="@(() => OnMouseOut())"
+         @ontouchend="@(() => OnClick())">
+
+        <div style="transform: translateY(-50%) translateX(-50%); position: absolute;
+                    top: calc(50% + @(Thing?.VerticalTextPosition)px); left: 50%; width: @(Thing?.Width - 20)px;">
+            <div>
+                <strong>@Thing?.Label</strong>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Thing?.Description))
+            {
+                <div>
+                    @Thing?.Description
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private IDisposable? _subscription;
+
+    private Timer? _timer;
+    private DateTimeOffset? _mouseDown = null;
+    private bool _executing = false;
+
+    private bool? _isOn;
+
+    public ISwitchDevice? _switchDevice;
+
+    public string BackgroundColor => _isOn == true ? "#E5BB00" : "#000000";
+
+    [Parameter]
+    public SwitchButtonWidget? Thing { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _subscription = EventManager.Subscribe(@event =>
+        {
+            if (@event is ThingStateChangedEvent stateChangedEvent &&
+                stateChangedEvent.Thing.Id == Thing?.ThingId)
+            {
+                Update();
+            }
+        });
+
+        Update();
+    }
+
+    public void OnMouseDown()
+    {
+        _mouseDown = DateTimeOffset.Now;
+        _timer = new Timer(_ => InvokeAsync(() => OnHold()), null, 1000, Timeout.Infinite);
+    }
+
+    public void OnMouseOut()
+    {
+        _mouseDown = null;
+        _timer?.Dispose();
+    }
+
+    private void Update()
+    {
+        try
+        {
+            var thing = ThingManager?.TryGetById(Thing?.ThingId);
+
+            _switchDevice = thing as ISwitchDevice;
+
+            if (thing == null)
+            {
+                _isOn = null;
+            }
+            else if (!string.IsNullOrEmpty(Thing?.IsOnExpression))
+            {
+                var interpreter = new Interpreter(InterpreterOptions.Default | InterpreterOptions.LateBindObject);
+                interpreter.SetVariable<object?>("thing", thing);
+                _isOn = interpreter.Eval<bool>(Thing.IsOnExpression);
+            }
+            else
+            {
+                _isOn = _switchDevice?.IsOn;
+            }
+
+            InvokeAsync(StateHasChanged);
+        }
+        catch (Exception e)
+        {
+            Logger.LogWarning(e, "Failed to evaluate a switch button expression.");
+        }
+    }
+
+    public async void OnClick()
+    {
+        _timer?.Dispose();
+
+        if (_mouseDown != null && !_executing)
+        {
+            _mouseDown = null;
+            _executing = true;
+            try
+            {
+                if (Thing != null)
+                {
+                    if (_isOn == true && Thing.AllowTurnOff)
+                    {
+                        if (Thing.TurnOffOperation != null)
+                        {
+                            await Thing.TurnOffOperation.ExecuteAsync(ThingManager, Logger, CancellationToken.None);
+                        }
+                        else if (_switchDevice != null)
+                        {
+                            await _switchDevice.TurnOffAsync(CancellationToken.None);
+                        }
+                    }
+                    else if (_isOn == false && Thing.AllowTurnOn)
+                    {
+                        if (Thing.TurnOnOperation != null)
+                        {
+                            await Thing.TurnOnOperation.ExecuteAsync(ThingManager, Logger, CancellationToken.None);
+                        }
+                        else if (_switchDevice != null)
+                        {
+                            await _switchDevice.TurnOnAsync(CancellationToken.None);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                _executing = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    public async void OnHold()
+    {
+        _timer?.Dispose();
+
+        if (_switchDevice is ILightbulb lightbulb)
+        {
+            _mouseDown = null;
+            await LightDialog.ShowAsync(DialogService, lightbulb);
+        }
+    }
+
+    public void Dispose()
+    {
+        _mouseDown = null;
+        _subscription?.Dispose();
+        _timer?.Dispose();
+    }
+}

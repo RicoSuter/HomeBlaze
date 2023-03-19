@@ -1,0 +1,17 @@
+{
+	"manufacturer": "GE",
+	"manufacturerId": "0x0063",
+	"label": "45631 / ZW5301",
+	"description": "On-Wall Keypad Secondary Controller, 300S",
+	"devices": [
+		{
+			"productType": "0x8008",
+			"productId": "0x5301",
+			"zwaveAllianceId": 165
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

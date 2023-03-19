@@ -1,0 +1,97 @@
+{
+	"manufacturer": "Philio Technology Corp",
+	"manufacturerId": "0x013c",
+	"label": "PAD15",
+	"description": "2 Wire Dimmer",
+	"devices": [
+		{
+			"productType": "0x0005",
+			"productId": "0x007e",
+			"zwaveAllianceId": [4209, 4216, 4217, 4248, 4256, 4257, 4261, 4264, 4268]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Switch Set",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Enable S1",
+					"value": 0
+				},
+				{
+					"label": "Enable S1 & S2",
+					"value": 1
+				},
+				{
+					"label": "Dimmer up/down",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "2",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_prev_on"
+		},
+		{
+			"#": "3",
+			"label": "Send Multilevel Switch Reports",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "Enable",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "4",
+			"label": "Maximum Level",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 99,
+			"defaultValue": 99,
+			"unsigned": true
+		},
+		{
+			"#": "5",
+			"label": "Minimum Level",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 98,
+			"defaultValue": 0,
+			"unsigned": true
+		},
+		{
+			"#": "6",
+			"label": "Basic Duration Set",
+			"valueSize": 1,
+			"unit": "seconds",
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 2,
+			"unsigned": true
+		}
+	],
+	"metadata": {
+		"inclusion": "Add(Classic Inclusion) : 1. Put your Z-Wave™ controller into inclusion mode by following the instructions\nprovided by the controller manufacturer. 2. Press the include button three times within 3 seconds to enter\ninclusion mode",
+		"exclusion": "Remove (Exclusion) 1. Put your Z-Wave™ controller into exclusion mode by following the instructions\nprovided by the controller manufacturer. 2. Press the include button three times within 3 seconds to enter\nexclusion mode. 3. Node ID will be excluded",
+		"reset": "Reset : 1. Press the include button four times within 3 seconds and hold on the button press without\nreleasing. 2. Keep pressing the button for 3 seconds then LED will be o ,release the button within 2 seconds.\n3. Device has been reset. ※Function Reset : Please use this procedure only when the network primary\ncontroller is missing or otherwise inoperable",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=product_documents/4209/PAD15_UserManual_V3.pdf"
+	}
+}

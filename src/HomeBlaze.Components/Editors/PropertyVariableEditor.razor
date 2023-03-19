@@ -1,0 +1,27 @@
+﻿@using HomeBlaze.Components.Inputs
+@using MudBlazor
+
+@if (Variable != null)
+{
+    <MudTextField @bind-Value="@Variable.Name" Label="Variable Name" />
+
+    <ThingSelect Label="Thing ID" ThingId="@Variable.ThingId" ThingIdChanged="@(thingId => { Variable.ThingId = thingId; Variable.PropertyName = null; })" Required="true" />
+    <ThingPropertySelect Label="Property" @bind-PropertyName="@Variable.PropertyName" ThingId="@Variable.ThingId" Disabled="@(Variable.ThingId == null)" Required="true" />
+
+    <MudSelect Label="Aggregation" @bind-Value="Variable.WindowAggregation">
+    @foreach (AggregationType item in Enum.GetValues(typeof(AggregationType)))
+    {
+        <MudSelectItem Value="@item">@item</MudSelectItem>
+    }
+    </MudSelect>
+
+    @if (Variable.WindowAggregation != AggregationType.None)
+    {
+        <MudTimePicker Label="Window Duration" @bind-Time="Variable.WindowDuration" />
+    }
+}
+
+@code {
+    [Parameter]
+    public PropertyVariable? Variable { get; set; }
+}

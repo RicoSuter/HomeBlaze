@@ -1,0 +1,87 @@
+{
+	"manufacturer": "Zooz",
+	"manufacturerId": "0x027a",
+	"label": "ZEN07",
+	"description": "Mini Plug On / Off Module ZEN07",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0087"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Send Metering Report",
+			"defaultValue": 1
+		},
+		{
+			"#": "2",
+			"label": "Metering Report Frequency",
+			"unit": "seconds",
+			"valueSize": 2,
+			"minValue": 1,
+			"maxValue": 65535,
+			"defaultValue": 300,
+			"unsigned": true
+		},
+		{
+			"#": "3",
+			"label": "Overload Protection Threshold",
+			"unit": "Amperes",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 16,
+			"defaultValue": 13
+		},
+		{
+			"#": "4",
+			"label": "Overload Protection LED Notification Threshold",
+			"unit": "Amperes",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 13,
+			"defaultValue": 12
+		},
+		{
+			"#": "5",
+			"$import": "~/templates/master_template.json#enable_led_indicator",
+			"defaultValue": 1
+		},
+		{
+			"#": "6",
+			"$import": "~/templates/master_template.json#base_1-100_nounit",
+			"label": "Power Report Percentage Threshold",
+			"unit": "%",
+			"defaultValue": 5
+		},
+		{
+			"#": "7",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_prev"
+		},
+		{
+			"#": "8",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-Off Timer"
+		},
+		{
+			"#": "9",
+			"label": "Auto Turn-Off Timer Interval",
+			"unit": "minutes",
+			"valueSize": 2,
+			"minValue": 1,
+			"maxValue": 65535,
+			"defaultValue": 150,
+			"unsigned": true
+		},
+		{
+			"#": "10",
+			"$import": "templates/zooz_template.json#local_control"
+		}
+	]
+}

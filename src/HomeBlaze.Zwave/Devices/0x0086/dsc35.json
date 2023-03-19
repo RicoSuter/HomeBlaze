@@ -1,0 +1,29 @@
+{
+	"manufacturer": "AEON Labs",
+	"manufacturerId": "0x0086",
+	"label": "DSC35",
+	"description": "Micro Double Switch",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0023"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "80",
+			"$import": "templates/aeotec_template.json#enable_notifications"
+		}
+	]
+}

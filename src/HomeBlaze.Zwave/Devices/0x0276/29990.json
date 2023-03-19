@@ -1,0 +1,68 @@
+{
+	"manufacturer": "Systemair Sverige AB",
+	"manufacturerId": "0x0276",
+	"label": "29990",
+	"description": "Remotely Controlled Ventilation",
+	"devices": [
+		{
+			"productType": "0x0139",
+			"productId": "0x0001"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Ventilation System Type",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0,
+			"readOnly": true
+		},
+		{
+			"#": "2",
+			"label": "Filter - Period (read-only)",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 12,
+			"defaultValue": 12,
+			"unit": "30 days",
+			"readOnly": true
+		},
+		{
+			"#": "3",
+			"label": "Filter - Days",
+			"description": "How many days the filter has been used since the last change",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0,
+			"unit": "days",
+			"readOnly": true
+		},
+		{
+			"#": "4",
+			"label": "Boost Mode Remaining Time",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0,
+			"unit": "seconds",
+			"readOnly": true
+		},
+		{
+			"#": "5",
+			"label": "Temperature Setpoint Step",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 0,
+			"defaultValue": 0,
+			"unit": "0.1 °C",
+			"readOnly": true
+		}
+	]
+}

@@ -1,0 +1,17 @@
+{
+	"manufacturer": "Schuko",
+	"manufacturerId": "0x0064",
+	"label": "064394",
+	"description": "Plug Dimmer",
+	"devices": [
+		{
+			"productType": "0x1001",
+			"productId": "0x0000",
+			"zwaveAllianceId": 370
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

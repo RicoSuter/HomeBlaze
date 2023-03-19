@@ -1,0 +1,161 @@
+{
+	"manufacturer": "STEINEL GmbH",
+	"manufacturerId": "0x0271",
+	"label": "MotionSwitch LED",
+	"description": "Infrared motion detector with orientation light",
+	"devices": [
+		{
+			"productType": "0x0002",
+			"productId": "0x19fb"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "templates/steinel_template.json#motion_light_duration"
+		},
+		{
+			"#": "2",
+			"$import": "templates/steinel_template.json#light_threshold"
+		},
+		{
+			"#": "5",
+			"$import": "templates/steinel_template.json#motion_sensor_sensitivity"
+		},
+		{
+			"#": "6",
+			"$import": "templates/steinel_template.json#brightness_measuring_interval"
+		},
+		{
+			"#": "8",
+			"$import": "templates/steinel_template.json#external_light_sensor"
+		},
+		{
+			"#": "9[0x07]",
+			"$import": "templates/steinel_template.json#light_behavior"
+		},
+		{
+			"#": "10",
+			"$import": "templates/steinel_template.json#off_command_duration"
+		},
+		{
+			"#": "11",
+			"$import": "templates/steinel_template.json#on_command_duration"
+		},
+		{
+			"#": "12",
+			"$import": "templates/steinel_template.json#motion_wait_limit"
+		},
+		{
+			"#": "13",
+			"$import": "templates/steinel_template.json#on_off_sequence_off_duration"
+		},
+		{
+			"#": "14",
+			"$import": "templates/steinel_template.json#off_on_sequence_on_duration"
+		},
+		{
+			"#": "15",
+			"$import": "templates/steinel_template.json#sequence_timing"
+		},
+		{
+			"#": "16",
+			"$import": "templates/steinel_template.json#command_motion_disable_timeout"
+		},
+		{
+			"#": "17[0x01]",
+			"label": "Button: Long Press",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Lower brightness",
+					"value": 0
+				},
+				{
+					"label": "Increase brightness",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "17[0x02]",
+			"label": "Button: Short Press",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Toggle",
+					"value": 0
+				},
+				{
+					"label": "Control scene (parameter 18)",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "17[0x04]",
+			"label": "Button: Override Sensors (Standalone Mode)",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "According to parameter 19 (legacy behavior)",
+					"value": 0
+				},
+				{
+					"label": "According to parameters 10-14",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "17[0x08]",
+			"label": "Button: Override Sensors (Network Mode)",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "According to parameter 19 (legacy behavior)",
+					"value": 0
+				},
+				{
+					"label": "According to parameters 10-14",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "18",
+			"label": "Button: Scene Number",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 1,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "19",
+			"label": "Sensor Override Duration (Legacy Behavior)",
+			"description": "After motion ends, wait for the specified duration, then return to normal operation: 1...100 = seconds, 101...200 = minutes (minus 100), 201...209 = hours (minus 200)",
+			"valueSize": 2,
+			"minValue": 1,
+			"maxValue": 209,
+			"defaultValue": 103
+		}
+	]
+}

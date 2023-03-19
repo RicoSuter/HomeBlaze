@@ -1,0 +1,69 @@
+{
+	"manufacturer": "AEON Labs",
+	"manufacturerId": "0x0086",
+	"label": "DSC26",
+	"description": "Micro Switch G2",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x001a",
+			"zwaveAllianceId": [709, 768, 776]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 1,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Group 2",
+			"maxNodes": 5
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "2[0xff]",
+			"$import": "templates/aeotec_template.json#blink_duration"
+		},
+		{
+			"#": "2[0xff00]",
+			"$import": "templates/aeotec_template.json#blink_length"
+		},
+		{
+			"#": "80",
+			"$import": "templates/aeotec_template.json#enable_notifications"
+		},
+		{
+			"#": "120",
+			"$import": "templates/aeotec_template.json#external_switch_3way"
+		},
+		{
+			"#": "200",
+			"$import": "templates/aeotec_template.json#partner_id_att"
+		},
+		{
+			"#": "252",
+			"$import": "templates/aeotec_template.json#lock_configuration"
+		},
+		{
+			"#": "254",
+			"$import": "templates/aeotec_template.json#device_tag"
+		},
+		{
+			"#": "255",
+			"$import": "templates/aeotec_template.json#factory_reset"
+		}
+	],
+	"metadata": {
+		"wakeup": "Press and release the button which is on Micro Smart Energy Switch G2.",
+		"inclusion": "1. Start by placing the controller into inclusion mode.\n2. While the Micro Smart Energy Switch G2 is powered in a 3-wire system, the external switch/button can be toggled to initiate pairing into the Z-Wave network. Or the internal button can be pushed to initiate pairing into the Z-Wave network if the Micro Smart Energy Switch G2 was not put into in-wall box.",
+		"exclusion": "1. Start by placing the controller into exclusion mode.\n2. While the Micro Smart Energy Switch G2 is powered in a 3-wire system, the external switch/button can be toggled 10 times in quick succession to initiate removing from the Z-Wave network. Or the internal button can be pushed to initiate pairing into the Z-Wave network if Micro Smart Energy Switch G2 was not put into in-wall box.",
+		"reset": "Press and hold the button which is on Micro Smart Energy Switch G2 for 20 seconds",
+		"manual": "https://help.aeotec.com/support/solutions/articles/6000165733-micro-switch-g2-user-guide-"
+	}
+}

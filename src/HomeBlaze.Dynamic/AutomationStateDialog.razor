@@ -1,0 +1,75 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components.Editors
+@using HomeBlaze.Components.Inputs;
+@using HomeBlaze.Services.Json;
+@using MudBlazor;
+@using System.Text.Json;
+
+@inject IThingManager ThingManager
+@inject IDialogService DialogService
+
+<MudDialog ClassContent="edit-dialog">
+    <TitleContent>@(DialogInstance?.Title)</TitleContent>
+    <DialogContent>
+        @if (State != null)
+        {
+            <MudTextField @bind-Value="State.Name" Label="State Name" Required="true" />
+            <br />
+
+            <OperationListEditor Operations="State.Operations"></OperationListEditor>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => DialogInstance?.Close(null))" Color="Color.Primary">Close</MudButton>
+        <MudButton OnClick="@(() => DialogInstance?.Close(State))" Disabled="string.IsNullOrEmpty(State?.Name)"
+                   Variant="Variant.Filled" Color="Color.Primary">
+            Update State
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public AutomationState? State { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    public static async Task<AutomationState?> CreateAsync(IDialogService dialogService)
+    {
+        var state = new AutomationState();
+        if (await ShowAsync(dialogService, state, "Add State"))
+        {
+            return state;
+        }
+
+        return null;
+    }
+
+    public static async Task<bool> EditAsync(IDialogService dialogService, AutomationState state)
+    {
+        return await ShowAsync(dialogService, state, "Edit State");
+    }
+
+    private static async Task<bool> ShowAsync(IDialogService dialogService, AutomationState state, string title)
+    {
+        var result = await dialogService.Show<AutomationStateDialog>(title,
+            new DialogParameters
+            {
+                { "State", JsonUtilities.Clone(state)}
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium
+            }).Result;
+
+        if (result?.Cancelled == false && result.Data != null)
+        {
+            JsonUtilities.PopulateObject(state!, JsonSerializer.Serialize<AutomationState>((AutomationState)result.Data));
+            return true;
+        }
+
+        return false;
+    }
+}

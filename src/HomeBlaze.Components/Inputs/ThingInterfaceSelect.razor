@@ -1,0 +1,38 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+@inject ITypeManager TypeManager
+
+<MudSelect T="Type" Label="@Label" Required="Required" Disabled="Disabled"
+           Value="@(TypeManager.ThingInterfaces.FirstOrDefault(e => e.FullName == InterfaceName))" 
+           ValueChanged="@(e => InterfaceNameChanged.InvokeAsync(e?.FullName))">
+    
+    @if (!Required)
+    {
+        <MudSelectItem Value="@(null)" T="Type">&lt;None&gt;</MudSelectItem>
+    }
+
+    @foreach (var interfaceType in TypeManager.ThingInterfaces.Where(t => !t.IsAssignableTo(typeof(IExtensionThing))))
+    {
+        <MudSelectItem Value="@interfaceType">@interfaceType.FullName</MudSelectItem>
+    }
+</MudSelect>
+
+@code {
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public bool Required { get; set; }
+
+    [Parameter]
+    public string? InterfaceName { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> InterfaceNameChanged { get; set; }
+}

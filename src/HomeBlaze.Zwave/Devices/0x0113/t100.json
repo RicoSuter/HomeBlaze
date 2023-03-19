@@ -1,0 +1,22 @@
+{
+	"manufacturer": "Evolve",
+	"manufacturerId": "0x0113",
+	"label": "T100",
+	"description": "Thermostat",
+	"devices": [
+		{
+			"productType": "0x4556",
+			"productId": "0x5434",
+			"zwaveAllianceId": 81
+		},
+		{
+			"productType": "0x4556",
+			"productId": "0x5435",
+			"zwaveAllianceId": 62
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

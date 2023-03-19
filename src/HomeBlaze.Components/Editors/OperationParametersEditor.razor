@@ -1,0 +1,85 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Attributes;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+@using System.Reflection;
+
+@inject IThingManager ThingManager
+
+@if (Parameters?.Any() == true)
+{
+    @foreach (var parameterName in Parameters.Keys.Where(k => !ExcludedParameters.Contains(k)))
+    {
+        var parameter = _parameters.FirstOrDefault(p => p.Name == parameterName);
+        var attribute = parameter?.GetCustomAttribute<OperationParameterAttribute>(true);
+
+        @if (attribute?.Unit == StateUnit.HexColor)
+        {
+            <MudColorPicker Label="@parameterName"
+                DisableAlpha="true"
+                Value="@(Parameters[parameterName]?.ToString() ?? "#FFFFFF")"
+                ValueChanged="@(value => Parameters[parameterName] = value.Value.Substring(0, 7))" />
+        }
+        else if (attribute?.Unit == StateUnit.Percent)
+        {
+            <MudTextField Label="@parameterName"
+              Value="@(Parameters[parameterName] != null ? Convert.ToDecimal(Parameters[parameterName]?.ToString()) * 100m : null)"
+              ValueChanged="@(value => Parameters[parameterName] = value / 100)"
+              InputType="InputType.Number"
+              Immediate="true"
+              HelperText="Percent (0..100)"
+              T="decimal?" />
+        }
+        else if (parameter?.ParameterType.IsAssignableTo(typeof(decimal)) == true)
+        {
+            <MudTextField Label="@parameterName"
+              Value="@Parameters[parameterName]?.ToString()"
+              ValueChanged="@(value => Parameters[parameterName] = value)"
+              InputType="InputType.Number"
+              Immediate="true"
+              HelperText="@(attribute?.Unit.ToString())"
+              T="string" />
+        }
+        else if (parameter?.ParameterType.IsAssignableTo(typeof(TimeSpan)) == true)
+        {
+            <MudTimePicker Label="@parameterName"
+               Time="@(TimeSpan.Parse(Parameters[parameterName]?.ToString() ?? "00:00:00"))"
+               TimeChanged="@(value => Parameters[parameterName] = value)" />
+        }
+        else
+        {
+            <MudTextField Label="@parameterName"
+              Value="@Parameters[parameterName]?.ToString()"
+              ValueChanged="@(value => Parameters[parameterName] = value)"
+              Immediate="true"
+              HelperText="@(attribute?.Unit.ToString())"
+              T="string" />
+        }
+    }
+}
+
+@code {
+    private ParameterInfo[] _parameters = Array.Empty<ParameterInfo>();
+
+    [Parameter]
+    public string? ThingId { get; set; }
+
+    [Parameter]
+    public string? OperationName { get; set; }
+
+    [Parameter]
+    public IDictionary<string, object?>? Parameters { get; set; }
+
+    [Parameter]
+    public string[] ExcludedParameters { get; set; } = Array.Empty<string>();
+
+    protected override void OnInitialized()
+    {
+        var operations = ThingManager.GetOperations(ThingId, true);
+        var operation = operations.FirstOrDefault(o => o.Name == OperationName);
+        if (operation != null)
+        {
+            _parameters = operation.Method.GetParameters();
+        }
+    }
+}

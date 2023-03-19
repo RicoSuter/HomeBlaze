@@ -1,0 +1,39 @@
+{
+	"manufacturer": "AEON Labs",
+	"manufacturerId": "0x0086",
+	"label": "DSC25",
+	"description": "Smart Energy Illuminator G2",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0019",
+			"zwaveAllianceId": [711, 769, 777]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Group 2",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "2[0xff]",
+			"$import": "templates/aeotec_template.json#blink_duration"
+		},
+		{
+			"#": "2[0xff00]",
+			"$import": "templates/aeotec_template.json#blink_length"
+		}
+	]
+}

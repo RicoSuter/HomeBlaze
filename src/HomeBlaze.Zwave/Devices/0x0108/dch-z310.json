@@ -1,0 +1,53 @@
+{
+	"manufacturer": "D-Link",
+	"manufacturerId": "0x0108",
+	"label": "DCH-Z310",
+	"description": "Smoke Detector",
+	"devices": [
+		{
+			"productType": "0x0002",
+			"productId": "0x001e",
+			"zwaveAllianceId": 1261
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "7",
+			"label": "Customer Function",
+			"description": "Customer function switch, using bit control",
+			"valueSize": 1,
+			"defaultValue": 4,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Notification Report",
+					"value": 4
+				},
+				{
+					"label": "Sensor Binary Report",
+					"value": 20
+				}
+			]
+		},
+		{
+			"#": "10",
+			"label": "Auto Report Battery Time",
+			"description": "The interval time for auto report the battery level",
+			"unit": "30 minutes",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 12
+		}
+	],
+	"metadata": {
+		"inclusion": "1. Have Z-Wave™ Controller entered inclusion mode.\n2. Pressing button three times within 1.5 seconds to enter the inclusion mode.\n3. After add successful, the device will wake to receive the setting command from Z-Wave™ Controller about 20 seconds",
+		"exclusion": "1. Have Z-Wave™ Controller entered exclusion mode.\n2. Pressing button three times within 1.5 seconds to enter the exclusion mode. Node ID has been removed",
+		"reset": "Notice: Use this procedure only in the event that the primary controller is lost or otherwise inoperable.\n1. Pressing button four times within 1.5 seconds and do not release the button in the 4 th pressed, and the red LED will light ON.\n2. After the red LED flash 9 times, release the button within 2 seconds.\n3. IDs are removed and all settings will reset to factory default",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/1261/DCH-Z310_Manual.pdf"
+	}
+}

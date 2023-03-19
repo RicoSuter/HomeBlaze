@@ -1,0 +1,60 @@
+﻿@using HomeBlaze.Components.Editors
+@using MudBlazor;
+
+<MudDialog>
+    <TitleContent>@(DialogInstance?.Title)</TitleContent>
+    <DialogContent>
+        @if (Parameters != null)
+        {
+            <MudForm @bind-IsValid="_isFormValid">
+                <OperationParametersEditor ThingId="@ThingId" OperationName="@OperationName" Parameters="@Parameters" ExcludedParameters="@_excludedParameters" />
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(true))" Disabled="@(!_isFormValid)">OK</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private bool _isFormValid;
+    private string[] _excludedParameters = Array.Empty<string>();
+
+    [Parameter]
+    public string? ThingId { get; set; }
+
+    [Parameter]
+    public string? OperationName { get; set; }
+
+    [Parameter]
+    public Dictionary<string, object?>? Parameters { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _excludedParameters = Parameters!
+            .Where(p => p.Value != null)
+            .Select(p => p.Key)
+            .ToArray();
+    }
+
+    public static async Task<DialogResult> ShowAsync(IDialogService dialogService, string title, string thingId, string operationId, Dictionary<string, object?> parameters)
+    {
+        return await dialogService.Show<OperationParametersDialog>(title,
+            new DialogParameters
+            {
+                { "ThingId", thingId },
+                { "OperationName", operationId },
+                { "Parameters", parameters }
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium,
+            }).Result;
+    }
+}

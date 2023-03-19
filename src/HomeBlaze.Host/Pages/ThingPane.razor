@@ -1,0 +1,350 @@
+﻿@using HomeBlaze.Abstractions.Attributes;
+@using HomeBlaze.Abstractions.Presentation;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Components.Dialogs;
+@using HomeBlaze.Components.Inputs;
+@using HomeBlaze.Things;
+@using System.Collections;
+@using Microsoft.Extensions.Logging;
+@using System.Threading;
+@using System.Reflection;
+
+@inject IThingManager ThingManager
+@inject IThingSerializer ThingSerializer
+@inject IDialogService DialogService
+@inject ILogger<ThingPane> Logger
+@inject NavigationManager Navigation
+
+@if (Thing != null && PaneWidth.HasValue)
+{
+    var canExtend = Thing is not GroupBase && Thing is not IExtensionThing;
+
+    <MudPaper Width="@((PaneWidth - 15m) + "px")" Style="@("min-width: " + (PaneWidth - 15m) + "px; float: left; margin-right: 15px; height: calc(100% - 15px);")">
+        @{
+            var metadata = ThingManager.TryGetMetadata(Thing);
+
+            var stateGroups = ThingManager
+            .GetState(Thing.Id, true)
+            .OrderBy(s => s.Value.Attribute.Order)
+            .GroupBy(p => p.Value.SourceThing);
+
+            var operations = ThingManager.GetOperations(Thing.Id, true);
+        }
+
+        @* Thing Header *@
+        <MudListSubheader>
+            @if (CanClose)
+            {
+                <MudFab OnClick="@(() => Navigation.NavigateToThing(ParentThing))" Color="Color.Primary"
+                StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Style="float: right; margin-right: 5px" />
+            }
+
+            <h1 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <MudIcon Size="Size.Small"
+                     Color="@(Thing is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)"
+                     Icon="@(Thing is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"></MudIcon>
+                @Thing.Title
+            </h1>
+        </MudListSubheader>
+
+        <div style="height: calc(100% - 70px); overflow-x: scroll;">
+            <MudListSubheader>
+                @* Edit, Move, Delete & Exend Buttons *@
+                @if (metadata?.CanEdit == true ||
+               metadata?.CanDelete == true ||
+               ParentThing is GroupBase ||
+               canExtend)
+                {
+                    @if (metadata?.CanEdit == true)
+                    {
+                        <MudIconButton OnClick="@(() => EditThing(Thing))"
+                           Icon="@Icons.Filled.Edit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ma-2">Edit</MudIconButton>
+                    }
+
+                    @if (canExtend)
+                    {
+                        <MudIconButton OnClick="@(() => AddThingExtension(Thing))"
+                           Icon="@Icons.Filled.BackupTable"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ma-2">Extend</MudIconButton>
+                    }
+
+                    @if (ParentThing is GroupBase parentGroup)
+                    {
+                        @if (metadata?.CanClone == true)
+                        {
+                            <MudIconButton OnClick="@(() => CloneThing(Thing, parentGroup))"
+                           Icon="@Icons.Filled.ContentCopy"
+                           Variant="Variant.Filled" Color="Color.Primary"
+                           Class="ma-2">Clone</MudIconButton>
+                        }
+
+                        <MudIconButton OnClick="@(() => MoveThing(Thing, parentGroup))"
+                           Icon="@Icons.Filled.MoveUp"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ma-2">Move</MudIconButton>
+
+                        @if (metadata?.CanDelete == true)
+                        {
+                            <MudIconButton OnClick="@(() => DeleteThing(Thing, parentGroup))"
+                           Icon="@Icons.Filled.Delete"
+                           Variant="Variant.Filled"
+                           Color="Color.Error"
+                           Class="ma-2">Delete</MudIconButton>
+                        }
+                    }
+
+                    <br />
+                    <br />
+                }
+
+                @* State *@
+                @if (stateGroups.Any())
+                {
+                    @foreach (var group in stateGroups.Where(g => g.Any(p => !p.Value.HasThingChildren)))
+                    {
+                        @if (group.Key != Thing)
+                        {
+                            <p><small><br />@group.Key.Title</small></p>
+                        }
+
+                        @foreach (var value in group.Where(p => !p.Value.HasThingChildren))
+                        {
+                            <MudText @onclick="@(() => Navigation.NavigateToThingProperty(Thing, value.Value.Name))"
+                                     Color="SelectedProperty == value.Key ? Color.Primary : Color.Default"
+                                     Style="cursor: pointer">
+                                <strong>@(value.Key): </strong>
+                                @if (value.Value.Value is byte[] bytes)
+                                {
+                                    <span>@bytes.Length bytes</span>
+                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(bytes)" style="width: 100%" />
+                                }
+                                else if (value.Value.Value is IEnumerable enumerable && !(value.Value.Value is string))
+                                {
+                                    foreach (var item in enumerable)
+                                    {
+                                        <br />
+                                        @item
+                                    }
+                                }
+                                else
+                                {
+                                    @value.Value.GetDisplayText()
+                                }
+                            </MudText>
+                        }
+                        <br />
+                    }
+                }
+
+                @* Operations *@
+                @if (operations.Any() == true)
+                {
+                    foreach (var operation in operations)
+                    {
+                        <MudButton OnClick="() => ExecuteOperation(operation)"
+                       Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">
+                            @(operation.Title ?? operation.Name)
+                        </MudButton>
+                    }
+                    <br />
+                }
+            </MudListSubheader>
+
+            @* Children *@
+            <MudExpansionPanels MultiExpansion="true" DisableBorders="true" Elevation="0" DisableGutters="true" Dense="true">
+                @foreach (var group in stateGroups)
+                {
+                    foreach (var pair in group.Where(p => p.Value.HasThingChildren))
+                    {
+                        var count = pair.Value.Children.Count();
+                        if (count == 1)
+                        {
+                            <MudList Clickable="true" SelectedValue="SelectedThing" Style="padding-top: 0; padding-bottom: 0">
+                                <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing"
+                                      Subtitle="@(group.Key != Thing ? group.Key.Title : null)"
+                                      Children="pair.Value.Children">
+                                </ThingChildListIItems>
+                            </MudList>
+                        }
+                        else if (count > 1)
+                        {
+                            <MudExpansionPanel DisableGutters="true" Dense="true"
+                               IsInitiallyExpanded="Thing == ThingManager.RootThing ||
+                                                 stateGroups.Count() == 1 ||
+                                                 pair.Value.Property?.PropertyType.Type.IsAssignableTo(typeof(IThing)) == true">
+                                <TitleContent>
+                                    @pair.Key
+                                    @if (group.Key != Thing)
+                                    {
+                                        <span>&nbsp;&nbsp;</span>
+                                        <small>(@group.Key.Title)</small>
+                                    }
+
+                                    <MudChip Color="Color.Default" Size="Size.Small">@pair.Value.Children.Count()</MudChip>
+                                </TitleContent>
+                                <ChildContent>
+                                    <MudList Clickable="true" SelectedValue="SelectedThing">
+                                        <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing" Children="pair.Value.Children">
+                                        </ThingChildListIItems>
+                                    </MudList>
+                                </ChildContent>
+                            </MudExpansionPanel>
+                        }
+                    }
+                }
+            </MudExpansionPanels>
+
+            @* Technical Details *@
+            <MudExpansionPanels DisableBorders="true" Elevation="0">
+                <MudExpansionPanel Text="Details" IsInitiallyExpanded="true">
+                    <small style="word-break: break-all">
+                        <p>
+                            <strong>ID:</strong> @(Thing.Id ?? "Loading...")
+                        </p>
+                        <p>
+                            <strong>Type:</strong> @(Thing.GetType().FullName)
+                        </p>
+                    </small>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </div>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public decimal? PaneWidth { get; set; }
+
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public IThing? ParentThing { get; set; }
+
+    [Parameter]
+    public IThing? SelectedThing { get; set; }
+
+    [Parameter]
+    public string? SelectedProperty { get; set; }
+
+    [Parameter]
+    public bool CanClose { get; set; }
+
+    private async void ExecuteOperation(ThingOperation operation)
+    {
+        try
+        {
+            var parameters = operation.CreateParameters();
+
+            foreach (var parameter in operation.Method
+                .GetParameters()
+                .Where(p => p.Name != null))
+            {
+                if (parameter.ParameterType == typeof(IDialogService))
+                {
+                    parameters[parameter.Name!] = DialogService;
+                }
+                else if (parameter.ParameterType == typeof(NavigationManager))
+                {
+                    parameters[parameter.Name!] = Navigation;
+                }
+            }
+
+            if (parameters.Any(p => p.Value == null) && Thing?.Id != null)
+            {
+                var result = await OperationParametersDialog.ShowAsync(DialogService, "Parameters", Thing.Id, operation.Name, parameters);
+                if (result != null && !result.Cancelled)
+                {
+                    await operation.ExecuteAsync(parameters, Logger, CancellationToken.None);
+                }
+            }
+            else
+            {
+                await operation.ExecuteAsync(parameters, Logger, CancellationToken.None);
+            }
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Error", e.ToString());
+        }
+    }
+
+    private void AddThingExtension(IThing extendedThing)
+    {
+        Navigation.NavigateToCreateThing(ThingManager.RootThing, extendedThing);
+    }
+
+    public void EditThing(IThing thing)
+    {
+        if (thing.GetType().GetCustomAttribute<ThingSetupAttribute>()?.EditParentThing == true)
+        {
+            var parentThing = ThingManager.TryGetParent(thing);
+            if (parentThing == null)
+            {
+                return;
+            }
+
+            thing = parentThing;
+        }
+
+        Navigation.NavigateToEditThing(thing);
+    }
+
+    public async void CloneThing(IThing thing, GroupBase group)
+    {
+        var clone = await DialogService.ShowMessageBox("Clone Thing", "Do you want to clone this Thing?", "Clone", "No");
+        if (clone == true)
+        {
+            var clonedThing = ThingSerializer.CloneThing(thing);
+            group.AddThing(clonedThing);
+
+            ThingManager.DetectChanges((IThing)group);
+            await ThingManager.WriteConfigurationAsync(CancellationToken.None);
+        }
+    }
+
+    public async void DeleteThing(IThing thing, GroupBase group)
+    {
+        var delete = await DialogService.ShowMessageBox("Delete Thing", "Do you really want to delete this Thing?", "Delete", "No");
+        if (delete == true)
+        {
+            group.RemoveThing(thing);
+
+            ThingManager.DetectChanges((IThing)group);
+            await ThingManager.WriteConfigurationAsync(CancellationToken.None);
+
+            Navigation.NavigateToThing(group as IThing);
+        }
+    }
+
+    public async void MoveThing(IThing thing, GroupBase sourceGroup)
+    {
+        var result = await ThingSelectDialog.ShowAsync(DialogService, false, t => t is GroupBase);
+        if (result?.Item1 == true && result?.Item2 is GroupBase targetGroup)
+        {
+            if (targetGroup != sourceGroup)
+            {
+                targetGroup.AddThing(thing);
+                sourceGroup.RemoveThing(thing);
+
+                await ThingManager.WriteConfigurationAsync(CancellationToken.None);
+
+                ThingManager.DetectChanges((IThing)targetGroup);
+                ThingManager.DetectChanges((IThing)sourceGroup);
+
+                Navigation.NavigateToThing(sourceGroup as IThing);
+            }
+            else
+            {
+                await DialogService.ShowMessageBox("Already in Group", "The Thing is already in this Group.");
+            }
+        }
+    }
+}

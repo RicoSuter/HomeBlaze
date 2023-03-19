@@ -1,0 +1,189 @@
+{
+	"manufacturer": "Kwikset",
+	"manufacturerId": "0x0090",
+	"label": "SmartCode 888",
+	"description": "Touchpad Electronic Deadbolt",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0541",
+			"zwaveAllianceId": 2176
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 1,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "33",
+			"$import": "templates/kwikset_template.json#dipswitch_sku_firstfour"
+		},
+		{
+			"#": "34",
+			"$import": "templates/kwikset_template.json#dipswitch_sku_lastfour"
+		},
+		{
+			"#": "35",
+			"label": "Interior Status LED",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "Enable",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "37",
+			"label": "Audio Feedback",
+			"description": "Allows the user to get/set the audio feed back command",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "Enable",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "40",
+			"$import": "templates/kwikset_template.json#reset"
+		},
+		{
+			"#": "47",
+			"label": "Send Motor Load Alarms",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "Enable",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "36[0x01]",
+			"label": "Auto Relock Door",
+			"valueSize": 2,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "Enable",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "36[0xff00]",
+			"label": "Auto Relock Timing",
+			"valueSize": 2,
+			"defaultValue": 30,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "30 seconds",
+					"value": 30
+				},
+				{
+					"label": "60 Seconds",
+					"value": 60
+				},
+				{
+					"label": "90 Seconds",
+					"value": 90
+				},
+				{
+					"label": "120 Seconds",
+					"value": 120
+				},
+				{
+					"label": "180 Seconds",
+					"value": 180
+				}
+			]
+		}
+	],
+	"compat": {
+		"alarmMapping": [
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_idle"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_lock_jammed"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_keypad_unlocked"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_keypad_lock"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_manual_lock"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_manual_unlock"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_rf_lock_jammed"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_rf_lock"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_rf_unlock"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_auto_lock_jammed"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_auto_lock"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_all_codes_deleted"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_code_deleted"
+			},
+			{
+				"$import": "templates/kwikset_template.json#alarm_map_low_battery"
+			}
+		]
+	},
+	"metadata": {
+		"inclusion": "Initiate the process to add the lock to your system at your smart home controller.\nWhen prompted by your smart home system to add the lock, press button “A” on the lock interior one time. The red LED will illuminate when the lock enters Add Mode.\nPlease allow time for the controller to add the lock to your system",
+		"exclusion": "Follow your smart home system’s instructions to remove the lock from the network. When prompted by the system, press button A” on the lock interior once. The red LED will illuminate when the lock enters Remove mode.",
+		"reset": "A factory reset will delete all user codes associated with the lock and will remove itself from your smart home system.\nPlease only perform a factory reset when the primary controller is missing or inoperable.\n\nTo perform a factory reset, please perform the following: \n1. Remove the battery pack\n2. Press and HOLD the Program button while reinserting the battery pack.\n3. Keep holding the button for 30 seconds until the lock beeps and the status LED flashes red.\n4. Press the Program button once more. The status LED will flash green and red several times.\n5. After a few seconds, the lock will initiate the door handing process",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/2176/Install%20Guide%20888%20ENG_Merged.pdf"
+	}
+}

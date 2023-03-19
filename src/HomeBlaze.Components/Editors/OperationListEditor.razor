@@ -1,0 +1,32 @@
+﻿@using MudBlazor
+
+@if (Operations != null)
+{
+    <div style="position: relative">
+        <MudIconButton Icon="@Icons.Filled.Add" OnClick="@(() => Operations.Add(new Operation()))"
+                   Variant="Variant.Filled" Color="Color.Primary"
+                   Style="position: absolute; right: 6px; top: 6px; z-index: 1000"></MudIconButton>
+
+        <MudTabs>
+            @foreach (var operation in Operations)
+            {
+                <MudTabPanel Icon="@Icons.Outlined.Label" Text="@(!string.IsNullOrEmpty(operation.Name) ? operation.Name : "n/a")"
+                     Tag="@operation" Style="justify-content: left">
+
+                    <br />
+                    <MudIconButton Icon="@Icons.Filled.Delete"
+                           OnClick="@(() => Operations.Remove(operation))"
+                           Style="float: right; margin-right: 6px; margin-left: 6px; margin-top: 12px"
+                           Variant="Variant.Filled" Color="Color.Error"></MudIconButton>
+
+                    <OperationEditor Operation="operation" Required="true" />
+                </MudTabPanel>
+            }
+        </MudTabs>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public IList<Operation>? Operations { get; set; }
+}

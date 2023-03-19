@@ -1,0 +1,130 @@
+{
+	"manufacturer": "McoHome Technology Co., Ltd.",
+	"manufacturerId": "0x015f",
+	"label": "MH7H",
+	"description": "Water / Electrical Heating Thermostat",
+	"devices": [
+		{
+			"productType": "0x0701",
+			"productId": "0x5102"
+		},
+		{
+			"productType": "0x0702",
+			"productId": "0x5102",
+			"zwaveAllianceId": [2900, 3846, 3847]
+		},
+		{
+			"productType": "0x0712",
+			"productId": "0x5102"
+		},
+		{
+			"productType": "0x0732",
+			"productId": "0x5102"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Upload temperature format automatically",
+			"valueSize": 1,
+			"defaultValue": 2,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Celsius",
+					"value": 0
+				},
+				{
+					"label": "Fahrenheit",
+					"value": 1
+				},
+				{
+					"label": "Follow the main display",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "2",
+			"label": "Upload temperature and humidity automatically",
+			"valueSize": 1,
+			"defaultValue": 3,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "OFF",
+					"value": 0
+				},
+				{
+					"label": "Upload the difference value only",
+					"value": 1
+				},
+				{
+					"label": "Timing upload mode only",
+					"value": 2
+				},
+				{
+					"label": "Upload the difference+timing upload mode",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "3",
+			"label": "Upload temperature difference",
+			"description": "Base on 0.1°C unit, 5 by default, 5*0.1°C=0.5°C",
+			"valueSize": 2,
+			"minValue": 3,
+			"maxValue": 1000,
+			"defaultValue": 5
+		},
+		{
+			"#": "4",
+			"label": "Upload time interval regularly",
+			"description": "Base on 1s unit, it suggest to be set above 30s",
+			"valueSize": 2,
+			"minValue": 19,
+			"maxValue": 65535,
+			"defaultValue": 30,
+			"unsigned": true
+		},
+		{
+			"#": "5",
+			"label": "Upload humidity difference",
+			"description": "Upload when percent difference exceeded",
+			"valueSize": 1,
+			"minValue": 2,
+			"maxValue": 255,
+			"defaultValue": 3,
+			"unsigned": true
+		},
+		{
+			"#": "255",
+			"label": "Factory setting",
+			"description": "Restore the factory setting - write only, set to 85 to reset",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true,
+			"writeOnly": true
+		}
+	],
+	"metadata": {
+		"inclusion": "In normal working interface, press & hold S4 to enter interface for adding or removing of Z-Wave network. Before device added into network, “- - -” will display on the screen. Then press S4 once, device will enter learning mode to get a node ID. If adding is succeed, a node ID will display on the screen in a few seconds. \n\nA node ID can always inform us whether the device is in the network or not.\n\nAfter adding, turn off the device and then turn it on. Now the device is ready to be operated by controller/ gateway in Z-Wave network.",
+		"exclusion": "In normal working interface, press & hold S4 to enter interface for adding or removing of Z-Wave network. Before device removed from network, a Node ID will display on the screen. Then press S4 once. If removing is succeed, “- - -”will display on the screen in a few seconds. \n\nA node ID can always inform us whether the device is in the network or not.When removed, the device will restore its factory setting.",
+		"reset": "A parameter P18 in the secret menu can be used to restore factory setting locally. Please use this procedure only when the network primary controller is missing or otherwise inoperable. ; And a parameter FF can be used to restore the factory setting via Z-Wave",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/2900/MH7H%20User%20Manual.pdf"
+	}
+}
