@@ -69,10 +69,10 @@ namespace HomeBlaze.Luxtronik
         public string? HeatPumpType { get; private set; }
 
         [State]
-        public decimal? SoftwareVersion { get; private set; }
+        public string? SoftwareVersion { get; private set; }
 
         [State]
-        public decimal? OperationMode { get; private set; }
+        public string? OperationMode { get; private set; }
 
         [State(Unit = StateUnit.Watt, IsEstimated = true)]
         public decimal? PowerConsumption { get; set; }
@@ -261,16 +261,14 @@ namespace HomeBlaze.Luxtronik
                 var powerEnergy = energy?.ElementAt(1).Elements("item");
 
                 HeatPumpType = GetString(allValues, state, 0);
-                SoftwareVersion = GetDecimal(allValues, state, 1);
-                OperationMode = GetDecimal(allValues, state, 7);
+                SoftwareVersion = GetString(allValues, state, 1);
+                OperationMode = GetString(allValues, state, 7);
                 PowerProduction = GetDecimal(allValues, state, 8) * 1000;
 
+                FlowTemperature.Temperature = GetDecimal(allValues, temperatures, 0);
+                ReturnTemperature.Temperature = GetDecimal(allValues, temperatures, 1);
                 OutsideTemperature.Temperature = GetDecimal(allValues, temperatures, 5);
                 WaterTemperature.Temperature = GetDecimal(allValues, temperatures, 7);
-
-                FlowTemperature.Temperature = GetDecimal(allValues, temperatures, 9);
-                ReturnTemperature.Temperature = GetDecimal(allValues, temperatures, 10);
-
                 HeatSourceInletTemperature.Temperature = GetDecimal(allValues, temperatures, 9);
                 HeatSourceOutletTemperature.Temperature = GetDecimal(allValues, temperatures, 10);
 
