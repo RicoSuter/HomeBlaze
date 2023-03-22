@@ -57,21 +57,44 @@ namespace HomeBlaze.Luxtronik
 
 
         [State]
-        public bool IsConnected => _webSocket?.State == WebSocketState.Open;
+        public bool IsConnected => 
+            _webSocket?.State == WebSocketState.Open && 
+            (DateTimeOffset.Now - LastUpdated < TimeSpan.FromMinutes(1));
 
         [State]
         public bool IsAuthenticated { get; private set; }
 
 
+        [State]
+        public string? HeatPumpType { get; private set; }
+
+        [State]
+        public decimal? SoftwareVersion { get; private set; }
+
+        [State]
+        public decimal? OperationMode { get; private set; }
+
         [State(Unit = StateUnit.Watt, IsEstimated = true)]
         public decimal? PowerConsumption { get; set; }
 
 
-        [State(Unit = StateUnit.DegreeCelsius)]
-        public decimal? OutsideTemperature { get; private set; }
+        [State]
+        public LuxtronikTemperature OutsideTemperature { get; private set; }
 
-        [State(Unit = StateUnit.DegreeCelsius)]
-        public decimal? WaterTemperature { get; private set; }
+        [State]
+        public LuxtronikTemperature WaterTemperature { get; private set; }
+
+        [State]
+        public LuxtronikTemperature FlowTemperature { get; private set; }
+
+        [State]
+        public LuxtronikTemperature ReturnTemperature { get; private set; }
+
+        [State]
+        public LuxtronikTemperature HeatSourceInletTemperature { get; private set; }
+
+        [State]
+        public LuxtronikTemperature HeatSourceOutletTemperature { get; private set; }
 
 
         [State(Unit = StateUnit.Watt)]
@@ -115,10 +138,18 @@ namespace HomeBlaze.Luxtronik
         {
             _thingManager = thingManager;
             _logger = logger;
+
+            OutsideTemperature = new LuxtronikTemperature { Id = Id + "/OutsideTemperature", Title = "Outside Temperature" };
+            WaterTemperature = new LuxtronikTemperature { Id = Id + "/WaterTemperature", Title = "Water Temperature" };
+            FlowTemperature = new LuxtronikTemperature { Id = Id + "/FlowTemperature", Title = "Flow Temperature" };
+            ReturnTemperature = new LuxtronikTemperature { Id = Id + "/ReturnTemperature", Title = "Return Temperature" };
+            HeatSourceInletTemperature = new LuxtronikTemperature { Id = Id + "/HeatSourceInletTemperature", Title = "Heat Source Inlet Temperature" };
+            HeatSourceOutletTemperature = new LuxtronikTemperature { Id = Id + "/HeatSourceOutletTemperature", Title = "Heat Source Outlet Temperature" };
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            var buffer = WebSocket.CreateClientBuffer(10 * 1024, 10 * 1024);
             while (_isRunning && !stoppingToken.IsCancellationRequested)
             {
                 try
@@ -144,13 +175,6 @@ namespace HomeBlaze.Luxtronik
                         {
                             try
                             {
-                                var buffer = WebSocket.CreateClientBuffer(10 * 1024, 10 * 1024);
-
-                                if (_isInitialized)
-                                {
-                                    await _webSocket.SendAsync(Encoding.UTF8.GetBytes("REFRESH"), WebSocketMessageType.Text, true, stoppingToken);
-                                }
-
                                 if (!_isInitialized)
                                 {
                                     var result = await _webSocket.ReceiveAsync(buffer, stoppingToken);
@@ -174,7 +198,7 @@ namespace HomeBlaze.Luxtronik
                                 }
                                 else
                                 {
-                                    await _webSocket.SendAsync(Encoding.UTF8.GetBytes("REFRESH"), WebSocketMessageType.Text, true, CancellationToken.None);
+                                    await _webSocket.SendAsync(Encoding.UTF8.GetBytes("REFRESH"), WebSocketMessageType.Text, true, stoppingToken);
                                     var result = await _webSocket.ReceiveAsync(buffer, stoppingToken);
                                     if (result.Count > 0)
                                     {
@@ -207,6 +231,13 @@ namespace HomeBlaze.Luxtronik
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failure in Luxtronic device.");
+
+                    IsAuthenticated = false;
+                    _webSocket?.Dispose();
+                    _webSocket = null;
+
+                    _thingManager.DetectChanges(this);
+                    await Task.Delay(10000, stoppingToken);
                 }
             }
         }
@@ -229,11 +260,21 @@ namespace HomeBlaze.Luxtronik
                 var heatEnergy = energy?.ElementAt(0).Elements("item");
                 var powerEnergy = energy?.ElementAt(1).Elements("item");
 
-                OutsideTemperature = GetDecimal(allValues, temperatures, 5);
-                WaterTemperature = GetDecimal(allValues, temperatures, 7);
-                FlowRate = GetDecimal(allValues, incoming, 6);
-
+                HeatPumpType = GetString(allValues, state, 0);
+                SoftwareVersion = GetDecimal(allValues, state, 1);
+                OperationMode = GetDecimal(allValues, state, 7);
                 PowerProduction = GetDecimal(allValues, state, 8) * 1000;
+
+                OutsideTemperature.Temperature = GetDecimal(allValues, temperatures, 5);
+                WaterTemperature.Temperature = GetDecimal(allValues, temperatures, 7);
+
+                FlowTemperature.Temperature = GetDecimal(allValues, temperatures, 9);
+                ReturnTemperature.Temperature = GetDecimal(allValues, temperatures, 10);
+
+                HeatSourceInletTemperature.Temperature = GetDecimal(allValues, temperatures, 9);
+                HeatSourceOutletTemperature.Temperature = GetDecimal(allValues, temperatures, 10);
+
+                FlowRate = GetDecimal(allValues, incoming, 6);
 
                 TotalProducedHeatEnergy = GetDecimal(allValues, heatEnergy, 0) * 1000;
                 TotalProducedWaterEnergy = GetDecimal(allValues, heatEnergy, 1) * 1000;
@@ -304,6 +345,13 @@ namespace HomeBlaze.Luxtronik
             }
 
             return null;
+        }
+
+        private string? GetString(XElement[]? allValues, IEnumerable<XElement>? section, int index)
+        {
+            var id = section?.ElementAt(index).Attribute("id")?.Value;
+            var element = allValues?.SingleOrDefault(v => v.Attribute("id")?.Value == id);
+            return element?.Element("value")?.Value;
         }
 
         public override void Dispose()

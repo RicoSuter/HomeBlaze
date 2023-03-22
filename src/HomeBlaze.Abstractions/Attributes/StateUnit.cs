@@ -15,6 +15,7 @@
         Currency,
         Ampere,
         Meter,
-        Kilobyte
+        Kilobyte,
+        LiterPerHour
     }
 }
