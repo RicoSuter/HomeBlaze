@@ -131,7 +131,7 @@ namespace HomeBlaze.Luxtronik
             }
         }
 
-        [State]
+        [State(Unit = StateUnit.LiterPerHour)]
         public decimal? FlowRate { get; private set; }
 
         public LuxtronikDevice(IThingManager thingManager, ILogger<LuxtronikDevice> logger)
