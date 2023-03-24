@@ -18,7 +18,7 @@ namespace HomeBlaze.Services
             string thingId, string propertyName, 
             DateTimeOffset from, DateTimeOffset to, CancellationToken cancellationToken)
         {
-            return _influxStateManager.ReadStateAsync<TState>(
+            return _blobStateManager.ReadStateAsync<TState>(
                 thingId, propertyName, from, to, cancellationToken);
         }
 
