@@ -44,7 +44,17 @@ namespace HomeBlaze.Host
                 .AddHostedService(s => (ThingManager)s.GetRequiredService<IThingManager>());
 
             var seriesType = configuration.GetValue<string>("Series:Type");
-            if (seriesType == "InfluxDb")
+            if (seriesType == "InfluxDb,Blobs")
+            {
+                services
+                    .AddSingleton<InfluxStateManager>()
+                    .AddSingleton<BlobStateManager>()
+                    .AddSingleton<IStateManager>(s => new CombinedStateManager(
+                        s.GetRequiredService<InfluxStateManager>(), 
+                        s.GetRequiredService<BlobStateManager>()))
+                    .AddHostedService(s => (CombinedStateManager)s.GetRequiredService<IStateManager>());
+            }
+            else if (seriesType == "InfluxDb")
             {
                 services
                     .AddSingleton<IStateManager, InfluxStateManager>();

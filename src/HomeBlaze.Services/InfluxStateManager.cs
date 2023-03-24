@@ -79,7 +79,7 @@ namespace HomeBlaze.Services
         {
             try
             {
-                var flux = "from(bucket:\"" + _organization + "\")\r\n" +
+                var flux = "from(bucket:\"" + _bucket + "\")\r\n" +
                     "|> range(start: " + from.ToUniversalTime().ToString("o") + ", " +
                              "stop: " + to.ToUniversalTime().ToString("o") + ")\r\n" +
                     "|> filter(fn: (r) => r[\"thing\"] == \"" + thingId + "\")\r\n" +
