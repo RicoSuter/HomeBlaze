@@ -11,6 +11,8 @@ namespace HomeBlaze.Services
     public class InfluxStateManager : IDisposable, IStateManager
     {
         private readonly InfluxDBClient _client;
+        private readonly WriteApi _writeApi;
+
         private readonly ILogger<InfluxStateManager> _logger;
 
         private readonly IDisposable _eventSubscription;
@@ -30,6 +32,8 @@ namespace HomeBlaze.Services
             _organization = configuration.GetValue("Series:Organization", "HomeBlaze");
 
             _client = new InfluxDBClient(_url, _username, _password);
+            _writeApi = _client.GetWriteApi();
+            
             _logger = logger;
 
             _eventSubscription = eventManager.Subscribe(message =>
@@ -45,25 +49,21 @@ namespace HomeBlaze.Services
         {
             try
             {
-                if (!(stateChangedEvent.NewValue is byte[]))
+                if (stateChangedEvent.NewValue is not byte[])
                 {
                     var thingId = stateChangedEvent.Thing.Id;
                     if (thingId != null)
                     {
-                        using (var writeApi = _client.GetWriteApi())
-                        {
-                            var point = PointData
-                                .Measurement("property")
-                                .Tag("property", stateChangedEvent.PropertyName)
-                                .Tag("thing", stateChangedEvent.Thing.Id)
-                                .Field("value", stateChangedEvent.NewValue)
-                                .Timestamp(
-                                    stateChangedEvent.ChangeDate.ToUniversalTime(),
-                                    WritePrecision.Ns);
+                        var point = PointData
+                            .Measurement("property")
+                            .Tag("property", stateChangedEvent.PropertyName)
+                            .Tag("thing", stateChangedEvent.Thing.Id)
+                            .Field("value", stateChangedEvent.NewValue)
+                            .Timestamp(
+                                stateChangedEvent.ChangeDate.ToUniversalTime(),
+                                WritePrecision.Ns);
 
-                            writeApi.WritePoint(point, _bucket, _organization);
-                            writeApi.Flush();
-                        }
+                        _writeApi.WritePoint(point, _bucket, _organization);
                     }
                 }
             }
@@ -116,6 +116,8 @@ namespace HomeBlaze.Services
         public void Dispose()
         {
             _eventSubscription.Dispose();
+            _writeApi.Dispose();
+            _client.Dispose();
         }
     }
 }

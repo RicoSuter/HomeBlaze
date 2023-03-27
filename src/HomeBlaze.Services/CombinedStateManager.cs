@@ -29,10 +29,10 @@ namespace HomeBlaze.Services
 
         public override void Dispose()
         {
-            base.Dispose();
-
             _influxStateManager.Dispose();
             _blobStateManager.Dispose();
+
+            base.Dispose();
         }
     }
 }
