@@ -49,16 +49,16 @@ namespace HomeBlaze.Services
         {
             try
             {
-                if (stateChangedEvent.NewValue is not byte[])
+                var newValue = stateChangedEvent.NewValue;
+                if (newValue is not byte[])
                 {
                     var thingId = stateChangedEvent.Thing.Id;
-                    var newValue = stateChangedEvent.NewValue;
-
                     if (thingId != null && newValue != null)
                     {
                         var point = PointData
                             .Measurement("property")
                             .Tag("property", stateChangedEvent.PropertyName)
+                            .Tag("type", stateChangedEvent.Thing.GetType().FullName)
                             .Tag("thing", thingId)
                             .Field("value", newValue)
                             .Timestamp(
