@@ -67,7 +67,7 @@
                 DateTimeOffset.Now.AddDays(numberOfDays * -1),
                 DateTimeOffset.Now, CancellationToken.None);
 
-            var date = (DateTimeOffset)DateTimeOffset.Now.Date;
+            var date = DateTimeOffset.Now.Date;
             var days = new Dictionary<DateTimeOffset, decimal>();
             for (int i = 0; i < numberOfDays; i++)
             {
