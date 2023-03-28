@@ -7,7 +7,7 @@
 
 @if (Thing != null)
 {
-    <div style="padding: 10px; height: @(Thing.Scale * 100)px; width: @(Thing.Scale * 200)px">
+    <div style="padding: 10px; height: @(Thing.Scale * 100)px; width: @(Thing.Scale * 200 * Thing.Days / 7)px">
         <div style="transform: scale(@((Thing.Scale * 100 - 20) / 80)); transform-origin: top left;">
             <div style="font-size: 1.2em; white-space: nowrap;">
                 <i class="@Thing.Icon" aria-hidden="true"></i><span>&nbsp;</span>
@@ -62,7 +62,7 @@
 
         if (Thing != null && thingId != null && propertyName != null)
         {
-            var numberOfDays = 7;
+            var numberOfDays = Thing.Days;
             var values = await StateManager.ReadStateAsync<object>(thingId, propertyName,
                 DateTimeOffset.Now.AddDays(numberOfDays * -1),
                 DateTimeOffset.Now, CancellationToken.None);

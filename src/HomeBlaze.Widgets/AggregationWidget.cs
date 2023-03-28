@@ -34,6 +34,9 @@ namespace HomeBlaze.Widgets
         public decimal Multiplier { get; set; } = 1m;
 
         [Configuration]
+        public int Days { get; set; } = 7;
+
+        [Configuration]
         public int Decimals { get; set; } = 2;
 
         [Configuration(IsThingReference = true)]
