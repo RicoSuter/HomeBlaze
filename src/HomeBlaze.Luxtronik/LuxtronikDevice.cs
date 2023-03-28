@@ -57,8 +57,8 @@ namespace HomeBlaze.Luxtronik
 
 
         [State]
-        public bool IsConnected => 
-            _webSocket?.State == WebSocketState.Open && 
+        public bool IsConnected =>
+            _webSocket?.State == WebSocketState.Open &&
             (DateTimeOffset.Now - LastUpdated < TimeSpan.FromMinutes(1));
 
         [State]
@@ -139,12 +139,12 @@ namespace HomeBlaze.Luxtronik
             _thingManager = thingManager;
             _logger = logger;
 
-            OutsideTemperature = new LuxtronikTemperature { Id = Id + "/OutsideTemperature", Title = "Outside Temperature" };
-            WaterTemperature = new LuxtronikTemperature { Id = Id + "/WaterTemperature", Title = "Water Temperature" };
-            FlowTemperature = new LuxtronikTemperature { Id = Id + "/FlowTemperature", Title = "Flow Temperature" };
-            ReturnTemperature = new LuxtronikTemperature { Id = Id + "/ReturnTemperature", Title = "Return Temperature" };
-            HeatSourceInletTemperature = new LuxtronikTemperature { Id = Id + "/HeatSourceInletTemperature", Title = "Heat Source Inlet Temperature" };
-            HeatSourceOutletTemperature = new LuxtronikTemperature { Id = Id + "/HeatSourceOutletTemperature", Title = "Heat Source Outlet Temperature" };
+            OutsideTemperature = new LuxtronikTemperature(this, "OutsideTemperature") { Title = "Outside Temperature" };
+            WaterTemperature = new LuxtronikTemperature(this, "WaterTemperature") { Title = "Water Temperature" };
+            FlowTemperature = new LuxtronikTemperature(this, "FlowTemperature") { Title = "Flow Temperature" };
+            ReturnTemperature = new LuxtronikTemperature(this, "ReturnTemperature") { Title = "Return Temperature" };
+            HeatSourceInletTemperature = new LuxtronikTemperature(this, "HeatSourceInletTemperature") { Title = "Heat Source Inlet Temperature" };
+            HeatSourceOutletTemperature = new LuxtronikTemperature(this, "HeatSourceOutletTemperature") { Title = "Heat Source Outlet Temperature" };
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
