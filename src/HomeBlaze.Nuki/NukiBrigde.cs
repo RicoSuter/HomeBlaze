@@ -22,7 +22,7 @@ namespace HomeBlaze.Nuki
     // Docs: https://developer.nuki.io/page/nuki-bridge-http-api-1-12/4#heading--doorsensor-states
 
     [DisplayName("Nuki Bridge")]
-    [ThingSetup(typeof(NukiBridgeSetup))]
+    [ThingSetup(typeof(NukiBridgeSetup), CanEdit = true)]
     public class NukiBridge : PollingThing, IIconProvider,
         IConnectedThing, IHubDevice, IPowerConsumptionSensor
     {
