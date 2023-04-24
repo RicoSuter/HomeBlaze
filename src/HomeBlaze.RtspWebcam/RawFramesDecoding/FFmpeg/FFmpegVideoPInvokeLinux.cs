@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace RtspCapture.RawFramesDecoding.FFmpeg
+namespace HomeBlaze.RtspWebcam.RawFramesDecoding.FFmpeg
 {
     static class FFmpegVideoPInvokeLinux
     {
         private const string LibraryName = "libffmpeghelper.so";
-        
+
         [DllImport(LibraryName, EntryPoint = "create_video_decoder", CallingConvention = CallingConvention.Cdecl)]
         public static extern int CreateVideoDecoder(FFmpegVideoCodecId videoCodecId, out IntPtr handle);
 

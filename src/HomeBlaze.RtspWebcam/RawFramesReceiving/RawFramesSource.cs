@@ -6,7 +6,7 @@ using RtspClientSharp;
 using RtspClientSharp.RawFrames;
 using RtspClientSharp.Rtsp;
 
-namespace RtspCapture.RawFramesReceiving
+namespace HomeBlaze.RtspWebcam.RawFramesReceiving
 {
     class RawFramesSource : IRawFramesSource
     {

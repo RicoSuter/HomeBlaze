@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using RtspCapture.RawFramesDecoding;
-using RtspCapture.RawFramesDecoding.DecodedFrames;
-using RtspCapture.RawFramesDecoding.FFmpeg;
-using RtspCapture.RawFramesReceiving;
+using HomeBlaze.RtspWebcam.RawFramesDecoding.DecodedFrames;
+using HomeBlaze.RtspWebcam.RawFramesDecoding.FFmpeg;
+using HomeBlaze.RtspWebcam.RawFramesReceiving;
 using RtspClientSharp.RawFrames;
 using RtspClientSharp.RawFrames.Video;
 
-namespace RtspCapture.processor
+namespace HomeBlaze.RtspWebcam.RawFramesDecoding
 {
     class DecodedFrameSource : IDisposable
     {

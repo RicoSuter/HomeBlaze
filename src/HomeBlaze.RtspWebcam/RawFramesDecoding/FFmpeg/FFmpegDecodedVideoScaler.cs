@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RtspCapture.RawFramesDecoding.FFmpeg
+namespace HomeBlaze.RtspWebcam.RawFramesDecoding.FFmpeg
 {
     class FFmpegDecodedVideoScaler
     {
@@ -47,13 +47,13 @@ namespace RtspCapture.RawFramesDecoding.FFmpeg
             if (!postVideoDecodingParameters.RegionOfInterest.IsEmpty)
             {
                 sourceLeft =
-                    (int) (decodedVideoFrameParameters.Width * postVideoDecodingParameters.RegionOfInterest.Left);
+                    (int)(decodedVideoFrameParameters.Width * postVideoDecodingParameters.RegionOfInterest.Left);
                 sourceTop =
-                    (int) (decodedVideoFrameParameters.Height * postVideoDecodingParameters.RegionOfInterest.Top);
+                    (int)(decodedVideoFrameParameters.Height * postVideoDecodingParameters.RegionOfInterest.Top);
                 sourceWidth =
-                    (int) (decodedVideoFrameParameters.Width * postVideoDecodingParameters.RegionOfInterest.Width);
+                    (int)(decodedVideoFrameParameters.Width * postVideoDecodingParameters.RegionOfInterest.Width);
                 sourceHeight =
-                    (int) (decodedVideoFrameParameters.Height * postVideoDecodingParameters.RegionOfInterest.Height);
+                    (int)(decodedVideoFrameParameters.Height * postVideoDecodingParameters.RegionOfInterest.Height);
             }
 
             if (!postVideoDecodingParameters.TargetFrameSize.IsEmpty)
@@ -63,8 +63,8 @@ namespace RtspCapture.RawFramesDecoding.FFmpeg
 
                 ScalingPolicy scalingPolicy = postVideoDecodingParameters.ScalePolicy;
 
-                float srcAspectRatio = (float) sourceWidth / sourceHeight;
-                float destAspectRatio = (float) scaledWidth / scaledHeight;
+                float srcAspectRatio = (float)sourceWidth / sourceHeight;
+                float destAspectRatio = (float)scaledWidth / scaledHeight;
 
                 if (scalingPolicy == ScalingPolicy.Auto)
                 {

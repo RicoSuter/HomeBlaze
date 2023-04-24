@@ -1,4 +1,4 @@
-﻿namespace RtspCapture.RawFramesDecoding
+﻿namespace HomeBlaze.RtspWebcam.RawFramesDecoding
 {
     public enum ScalingPolicy
     {

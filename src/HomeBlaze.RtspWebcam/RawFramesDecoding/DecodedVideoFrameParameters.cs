@@ -1,6 +1,6 @@
-﻿using RtspCapture.RawFramesDecoding.FFmpeg;
+﻿using HomeBlaze.RtspWebcam.RawFramesDecoding.FFmpeg;
 
-namespace RtspCapture.RawFramesDecoding
+namespace HomeBlaze.RtspWebcam.RawFramesDecoding
 {
     class DecodedVideoFrameParameters
     {
@@ -29,7 +29,7 @@ namespace RtspCapture.RawFramesDecoding
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((DecodedVideoFrameParameters) obj);
+            return Equals((DecodedVideoFrameParameters)obj);
         }
 
         public override int GetHashCode()
@@ -37,8 +37,8 @@ namespace RtspCapture.RawFramesDecoding
             unchecked
             {
                 var hashCode = Width;
-                hashCode = (hashCode * 397) ^ Height;
-                hashCode = (hashCode * 397) ^ (int) PixelFormat;
+                hashCode = hashCode * 397 ^ Height;
+                hashCode = hashCode * 397 ^ (int)PixelFormat;
                 return hashCode;
             }
         }

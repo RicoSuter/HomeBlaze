@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RtspCapture.RawFramesDecoding
+namespace HomeBlaze.RtspWebcam.RawFramesDecoding
 {
     static class ImageUtils
     {
@@ -8,7 +8,7 @@ namespace RtspCapture.RawFramesDecoding
         {
             int bitsPerPixel = pixelFormat.GetBitsPerPixel();
 
-            return ((width * bitsPerPixel + 31) & ~31) >> 3;
+            return (width * bitsPerPixel + 31 & ~31) >> 3;
         }
 
         public static int GetBitsPerPixel(this PixelFormat pixelFormat)

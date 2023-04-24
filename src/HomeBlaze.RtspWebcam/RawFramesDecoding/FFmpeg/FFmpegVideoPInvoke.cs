@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace RtspCapture.RawFramesDecoding.FFmpeg
+namespace HomeBlaze.RtspWebcam.RawFramesDecoding.FFmpeg
 {
     enum FFmpegVideoCodecId
     {
@@ -128,7 +128,7 @@ namespace RtspCapture.RawFramesDecoding.FFmpeg
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return FFmpegVideoPInvokeWin.CreateVideoScaler(sourceLeft, sourceTop, sourceWidth, 
+                return FFmpegVideoPInvokeWin.CreateVideoScaler(sourceLeft, sourceTop, sourceWidth,
                     sourceHeight, sourcePixelFormat, scaledWidth, scaledHeight, scaledPixelFormat, qualityFlags, out handle);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))

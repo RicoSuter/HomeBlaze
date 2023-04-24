@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using RtspClientSharp.RawFrames.Video;
-using RtspCapture.RawFramesDecoding.DecodedFrames;
+using HomeBlaze.RtspWebcam.RawFramesDecoding.DecodedFrames;
 
-namespace RtspCapture.RawFramesDecoding.FFmpeg
+namespace HomeBlaze.RtspWebcam.RawFramesDecoding.FFmpeg
 {
     class FFmpegVideoDecoder
     {
@@ -65,7 +65,7 @@ namespace RtspCapture.RawFramesDecoding.FFmpeg
                         fixed (byte* initDataPtr = &_extraData[0])
                         {
                             resultCode = FFmpegVideoPInvoke.SetVideoDecoderExtraData(_decoderHandle,
-                                (IntPtr) initDataPtr, _extraData.Length);
+                                (IntPtr)initDataPtr, _extraData.Length);
 
                             if (resultCode != 0)
                                 throw new DecoderException(
@@ -74,7 +74,7 @@ namespace RtspCapture.RawFramesDecoding.FFmpeg
                     }
                 }
 
-                resultCode = FFmpegVideoPInvoke.DecodeFrame(_decoderHandle, (IntPtr) rawBufferPtr,
+                resultCode = FFmpegVideoPInvoke.DecodeFrame(_decoderHandle, (IntPtr)rawBufferPtr,
                     rawVideoFrame.FrameSegment.Count,
                     out int width, out int height, out FFmpegPixelFormat pixelFormat);
 
@@ -113,7 +113,7 @@ namespace RtspCapture.RawFramesDecoding.FFmpeg
 
             fixed (byte* scaledBuffer = &bufferSegment.Array[bufferSegment.Offset])
                 resultCode = FFmpegVideoPInvoke.ScaleDecodedVideoFrame(_decoderHandle, videoScaler.Handle,
-                    (IntPtr) scaledBuffer, videoScaler.ScaledStride);
+                    (IntPtr)scaledBuffer, videoScaler.ScaledStride);
 
             if (resultCode != 0)
                 throw new DecoderException(

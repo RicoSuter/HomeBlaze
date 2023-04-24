@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace RtspCapture.RawFramesDecoding.DecodedFrames
+namespace HomeBlaze.RtspWebcam.RawFramesDecoding.DecodedFrames
 {
     class DecodedVideoFrame : IDecodedVideoFrame
     {

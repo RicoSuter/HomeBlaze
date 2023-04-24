@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace RtspCapture.RawFramesDecoding.FFmpeg
+namespace HomeBlaze.RtspWebcam.RawFramesDecoding.FFmpeg
 {
     static class FFmpegVideoPInvokeWin
     {

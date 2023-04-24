@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace RtspCapture.RawFramesDecoding
+namespace HomeBlaze.RtspWebcam.RawFramesDecoding
 {
     public class PostVideoDecodingParameters
     {
@@ -36,7 +36,7 @@ namespace RtspCapture.RawFramesDecoding
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((PostVideoDecodingParameters) obj);
+            return Equals((PostVideoDecodingParameters)obj);
         }
 
         public override int GetHashCode()
@@ -44,9 +44,9 @@ namespace RtspCapture.RawFramesDecoding
             unchecked
             {
                 var hashCode = RegionOfInterest.GetHashCode();
-                hashCode = (hashCode * 397) ^ TargetFrameSize.GetHashCode();
-                hashCode = (hashCode * 397) ^ (int) TargetFormat;
-                hashCode = (hashCode * 397) ^ (int) ScaleQuality;
+                hashCode = hashCode * 397 ^ TargetFrameSize.GetHashCode();
+                hashCode = hashCode * 397 ^ (int)TargetFormat;
+                hashCode = hashCode * 397 ^ (int)ScaleQuality;
                 return hashCode;
             }
         }

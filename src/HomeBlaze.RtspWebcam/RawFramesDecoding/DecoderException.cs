@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace RtspCapture.RawFramesDecoding
+namespace HomeBlaze.RtspWebcam.RawFramesDecoding
 {
     [Serializable]
     public class DecoderException : Exception

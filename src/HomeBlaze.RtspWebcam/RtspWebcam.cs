@@ -2,11 +2,10 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.RtspWebcam;
+using HomeBlaze.RtspWebcam.RawFramesDecoding;
+using HomeBlaze.RtspWebcam.RawFramesReceiving;
 using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.Logging;
-using RtspCapture.processor;
-using RtspCapture.RawFramesReceiving;
 using RtspClientSharp;
 using System;
 using System.ComponentModel;
@@ -18,7 +17,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Baflux.RtspWebcam
+namespace HomeBlaze.RtspWebcam
 {
     [DisplayName("RTSP Webcam")]
     [ThingSetup(typeof(RtspWebcamSetup), CanEdit = true)]
