@@ -17,7 +17,7 @@ namespace HomeBlaze.Things
         private IEnumerable<string>? _thingTypes;
         private IEnumerable<string>? _tingInterfaces;
 
-        public string? Id => "system.pluginmanager." + _systemThing.InternalId;
+        public string Id => _systemThing.Id + "/plugins";
 
         public string Title => "Plugin Manager";
 

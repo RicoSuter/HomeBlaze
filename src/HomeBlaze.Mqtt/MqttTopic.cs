@@ -14,7 +14,7 @@ namespace HomeBlaze.Mqtt
     {
         private Dictionary<string, object?> _state = new Dictionary<string, object?>();
 
-        public string? Id { get; set; }
+        public required string Id { get; init; }
 
         public string? Title { get; set; }
 
@@ -57,7 +57,7 @@ namespace HomeBlaze.Mqtt
                             if (property.Value.ValueKind == JsonValueKind.String)
                             {
                                 _state[property.Name] = property.Value.GetString();
-                            } 
+                            }
                             else if (property.Value.ValueKind == JsonValueKind.Number)
                             {
                                 _state[property.Name] = property.Value.GetDecimal();

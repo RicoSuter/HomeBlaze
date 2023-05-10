@@ -25,8 +25,6 @@ namespace HomeBlaze.ThanksMister
         private IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ThanksMisterWallPanel> _logger;
 
-        public override string? Id => "thanksmister.wallpanel." + InternalId;
-
         public override string Title => "ThanksMister WallPanel (" + Host + ")";
 
         public string IconName => "fas fa-tablet-alt";
@@ -43,9 +41,6 @@ namespace HomeBlaze.ThanksMister
         public decimal? Brightness { get; private set; }
 
         // Configuration
-
-        [Configuration("id")]
-        public string? InternalId { get; set; } = Guid.NewGuid().ToString();
 
         [Configuration]
         public string? Host { get; set; }

@@ -41,7 +41,7 @@ namespace HomeBlaze.Luxtronik
 
 
         [Configuration(IsIdentifier = true)]
-        public string? Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [Configuration("title")]
         public string? DisplayTitle { get; set; }
@@ -139,12 +139,12 @@ namespace HomeBlaze.Luxtronik
             _thingManager = thingManager;
             _logger = logger;
 
-            OutsideTemperature = new LuxtronikTemperature(this, "OutsideTemperature") { Title = "Outside Temperature" };
-            WaterTemperature = new LuxtronikTemperature(this, "WaterTemperature") { Title = "Water Temperature" };
-            FlowTemperature = new LuxtronikTemperature(this, "FlowTemperature") { Title = "Flow Temperature" };
-            ReturnTemperature = new LuxtronikTemperature(this, "ReturnTemperature") { Title = "Return Temperature" };
-            HeatSourceInletTemperature = new LuxtronikTemperature(this, "HeatSourceInletTemperature") { Title = "Heat Source Inlet Temperature" };
-            HeatSourceOutletTemperature = new LuxtronikTemperature(this, "HeatSourceOutletTemperature") { Title = "Heat Source Outlet Temperature" };
+            OutsideTemperature = new LuxtronikTemperature(this, "outside") { Title = "Outside Temperature" };
+            WaterTemperature = new LuxtronikTemperature(this, "water") { Title = "Water Temperature" };
+            FlowTemperature = new LuxtronikTemperature(this, "flow") { Title = "Flow Temperature" };
+            ReturnTemperature = new LuxtronikTemperature(this, "return") { Title = "Return Temperature" };
+            HeatSourceInletTemperature = new LuxtronikTemperature(this, "heat-source-inlet") { Title = "Heat Source Inlet Temperature" };
+            HeatSourceOutletTemperature = new LuxtronikTemperature(this, "heat-source-outlet") { Title = "Heat Source Outlet Temperature" };
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

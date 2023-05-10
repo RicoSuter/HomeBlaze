@@ -28,8 +28,6 @@ namespace HomeBlaze.Zwave
 
         public string IconName => "fab fa-hubspot";
 
-        public override string? Id => "zwave.controller." + InternalId;
-
         public override string? Title => $"Z-Wave Controller ({ActualSerialPort ?? "n/a"}, Node {(_controllerNode != null ? _controllerNode.NodeID : "?")})";
 
         [State]
@@ -46,9 +44,6 @@ namespace HomeBlaze.Zwave
 
         [State]
         public bool IsRemovingNodes { get; private set; }
-
-        [Configuration("id")]
-        public string InternalId { get; set; } = Guid.NewGuid().ToString();
 
         [Configuration]
         public string? SerialPort { get; set; } = "COM7;/dev/ttyACM1";

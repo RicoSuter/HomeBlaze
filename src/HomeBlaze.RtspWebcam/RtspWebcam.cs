@@ -47,13 +47,9 @@ namespace HomeBlaze.RtspWebcam
             return IntPtr.Zero;
         }
 
-        public override string Id => "rtsp.webcam." + InternalId;
-
         public override string Title => InternalTitle + " (RTSP Webcam)";
 
         // Configuration
-        [Configuration("id")]
-        public string InternalId { get; set; } = Guid.NewGuid().ToString();
 
         [Configuration("title")]
         public string? InternalTitle { get; set; }

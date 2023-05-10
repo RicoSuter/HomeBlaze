@@ -8,7 +8,7 @@ namespace HomeBlaze.Gardena
 {
     public abstract class GardenaDevice : IThing
     {
-        public abstract string? Id { get; }
+        public abstract string Id { get; }
 
         public virtual string? Title { get; set; }
 

@@ -13,7 +13,7 @@ namespace HomeBlaze.Widgets
     public class IconWidget : IThing
     {
         [Configuration(IsIdentifier = true)]
-        public string? Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         public string? Title => "Icon";
 

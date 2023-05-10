@@ -26,8 +26,6 @@ namespace HomeBlaze.MyStrom
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public override string? Id => Information?.MacAddress != null ? "mystrom.switch." + Information?.MacAddress : null;
-
         public override string Title => string.IsNullOrEmpty(DisplayTitle) ?
             $"myStrom Switch ({Information?.MacAddress})" : DisplayTitle;
 

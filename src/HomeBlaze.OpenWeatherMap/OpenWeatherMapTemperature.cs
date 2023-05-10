@@ -23,8 +23,6 @@ namespace HomeBlaze.OpenWeatherMap
 
         public bool IsRefreshing { get; private set; }
 
-        public override string Id => "openweathermap." + InternalId;
-
         public override string Title => LocationQuery + " (OpenWeatherMap)";
 
         public string IconName => "fas fa-cloud";
@@ -32,9 +30,6 @@ namespace HomeBlaze.OpenWeatherMap
         public DateTimeOffset? LastUpdated { get; private set; }
 
         // Configuration
-
-        [Configuration("id")]
-        public string InternalId { get; set; } = Guid.NewGuid().ToString();
 
         [Configuration(IsSecret = true)]
         public string? ApiKey { get; set; }

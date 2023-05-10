@@ -12,9 +12,7 @@ namespace HomeBlaze.Philips.Hue
     {
         private Sensor _sensor;
 
-        public string? Id => Bridge != null ?
-            "hue.unknown." + Bridge.BridgeId + "." + (_sensor.UniqueId ?? _sensor.Id) :
-            null;
+        public string Id => Bridge.Id + "/sensors/" + (_sensor.UniqueId ?? _sensor.Id);
 
         public string Title => _sensor.Name;
 

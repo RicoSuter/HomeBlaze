@@ -10,7 +10,7 @@ namespace HomeBlaze.Philips.Hue
 {
     public abstract class HueSwitchDevice : IThing, IIconProvider, ILastUpdatedProvider
     {
-        public abstract string? Id { get; }
+        public string Id => Bridge.Id + "/sensors/" + (Sensor.UniqueId ?? Sensor.Id);
 
         internal Sensor Sensor { get; set; }
 

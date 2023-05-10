@@ -6,12 +6,13 @@ namespace HomeBlaze.Tesla.Vehicle.Models
 {
     public partial class DriveState : IThing
     {
-        public string? Id => Parent?.Id + "/drive";
+        public string Id => Parent!.Id + "/drive";
 
         public string? Title => "Drive";
 
         [ParentThing]
         public TeslaVehicle? Parent { get; private set; }
+
 
         [State]
         public GeoCoordinate ActiveRouteLocation => new()

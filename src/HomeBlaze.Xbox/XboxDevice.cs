@@ -28,8 +28,6 @@ namespace HomeBlaze.Xbox
 
         internal SmartGlassClient? Client { get; private set; }
 
-        public override string Id => "microsoft.xbox." + DeviceId;
-
         public override string Title => "Microsoft Xbox (" + IpAddress + ")";
 
         public string IconName => "fas fa-gamepad";

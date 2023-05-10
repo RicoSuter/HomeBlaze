@@ -10,9 +10,7 @@ namespace HomeBlaze.Gardena
 {
     public class GardenaIrrigationControl : GardenaDevice, IIconProvider, ILastUpdatedProvider, IConnectedThing
     {
-        public override string? Id => GardenaId != null ?
-           "gardena.irrigationcontrol." + GardenaId :
-           null;
+        public override string Id => Location.Id + "/irrigation-controls/" + GardenaId;
 
         public string IconName => "fas fa-water";
 
@@ -59,7 +57,7 @@ namespace HomeBlaze.Gardena
 
         internal override GardenaDevice UpdateCommon(JObject data)
         {
-            GardenaId = data?["id"]?.Value<string>();
+            GardenaId = data!["id"]!.Value<string>()!;
 
             Title = data?["attributes"]?["name"]?["value"]?.Value<string>() ?? Title;
             BatteryState = data?["attributes"]?["batteryState"]?["value"]?.Value<string>() ?? BatteryState;

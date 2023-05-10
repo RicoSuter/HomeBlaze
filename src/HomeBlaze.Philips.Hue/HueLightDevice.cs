@@ -7,6 +7,7 @@ using MudBlazor;
 using Q42.HueApi;
 using Q42.HueApi.ColorConverters;
 using Q42.HueApi.ColorConverters.Original;
+using Q42.HueApi.Models;
 using System;
 using System.Linq;
 using System.Threading;
@@ -19,9 +20,7 @@ namespace HomeBlaze.Philips.Hue
     {
         private Light _light;
 
-        public string? Id => Bridge != null ?
-            "hue.light." + Bridge.BridgeId + "." + _light.UniqueId :
-            null;
+        public string Id => Bridge.Id + "/sensors/" + _light.UniqueId;
 
         public string Title => $"{_light.Name} " +
             $"({string.Join(", ", new string?[] 

@@ -7,10 +7,6 @@ namespace HomeBlaze.Philips.Hue
 {
     public class HueTapSwitchDevice : HueSwitchDevice, IIconProvider
     {
-        public override string? Id => Bridge != null ?
-            "hue.tap.switch." + Bridge.BridgeId + "." + Sensor.UniqueId :
-            null;
-
         public HueTapSwitchDevice(Sensor sensor, HueBridge bridge)
             : base(sensor, bridge)
         {

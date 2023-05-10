@@ -12,9 +12,7 @@ namespace HomeBlaze.Gardena
 {
     public class GardenaValve : GardenaDevice, IIconProvider, ILastUpdatedProvider, IConnectedThing
     {
-        public override string? Id => GardenaId != null ?
-           "gardena.valve." + GardenaId :
-           null;
+        public override string Id => Location.Id + "/valves/" + GardenaId;
 
         public string IconName => "fas fa-tint";
 
@@ -99,7 +97,7 @@ namespace HomeBlaze.Gardena
 
         internal override GardenaValve Update(JObject data)
         {
-            GardenaId = data?["id"]?.Value<string>();
+            GardenaId = data!["id"]!.Value<string>()!;
 
             var array = GardenaId?.Split(':');
             if (array?.Length == 2)

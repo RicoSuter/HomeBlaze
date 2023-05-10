@@ -8,10 +8,6 @@ namespace HomeBlaze.Philips.Hue
 {
     public class HueDimmerSwitchDevice : HueSwitchDevice, IBatteryDevice
     {
-        public override string? Id => Bridge != null ?
-            "hue.dimmer.switch." + Bridge.BridgeId + "." + Sensor.UniqueId :
-            null;
-
         [State]
         public decimal? BatteryLevel => Sensor?.Config.Battery / 100m;
 

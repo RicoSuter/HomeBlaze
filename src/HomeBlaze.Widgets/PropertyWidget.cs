@@ -14,7 +14,7 @@ namespace HomeBlaze.Widgets
         private readonly IThingManager _thingManager;
 
         [Configuration(IsIdentifier = true)]
-        public string? Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [Configuration]
         public string? Title { get; set; }

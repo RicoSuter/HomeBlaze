@@ -27,8 +27,6 @@ namespace HomeBlaze.AsusRouter
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public override string? Id => Settings?.LabelMac != null ? "asus.router." + Settings?.LabelMac : null;
-
         public override string? Title =>
             !string.IsNullOrEmpty(Settings?.LabelMac) ?
             $"ASUS Router ({Settings?.LabelMac})" :

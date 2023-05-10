@@ -35,8 +35,6 @@ namespace HomeBlaze.Gardena
 
         internal Location? Location { get; private set; }
 
-        public override string? Id => LocationId != null ? "gardena.location." + LocationId : null;
-
         public override string? Title => $"Gardena Location ({Location?.Name?.ToString() ?? "?"})";
 
         public string IconName => "fab fa-hubspot";

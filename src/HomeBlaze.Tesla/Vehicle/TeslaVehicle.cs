@@ -26,8 +26,6 @@ namespace HomeBlaze.Tesla
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public override string? Id => VehicleId != null ? "tesla/vehicles/" + VehicleId : null;
-
         public override string Title => "Tesla Vehicle (" + (Vin?.ToString() ?? "?") + ")";
 
         public bool IsConnected { get; private set; }

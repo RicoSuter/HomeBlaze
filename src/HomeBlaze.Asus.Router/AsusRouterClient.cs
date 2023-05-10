@@ -4,6 +4,7 @@ using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using MudBlazor;
 using PixelByProxy.Asus.Router.Models;
+using System;
 
 namespace HomeBlaze.AsusRouter
 {
@@ -12,7 +13,8 @@ namespace HomeBlaze.AsusRouter
     {
         internal Client Client { get; private set; }
 
-        public string? Id => "asus.router.client." + Client.Mac;
+        [Configuration(IsIdentifier = true)]
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         public string? Title => Client.DisplayName +
             (!string.IsNullOrEmpty(IpAddress) ? " (" + IpAddress + ")" : "");

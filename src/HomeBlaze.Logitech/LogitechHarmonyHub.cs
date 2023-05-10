@@ -27,8 +27,6 @@ namespace HomeBlaze.Logitech
 
         internal Harmony.Hub? Hub { get; private set; }
 
-        public override string Id => "logitech.harmony.hub." + RemoteId;
-
         public override string Title => "Logitech Harmony Hub (" + RemoteId + ")";
 
         public string IconName => "fab fa-hubspot";

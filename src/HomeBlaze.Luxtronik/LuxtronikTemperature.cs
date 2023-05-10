@@ -14,7 +14,7 @@ namespace HomeBlaze.Luxtronik
             _property = property;
         }
 
-        public string? Id => _device + "/" + _property;
+        public string Id => _device.Id + "/temperatures/" + _property;
 
         public string? Title { get; internal set; }
 

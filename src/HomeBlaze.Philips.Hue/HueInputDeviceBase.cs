@@ -18,7 +18,7 @@ namespace HomeBlaze.Philips.Hue
         private DateTimeOffset? _currentButtonChangeDate;
         private SensorInput _sensorInput;
 
-        public string? Id => $"hue.input.{SwitchDevice.Bridge.BridgeId}.{SwitchDevice.ReferenceId}.{ReferenceId}";
+        public string Id => SwitchDevice.Bridge.Id + $"/inputs/{SwitchDevice.ReferenceId}.{ReferenceId}";
 
         public string Title => _name;
 

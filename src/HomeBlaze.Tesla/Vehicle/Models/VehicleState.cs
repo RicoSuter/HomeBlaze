@@ -8,7 +8,7 @@ namespace HomeBlaze.Tesla.Vehicle.Models
     {
         private decimal _odometer;
 
-        public string? Id => Parent?.Id + "/vehicle";
+        public string Id => Parent?.Id + "/vehicle";
 
         public string? Title => "Vehicle";
 

@@ -24,7 +24,7 @@ namespace HomeBlaze.Things
         private readonly SystemThing _systemThing;
         private readonly IEventManager _eventManager;
 
-        public override string? Id => "system.diagnostics." + _systemThing.InternalId;
+        public override string Id => _systemThing.Id + "/diagnostics";
 
         public override string Title => "System Diagnostics";
 

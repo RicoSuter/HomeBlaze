@@ -9,7 +9,7 @@ namespace HomeBlaze.Zwave.Components
 
         public IThing? Parent => ParentDevice;
 
-        public string? Id => ParentDevice?.Id != null ? $"{ParentDevice.Id}:{Class}" : null;
+        public string Id => ParentDevice.Id + $"/{ParentDevice.Id}:{Class}";
 
         public virtual string? Title => $"{Class} (Node {ParentDevice?.NodeId.ToString() ?? "n/a"})";
 

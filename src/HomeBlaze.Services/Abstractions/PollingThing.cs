@@ -1,4 +1,5 @@
 ﻿using HomeBlaze.Abstractions;
+using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,8 @@ namespace HomeBlaze.Services.Abstractions
     {
         private readonly ILogger _logger;
 
-        public abstract string? Id { get; }
+        [Configuration(IsIdentifier = true)]
+        public virtual string Id { get; set; } = Guid.NewGuid().ToString();
 
         public abstract string? Title { get; }
 

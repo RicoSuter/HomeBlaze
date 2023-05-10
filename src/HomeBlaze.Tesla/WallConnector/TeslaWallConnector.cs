@@ -25,9 +25,6 @@ namespace HomeBlaze.Tesla.WallConnector
         private readonly ILogger _logger;
 
         [JsonIgnore]
-        public override string? Id => SerialNumber != null ? "tesla.wall.charger." + SerialNumber : null;
-
-        [JsonIgnore]
         public override string Title => "Tesla Wall Connector (" + (SerialNumber?.ToString() ?? "?") + ")";
 
         public string IconName => "fas fa-plug";

@@ -511,11 +511,6 @@ namespace HomeBlaze.Services
                         LoadState(rootThing, newValue, property.PropertyType, state, childThings, prefix, lastUpdated);
                     }
                 }
-                else if (parentThingAttribute != null && newValue == null)
-                {
-                    // TODO: Is this the right place and a good idea here?
-                    property.SetValue(obj, TryGetParent(rootThing));
-                }
             }
 
             if (obj is IStateProvider stateProvider)
@@ -551,6 +546,15 @@ namespace HomeBlaze.Services
 
             foreach (var thing in addedThings)
             {
+                foreach (var property in thing.GetType().GetStateProperties())
+                {
+                    var parentThingAttribute = property.ContextAttributes.OfType<ParentThingAttribute>().FirstOrDefault();
+                    if (parentThingAttribute != null)
+                    {
+                        property.SetValue(thing, parent);
+                    }
+                }
+
                 _things[parent].Children.Add(thing);
                 Register(thing);
             }

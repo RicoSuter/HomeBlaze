@@ -27,10 +27,6 @@ namespace HomeBlaze.Philips.Hue
         private bool _isRefreshing = false;
         private readonly ILogger<HueBridge> _logger;
 
-        public override string? Id => Bridge != null ?
-            "hue.brigde." + Bridge.BridgeId :
-            null;
-
         public override string Title => "Hue Bridge (" + (Bridge?.IpAddress ?? "?") + ")";
 
         public string IconName => "fab fa-hubspot";

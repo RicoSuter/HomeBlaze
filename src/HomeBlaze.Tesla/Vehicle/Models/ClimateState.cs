@@ -6,7 +6,7 @@ namespace HomeBlaze.Tesla.Vehicle.Models
 {
     public partial class ClimateState : IThing
     {
-        public string? Id => Parent?.Id + "/climate";
+        public string Id => Parent!.Id + "/climate";
 
         public string? Title => "Climate";
 

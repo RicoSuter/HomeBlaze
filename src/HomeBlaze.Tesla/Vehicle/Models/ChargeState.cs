@@ -8,7 +8,7 @@ namespace HomeBlaze.Tesla.Vehicle.Models
 
     public partial class ChargeState : IThing
     {
-        public string? Id => Parent?.Id + "/charge";
+        public string Id => Parent!.Id + "/charge";
 
         public string? Title => "Charge";
 

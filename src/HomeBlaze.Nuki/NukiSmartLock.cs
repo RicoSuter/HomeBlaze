@@ -20,9 +20,8 @@ namespace HomeBlaze.Nuki
     {
         private NukiDevice _device;
 
-        public string? Id => Bridge != null ?
-            "nuki.smartlock." + _device.NukiId :
-            null;
+        [Configuration(IsIdentifier = true)]
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         public string? Title => _device?.Name ?? "n/a";
 

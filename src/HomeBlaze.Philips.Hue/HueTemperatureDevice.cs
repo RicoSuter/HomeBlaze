@@ -3,7 +3,6 @@ using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices.Energy;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
-using NuGet.Protocol.Plugins;
 using Q42.HueApi.Models;
 using System;
 using System.Collections.Generic;
@@ -20,9 +19,7 @@ namespace HomeBlaze.Philips.Hue
         private Sensor _sensor;
         private Sensor? _parentSensor;
 
-        public string? Id => Bridge != null ?
-            "hue.temperature." + Bridge.BridgeId + "." + _sensor.UniqueId :
-        null;
+        public string Id => Bridge.Id + "/sensors/" + (_sensor.UniqueId ?? _sensor.Id);
 
         public string Title => (_parentSensor?.Name ?? _sensor.Name) + " (Temperature Sensor)";
 

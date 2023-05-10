@@ -32,8 +32,6 @@ namespace HomeBlaze.Nuki
 
         public BridgeInformation? Information { get; private set; }
 
-        public override string? Id => HardwareId.HasValue ? "nuki.bridge." + HardwareId : null;
-
         public override string Title => "Nuki Bridge (" + (HardwareId?.ToString() ?? "?") + ")";
 
         public string IconName => "fab fa-hubspot";

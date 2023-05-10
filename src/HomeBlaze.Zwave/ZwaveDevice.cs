@@ -29,7 +29,7 @@ namespace HomeBlaze.Zwave
 
         public byte NodeId => Node.NodeID;
 
-        public string? Id => $"zwave.device.{Controller.InternalId}:{NodeId}";
+        public string Id => Controller.Id + $"/Nodes/{NodeId}";
 
         public string? Title => DeviceDescription != null ?
             $"{Manufacturer} / {Description} ({Label}) (Node {NodeId})" :

@@ -18,8 +18,6 @@ namespace HomeBlaze.Xbox
     {
         internal AuthenticationService? Authentication { get; set; }
 
-        public override string? Id => IsAuthenticated ? "microsoft.xbox.account." + Authentication!.UserInformation.XboxUserId : null;
-
         public override string Title => "Xbox Live Account" + (!string.IsNullOrEmpty(Gamertag) ? " (" + Gamertag + ")" : " (Offline)");
 
         public string IconName => "fas fa-user-circle";

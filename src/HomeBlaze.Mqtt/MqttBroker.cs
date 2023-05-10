@@ -26,8 +26,8 @@ namespace HomeBlaze.Mqtt
 
         public string IconName => "fas fa-envelope";
 
-        [Configuration]
-        public string? Id { get; set; } = Guid.NewGuid().ToString();
+        [Configuration(IsIdentifier = true)]
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [Configuration]
         public string? Title { get; set; } = "MQTT Broker";

@@ -12,11 +12,9 @@ namespace HomeBlaze.Gardena
 {
     public class GardenaSensor : GardenaDevice, IIconProvider, IConnectedThing, ITemperatureSensor, ISoilSensor, ILightSensor, IBatteryDevice
     {
-        public override string? Id => GardenaId != null ?
-            "gardena.sensor." + GardenaId :
-            null;
-
         public string IconName => "fas fa-seedling";
+
+        public override string Id => Location.Id + "/sensors/" + GardenaId;
 
         public GardenaLocation Location { get; internal set; }
 
@@ -72,7 +70,7 @@ namespace HomeBlaze.Gardena
 
         internal override GardenaSensor Update(JObject data)
         {
-            GardenaId = data?["id"]?.Value<string>();
+            GardenaId = data!["id"]!.Value<string>()!;
 
             SoilHumidity = data?["attributes"]?["soilHumidity"]?["value"]?.Value<decimal>() / 100m ?? SoilHumidity;
             SoilTemperature = data?["attributes"]?["soilTemperature"]?["value"]?.Value<decimal>() ?? SoilTemperature;

@@ -2,6 +2,7 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices.Light;
 using HomeBlaze.Abstractions.Presentation;
+using Q42.HueApi.Models;
 using Q42.HueApi.Models.Groups;
 using System;
 using System.Linq;
@@ -15,9 +16,7 @@ namespace HomeBlaze.Philips.Hue
     {
         private Group _group;
 
-        public string? Id => Bridge != null ?
-            "hue.group." + Bridge.BridgeId + "." + _group.Id :
-            null;
+        public string Id => Bridge.Id + "/groups/" + _group.Id;
 
         public string Title => _group.Name;
 

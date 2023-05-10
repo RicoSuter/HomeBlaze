@@ -11,7 +11,7 @@ namespace HomeBlaze.Things
         public string? Title => $"{Thing?.GetType().Name} ({X},{Y})";
 
         [Configuration(IsIdentifier = true)]
-        public string? Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [Configuration]
         public int X { get; set; }

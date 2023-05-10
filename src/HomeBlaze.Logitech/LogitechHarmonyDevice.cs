@@ -15,9 +15,7 @@ namespace HomeBlaze.Logitech
         private Harmony.Device _device;
         private readonly LogitechHarmonyHub _hub;
 
-        public string? Id => _hub != null && _device != null ?
-            "logitech.harmony.device." + _hub?.RemoteId + "." + _device.ID :
-            null;
+        public string Id => _hub.Id + "/devices/" + _device.ID;
 
         public string? Title => $"{_device.Label} ({_device.DeviceTypeDisplayName})" ?? "n/a";
 

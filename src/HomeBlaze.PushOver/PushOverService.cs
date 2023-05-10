@@ -21,7 +21,7 @@ namespace HomeBlaze.PushOver
         public string IconName => "fab fa-hubspot";
 
         [Configuration(IsIdentifier = true)]
-        public string? Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [Configuration]
         public string? Title { get; set; } = "PushOver Service";
