@@ -72,7 +72,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Dynamic.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.RtspWebcam", "HomeBlaze.RtspWebcam\HomeBlaze.RtspWebcam.csproj", "{B83319FE-B797-4B99-8064-C63DE916D3FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeBlaze.Luxtronik", "HomeBlaze.Luxtronik\HomeBlaze.Luxtronik.csproj", "{4A126B96-0AEA-4253-BCA7-504B52119078}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Luxtronik", "HomeBlaze.Luxtronik\HomeBlaze.Luxtronik.csproj", "{4A126B96-0AEA-4253-BCA7-504B52119078}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -16,5 +16,7 @@ namespace HomeBlaze.Services
         public IList<IThing> Children { get; } = new List<IThing>();
 
         public ThingSetupAttribute? ThingSetupAttribute { get; set; }
+
+        IEnumerable<IThing> IThingMetadata.Children => Children;
     }
 }

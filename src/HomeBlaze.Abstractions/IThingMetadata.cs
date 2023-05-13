@@ -7,5 +7,8 @@
         bool CanClone { get; }
 
         bool CanEdit { get; }
+
+        IEnumerable<IThing> Children { get; }
+
     }
 }
