@@ -13,8 +13,10 @@ namespace HomeBlaze.AsusRouter
     {
         internal Client Client { get; private set; }
 
-        [Configuration(IsIdentifier = true)]
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        [ParentThing]
+        public IThing? ParentThing { get; private set; }
+
+        public string Id => $"{ParentThing?.Id}/clients/{Client.Mac}";
 
         public string? Title => Client.DisplayName +
             (!string.IsNullOrEmpty(IpAddress) ? " (" + IpAddress + ")" : "");
