@@ -11,12 +11,13 @@
 
     @foreach (var child in metadata?.Children ?? Array.Empty<IThing>())
     {
+        var childMetadata = ThingManager.TryGetMetadata(child);
         if (!_isExpanded.ContainsKey(child))
         {
             _isExpanded[child] = false;
         }
 
-        <MudTreeViewItem Value="@child" Icon="@Icons.Material.Filled.Folder" @bind-Expanded="_isExpanded[child]">
+        <MudTreeViewItem Value="@child" @bind-Expanded="_isExpanded[child]">
             <ChildContent>
                 @if (_isExpanded[child])
                 {
@@ -24,8 +25,9 @@
                 }
             </ChildContent>
             <Content>
-                <MudTreeViewItemToggleButton @bind-Expanded="@_isExpanded[child]" Visible="true" />
+                <MudTreeViewItemToggleButton @bind-Expanded="@_isExpanded[child]" Visible="@(childMetadata?.Children.Any() == true)" />
                 <MudText Style="@("width: " + (700 - Left) + "px")">@(child!.Title ?? child.Id)</MudText>
+                <MudText Style="width: 250px">@(child.GetType().Name)</MudText>
                 <MudText Style="width: 600px"><small>@(child?.Id)</small></MudText>
                 <MudText Style="width: 200px">@(child is IConnectedThing connectedThing && connectedThing.IsConnected == false ? "disconnected" : "")</MudText>
                 <MudText Style="width: 200px">@(child is IBatteryDevice batteryDevice ? ((int?)(batteryDevice.BatteryLevel * 100) + "% battery") : "")</MudText>
