@@ -149,7 +149,7 @@ namespace HomeBlaze.Dynamic
             {
                 if (invocation.Method?.Name == "get_Id")
                 {
-                    invocation.ReturnValue = Id + ".child";
+                    invocation.ReturnValue = Id + "/child";
                 }
                 else if (invocation.Method?.Name == "get_Title")
                 {

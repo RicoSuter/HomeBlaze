@@ -6,13 +6,21 @@
 @inject IThingManager ThingManager
 @inject IDialogService DialogService
 
-<MudTextField Value="@(ThingManager.TryGetById(ThingId)?.Title ?? ThingId)" @onclick="OnClick"
-              Style="@Style"
-              ReadOnly="true"
-              Label="@Label"
-              Required="Required"
-              Disabled="Disabled"
-              Class="input-pointer" />
+@{
+    var thing = ThingManager.TryGetById(ThingId);
+    var thingParent = thing != null ? ThingManager.TryGetParent(thing) : null;
+    var value = thing != null ? $"{thing.Title}{(thingParent != null ? $" ({thingParent?.Title})" : "")}" : ThingId;
+}
+
+<MudTooltip Text="@ThingId" Inline="false" RootStyle="width: 100%">
+    <MudTextField Value="@value" @onclick="OnClick"
+                  Style="@Style"
+                  ReadOnly="true"
+                  Label="@Label"
+                  Required="Required"
+                  Disabled="Disabled"
+                  Class="input-pointer" />
+</MudTooltip>
 
 @code {
     [Parameter]
