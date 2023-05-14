@@ -19,9 +19,7 @@
     <MudTextField Label="Image URL" @bind-Value="@Thing!.ImageUrl" Disabled="@(Thing.Thing != null)" />
 
     <br />
-    <ThingSelect Label="Source Thing ID"
-                 Disabled="@(!string.IsNullOrEmpty(Thing.ImageUrl))"
-                 ThingId="@Thing.ThingId" ThingIdChanged="@(thingId => { Thing.ThingId = thingId; Thing.PropertyName = null; })" />
+    <ThingSelect Label="Source Thing ID" Disabled="@(!string.IsNullOrEmpty(Thing.ImageUrl))" @bind-ThingId="@Thing.ThingId" />
     <ThingPropertySelect Label="Property" @bind-PropertyName="@Thing.PropertyName"
                          ThingId="@Thing.ThingId" Disabled="@(Thing.Thing == null)" />
 

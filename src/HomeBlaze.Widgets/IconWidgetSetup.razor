@@ -46,8 +46,7 @@
 
                 <br />
                 <h3>Condition</h3>
-                <ThingSelect Label="Thing ID" ThingId="@condition.ThingId"
-                         ThingIdChanged="@(thingId => { condition.ThingId = thingId; condition.PropertyName = null; })" />
+                <ThingSelect Label="Thing ID" @bind-ThingId="condition.ThingId" />
 
                 @if (condition.ThingId != null)
                 {

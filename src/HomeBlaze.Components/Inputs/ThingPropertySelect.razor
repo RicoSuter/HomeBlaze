@@ -4,23 +4,29 @@
 
 @inject IThingManager ThingManager
 
-<MudSelect T="string" Label="@Label" Required="Required" Disabled="Disabled" Style="@Style"
+@if (ThingId != null)
+{
+    var state = ThingManager.GetState(ThingId, true).Where(p => !p.Value.HasThingChildren);
+
+    <MudSelect T="string" Label="@Label" Required="Required" Disabled="Disabled" Style="@Style" @ref="_select"
+           Validation="@((string? value) => state.Any(p => p.Key == value) ? (string?)null : "Property not found.")"
            Value="PropertyName" ValueChanged="@(value => PropertyNameChanged.InvokeAsync(value))">
-    @if (ThingId != null)
-    {
-        if (!Required)
+
+        @if (!Required)
         {
             <MudSelectItem Value="@(null)" T="string">&lt;None&gt;</MudSelectItem>
         }
 
-        @foreach (var pair in ThingManager.GetState(ThingId, true).Where(p => !p.Value.HasThingChildren))
+        @foreach (var pair in state)
         {
             <MudSelectItem Value="@pair.Key" />
         }
-    }
-</MudSelect>
+    </MudSelect>
+}
 
 @code {
+    private MudSelect<string>? _select;
+
     [Parameter]
     public string Style { get; set; } = string.Empty;
 
@@ -41,4 +47,10 @@
 
     [Parameter]
     public EventCallback<string?> PropertyNameChanged { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _select?.Validate();
+        base.OnParametersSet();
+    }
 }
