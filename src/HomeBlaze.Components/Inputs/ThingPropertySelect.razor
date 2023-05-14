@@ -48,9 +48,13 @@
     [Parameter]
     public EventCallback<string?> PropertyNameChanged { get; set; }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        _select?.Validate();
-        base.OnParametersSet();
+        await base.OnParametersSetAsync();
+
+        if (_select != null)
+        {
+            await _select.Validate();
+        }
     }
 }
