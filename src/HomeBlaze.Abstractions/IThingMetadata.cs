@@ -9,6 +9,5 @@
         bool CanEdit { get; }
 
         IEnumerable<IThing> Children { get; }
-
     }
 }
