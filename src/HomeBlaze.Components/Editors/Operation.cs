@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using HomeBlaze.Abstractions;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using System;
 
 namespace HomeBlaze.Components.Editors
 {
@@ -42,8 +43,9 @@ namespace HomeBlaze.Components.Editors
                     {
                         return await operation.ExecuteAsync(Parameters, logger, cancellationToken);
                     }
-                    catch
+                    catch (Exception exception)
                     {
+                        logger.LogWarning(exception, "The operation {OperationName} of Thing {ThingId} failed to execute.", Name, ThingId);
                         return false;
                     }
                 }

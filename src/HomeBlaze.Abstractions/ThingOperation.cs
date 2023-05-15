@@ -71,6 +71,12 @@ namespace HomeBlaze.Abstractions
                         {
                             parameterList.Add(parameterValue);
                         }
+                        else if (parameterValue is JsonElement jsonStringElement && 
+                                 jsonStringElement.ValueKind == JsonValueKind.String)
+                        {
+                            parameterValue = jsonStringElement.Deserialize<string>();
+                            parameterList.Add(Convert.ChangeType(parameterValue, parameter.ParameterType));
+                        }
                         else if (parameterValue is JsonElement jsonElement)
                         {
                             parameterList.Add(jsonElement.Deserialize(parameter.ParameterType));
