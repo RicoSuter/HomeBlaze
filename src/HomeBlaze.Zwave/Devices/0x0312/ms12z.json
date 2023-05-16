@@ -1,0 +1,99 @@
+{
+	"manufacturer": "Minoston",
+	"manufacturerId": "0x0312",
+	"label": "MS12ZS",
+	"description": "Smart On/Off Toggle Switch",
+	"devices": [
+		{
+			"productType": "0xee00",
+			"productId": "0xee03",
+			"zwaveAllianceId": [3996, 4138]
+		},
+		{
+			"productType": "0xff00",
+			"productId": "0xff01",
+			"zwaveAllianceId": 3404
+		},
+		{
+			"productType": "0xff01",
+			"productId": "0xff01",
+			"zwaveAllianceId": 3628
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "~/templates/master_template.json#orientation_momentary"
+		},
+		{
+			"#": "2",
+			"$import": "~/templates/master_template.json#led_indicator_four_options"
+		},
+		{
+			"#": "3",
+			"$import": "templates/minoston_template.json#auto_off_timer"
+		},
+		{
+			"#": "5",
+			"$import": "templates/minoston_template.json#auto_on_timer"
+		},
+		{
+			"#": "7[0x01]",
+			"$import": "templates/minoston_template.json#status_change_report_local_control"
+		},
+		{
+			"#": "7[0x02]",
+			"$import": "templates/minoston_template.json#status_change_report_three_way"
+		},
+		{
+			"#": "7[0x04]",
+			"$import": "templates/minoston_template.json#status_change_report_zwave"
+		},
+		{
+			"#": "7[0x08]",
+			"$import": "templates/minoston_template.json#status_change_report_timer"
+		},
+		{
+			"#": "8",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_on_prev"
+		},
+		{
+			"#": "9",
+			"$import": "~/templates/master_template.json#enable_scene_control"
+		},
+		{
+			"#": "11",
+			"$import": "~/templates/master_template.json#smart_switch_mode_0-2"
+		},
+		{
+			"#": "13",
+			"$import": "templates/minoston_template.json#report_state_when_local_control_disabled"
+		},
+		{
+			"#": "12",
+			"$import": "templates/minoston_template.json#external_switch_type_two_options"
+		},
+		{
+			"#": "14",
+			"$import": "templates/minoston_template.json#led_indicator_color"
+		},
+		{
+			"#": "15",
+			"$import": "templates/minoston_template.json#led_indicator_brightness"
+		},
+		{
+			"#": "16",
+			"$import": "templates/minoston_template.json#association_reports_basic_binary"
+		}
+	],
+	"metadata": {
+		"inclusion": "1. Refer to your primary controller instructions to process the inclusion / exclusion setup procedure.\n2. When prompted by your primary controller, click the button three times in one second",
+		"exclusion": "1. Refer to your primary controller instructions to process the inclusion / exclusion setup procedure.\n2. When prompted by your primary controller, click the button three times in one second",
+		"reset": "Press and hold lower paddle for 10 seconds,then LED starts blinking, release paddle and within 2 seconds,click lower paddle 5 times\n(Node:Please use this procedure only when the network primary controller is missing or otherwise inoperable.)",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=product_documents/4138/MS12ZS%20manual-20210303.pdf"
+	}
+}

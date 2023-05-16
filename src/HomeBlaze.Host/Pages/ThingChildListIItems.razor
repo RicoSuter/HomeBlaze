@@ -1,0 +1,88 @@
+﻿@using HomeBlaze.Abstractions.Presentation;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Things;
+@using System.Threading;
+
+@inject IThingManager ThingManager
+@inject IThingSerializer ThingSerializer
+@inject NavigationManager Navigation
+
+@if (Children != null)
+{
+    @foreach (var child in Children)
+    {
+        <MudListItem Value="@child"
+             OnClick="@(() => Navigation.NavigateToThing(child))"
+             Icon="@(child is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"
+             IconColor="@(child is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)">
+
+            @if (child == SelectedThing)
+            {
+                <div style="float: right; line-height: 0">
+                    @if (Thing is GroupBase group)
+                    {
+                        <MudIconButton OnClick="@(() => MoveThingUp(child, group))"
+                       Icon="@Icons.Filled.ArrowUpward"
+                       Disabled="@(group.Things.First() == child)"
+                       Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
+                       Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
+
+                        <MudIconButton OnClick="@(() => MoveThingDown(child, group))"
+                       Icon="@Icons.Filled.ArrowDownward"
+                       Disabled="@(group.Things.Last() == child)"
+                       Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
+                       Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
+                    }
+
+                    <MudIcon Icon="@("<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/>")"></MudIcon>
+                </div>
+            }
+
+            @child.Title
+            @if (Subtitle != null)
+            {
+                <span>&nbsp;&nbsp;</span>
+                <small>(@Subtitle)</small>
+            }
+
+            @if (child is GroupBase group2)
+            {
+                <span>&nbsp;</span>
+                <MudChip Color="Color.Default" Size="Size.Small">@group2.Things.Count()</MudChip>
+            }
+        </MudListItem>
+        <MudDivider />
+    }
+}
+
+@code {
+    [Parameter]
+    public IThing? SelectedThing { get; set; }
+
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public IEnumerable<IThing>? Children { get; set; }
+
+    [Parameter]
+    public string? Subtitle { get; set; }
+
+
+    public async void MoveThingUp(IThing thing, GroupBase parentGroup)
+    {
+        parentGroup.MoveThingUp(thing);
+
+        ThingManager.DetectChanges((IThing)parentGroup);
+        await ThingManager.WriteConfigurationAsync(CancellationToken.None);
+    }
+
+    public async void MoveThingDown(IThing thing, GroupBase parentGroup)
+    {
+        parentGroup.MoveThingDown(thing);
+
+        ThingManager.DetectChanges((IThing)parentGroup);
+        await ThingManager.WriteConfigurationAsync(CancellationToken.None);
+    }
+}

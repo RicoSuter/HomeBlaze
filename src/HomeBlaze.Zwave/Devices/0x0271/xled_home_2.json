@@ -1,0 +1,70 @@
+{
+	"manufacturer": "STEINEL GmbH",
+	"manufacturerId": "0x0271",
+	"label": "XLED Home 2",
+	"description": "PIR sensor with relay and light",
+	"devices": [
+		{
+			"productType": "0x0001",
+			"productId": "0x1a73"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "templates/steinel_template.json#motion_light_duration"
+		},
+		{
+			"#": "2",
+			"$import": "templates/steinel_template.json#light_threshold"
+		},
+		{
+			"#": "5",
+			"$import": "templates/steinel_template.json#motion_sensor_sensitivity"
+		},
+		{
+			"#": "6",
+			"$import": "templates/steinel_template.json#brightness_measuring_interval"
+		},
+		{
+			"#": "8",
+			"$import": "templates/steinel_template.json#external_light_sensor"
+		},
+		{
+			"#": "9[0x07]",
+			"$import": "templates/steinel_template.json#light_behavior"
+		},
+		{
+			"#": "10",
+			"$import": "templates/steinel_template.json#off_command_duration"
+		},
+		{
+			"#": "11",
+			"$import": "templates/steinel_template.json#on_command_duration"
+		},
+		{
+			"#": "12",
+			"$import": "templates/steinel_template.json#motion_wait_limit"
+		},
+		{
+			"#": "13",
+			"$import": "templates/steinel_template.json#on_off_sequence_off_duration"
+		},
+		{
+			"#": "14",
+			"$import": "templates/steinel_template.json#off_on_sequence_on_duration"
+		},
+		{
+			"#": "15",
+			"$import": "templates/steinel_template.json#sequence_timing"
+		},
+		{
+			"#": "16",
+			"$import": "templates/steinel_template.json#command_motion_disable_timeout"
+		}
+	]
+}

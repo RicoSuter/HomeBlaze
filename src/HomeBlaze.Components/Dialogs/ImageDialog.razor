@@ -1,0 +1,100 @@
+﻿@using System.Threading
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Components.Extensions;
+@using HomeBlaze.Messages;
+@using MudBlazor
+@using Radzen.Blazor
+
+@implements IDisposable
+@inject IThingManager ThingManager
+@inject IEventManager EventManager
+
+<MudDialog>
+    <TitleContent>
+        @(Thing?.Title + ":")
+        @PropertyName
+        @(Thing is ILastUpdatedProvider lastUpdatedProvider ?
+            "(" + lastUpdatedProvider.LastUpdated + ")" : "")</TitleContent>
+    <DialogContent>
+        @if (!string.IsNullOrEmpty(ImageUrl))
+        {
+            <img src="@ImageUrl" style="width: 100%" />
+        }
+        else if (State?.Value is byte[] bytes)
+        {
+            <img src="data:image/jpeg;base64,@Convert.ToBase64String(bytes)" style="width: 100%" />
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   OnClick="@(() => DialogInstance?.Close(null))" Class="px-10">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private IDisposable? _subscription;
+
+    private PropertyState? State => Thing?.Id != null && PropertyName != null ?
+        ThingManager.TryGetPropertyState(Thing.Id, PropertyName, true) :
+        null;
+
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public string? PropertyName { get; set; }
+
+    [Parameter]
+    public string? ImageUrl { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    public static async Task ShowAsync(IDialogService dialogService, IThing thing, string propertyName)
+    {
+        await dialogService.Show<ImageDialog>(string.Empty,
+            new DialogParameters
+            {
+                { "Thing", thing },
+                { "PropertyName", propertyName }
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Large
+            }).Result;
+    }
+
+    public static async Task ShowAsync(IDialogService dialogService, string imageUrl)
+    {
+        await dialogService.Show<ImageDialog>(string.Empty,
+            new DialogParameters
+            {
+                { "ImageUrl", imageUrl },
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Large
+            }).Result;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _subscription = EventManager.Subscribe(@event =>
+        {
+            if (@event is ThingStateChangedEvent changed &&
+                changed.Thing == Thing)
+            {
+                InvokeAsync(StateHasChanged);
+            }
+        });
+    }
+
+    public void Dispose()
+    {
+        _subscription?.Dispose();
+    }
+}

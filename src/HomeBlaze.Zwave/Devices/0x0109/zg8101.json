@@ -1,0 +1,38 @@
+{
+	"manufacturer": "Vision Security",
+	"manufacturerId": "0x0109",
+	"label": "ZG8101",
+	"description": "Garage Door Tilt Sensor",
+	"devices": [
+		{
+			"productType": "0x200a",
+			"productId": "0x0a01",
+			"zwaveAllianceId": 592
+		},
+		{
+			"productType": "0x200a",
+			"productId": "0x0a02"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Control Command",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"compat": {
+		"enableBasicSetMapping": true,
+		// The device does not idle its own notifications
+		"forceNotificationIdleReset": true
+	},
+	"metadata": {
+		"wakeup": "Remove the cover of ZG8101",
+		"inclusion": "1. Initiate inclusion on your Z Wave controller. The distance between sensor and controller is suggested to be less than 1 meter.\n2. Press the program switch of the ZG8101 for at least 1 second.\n3. The LED on the ZG8101 should go solid, if not, please try again.",
+		"exclusion": "1. Initiate exclusion on your Z Wave controller.\n2. Press the program switch of ZG8101 for 1 second at least to be excluded."
+	}
+}

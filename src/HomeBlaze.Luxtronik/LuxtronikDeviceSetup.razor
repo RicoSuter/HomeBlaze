@@ -1,0 +1,20 @@
+﻿@using HomeBlaze.Components;
+@using Microsoft.Extensions.DependencyInjection;
+@using MudBlazor
+@using System.Threading
+@using System.Net.Http
+
+@inherits ThingSetupComponent<LuxtronikDevice>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.DisplayTitle" Label="Title" Required="true" />
+    <MudTextField @bind-Value="@Thing.Host" Label="Host" Required="true" />
+    <MudTextField @bind-Value="@Thing.Port" Label="Port" Required="true" />
+    <MudTextField @bind-Value="@Thing.Password" Label="Password" Required="true" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

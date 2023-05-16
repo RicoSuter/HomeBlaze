@@ -1,0 +1,121 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Components.Dialogs;
+@using Microsoft.Extensions.Logging;
+@using Namotion.Reflection;
+
+@inject IThingManager ThingManager
+@inject IDialogService DialogService
+@inject ILogger<ThingPropertyPane> Logger
+@inject NavigationManager Navigation
+
+@if (PaneWidth.HasValue)
+{
+    <MudPaper Width="@((PaneWidth - 15m) + "px")" Style="@("min-width: " + (PaneWidth - 15m) + "px; float: left; margin-right: 15px; height: calc(100% - 15px);")">
+        <MudListSubheader>
+            <MudFab OnClick="@(() => Navigation.NavigateToThing(Thing))"
+                Color="Color.Primary" StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Style="float: right" />
+            <h1 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@PropertyState.Name</h1>
+
+            <br />
+            <MudText>
+                <strong>Current Value: </strong>
+                @PropertyState.GetDisplayText()
+            </MudText>
+
+            @if (PropertyState.Value is GeoCoordinate geoCoordinate)
+            {
+                <iframe width="100%" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                        src="@("https://www.openstreetmap.org/export/embed.html" +
+                               "?bbox=" + GetBBox(geoCoordinate.Latitude, geoCoordinate.Longitude, 1000) +
+                               "&marker=" + geoCoordinate.Latitude + "%2C" + geoCoordinate.Longitude + "&layer=mapnik")"
+                        style="border: 1px solid black; height: 350px"></iframe>
+            }
+
+            @if (PropertyState.LastUpdated.HasValue)
+            {
+                <MudText>
+                    <strong>Updated: </strong>
+                    @PropertyState.LastUpdated
+                </MudText>
+            }
+
+            <br />
+            <MudText>
+                <strong>Previous Value: </strong>
+                @PropertyState.GetPreviousDisplayText()
+            </MudText>
+
+            @if (PropertyState.LastUpdated.HasValue)
+            {
+                <MudText>
+                    <strong>Changed: </strong>
+                    @PropertyState.LastChanged
+                </MudText>
+            }
+
+            <br />
+            <MudButton OnClick="@(() => ShowHistory())" Variant="Variant.Filled">History</MudButton>
+            <br />
+
+            <br />
+            <h2>Metadata</h2>
+            <br />
+
+            @if (PropertyState.Property != null)
+            {
+                <MudText>
+                    <strong>Type: </strong>
+                    @(PropertyState.Property.PropertyType.Type.GetDisplayName())
+                </MudText>
+                <MudText>
+                    <strong>Nullable: </strong>
+                    @PropertyState.Property.PropertyType.IsNullableType
+                </MudText>
+            }
+
+            <MudText>
+                <strong>Unit: </strong>
+                @PropertyState.Attribute?.Unit
+            </MudText>
+        </MudListSubheader>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public PropertyState PropertyState { get; set; }
+
+    [Parameter]
+    public decimal? PaneWidth { get; set; }
+
+    private async void ShowHistory()
+    {
+        if (Thing != null)
+        {
+            await StateHistoryDialog.ShowAsync(DialogService, Thing, PropertyState.Name);
+        }
+    }
+
+    public static string GetBBox(double lat, double lon, double area)
+    {
+        double offset = area / 2;
+        return 
+            GetCoordinateOffset(1, lat, lon, -offset) + "%2C" + 
+            GetCoordinateOffset(0, lat, lon, -offset) + "%2C" + 
+            GetCoordinateOffset(1, lat, lon, offset) + "%2C" + 
+            GetCoordinateOffset(0, lat, lon, offset);
+    }
+
+    public static double GetCoordinateOffset(int what, double lat, double lon, double offset)
+    {
+        double earthRadius = 6378137;
+        double[] coord = { lat, lon };
+
+        double radOff = what == 0 ? offset / earthRadius : offset / (earthRadius * Math.Cos(Math.PI * coord[0] / 180));
+        return coord[what] + radOff * 180 / Math.PI;
+    }
+}

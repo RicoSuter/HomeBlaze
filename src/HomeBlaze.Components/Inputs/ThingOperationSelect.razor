@@ -1,0 +1,42 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+
+<MudSelect T="string" Label="@Label" Required="Required" Disabled="Disabled"
+           Value="OperationName" ValueChanged="@(operation => OperationNameChanged.InvokeAsync(operation))">
+    
+    @if (ThingId != null)
+    {
+        if (!Required)
+        {
+            <MudSelectItem Value="@(null)" T="string">&lt;None&gt;</MudSelectItem>
+        }
+
+        @foreach (var operation in ThingManager.GetOperations(ThingId, true))
+        {
+            <MudSelectItem Value="@operation.Name" />
+        }
+    }
+</MudSelect>
+
+@code {
+    [Parameter]
+    public string? ThingId { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public bool Required { get; set; }
+
+    [Parameter]
+    public string? OperationName { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OperationNameChanged { get; set; }
+}

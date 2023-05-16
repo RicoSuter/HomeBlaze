@@ -1,0 +1,30 @@
+﻿@using Blazor.Diagrams.Core.Geometry;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components.Dialogs;
+
+@inject IDialogService DialogService
+@inject IThingManager ThingManager
+
+<div @ondblclick="OnDoubleClick" style="@(Node?.Widget.NoPointerEvents == true ? "" : "pointer-events: all")">
+    <div style="@(Node?.Locked != true ? $"pointer-events: none; outline: 5px solid {OutlineColor}; outline-offset: -5px" : "")">
+        @Node?.Widget.RenderFragment
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public DashboardWidgetNodeModel? Node { get; set; }
+
+    public string OutlineColor => Node?.Selected == true ? "Blue" : "Gray";
+
+    public async void OnDoubleClick(MouseEventArgs args)
+    {
+        if (Node?.Locked == false && Node.Widget.Thing != null)
+        {
+            if (await ThingSetupDialog.EditThingAsync(DialogService, Node.Widget.Thing))
+            {
+                Node.Refresh();
+            }
+        }
+    }
+}

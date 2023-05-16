@@ -1,0 +1,79 @@
+{
+	"manufacturer": "Everspring",
+	"manufacturerId": "0x0060",
+	"label": "ST815",
+	"description": "Illumination Sensor",
+	"devices": [
+		{
+			"productType": "0x0007",
+			"productId": "0x0001",
+			"zwaveAllianceId": [2, 210, 975]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Reports",
+			"maxNodes": 1,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Control",
+			"maxNodes": 3
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Dim Level Sent via Basic Set",
+			"description": "The dim level sent to a lamp module upon activation: (0) Off; (1)-(99) Dim Level",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 99,
+			"defaultValue": 99
+		},
+		{
+			"#": "2",
+			"label": "Lux Trigger On Value",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 1000,
+			"defaultValue": 300
+		},
+		{
+			"#": "3",
+			"label": "Lux Trigger Off Value",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 1000,
+			"defaultValue": 500
+		},
+		{
+			"#": "4",
+			"label": "Lux Trigger Off Timer Value.",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 480,
+			"defaultValue": 0
+		},
+		{
+			"#": "5",
+			"label": "Auto Report Time Interval",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 1439,
+			"defaultValue": 0
+		},
+		{
+			"#": "6",
+			"label": "Auto Report Lux Interval",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 1000,
+			"defaultValue": 0
+		}
+	]
+}

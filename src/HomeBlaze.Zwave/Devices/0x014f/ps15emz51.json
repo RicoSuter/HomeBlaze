@@ -1,0 +1,43 @@
+{
+	"manufacturer": "Nortek Security & Control LLC",
+	"manufacturerId": "0x014f",
+	"label": "PS15EMZ5-1",
+	"description": "Plug-in Appliance Module",
+	"devices": [
+		{
+			"productType": "0x5053",
+			"productId": "0x3531"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "2",
+			"$import": "templates/config_template.json#led_brightness"
+		},
+		{
+			"#": "3",
+			"$import": "templates/config_template.json#night_light_4"
+		},
+		{
+			"#": "11",
+			"$import": "templates/config_template.json#power_monitor"
+		},
+		{
+			"#": "12",
+			"$import": "templates/config_template.json#energy_display_duration"
+		},
+		{
+			"#": "13",
+			"$import": "templates/config_template.json#report_interval"
+		}
+	],
+	"metadata": {
+		"inclusion": "With the controller in inclusion mode, tap the button on the face of the outlet. The LED will blink slowly when adding.",
+		"exclusion": "Remove the switch by tapping the button on the face of the outlet 2 times. The LED will begin blinking slowly for 10 seconds indicating that it has been removed.",
+		"manual": "https://www.gocontrol.com/manuals/ps15emz5-1_installation_guide_10008371c.pdf"
+	}
+}

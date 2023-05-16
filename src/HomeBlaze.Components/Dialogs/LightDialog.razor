@@ -1,0 +1,159 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Devices.Light;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Messages;
+@using MudBlazor
+
+@inject IEventManager EventManager
+@implements IDisposable
+
+<MudDialog>
+    <TitleContent>@($"{(Lightbulb?.Title ?? "n/a")}")</TitleContent>
+    <DialogContent>
+        <div style="height: 240px">
+            @if (Lightbulb != null)
+            {
+                <MudSwitch T="bool" Checked="(_isLightOn ?? false)"
+                       CheckedChanged="@LightOnChanged">On</MudSwitch>
+
+                @if (_isLightOn == true && _brightness != null)
+                {
+                    <MudSlider T="int"
+                       Min="0" Max="100" Step="10"
+                       ValueChanged="@BrightnessChanged"
+                       Value="_brightness ?? 0">Brightness</MudSlider>
+                }
+
+                @if (_isLightOn == true && _colorTemperature != null)
+                {
+                    <MudSlider T="int"
+                       Min="0" Max="100" Step="10"
+                       ValueChanged="@ColorTemperatureChanged"
+                       Value="_colorTemperature ?? 0">Color Temperature</MudSlider>
+                }
+
+                @if (_isLightOn == true && _color != null)
+                {
+                    <MudColorPicker Label="Color"
+                            DisableAlpha="true"
+                            Value="@(new MudBlazor.Utilities.MudColor(_color ?? "#FFFFFF"))"
+                            ValueChanged="@(value => ColorChanged(value.Value.Substring(0, 7)))" />
+                }
+            }
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(null))" Class="px-10">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private IDisposable? _subscription;
+
+    private bool _isUpdating = true;
+    private bool? _isLightOn;
+    private int? _brightness;
+    private int? _colorTemperature;
+    private string? _color;
+
+    [Parameter]
+    public ILightbulb? Lightbulb { get; set; }
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    public static async Task ShowAsync(IDialogService dialogService, ILightbulb lightbulb)
+    {
+        await dialogService.Show<LightDialog>(string.Empty,
+            new DialogParameters
+            {
+                { "Lightbulb", lightbulb }
+            },
+            new DialogOptions
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium
+            }).Result;
+    }
+
+    protected override void OnInitialized()
+    {
+        UpdateState();
+
+        _subscription = EventManager.Subscribe(@event =>
+        {
+            if (@event is ThingStateChangedEvent changed &&
+                changed.Thing == Lightbulb)
+            {
+                InvokeAsync(() => UpdateState());
+            }
+        });
+    }
+
+    public async void LightOnChanged(bool newIsLightOn)
+    {
+        if (!_isUpdating &&
+            newIsLightOn != _isLightOn &&
+            Lightbulb != null)
+        {
+            _isLightOn = newIsLightOn;
+            await Lightbulb.ToggleAsync(default);
+        }
+    }
+
+    public async void BrightnessChanged(int newBrightness)
+    {
+        if (!_isUpdating && newBrightness != _brightness &&
+            Lightbulb is IDimmerLightbulb dimmerLightbulb &&
+            newBrightness != dimmerLightbulb.Brightness)
+        {
+            _brightness = newBrightness;
+            await dimmerLightbulb.DimmAsync(newBrightness / 100m, default);
+        }
+    }
+
+    public async void ColorTemperatureChanged(int newColorTemperature)
+    {
+        if (!_isUpdating && newColorTemperature != _colorTemperature &&
+            Lightbulb is IColorTemperatureLightbulb colorTemperatureLightbulb &&
+            newColorTemperature != colorTemperatureLightbulb.ColorTemperature)
+        {
+            _colorTemperature = newColorTemperature;
+            await colorTemperatureLightbulb.ChangeTemperatureAsync(newColorTemperature / 100m, default);
+        }
+    }
+
+    public async void ColorChanged(string newColor)
+    {
+        if (!_isUpdating && newColor != _color &&
+            Lightbulb is IColorLightbulb colorLightbulb &&
+            newColor != colorLightbulb.Color)
+        {
+            _color = newColor;
+            await colorLightbulb.ChangeColorAsync(newColor, default);
+        }
+    }
+
+    private void UpdateState()
+    {
+        _isUpdating = true;
+        try
+        {
+            _isLightOn = Lightbulb?.IsOn;
+            _brightness = (int?)((Lightbulb as IDimmerLightbulb)?.Brightness * 100);
+            _colorTemperature = (int?)((Lightbulb as IColorTemperatureLightbulb)?.ColorTemperature * 100);
+            _color = (Lightbulb as IColorLightbulb)?.Color;
+
+            StateHasChanged();
+        }
+        finally
+        {
+            _isUpdating = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        _subscription?.Dispose();
+    }
+}

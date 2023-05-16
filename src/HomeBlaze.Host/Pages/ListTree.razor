@@ -1,0 +1,48 @@
+﻿@using HomeBlaze.Abstractions.Devices.Energy;
+@using HomeBlaze.Abstractions.Networking;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+
+@inject IThingManager ThingManager
+
+@if (Thing != null)
+{
+    var metadata = ThingManager.TryGetMetadata(Thing);
+
+    @foreach (var child in metadata?.Children ?? Array.Empty<IThing>())
+    {
+        var childMetadata = ThingManager.TryGetMetadata(child);
+        if (!_isExpanded.ContainsKey(child))
+        {
+            _isExpanded[child] = false;
+        }
+
+        <MudTreeViewItem Value="@child" @bind-Expanded="_isExpanded[child]">
+            <ChildContent>
+                @if (_isExpanded[child])
+                {
+                    <ListTree Thing="@child" Left="@(Left + 16)" />
+                }
+            </ChildContent>
+            <Content>
+                <MudTreeViewItemToggleButton @bind-Expanded="@_isExpanded[child]" Visible="@(childMetadata?.Children.Any() == true)" />
+                <MudText Style="@("width: " + (700 - Left) + "px")">@(child!.Title ?? child.Id)</MudText>
+                <MudText Style="width: 250px">@(child.GetType().Name)</MudText>
+                <MudText Style="width: 600px"><small>@(child?.Id)</small></MudText>
+                <MudText Style="width: 200px">@(child is IConnectedThing connectedThing && connectedThing.IsConnected == false ? "disconnected" : "")</MudText>
+                <MudText Style="width: 200px">@(child is IBatteryDevice batteryDevice ? ((int?)(batteryDevice.BatteryLevel * 100) + "% battery") : "")</MudText>
+            </Content>
+        </MudTreeViewItem>
+    }
+}
+
+@code {
+    // used to support endless recursions in the tree (not allowed but used to avoid app crash)
+    private Dictionary<IThing, bool> _isExpanded = new Dictionary<IThing, bool>();
+
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public int Left { get; set; } = 0;
+}

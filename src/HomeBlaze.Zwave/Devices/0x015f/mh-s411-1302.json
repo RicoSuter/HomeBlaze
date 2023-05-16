@@ -1,0 +1,33 @@
+{
+	"manufacturer": "McoHome Technology Co., Ltd.",
+	"manufacturerId": "0x015f",
+	"label": "MH-S411",
+	"description": "Touch Panel Switch 1 Button",
+	"devices": [
+		{
+			"productType": "0x4111",
+			"productId": "0x1302"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Button 1",
+			"maxNodes": 5
+		},
+		"2": {
+			"label": "Lifeline",
+			"maxNodes": 1,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_prev"
+		}
+	]
+}

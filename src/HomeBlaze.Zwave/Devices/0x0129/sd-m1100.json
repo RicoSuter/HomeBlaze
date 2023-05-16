@@ -1,0 +1,34 @@
+{
+	"manufacturer": "Yale",
+	"manufacturerId": "0x0129",
+	"label": "SD-M1100",
+	"description": "Smart Door Lock Z-Wave Module 2",
+	"devices": [
+		{
+			"productType": "0xc600",
+			"productId": "0x0002"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "templates/yale_template.json#volume_inverted"
+		},
+		{
+			"#": "2",
+			"$import": "templates/yale_template.json#auto_relock"
+		},
+		{
+			"#": "3",
+			"$import": "templates/yale_template.json#manual_relock_time"
+		},
+		{
+			"#": "6",
+			"$import": "templates/yale_template.json#remote_relock_time"
+		}
+	]
+}

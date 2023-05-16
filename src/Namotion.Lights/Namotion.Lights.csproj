@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageOutputPath>../HomeBlaze/Config/Plugins</PackageOutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HomeBlaze.Services\HomeBlaze.Services.csproj" />
+    <ProjectReference Include="..\HomeBlaze.Philips.Hue\HomeBlaze.Philips.Hue.csproj" />
+  </ItemGroup>
+</Project>

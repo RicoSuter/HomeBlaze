@@ -1,0 +1,60 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+
+@if (ThingId != null)
+{
+    var state = ThingManager.GetState(ThingId, true).Where(p => !p.Value.HasThingChildren);
+
+    <MudSelect T="string" Label="@Label" Required="Required" Disabled="Disabled" Style="@Style" @ref="_select"
+           Validation="@((string? value) => state.Any(p => p.Key == value) ? (string?)null : "Property not found.")"
+           Value="PropertyName" ValueChanged="@(value => PropertyNameChanged.InvokeAsync(value))">
+
+        @if (!Required)
+        {
+            <MudSelectItem Value="@(null)" T="string">&lt;None&gt;</MudSelectItem>
+        }
+
+        @foreach (var pair in state)
+        {
+            <MudSelectItem Value="@pair.Key" />
+        }
+    </MudSelect>
+}
+
+@code {
+    private MudSelect<string>? _select;
+
+    [Parameter]
+    public string Style { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? ThingId { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public bool Required { get; set; }
+
+    [Parameter]
+    public string? PropertyName { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> PropertyNameChanged { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (_select != null)
+        {
+            await _select.Validate();
+        }
+    }
+}

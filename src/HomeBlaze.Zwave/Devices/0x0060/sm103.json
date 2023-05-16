@@ -1,0 +1,53 @@
+{
+	"manufacturer": "Everspring",
+	"manufacturerId": "0x0060",
+	"label": "SM103",
+	"description": "Door/Window Contact",
+	"devices": [
+		{
+			"productType": "0x0002",
+			"productId": "0x0001",
+			"zwaveAllianceId": [394, 921, 924]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Tamper Event Report (Alarm Report)",
+			"maxNodes": 5,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Control other Z-Wave Devices",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Basic Set Level",
+			"description": "Value to be sent with a BASIC SET command",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 99,
+			"defaultValue": 99
+		},
+		{
+			"#": "2",
+			"label": "Configuring the OFF Delay",
+			"description": "OFF Delay in seconds",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 1
+		}
+	],
+	"compat": {
+		// The device is a Binary Sensor, but uses Basic Sets to report its status
+		"enableBasicSetMapping": true
+	}
+}

@@ -1,0 +1,18 @@
+﻿@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors;
+@using HomeBlaze.Components.Inputs
+@using MudBlazor
+
+@inherits ThingSetupComponent<BrowserWidget>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.BrowserUrl" Label="Label" Required="true" />
+    <MudTextField @bind-Value="@Thing.Width" Label="Label" Required="true" InputType="InputType.Number" />
+    <MudTextField @bind-Value="@Thing.Height" Label="Label" Required="true" InputType="InputType.Number" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

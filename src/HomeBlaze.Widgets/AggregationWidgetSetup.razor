@@ -1,0 +1,35 @@
+﻿@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors;
+@using HomeBlaze.Components.Inputs
+@using MudBlazor
+
+@inherits ThingSetupComponent<AggregationWidget>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Label" Label="Label" Required="true" />
+    <MudTextField @bind-Value="@Thing.Unit" Label="Unit" />
+    <MudTextField @bind-Value="@Thing.ExpectedMaximum" Label="Expected Maximum" InputType="InputType.Number" Required="true" />
+   
+    <MudTextField Label="Days" @bind-Value="@Thing.Days" />
+
+    <div class="d-flex gap-4">
+        <MudTextField Label="Multiplier" @bind-Value="@Thing.Multiplier" />
+        <MudTextField Label="Decimals" @bind-Value="@Thing.Decimals" />
+    </div>
+    <br />
+
+    <div class="d-flex gap-4">
+        <IconTextField @bind-Value="@Thing.Icon" Label="Icon" Required="true" />
+        <MudTextField @bind-Value="@Thing.Scale" Label="Scale" InputType="InputType.Number" Required="true" />
+    </div>
+    <br />
+
+    <ThingSelect Label="Thing ID" @bind-ThingId="Thing.ThingId" Required="true" />
+    <ThingPropertySelect Label="Property" @bind-PropertyName="@Thing.PropertyName" ThingId="@Thing.ThingId" Required="true" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

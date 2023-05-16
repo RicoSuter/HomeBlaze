@@ -1,0 +1,238 @@
+{
+	"manufacturer": "Zooz",
+	"manufacturerId": "0x027a",
+	"label": "ZEN20",
+	"description": "Z-Wave Plus Power Strip, VER. 2.0",
+	"devices": [
+		{
+			"productType": "0xa000",
+			"productId": "0xa004"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "~/templates/master_template.json#state_after_power_failure_prev_on_off"
+		},
+		{
+			"#": "2",
+			"$import": "~/templates/master_template.json#base_0-65535",
+			"label": "Power (W) Report Threshold",
+			"unit": "W",
+			"defaultValue": 5
+		},
+		{
+			"#": "3",
+			"label": "Power (W) Report Interval",
+			"unit": "seconds",
+			"valueSize": 4,
+			"minValue": 5,
+			"maxValue": 2678400,
+			"defaultValue": 30
+		},
+		{
+			"#": "4",
+			"label": "Energy (kWh) Report Interval",
+			"unit": "seconds",
+			"valueSize": 4,
+			"minValue": 5,
+			"maxValue": 2678400,
+			"defaultValue": 300
+		},
+		{
+			"#": "35",
+			"$if": "firmwareVersion >= 2.3",
+			"label": "Current (A) Report Interval",
+			"unit": "seconds",
+			"valueSize": 4,
+			"minValue": 5,
+			"maxValue": 2678400,
+			"defaultValue": 30
+		},
+		{
+			"#": "36",
+			"$if": "firmwareVersion >= 2.3",
+			"label": "Voltage (V) Report Interval",
+			"unit": "seconds",
+			"valueSize": 4,
+			"minValue": 5,
+			"maxValue": 2678400,
+			"defaultValue": 30
+		},
+		{
+			"#": "5",
+			"label": "Overload Protection",
+			"unit": "W",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 1500,
+			"defaultValue": 1500
+		},
+		{
+			"#": "6",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-Off Timer (Relay 1)"
+		},
+		{
+			"#": "7",
+			"$import": "templates/zooz_template.json#auto_timer_duration_base",
+			"label": "Auto Turn-Off Timer Duration (Relay 1)"
+		},
+		{
+			"#": "8",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-On Timer (Relay 1)"
+		},
+		{
+			"#": "9",
+			"$import": "templates/zooz_template.json#auto_timer_duration_base",
+			"label": "Auto Turn-On Timer Duration (Relay 1)"
+		},
+		{
+			"#": "10",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-Off Timer (Relay 2)"
+		},
+		{
+			"#": "11",
+			"$import": "templates/zooz_template.json#auto_timer_duration_base",
+			"label": "Auto Turn-Off Timer Duration (Relay 2)"
+		},
+		{
+			"#": "12",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-On Timer (Relay 2)"
+		},
+		{
+			"#": "13",
+			"$import": "templates/zooz_template.json#auto_timer_duration_base",
+			"label": "Auto Turn-On Timer Duration (Relay 2)"
+		},
+		{
+			"#": "14",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-Off Timer (Relay 3)"
+		},
+		{
+			"#": "15",
+			"$import": "templates/zooz_template.json#auto_timer_duration_base",
+			"label": "Auto Turn-Off Timer Duration (Relay 3)"
+		},
+		{
+			"#": "16",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-On Timer (Relay 3)"
+		},
+		{
+			"#": "17",
+			"$import": "templates/zooz_template.json#auto_timer_duration_base",
+			"label": "Auto Turn-On Timer Duration (Relay 3)"
+		},
+		{
+			"#": "18",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-Off Timer (Relay 4)"
+		},
+		{
+			"#": "19",
+			"$import": "templates/zooz_template.json#auto_timer_duration_base",
+			"label": "Auto Turn-Off Timer Duration (Relay 4)"
+		},
+		{
+			"#": "20",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-On Timer (Relay 4)"
+		},
+		{
+			"#": "21",
+			"$import": "templates/zooz_template.json#auto_timer_duration_base",
+			"label": "Auto Turn-On Timer Duration (Relay 4)"
+		},
+		{
+			"#": "22",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-Off Timer (Relay 5)"
+		},
+		{
+			"#": "23",
+			"$import": "templates/zooz_template.json#auto_timer_duration_base",
+			"label": "Auto Turn-Off Timer Duration (Relay 5)"
+		},
+		{
+			"#": "24",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-On Timer (Relay 5)"
+		},
+		{
+			"#": "25",
+			"$import": "templates/zooz_template.json#auto_timer_duration_base",
+			"label": "Auto Turn-On Timer Duration (Relay 5)"
+		},
+		{
+			"#": "26",
+			"$import": "templates/zooz_template.json#local_control"
+		},
+		{
+			"#": "27",
+			"$import": "~/templates/master_template.json#led_indicator_three_options",
+			"defaultValue": 1
+		},
+		{
+			"#": "28",
+			"$if": "firmwareVersion >= 2.2",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Power/Energy Monitoring",
+			"defaultValue": 1
+		},
+		{
+			"#": "29",
+			"$if": "firmwareVersion >= 2.2",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Power/Energy Monitoring (Relay 1)",
+			"defaultValue": 1
+		},
+		{
+			"#": "30",
+			"$if": "firmwareVersion >= 2.2",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Power/Energy Monitoring (Relay 2)",
+			"defaultValue": 1
+		},
+		{
+			"#": "31",
+			"$if": "firmwareVersion >= 2.2",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Power/Energy Monitoring (Relay 3)",
+			"defaultValue": 1
+		},
+		{
+			"#": "32",
+			"$if": "firmwareVersion >= 2.2",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Power/Energy Monitoring (Relay 4)",
+			"defaultValue": 1
+		},
+		{
+			"#": "33",
+			"$if": "firmwareVersion >= 2.2",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Power/Energy Monitoring (Relay 5)",
+			"defaultValue": 1
+		},
+		{
+			"#": "34",
+			"$if": "firmwareVersion >= 2.2",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Power/Energy Monitoring (USB)",
+			"defaultValue": 1
+		}
+	],
+	"compat": {
+		// Accumulative values are reported on the root endpoint
+		"preserveRootApplicationCCValueIDs": true
+	}
+}

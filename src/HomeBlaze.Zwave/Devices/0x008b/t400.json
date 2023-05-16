@@ -1,0 +1,53 @@
+{
+	"manufacturer": "Trane Corporation",
+	"manufacturerId": "0x008b",
+	"label": "T400",
+	"description": "Trane Z-Wave Programmable Thermostat",
+	"devices": [
+		{
+			"productType": "0x5452",
+			"productId": "0x5431",
+			"zwaveAllianceId": 109
+		},
+		{
+			"productType": "0x5452",
+			"productId": "0x5433",
+			"zwaveAllianceId": 107
+		},
+		{
+			"productType": "0x5452",
+			"productId": "0x5436"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Reports",
+			"maxNodes": 1,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "132",
+			"label": "Schedule Mode",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Hold",
+					"value": 0
+				},
+				{
+					"label": "Schedule",
+					"value": 1
+				}
+			]
+		}
+	]
+}

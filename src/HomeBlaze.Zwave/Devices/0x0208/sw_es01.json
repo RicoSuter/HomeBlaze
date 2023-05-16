@@ -1,0 +1,16 @@
+{
+	"manufacturer": "HANK Electronics Ltd.",
+	"manufacturerId": "0x0208",
+	"label": "SW es01",
+	"description": "Siterwell eyesonsor",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0300"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

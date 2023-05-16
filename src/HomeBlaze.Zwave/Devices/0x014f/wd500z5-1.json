@@ -1,0 +1,54 @@
+{
+	"manufacturer": "Nortek Security & Control LLC",
+	"manufacturerId": "0x014f",
+	"label": "WD500Z5-1",
+	"description": "An in-wall lighting dimmer",
+	"devices": [
+		{
+			"productType": "0x5744",
+			"productId": "0x3530"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "3",
+			"$import": "templates/config_template.json#night_light_5"
+		},
+		{
+			"#": "4",
+			"$import": "~/templates/master_template.json#orientation"
+		},
+		{
+			"#": "5",
+			"$import": "templates/config_template.json#ignore_dim_start"
+		},
+		{
+			"#": "7",
+			"$import": "templates/config_template.json#dim_step_zwave"
+		},
+		{
+			"#": "8",
+			"$import": "templates/config_template.json#dim_rate_zwave"
+		},
+		{
+			"#": "9",
+			"$import": "templates/config_template.json#dim_step_manual"
+		},
+		{
+			"#": "10",
+			"$import": "templates/config_template.json#dim_rate_manual"
+		},
+		{
+			"#": "11",
+			"$import": "templates/config_template.json#dim_step_all"
+		},
+		{
+			"#": "12",
+			"$import": "templates/config_template.json#dim_rate_all"
+		}
+	]
+}

@@ -1,0 +1,62 @@
+{
+	"manufacturer": "Secure Meters (UK) Ltd.",
+	"manufacturerId": "0x0059",
+	"label": "SES 303",
+	"description": "Temperature and humidity sensor",
+	"devices": [
+		{
+			"productType": "0x000d",
+			"productId": "0x0003"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Delta Temp",
+			"description": "Precision of measured temperature (delta)",
+			"unit": "Celcius degrees",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true
+		},
+		{
+			"#": "2",
+			"label": "Temp Reporting Interval",
+			"description": "Reporting interval in minutes",
+			"unit": "Mins",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 5,
+			"unsigned": true
+		},
+		{
+			"#": "3",
+			"label": "Delta Humidity",
+			"description": "Precision of measured humidity (delta)",
+			"unit": "RH %",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 5,
+			"unsigned": true
+		},
+		{
+			"#": "4",
+			"label": "Humidity Reporting Interval",
+			"description": "Reporting interval in minutes",
+			"unit": "Mins",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 5,
+			"unsigned": true
+		}
+	]
+}

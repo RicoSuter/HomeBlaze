@@ -1,0 +1,21 @@
+{
+	"manufacturer": "Pixela Corporation",
+	"manufacturerId": "0x0277",
+	"label": "PIX-GW100Z",
+	"description": "Sensor Gateway",
+	"devices": [
+		{
+			"productType": "0x0001",
+			"productId": "0x0001",
+			"zwaveAllianceId": 1759
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"metadata": {
+		"reset": "Push the hardware reset button.\n\n\"Please use this procedure only when the network primary controller is missing or otherwise inoperable.\"",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/1759/Pixela%20manual.pdf"
+	}
+}

@@ -1,0 +1,95 @@
+﻿@using System.Reflection
+@using System.Threading
+@using HomeBlaze.Abstractions.Services;
+
+@inject IDialogService DialogService
+@inject IStateManager StateManager
+
+@if (Thing != null)
+{
+    <div style="padding: 10px; height: @(Thing.Scale * 100)px; width: @(Thing.Scale * 200 * Thing.Days / 7)px">
+        <div style="transform: scale(@((Thing.Scale * 100 - 20) / 80)); transform-origin: top left;">
+            <div style="font-size: 1.2em; white-space: nowrap;">
+                <i class="@Thing.Icon" aria-hidden="true"></i><span>&nbsp;</span>
+                @Thing.Label
+
+                @if (!string.IsNullOrEmpty(@Thing.Unit))
+                {
+                    <span style="font-size: 0.6em">&nbsp;&nbsp;(@Thing.Unit)</span>
+                }
+            </div>
+            @for (int i = 0; i < _differencesPerDay.Length; i++)
+            {
+                var heightMultiplier = 30m;
+                var day = _differencesPerDay[i];
+
+                <div style="height: 60px; position: absolute; width: 20px; left: @(i * 26)px; font-size: 0.8em">
+                    @if (day.Item2 > 0)
+                    {
+                        <div style="position: absolute; bottom: @(day.Item2 / Thing.ExpectedMaximum * heightMultiplier + 15 + 5)px; width: 20px; text-align: center">
+                            @day.Item2
+                        </div>
+                    }
+
+                    <div style="position: absolute; bottom: 20px; height: @(day.Item2 / Thing.ExpectedMaximum * heightMultiplier + 1)px; background-color: #000000; width: 20px">
+                    </div>
+
+                    <div style="position: absolute; margin-top: 5px; bottom: 0px; width: 20px; text-align: center">
+                        @day.Item1.DayOfWeek.ToString().Substring(0, 2)
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private (DateTimeOffset, decimal)[] _differencesPerDay = new (DateTimeOffset, decimal)[0];
+    private Timer? _timer = null;
+
+    [Parameter]
+    public AggregationWidget? Thing { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _timer = new Timer(OnTimer!, null, 0, 1000 * 60 * 60); // refresh every hour
+    }
+
+    private async void OnTimer(object o)
+    {
+        var thingId = Thing?.ThingId;
+        var propertyName = Thing?.PropertyName;
+
+        if (Thing != null && thingId != null && propertyName != null)
+        {
+            var numberOfDays = Thing.Days;
+            var values = await StateManager.ReadStateAsync<object>(thingId, propertyName,
+                DateTimeOffset.Now.AddDays(numberOfDays * -1),
+                DateTimeOffset.Now, CancellationToken.None);
+
+            var date = DateTimeOffset.Now.Date;
+            var days = new Dictionary<DateTimeOffset, decimal>();
+            for (int i = 0; i < numberOfDays; i++)
+            {
+                var dayValues = values.Where(v => v.Item1.Date == date && v.Item2 != null);
+
+                days[date] = Math.Round(dayValues.Count() >= 2 ?
+                    decimal.Parse(dayValues.Last().Item2?.ToString() ?? "0") -
+                    decimal.Parse(dayValues.First().Item2?.ToString()?.ToString() ?? "0") : 0, 1);
+
+                date = date.AddDays(-1);
+            }
+
+            _differencesPerDay = days
+                .Select(p => (p.Key, Math.Round(p.Value * Thing.Multiplier, Thing.Decimals)))
+                .ToArray();
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}

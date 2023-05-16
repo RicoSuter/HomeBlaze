@@ -1,0 +1,26 @@
+{
+	"manufacturer": "NIE Technology Co., Ltd.",
+	"manufacturerId": "0x0312",
+	"label": "NZW96",
+	"description": "Outdoor Z-Wave Plug-In Module (1-Channel)",
+	"devices": [
+		{
+			"productType": "0x6000",
+			"productId": "0x6000"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "~/templates/master_template.json#led_indicator_three_options_inverted"
+		},
+		{
+			"#": "2",
+			"$import": "templates/minoston_template.json#auto_off_timer_36000s"
+		}
+	]
+}

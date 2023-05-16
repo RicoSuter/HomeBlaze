@@ -1,0 +1,30 @@
+{
+	"manufacturer": "Inovelli",
+	"manufacturerId": "0x0312",
+	"label": "NZW30",
+	"description": "In-Wall Switch (On/Off)",
+	"devices": [
+		{
+			"productType": "0x1e01",
+			"productId": "0x1e01"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "3",
+			"$import": "~/templates/master_template.json#led_indicator_four_options"
+		},
+		{
+			"#": "4",
+			"$import": "~/templates/master_template.json#orientation"
+		},
+		{
+			"#": "5",
+			"$import": "templates/minoston_template.json#auto_off_timer_32767s"
+		}
+	]
+}

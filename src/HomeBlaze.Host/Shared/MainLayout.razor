@@ -1,0 +1,97 @@
+﻿@using HomeBlaze.Host.Components
+
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="CurrentTheme" />
+<MudDialogProvider Position="DialogPosition.Center" />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <SectionOutlet Name="AppBar" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="25" Variant="@DrawerVariant.Temporary">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">HomeBlaze</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
+            <MudNavLink Href="/things" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Things</MudNavLink>
+            <MudNavLink Href="/list" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Debug</MudNavLink>
+            <MudNavLink Href="/logs" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Logs</MudNavLink>
+            <MudSpacer />
+            <MudNavLink Icon="@Icons.Material.Filled.FormatPaint" OnClick="@((e) => ToggleTheme())">Use @(UseDarkTheme ? "Light" : "Dark") Mode</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool _drawerOpen = false;
+
+    public static MudTheme CurrentTheme { get; private set; } = new MudTheme();
+    public static MainLayout? Instance { get; private set; }
+
+    protected override void OnInitialized()
+    {
+        Instance = this;
+        CurrentTheme = darkTheme;
+    }
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    void ToggleTheme()
+    {
+        if (CurrentTheme == defaultTheme)
+        {
+            CurrentTheme = darkTheme;
+        }
+        else
+        {
+            CurrentTheme = defaultTheme;
+        }
+    }
+
+    public static bool UseDarkTheme => CurrentTheme != defaultTheme;
+
+    static MudTheme defaultTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Black = "#272c34"
+        }
+    };
+
+    static MudTheme darkTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Black = "#27272f",
+            Background = "#32333d",
+            BackgroundGrey = "#27272f",
+            Surface = "#373740",
+            DrawerBackground = "#27272f",
+            DrawerText = "rgba(255,255,255, 0.50)",
+            DrawerIcon = "rgba(255,255,255, 0.50)",
+            AppbarBackground = "#27272f",
+            AppbarText = "rgba(255,255,255, 0.70)",
+            TextPrimary = "rgba(255,255,255, 0.70)",
+            TextSecondary = "rgba(255,255,255, 0.50)",
+            ActionDefault = "#adadb1",
+            ActionDisabled = "rgba(255,255,255, 0.26)",
+            ActionDisabledBackground = "rgba(255,255,255, 0.12)",
+            Divider = "rgba(255,255,255, 0.12)",
+            DividerLight = "rgba(255,255,255, 0.06)",
+            TableLines = "rgba(255,255,255, 0.12)",
+            LinesDefault = "rgba(255,255,255, 0.12)",
+            LinesInputs = "rgba(255,255,255, 0.3)",
+            TextDisabled = "rgba(255,255,255, 0.2)"
+        }
+    };
+}

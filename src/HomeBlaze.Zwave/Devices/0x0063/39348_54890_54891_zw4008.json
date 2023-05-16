@@ -1,0 +1,52 @@
+{
+	"manufacturer": "UltraPro",
+	"manufacturerId": "0x0063",
+	"label": "39348 / 54890 / 54891 / ZW4008",
+	"description": "In-Wall Paddle Switch, QFSW, 500S",
+	"devices": [
+		{
+			"productType": "0x4952",
+			"productId": "0x3237",
+			"zwaveAllianceId": [4004, 4168]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Local Load",
+			"maxNodes": 5
+		},
+		"3": {
+			"label": "Double Tap",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "3",
+			"$import": "~/templates/master_template.json#led_indicator_four_options"
+		},
+		{
+			"#": "19",
+			"$import": "templates/jasco_template.json#alternate_exclusion"
+		}
+	],
+	"compat": {
+		"treatBasicSetAsEvent": true
+	},
+	"metadata": {
+		"inclusion": "1. Follow the instructions for your Z-Wave certified controller to add a device to the Z-Wave network.\n2. Once the controller is ready to add your device, press and release the top or bottom of the smart switch (rocker)",
+		"exclusion": "1. Follow the instructions for your Z-Wave certified controller to remove a device from the Z-Wave network.\n2. Once the controller is ready to remove your device, press and release the top or bottom of the smart switch rocker)",
+		"reset": "Quickly press ON (top) button three times, then, immediately press the OFF (bottom) button three times. The LED will flash ON/OFF five times when completed successfully",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=product_documents/4168/39348%20QSG%20v3.pdf"
+	}
+}

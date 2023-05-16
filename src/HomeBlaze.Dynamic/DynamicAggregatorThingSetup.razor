@@ -1,0 +1,29 @@
+﻿@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors;
+@using HomeBlaze.Components.Inputs
+@using MudBlazor
+
+@inherits ThingSetupComponent<DynamicAggregatorThing>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField Label="Title" @bind-Value="@Thing.Title" Required="true" />
+
+    <br />
+    <ThingInterfaceSelect Label="Interface of collected Things" @bind-InterfaceName="@Thing.InterfaceName" Required="true" />
+    <ThingInterfacePropertySelect Label="Property to aggregate" Required="true"
+                                  @bind-PropertyName="@Thing.PropertyName" InterfaceName="@Thing.InterfaceName" />
+    <br />
+
+    <MudSelect Label="Aggregation" @bind-Value="Thing.Aggregation">
+        @foreach (AggregationType item in Enum.GetValues(typeof(AggregationType)))
+        {
+            <MudSelectItem Value="@item">@item</MudSelectItem>
+        }
+    </MudSelect>
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

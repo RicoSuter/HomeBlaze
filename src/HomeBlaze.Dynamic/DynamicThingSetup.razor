@@ -1,0 +1,89 @@
+﻿@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors
+@using HomeBlaze.Components.Inputs
+@using MudBlazor
+
+@inherits ThingSetupComponent<DynamicThing>
+
+<MudForm @bind-IsValid="_isFormValid">
+
+    <MudTabs>
+        <MudTabPanel Text="General">
+            <br />
+            <h2>Host</h2>
+            <MudTextField @bind-Value="@Thing.Title" Label="Thing Title (e.g. 'Temperature Sensor Host')" Required="true" />
+            <MudTextField @bind-Value="@Thing.PropertyName" Label="Property Name (e.g. 'TemperatureSensor')" Required="true" />
+
+            <br />
+            <h2>Dynamic Thing</h2>
+            <MudTextField @bind-Value="@Thing.ThingTitle" Label="Thing Title (e.g. 'Temperature Sensor')" Required="true" />
+            <ThingInterfaceSelect @bind-InterfaceName="@Thing.ThingInterfaceName" Label="Thing Interface to dynamically implement" Required="true" />
+            <ThingSelect @bind-ThingId="@Thing.ExtendedThingId" Label="Extended Thing (Parent)" />
+        </MudTabPanel>
+        <MudTabPanel Text="Properties" Disabled="@(string.IsNullOrEmpty(Thing.ThingInterfaceName))">
+            <br />
+            <MudButton OnClick="AddProperty" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Add Property</MudButton>
+
+            <br />
+            <br />
+            <MudTabs>
+                @foreach (var property in Thing.Properties)
+                {
+                    <MudTabPanel Icon="@Icons.Filled.LabelImportant" Text="@(!string.IsNullOrEmpty(property.Name) ? property.Name : "n/a")" Style="justify-content: left">
+                        <br />
+                        <div style="width: 100%">
+                            <ThingInterfacePropertySelect Label="Property Name" @bind-PropertyName="@property.Name" InterfaceName="@Thing.ThingInterfaceName" Required="true" />
+
+                            <br />
+                            <MudTextField Label="Expression" @bind-Value="@property.Expression" Variant="Variant.Outlined" Lines="3" Required="true" />
+
+                            <br />
+                            <MudButton OnClick="@(() => RemoveProperty(property))" Variant="Variant.Filled" Size="Size.Small" Color="Color.Error">Delete</MudButton>
+                        </div>
+                    </MudTabPanel>
+                }
+            </MudTabs>
+        </MudTabPanel>
+        <MudTabPanel Text="Variables">
+            @foreach (var variable in Thing.Variables)
+            {
+                <br />
+                <MudField Label="@variable.ActualName" Variant="Variant.Outlined" InnerPadding="true">
+                    <PropertyVariableEditor Variable="variable" />
+
+                    <br />
+                    <MudButton OnClick="@(() => RemoveVariable(variable))" Variant="Variant.Filled" Size="Size.Small" Color="Color.Error">Delete</MudButton>
+                </MudField>
+            }
+
+            <br />
+            <MudButton OnClick="AddVariable" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Add Variable</MudButton>
+        </MudTabPanel>
+    </MudTabs>
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+
+    public void AddProperty()
+    {
+        Thing.Properties.Add(new DynamicProperty());
+    }
+
+    public void RemoveProperty(DynamicProperty property)
+    {
+        Thing.Properties.Remove(property);
+    }
+
+    public void AddVariable()
+    {
+        Thing.Variables.Add(new PropertyVariable());
+    }
+
+    public void RemoveVariable(PropertyVariable variable)
+    {
+        Thing.Variables.Remove(variable);
+    }
+}

@@ -1,0 +1,81 @@
+﻿@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors
+@using HomeBlaze.Components.Inputs
+@using MudBlazor
+
+@inherits ThingSetupComponent<TriggerThing>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Title" Label="Title" Required="true" />
+    <br />
+
+    <MudSwitch @bind-Checked="@Thing.IsEnabled" Label="Enabled" Color="Color.Info" />
+    <br />
+    <br />
+
+    <MudTabs>
+        <MudTabPanel Text="Conditions (AND)">
+            @foreach (var condition in Thing.Conditions)
+            {
+                <br />
+                <div class="d-flex gap-4">
+                    <ThingSelect @bind-ThingId="@condition.ThingId"
+                             Label="Thing" Style="min-width: 250px"
+                             Required="true" />
+
+                    <ThingPropertySelect Label="Property (ideally Signal)"
+                                     Style="min-width: 200px"
+                                     @bind-PropertyName="@condition.PropertyName"
+                                     ThingId="@condition.ThingId"
+                                     Disabled="@(condition.ThingId == null)"
+                                     Required="true" />
+
+                    <MudSelect T="string" @bind-Value="@condition.Operator"
+                           Style="width: 80px"
+                           Label="Operator"
+                           Required="true">
+                        <MudSelectItem Value="@("==")"></MudSelectItem>
+                        <MudSelectItem Value="@("!=")"></MudSelectItem>
+                        <MudSelectItem Value="@("<")"></MudSelectItem>
+                        <MudSelectItem Value="@("<=")"></MudSelectItem>
+                        <MudSelectItem Value="@(">")"></MudSelectItem>
+                        <MudSelectItem Value="@(">=")"></MudSelectItem>
+                    </MudSelect>
+
+                    <MudTextField @bind-Value="@condition.Value" Label="Value" Required="true" />
+                    <MudTimePicker Label="Min. Hold Duration" Style="width: 140px"
+                               @bind-Time="condition.MinimumHoldDuration" />
+
+                    <MudIconButton Icon="@Icons.Filled.Delete"
+                               OnClick="@(() => RemoveCondition(condition))"
+                               Color="Color.Error" Variant="Variant.Filled" Class="ma-2">
+                    </MudIconButton>
+                </div>
+            }
+
+            <br />
+            <MudButton OnClick="AddCondition" Variant="Variant.Filled"
+                       Color="Color.Primary">Add Condition</MudButton>
+        </MudTabPanel>
+        <MudTabPanel Text="Operations">
+            <br />
+            <OperationListEditor Operations="Thing.Operations"></OperationListEditor>
+        </MudTabPanel>
+    </MudTabs>
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+
+    public void AddCondition()
+    {
+        Thing.Conditions.Add(new PropertyCondition());
+    }
+
+    public void RemoveCondition(PropertyCondition variable)
+    {
+        Thing.Conditions.Remove(variable);
+    }
+}

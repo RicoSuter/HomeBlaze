@@ -1,0 +1,85 @@
+{
+	"manufacturer": "Secure Meters (UK) Ltd.",
+	"manufacturerId": "0x0059",
+	"label": "SIR 321",
+	"description": "RF Countdown Timer",
+	"devices": [
+		{
+			"productType": "0x0010",
+			"productId": "0x0001"
+		},
+		{
+			"productType": "0x0010",
+			"productId": "0x0002",
+			"zwaveAllianceId": 1012
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Group 1",
+			"maxNodes": 4,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Group 2",
+			"maxNodes": 4,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Fail Save timer",
+			"description": "Enable/Disable the Fail save timer",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true
+		},
+		{
+			"#": "2",
+			"label": "Temperature Scale",
+			"description": "Set the Temperature scale to Celsius",
+			"valueSize": 2,
+			"unit": "°C",
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 0
+		},
+		{
+			"#": "3",
+			"label": "Temperature reporting intervals",
+			"description": "Define the time interval for the temperature report that is sent.",
+			"valueSize": 2,
+			"unit": "seconds",
+			"minValue": 0,
+			"maxValue": 32767,
+			"defaultValue": 0
+		},
+		{
+			"#": "4",
+			"label": "Delta configuration temperature reporting",
+			"description": "Set the delta-configuration of the temperature report in Celsius or Fahrenheit",
+			"valueSize": 2,
+			"unit": "°C",
+			"minValue": 0,
+			"maxValue": 100,
+			"defaultValue": 0
+		},
+		{
+			"#": "5",
+			"label": "Temperature Cutoff",
+			"description": "Set the Cutoff in Celsius",
+			"valueSize": 2,
+			"unit": "°C",
+			"minValue": 0,
+			"maxValue": 1000,
+			"defaultValue": 0
+		}
+	]
+}

@@ -1,0 +1,232 @@
+{
+	"manufacturer": "D-Link",
+	"manufacturerId": "0x0108",
+	"label": "DCH-Z110",
+	"description": "Door & Window Sensor",
+	"devices": [
+		{
+			"productType": "0x0002",
+			"productId": "0x000e",
+			"zwaveAllianceId": 1151
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "2",
+			"label": "Basic Set Level",
+			"description": "Setting the BASIC command value to turn on the light.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 255,
+			"unsigned": true,
+			"options": [
+				{
+					"label": "Off",
+					"value": 0
+				},
+				{
+					"label": "On",
+					"value": 255
+				}
+			]
+		},
+		{
+			"#": "3",
+			"label": "PIR Sensitivity",
+			"description": "Set the sensitivity for the PIR (Passive Infrared Sensor).",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 99,
+			"defaultValue": 70,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "4",
+			"label": "Light Threshold",
+			"description": "Set the illumination threshold to turn on the light.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 100,
+			"defaultValue": 100,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "5",
+			"label": "Operation Mode",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 0,
+			"options": [
+				{
+					"label": "Preset: Celsius and LED on = Bits: 00001010 = 10",
+					"value": 10
+				}
+			]
+		},
+		{
+			"#": "6",
+			"label": "Multi-Sensor Function Switch",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 4
+		},
+		{
+			"#": "8",
+			"label": "PIR Re-Detect Interval Time",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 127,
+			"defaultValue": 3
+		},
+		{
+			"#": "9",
+			"label": "Turn Off Light Time",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 4
+		},
+		{
+			"#": "10",
+			"label": "Auto Report Battery Time",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 12
+		},
+		{
+			"#": "11",
+			"label": "Auto Report Door/Window State Time",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 12
+		},
+		{
+			"#": "12",
+			"label": "Auto Report Illumination Time",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 127,
+			"defaultValue": 12
+		},
+		{
+			"#": "13",
+			"label": "Auto Report Temperature Time",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 127,
+			"defaultValue": 12
+		},
+		{
+			"#": "20",
+			"label": "Auto Report Tick Interval",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 30,
+			"unsigned": true
+		},
+		{
+			"#": "21",
+			"label": "Temperature Differential Report",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 1
+		},
+		{
+			"#": "22",
+			"label": "Illumination Differential Report",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 99,
+			"defaultValue": 1
+		},
+		{
+			"#": "7[0x08]",
+			"label": "Disable send of BASIC OFF after door closed",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Enable",
+					"value": 0
+				},
+				{
+					"label": "Disable",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "7[0x10]",
+			"label": "Notification Type",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Notification Report",
+					"value": 0
+				},
+				{
+					"label": "Sensor Binary Report",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "7[0x20]",
+			"label": "Disable Multi CC in auto report",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Enable",
+					"value": 0
+				},
+				{
+					"label": "Disable",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "7[0x40]",
+			"label": "Disable to report battery state",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Enable",
+					"value": 0
+				},
+				{
+					"label": "Disable",
+					"value": 1
+				}
+			]
+		}
+	]
+}

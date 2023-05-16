@@ -1,0 +1,58 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Services;
+@using Microsoft.AspNetCore.Components.Web;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+@inject IDialogService DialogService
+
+@{
+    var thing = ThingManager.TryGetById(ThingId);
+    var thingParent = thing != null ? ThingManager.TryGetParent(thing) : null;
+    var value = thing != null ? $"{thing.Title}{(thingParent != null ? $" ({thingParent?.Title})" : "")}" : ThingId;
+}
+
+<MudTooltip Text="@ThingId" Inline="false" RootStyle="width: 100%">
+    <MudTextField Value="@value" @onclick="OnClick"
+                  Style="@Style"
+                  ReadOnly="true"
+                  Label="@Label"
+                  Required="Required"
+                  Disabled="Disabled"
+                  Class="input-pointer" />
+</MudTooltip>
+
+@code {
+    [Parameter]
+    public string Style { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public string? ThingId { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> ThingIdChanged { get; set; }
+
+    [Parameter]
+    public bool Required { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public Func<IThing, bool>? ThingFilter { get; set; }
+
+    public async void OnClick(EventArgs args)
+    {
+        var result = await ThingSelectDialog.ShowAsync(DialogService, Required, ThingFilter);
+        if (result?.Item1 == true)
+        {
+            ThingId = result.Item2?.Id;
+            await InvokeAsync(StateHasChanged);
+
+            await ThingIdChanged.InvokeAsync(ThingId);
+        }
+    }
+}

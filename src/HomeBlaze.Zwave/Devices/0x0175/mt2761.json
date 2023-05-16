@@ -1,0 +1,261 @@
+{
+	"manufacturer": "Devolo",
+	"manufacturerId": "0x0175",
+	"label": "MT2761",
+	"description": "Home Control Shutter",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0052",
+			"zwaveAllianceId": 2962
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 1,
+			"isLifeline": true,
+			// The device does not like Endpoint Associations for the lifeline
+			"multiChannel": false
+		},
+		"2": {
+			"label": "Basic on/off - triggered at change of the input I1 state and reflecting its state.",
+			"maxNodes": 16
+		},
+		"3": {
+			"label": "Basic on/off - triggered at change of the input I2 state and reflecting its state.",
+			"maxNodes": 16
+		},
+		"4": {
+			"label": "Basic on/off - triggered at sensing moving direction of roller: up=FF, down=0.",
+			"maxNodes": 16
+		},
+		"5": {
+			"label": "Basic on/off - triggered at reaching roller position: bottom=FF, top=0.",
+			"maxNodes": 16
+		},
+		"6": {
+			"label": "Basic on/off - triggered at reaching roller position: bottom=FF, not bottom=0.",
+			"maxNodes": 16
+		},
+		"7": {
+			"label": "Multilevel set - triggered at changes of value of the Flush Shutter DC position.",
+			"maxNodes": 16
+		},
+		"8": {
+			"label": "Multilevel set - triggered at changes of value of slats tilting position.",
+			"maxNodes": 16
+		},
+		"9": {
+			"label": "Multilevel sensor report - triggered at change of temperature sensor.",
+			"maxNodes": 16,
+			"isLifeline": true,
+			// The device does not like Endpoint Associations for the lifeline
+			"multiChannel": false
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "10",
+			"label": "ALL ON/ALL OFF",
+			"description": "Responds to commands ALL ON / ALL OFF from Main Controller",
+			"valueSize": 2,
+			"defaultValue": 255,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "ALL ON is not active ALL OFF is not active",
+					"value": 0
+				},
+				{
+					"label": "ALL ON is not active ALL OFF active",
+					"value": 1
+				},
+				{
+					"label": "ALL ON is not active ALL OFF is not active",
+					"value": 2
+				},
+				{
+					"label": "ALL ON active, ALL OFF active",
+					"value": 255
+				}
+			]
+		},
+		{
+			"#": "40",
+			"label": "Power reporting in watts on power change",
+			"description": "Power consumption change threshold for sending updates",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 100,
+			"defaultValue": 1
+		},
+		{
+			"#": "42",
+			"label": "Power reporting in Watts by time interval",
+			"unit": "seconds",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32767,
+			"defaultValue": 300
+		},
+		{
+			"#": "71",
+			"label": "Operating modes",
+			"description": "Operation Mode (Shutter or Venetian)",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Shutter mode",
+					"value": 0
+				},
+				{
+					"label": "Venetian mode (up/down and slate rotation)",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "72",
+			"label": "Slats tilting full turn time",
+			"description": "Slat full turn time in tenths of a second.",
+			"unit": "tenths of a second",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32767,
+			"defaultValue": 150
+		},
+		{
+			"#": "73",
+			"label": "Slats position",
+			"description": "Slats position after up/down movement.",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Previous position for Z-wave control only",
+					"value": 0
+				},
+				{
+					"label": "Return to previous position in all cases",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "74",
+			"label": "Motor moving up/down time",
+			"description": "Shutter motor moving time of complete opening or complete closing",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32767,
+			"defaultValue": 0
+		},
+		{
+			"#": "76",
+			"label": "Motor operation detection",
+			"description": "Power threshold to be interpreted when motor reach the limit switch",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 10
+		},
+		{
+			"#": "78",
+			"label": "Forced Shutter calibration",
+			"description": "Enters calibration mode if set to 1",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Default",
+					"value": 0
+				},
+				{
+					"label": "Start Calibration Process",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "80",
+			"label": "Reporting to Controller",
+			"description": "Defines if reporting regarding power level, etc is reported to controller.",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Reporting to Controller Disabled",
+					"value": 0
+				},
+				{
+					"label": "Reporting to Controller Enabled",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "85",
+			"label": "Power consumption max delay time",
+			"description": "Time delay for detecting motor errors",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 50,
+			"defaultValue": 8
+		},
+		{
+			"#": "86",
+			"label": "Power consumption at limit switch delay time",
+			"description": "Sets the time delay for detecting limit switches",
+			"valueSize": 1,
+			"minValue": 3,
+			"maxValue": 50,
+			"defaultValue": 8
+		},
+		{
+			"#": "90",
+			"label": "Relay delay time",
+			"description": "Defines the minimum time delay between next motor movement",
+			"unit": "milliseconds",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 30,
+			"defaultValue": 5
+		},
+		{
+			"#": "110",
+			"label": "Temperature sensor offset settings",
+			"description": "Adds or removes an offset from the measured temperature.",
+			"valueSize": 2,
+			"minValue": 1,
+			"maxValue": 32536,
+			"defaultValue": 32536
+		},
+		{
+			"#": "120",
+			"label": "Digital temperature sensor reporting",
+			"description": "Threshold for sending temperature change reports",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 5
+		}
+	],
+	"metadata": {
+		"inclusion": "Module Inclusion (Adding to Z-wave network)\n• Connect module to power supply (with \ntemperature sensor connected - if purchased),\n• auto-inclusion (works for about 5 seconds after connected to power supply) or\n• press push button I1 three times within 3s (3 times change switch state within 3 seconds) or\n• press service button S (only applicable for 24 V SELV supply voltage) for more than 2 second.\nNOTE1: For auto-inclusion procedure, first set main controller into inclusion mode and then connect module to power supply.\nNOTE2: When connecting temperature sensor to module that has already been included, you have to exclude module first. Switch off power supply, connect the sensor and re-include the module.",
+		"exclusion": "Module Exclusion (Removing from Z-Wave network)\n• Connect module to power supply \n• bring module within maximum 1 meter (3 feet) of the main controller,\n• enable add/remove mode on main controller\nIf push button I1 is pressed three times within 3s (or service button S is pressed more than 2 and less than 6 seconds) module is excluded, but configuration parameters are not set to their default values.",
+		"reset": "• press push button I1 five times within 3s (5 times change switch state within 3 seconds) in the first 60 seconds after the module is connected to the power supply or\n• press service button S (only applicable for 24 V SELV supply voltage) for more than 6 second.\nBy this function all parameters of the module are set to their default values and the ID of the device is deleted.\nNOTE: Please use this procedure only when the network primary controller is missing or otherwise inoperable.\nNOTE: If the module is included with parameters 71 with value different to default and module reset is done, wait at least 30s before next inclusion",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/2962/Manual_Devolo_HC%20Shutter_FM.pdf"
+	}
+}

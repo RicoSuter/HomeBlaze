@@ -1,0 +1,20 @@
+{
+	"manufacturer": "Shenzhen Heiman Technology Co., Ltd.",
+	"manufacturerId": "0x0260",
+	"label": "HS1SA-Z",
+	"description": "Smoke Detector",
+	"devices": [
+		{
+			"productType": "0x8002",
+			"productId": "0x1000"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"metadata": {
+		"inclusion": "Press the pin 3 times within 1.5s, Green LED is Blinking 3 times within 1 second. If Inclusion Process is successful, Green led will turn off.",
+		"exclusion": "Press the pin 3 times within 1.5s. If Exclusion Process is successful, Green led is Blinking 6 times, then turn off."
+	}
+}

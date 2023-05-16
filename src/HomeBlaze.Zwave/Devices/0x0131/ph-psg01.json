@@ -1,0 +1,34 @@
+{
+	"manufacturer": "Zipato",
+	"manufacturerId": "0x0131",
+	"label": "PH-PSG01",
+	"description": "Smoke Sensor",
+	"devices": [
+		{
+			"productType": "0x0002",
+			"productId": "0x001e"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "7",
+			"label": "Customer Function",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 4,
+			"defaultValue": 4
+		},
+		{
+			"#": "10",
+			"label": "Auto Report Battery Time",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 127
+		}
+	]
+}

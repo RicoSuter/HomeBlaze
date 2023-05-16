@@ -1,0 +1,20 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors;
+@using HomeBlaze.Components.Inputs;
+@using HomeBlaze.Things;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+
+@inherits ThingSetupComponent<Group>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="Thing.Title" Label="Title" Required="true" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

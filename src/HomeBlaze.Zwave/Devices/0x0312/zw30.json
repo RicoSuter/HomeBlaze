@@ -1,0 +1,104 @@
+{
+	"manufacturer": "EVA Logik",
+	"manufacturerId": "0x0312",
+	"label": "ZW30",
+	"description": "S2 In-wall Smart ON/OFF Switch",
+	"devices": [
+		{
+			"productType": "0xaa00",
+			"productId": "0xaa01",
+			"zwaveAllianceId": 3597
+		},
+		{
+			"productType": "0xbb00",
+			"productId": "0xbb01",
+			"zwaveAllianceId": 4065
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Button Orientation",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Normal orientation",
+					"value": 0
+				},
+				{
+					"label": "Swap up/down buttons",
+					"value": 1
+				},
+				{
+					"label": "Both buttons toggle",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "2",
+			"$import": "~/templates/master_template.json#led_indicator_four_options"
+		},
+		{
+			"#": "3",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Enable/Disable Auto Turn-off Timer"
+		},
+		{
+			"#": "4",
+			"$import": "~/templates/master_template.json#base_1-65535",
+			"label": "Auto-Off Timer",
+			"unit": "minutes",
+			"defaultValue": 60
+		},
+		{
+			"#": "5",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Enable/Disable Auto Turn-on Timer"
+		},
+		{
+			"#": "6",
+			"$import": "~/templates/master_template.json#base_1-65535",
+			"label": "Auto-On Timer",
+			"unit": "minutes",
+			"defaultValue": 60
+		},
+		{
+			"#": "7[0x01]",
+			"$import": "templates/minoston_template.json#status_change_report_local_control"
+		},
+		{
+			"#": "7[0x02]",
+			"$import": "templates/minoston_template.json#status_change_report_three_way"
+		},
+		{
+			"#": "7[0x04]",
+			"$import": "templates/minoston_template.json#status_change_report_zwave"
+		},
+		{
+			"#": "7[0x08]",
+			"$import": "templates/minoston_template.json#status_change_report_timer"
+		},
+		{
+			"#": "8",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_on_prev"
+		},
+		{
+			"#": "9",
+			"$import": "templates/minoston_template.json#enable_local_control"
+		}
+	],
+	"metadata": {
+		"inclusion": "1. Follow the instructions for your Z-Wave certified controller to include\n a device to the Z-Wave network.\n2. Once the controller is ready to include your device, press up and \n Release for threes times the toggle to include it in the network.\n3. Once your controller has confirmed that the device has been included, refresh the \n Z-Wave network to optimize performance.\n4. The device is associated in the same group when it included in setting process. \n Now you can control your Z-Wave device according to groups, scenes, schedules \n and automation programmed.",
+		"exclusion": "1. Follow the instructions for your Z-Wave certified controller to exclude \n a device from the Z-Wave network.\n2. Once the controller is ready to Exclude your device, press up and \n release for threes times the front button to exclude it from the network.",
+		"reset": "Press click Z-Wave button3 times quickly,and hold the third time for at least 10 seconds. to restore the device to the factory.Please use this procedure only when the network primary controller is missing or otherwise inoperable",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/3597/ZW30manual_EVALOGIK-190711.1_1.pdf"
+	}
+}

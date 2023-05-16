@@ -1,0 +1,26 @@
+{
+	"manufacturer": "Linear (Nortek Security Control LLC)",
+	"manufacturerId": "0x014f",
+	"label": "WT00Z5-1",
+	"description": "3-Way Wall Accessory Switch",
+	"devices": [
+		{
+			"productType": "0x5754",
+			"productId": "0x3530"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "3",
+			"$import": "templates/config_template.json#night_light_5"
+		},
+		{
+			"#": "4",
+			"$import": "~/templates/master_template.json#orientation"
+		}
+	]
+}

@@ -1,0 +1,126 @@
+{
+	"manufacturer": "Q-light",
+	"manufacturerId": "0x0433",
+	"label": "Zerodim",
+	"description": "Q-Light Zerodim",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x000d"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 1,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "On/Off (rotary knob)", // Mirror of endpoint 1, group 2
+			"maxNodes": 5
+		},
+		"3": {
+			"label": "Dimmer (rotary knob)", // Mirror of endpoint 1, group 3
+			"maxNodes": 5
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Minimum brightness level",
+			"description": "Set the desired value from 1 to 98% for the minimum dim level that the dimmer is restricted to, the dimmer will not go lower than the value set here.",
+			"valueSize": 1,
+			"unit": "%",
+			"minValue": 1,
+			"maxValue": 98,
+			"defaultValue": 10,
+			"unsigned": true
+		},
+		{
+			"#": "2",
+			"label": "Maximum brightness level",
+			"description": "Set the desired value from 2 to 99% for the maximum dim level that the dimmer is restricted to; the dimmer will not go higher than the value set here.",
+			"valueSize": 1,
+			"unit": "%",
+			"minValue": 2,
+			"maxValue": 99,
+			"defaultValue": 99,
+			"unsigned": true
+		},
+		{
+			"#": "3",
+			"label": "Automatic control - dimming step size",
+			"description": "This parameter defines the percentage value of dimming step during the automatic control.",
+			"valueSize": 1,
+			"unit": "%",
+			"minValue": 1,
+			"maxValue": 99,
+			"defaultValue": 1,
+			"unsigned": true
+		},
+		{
+			"#": "4",
+			"label": "Automatic control - time of a dimming step",
+			"description": "This parameter defines the time of single dimming step set in parameter 3 during the automatic control.",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 255,
+			"defaultValue": 1,
+			"unsigned": true
+		},
+		{
+			"#": "5",
+			"label": "Manual control - dimming step size",
+			"description": "This parameter defines the percentage value of dimming step during the manual control.",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 99,
+			"defaultValue": 1,
+			"unsigned": true
+		},
+		{
+			"#": "6",
+			"label": "Manual control - time of a dimming step",
+			"description": "This parameter defines the time of single dimming step setin parameter 5 during the manual control.",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 255,
+			"defaultValue": 5,
+			"unsigned": true
+		},
+		{
+			"#": "7",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_prev"
+		},
+		{
+			"#": "8",
+			"label": "Scene ID set",
+			"description": "Scene ID is set by this configuration. Note: The actual action of each SCENE ID are set by SCENE_ACTUATOR_CONF(0x26) command.",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 255,
+			"defaultValue": 1,
+			"unsigned": true
+		},
+		{
+			"#": "9",
+			"label": "Auto-Off Timer",
+			"valueSize": 2,
+			"unit": "seconds",
+			"minValue": 0,
+			"maxValue": 32767,
+			"defaultValue": 0,
+			"unsigned": true,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				}
+			]
+		}
+	]
+}

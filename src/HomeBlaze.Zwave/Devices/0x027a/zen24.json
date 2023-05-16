@@ -1,0 +1,150 @@
+{
+	"manufacturer": "Zooz",
+	"manufacturerId": "0x027a",
+	"label": "ZEN24",
+	"description": "Z-Wave Plus Toggle Dimmer Light Switch Ver 2.0",
+	"devices": [
+		{
+			"productType": "0xb112",
+			"productId": "0x261c"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$if": "firmwareVersion <= 3.255",
+			"$import": "~/templates/master_template.json#orientation"
+		},
+		{
+			"#": "1",
+			"$if": "firmwareVersion >= 4.0",
+			"$import": "~/templates/master_template.json#orientation_momentary"
+		},
+		{
+			"#": "3",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-Off Timer"
+		},
+		{
+			"#": "4",
+			"$if": "firmwareVersion <= 2.255",
+			"label": "Ramp Rate Control",
+			"description": "Choose from 2 ramp rate options (fade-in / fade-out effect)",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Slow Ramp Rate",
+					"value": 0
+				},
+				{
+					"label": "Fast Ramp Rate",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "4",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#auto_off_timer_duration"
+		},
+		{
+			"#": "5",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Auto Turn-On Timer"
+		},
+		{
+			"#": "6",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#auto_on_timer_duration"
+		},
+		{
+			"#": "8",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_on_prev"
+		},
+		{
+			"#": "9",
+			"$if": "firmwareVersion >= 3.0 && firmwareVersion <= 3.255",
+			"$import": "templates/zooz_template.json#dimmer_ramp_rate"
+		},
+		{
+			"#": "9",
+			"$if": "firmwareVersion >= 4.0",
+			"$import": "templates/zooz_template.json#dimmer_ramp_rate"
+		},
+		{
+			"#": "10",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#min_brightness"
+		},
+		{
+			"#": "11",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#max_brightness"
+		},
+		{
+			"#": "12",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#zen2x_double_tap_up_behavior"
+		},
+		{
+			"#": "13",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#enable_scene_control"
+		},
+		{
+			"#": "14",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#double_tap_enable"
+		},
+		{
+			"#": "15",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "~/templates/master_template.json#smart_switch_mode_0-2"
+		},
+		{
+			"#": "16",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#local_dimming_speed",
+			"defaultValue": 4
+		},
+		{
+			"#": "17",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#zwave_ramp_rate"
+		},
+		{
+			"#": "18",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#custom_brightness"
+		},
+		{
+			"#": "19",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#3way_switch_type_dimmer"
+		},
+		{
+			"#": "20",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#smart_switch_mode_dimming_reporting"
+		},
+		{
+			"#": "21",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#smart_switch_mode_reporting"
+		},
+		{
+			"#": "22",
+			"$if": "firmwareVersion >= 3.0",
+			"$import": "templates/zooz_template.json#night_light_mode"
+		}
+	]
+}

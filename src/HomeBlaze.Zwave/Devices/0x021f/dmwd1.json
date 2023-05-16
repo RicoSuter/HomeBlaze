@@ -1,0 +1,66 @@
+{
+	"manufacturer": "Elexa Consumer Products Inc.",
+	"manufacturerId": "0x021f",
+	"label": "DMWD1",
+	"description": "Dome door & window sensor",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x0101"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Basic Set",
+			"maxNodes": 5
+		},
+		"3": {
+			"label": "Notification Report",
+			"maxNodes": 5
+		},
+		"4": {
+			"label": "Binary Sensor Report",
+			"maxNodes": 5
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "BASIC_SET Off Delay",
+			"description": "The delay time from when the Door/Window Sensor sends the BASIC_SET command.",
+			"valueSize": 2,
+			"minValue": 1,
+			"maxValue": 65535,
+			"defaultValue": 30,
+			"unsigned": true
+		},
+		{
+			"#": "2",
+			"label": "BASIC_SET Level",
+			"description": "Sets the value sent by the BASIC_SET command to Association Group 2",
+			"valueSize": 1,
+			"defaultValue": 255,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "0/Turn Off Device",
+					"value": 0
+				},
+				{
+					"label": "Turn On Device",
+					"value": 255
+				}
+			]
+		}
+	]
+}

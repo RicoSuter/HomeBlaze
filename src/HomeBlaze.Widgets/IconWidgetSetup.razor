@@ -1,0 +1,75 @@
+﻿@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Abstractions.Services
+@using HomeBlaze.Components
+@using HomeBlaze.Components.Inputs
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using HomeBlaze.Services.Json;
+@using MudBlazor
+@using System.Threading
+@using static HomeBlaze.Widgets.IconWidget;
+
+@inject IThingManager ThingManager
+
+@inherits ThingSetupComponent<IconWidget>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <div class="d-flex gap-4">
+        <MudTextField @bind-Value="@Thing.Scale" Label="Scale" />
+        <MudTextField @bind-Value="@Thing.Size" Label="Size" />
+    </div>
+
+    <br />
+    <br />
+    <MudButton StartIcon="@Icons.Filled.Add" Size="Size.Small"
+               OnClick="@(() => Thing.Conditions.Add(new IconCondition()))"
+               Variant="Variant.Filled" Color="Color.Primary">Add Icon</MudButton>
+
+    <span>&nbsp;&nbsp;The first icon from the left with a valid condition is rendered.</span>
+    <br />
+    <br />
+
+    <MudTabs>
+        @foreach (var condition in Thing.Conditions)
+        {
+            <MudTabPanel Icon="@condition.Icon"
+                     Text="@(condition.Color + " (" + (int)(condition.Opacity * 100) + "%)")"
+                     Style="@("justify-content: left; color: " + condition.Color)">
+                <br />
+
+                <IconTextField Label="Icon" @bind-Value="condition.Icon" />
+                <div class="d-flex gap-4">
+                    <MudColorPicker Label="Color" DisableAlpha="true" @bind-Text="@condition.Color" />
+                    <MudTextField Label="Opacity" @bind-Value="@condition.Opacity" />
+                </div>
+
+                <br />
+                <h3>Condition</h3>
+                <ThingSelect Label="Thing ID" @bind-ThingId="condition.ThingId" />
+
+                @if (condition.ThingId != null)
+                {
+                    <div class="d-flex gap-4">
+                        <div style="width: 50%">
+                            <ThingPropertySelect Label="Property" @bind-PropertyName="@condition.PropertyName" ThingId="@condition.ThingId" />
+                        </div>
+                        <div style="width: 50%">
+                            <MudTextField Label="Value" @bind-Value="@condition.Value" />
+                        </div>
+                    </div>
+                }
+
+                <br />
+                <MudButton StartIcon="@Icons.Filled.Delete" OnClick="@(x => Thing.Conditions.Remove(condition))"
+                       Variant="Variant.Filled" Color="Color.Error" Size="Size.Small">Delete</MudButton>
+            </MudTabPanel>
+        }
+    </MudTabs>
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid && Thing.Conditions.Any();
+}

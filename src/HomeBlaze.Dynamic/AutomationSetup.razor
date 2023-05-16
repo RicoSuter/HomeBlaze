@@ -1,0 +1,248 @@
+﻿@using Blazor.Diagrams.Components
+@using Blazor.Diagrams.Core;
+@using Blazor.Diagrams.Core.Geometry;
+@using Blazor.Diagrams.Core.Models;
+@using HomeBlaze.Components.Dialogs;
+@using MudBlazor;
+@using HomeBlaze.Components;
+@using System.Threading;
+@using static HomeBlaze.Dynamic.Automation;
+
+@inject IDialogService DialogService
+
+@inherits ThingSetupComponent<Automation>
+
+<MudTextField @bind-Value="@Thing.Title" Label="Title"></MudTextField>
+
+<br />
+@if (_diagram != null)
+{
+    var selections = _diagram.GetSelectedModels().ToArray();
+
+    <div style="float: right">
+        @foreach (var state in selections.OfType<AutomationStateNodeModel>())
+        {
+            <strong>&nbsp;&nbsp;&nbsp;@state.State.Name:</strong>
+            <span>&nbsp;</span>
+
+            <MudButton OnClick="@(() => EditStateAsync(state))" Variant="Variant.Filled" Color="Color.Warning" Class="ml-2">
+                Edit
+            </MudButton>
+
+            @if (state.State.Name != Thing.InitialState)
+            {
+                <MudButton OnClick="@(() => SetInitialState(state))" Variant="Variant.Filled" Color="Color.Tertiary" Class="ml-2">
+                    Set as initial State
+                </MudButton>
+            }
+        }
+
+        @foreach (var transition in selections.OfType<AutomationTransitionLinkModel>())
+        {
+            <strong>&nbsp;&nbsp;&nbsp;@transition.Transition.Name:</strong>
+            <span>&nbsp;</span>
+
+            <MudButton OnClick="@(() => EditTransitionAsync(transition))" Variant="Variant.Filled" Color="Color.Warning" Class="ml-2">
+                Edit
+            </MudButton>
+        }
+    </div>
+
+    <MudSwitch @bind-Checked="@Thing.IsEnabled" Label="Enabled" Color="Color.Info" />
+    <MudButton OnClick="AddStateAsync" Variant="Variant.Filled" Color="Color.Primary">Add Node</MudButton>
+
+    @if (_showDiagram)
+    {
+        <div style="width: 100%; height: 400px">
+            <CascadingValue Value="_diagram">
+                <DiagramCanvas></DiagramCanvas>
+            </CascadingValue>
+        </div>
+    }
+}
+
+<style>
+    .default-node {
+        width: auto !important;
+        padding: 16px 20px 16px 20px;
+        color: black;
+        display: block;
+        height: auto;
+    }
+</style>
+
+@code {
+    private bool _showDiagram = false;
+    private Diagram? _diagram;
+
+    public override bool IsValid => true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var options = new DiagramOptions
+        {
+            DeleteKey = "Delete",
+
+            AllowPanning = false,
+            AllowMultiSelection = false,
+
+            Zoom = new DiagramZoomOptions
+            {
+                Enabled = false
+            }, 
+
+            Links =
+            {
+                Factory = (Diagram diagram, PortModel sourcePort) => new AutomationTransitionLinkModel(new AutomationTransition(), sourcePort)
+            },
+
+            Constraints =
+            {
+                ShouldDeleteNode = node => 
+                    node is AutomationStateNodeModel stateModel &&
+                    stateModel.State.Name != Thing.InitialState
+            }
+        };
+
+        _diagram = new Diagram(options);
+        _diagram.RegisterModelComponent<AutomationStateNodeModel, AutomationStateNodeModelComponent>();
+        _diagram.SelectionChanged += node =>
+        {
+            InvokeAsync(StateHasChanged);
+        };
+        _diagram.MouseDoubleClick += async (model, args) =>
+        {
+            if (model is AutomationStateNodeModel stateModel)
+            {
+                await EditStateAsync(stateModel);
+            }
+            else if (model is AutomationTransitionLinkModel linkModel)
+            {
+                await EditTransitionAsync(linkModel);
+            }
+        };
+
+        foreach (var state in Thing!.States)
+        {
+            var node = new AutomationStateNodeModel(state);
+            _diagram.Nodes.Add(node);
+        }
+
+        var nodes = _diagram.Nodes.OfType<AutomationStateNodeModel>().ToArray();
+        foreach (var transition in Thing.Transitions)
+        {
+            var node1 = nodes.FirstOrDefault(s => s.State.Name == transition.FromState);
+            var node2 = nodes.FirstOrDefault(s => s.State.Name == transition.ToState);
+
+            if (node1 != null && node2 != null)
+            {
+                var fromPort = transition.FromPort ?? PortAlignment.Left;
+                var toPort = transition.ToPort ?? PortAlignment.Right;
+
+                var port1 = node1.GetPort(fromPort);
+                var port2 = node2.GetPort(toPort);
+
+                if (port1 != null && port2 != null)
+                {
+                    var link = new AutomationTransitionLinkModel(transition, port1, port2);
+                    link.Refresh();
+                    _diagram.Links.Add(link);
+                }
+            }
+        }
+
+        _diagram.Nodes.Removed += node =>
+        {
+            if (node is AutomationStateNodeModel stateModel)
+            {
+                Thing.States.Remove(stateModel.State);
+            }
+        };
+
+        _diagram.Links.Added += link =>
+        {
+            if (link is AutomationTransitionLinkModel transitionModel)
+            {
+                Thing.Transitions.Add(transitionModel.Transition);
+            }
+        };
+
+        _diagram.Links.Removed += link =>
+        {
+            if (link is AutomationTransitionLinkModel transitionModel)
+            {
+                Thing.Transitions.Remove(transitionModel.Transition);
+            }
+        };
+
+        await Task.Delay(100);
+        _showDiagram = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task AddStateAsync()
+    {
+        var state = await AutomationStateDialog.CreateAsync(DialogService);
+        if (state != null)
+        {
+            Thing.States.Add(state);
+
+            var node = new AutomationStateNodeModel(state);
+            _diagram!.Nodes.Add(node);
+            _diagram.Refresh();
+        }
+    }
+
+    public void SetInitialState(AutomationStateNodeModel stateModel)
+    {
+        Thing.InitialState = stateModel.State.Name!;
+    }
+
+    public async Task EditStateAsync(AutomationStateNodeModel stateModel)
+    {
+        var oldStateName = stateModel.State.Name;
+        if (await AutomationStateDialog.EditAsync(DialogService, stateModel.State))
+        {
+            var newStateName = stateModel.State.Name!;
+
+            stateModel.Title = newStateName;
+            stateModel.State.Name = newStateName;
+
+            if (Thing.InitialState == oldStateName)
+            {
+                Thing.InitialState = newStateName;
+            }
+
+            foreach (var transition in Thing.Transitions.Where(t => t.FromState == oldStateName))
+            {
+                transition.FromState = newStateName;
+            }
+
+            foreach (var transition in Thing.Transitions.Where(t => t.ToState == oldStateName))
+            {
+                transition.ToState = newStateName;
+            }
+
+            stateModel.RefreshAll();
+            _diagram!.Refresh();
+        }
+    }
+
+    public async Task EditTransitionAsync(AutomationTransitionLinkModel transitionModel)
+    {
+        if (await AutomationTransitionDialog.EditAsync(DialogService, transitionModel.Transition))
+        {
+            transitionModel.Refresh();
+            _diagram!.Refresh();
+        }
+    }
+
+    public override async Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
+    {
+        var result = await base.UpdateEditedThingAsync(cancellationToken);
+        EditedThing!.SetState(EditedThing.InitialState!);
+        return result;
+    }
+}

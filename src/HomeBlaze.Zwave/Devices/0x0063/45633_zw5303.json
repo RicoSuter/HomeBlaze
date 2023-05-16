@@ -1,0 +1,17 @@
+{
+	"manufacturer": "GE",
+	"manufacturerId": "0x0063",
+	"label": "45633 / ZW5303",
+	"description": "Handheld LCD Remote Controller, 400S",
+	"devices": [
+		{
+			"productType": "0x8009",
+			"productId": "0x5303",
+			"zwaveAllianceId": 829
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	}
+}

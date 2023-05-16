@@ -1,0 +1,44 @@
+{
+	"manufacturer": "Inovelli",
+	"manufacturerId": "0x0312",
+	"label": "NZW31",
+	"description": "In-wall Dimming Switch",
+	"devices": [
+		{
+			"productType": "0x1f01",
+			"productId": "0x1f01"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Dimmer Step configuration",
+			"description": "Dimmer speed setting (On/Off)",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 99,
+			"defaultValue": 1
+		},
+		{
+			"#": "2",
+			"label": "Dimmer Minimum Configuration",
+			"description": "Lowest dim setting before turning off",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 99,
+			"defaultValue": 1
+		},
+		{
+			"#": "4",
+			"$import": "~/templates/master_template.json#orientation"
+		},
+		{
+			"#": "5",
+			"$import": "templates/minoston_template.json#auto_off_timer_32767s"
+		}
+	]
+}

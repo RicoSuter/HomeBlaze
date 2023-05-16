@@ -1,0 +1,77 @@
+{
+	"manufacturer": "Remotec",
+	"manufacturerId": "0x5254",
+	"label": "ZDS-210NA",
+	"description": "Dimming Switch Module (Dual Mode)",
+	"devices": [
+		{
+			"productType": "0x8200",
+			"productId": "0x8130"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 1,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Group 2",
+			"maxNodes": 4
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "5",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_prev"
+		},
+		{
+			"#": "13",
+			"label": "Double click option",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disabled",
+					"value": 0
+				},
+				{
+					"label": "Enabled",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "17",
+			"label": "Dimmer time from 0% to max.",
+			"unit": "seconds",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 5,
+			"defaultValue": 3
+		},
+		{
+			"#": "18",
+			"label": "Maximum Dimmer level control",
+			"unit": "percent",
+			"valueSize": 1,
+			"minValue": 2,
+			"maxValue": 99,
+			"defaultValue": 99
+		},
+		{
+			"#": "19",
+			"label": "Minimum Dimmer level control",
+			"unit": "percent",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 98,
+			"defaultValue": 13
+		}
+	]
+}

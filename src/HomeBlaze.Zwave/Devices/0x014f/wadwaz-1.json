@@ -1,0 +1,31 @@
+{
+	"manufacturer": "Nortek Security & Control LLC",
+	"manufacturerId": "0x014f",
+	"label": "WADWAZ-1",
+	"description": "Door/Windows Sensor",
+	"devices": [
+		{
+			"productType": "0x2001",
+			"productId": "0x0102"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"compat": {
+		"enableBasicSetMapping": true
+	},
+	"metadata": {
+		"inclusion": "With your Controller in Inclusion mode, depress the internal program switch for 1 second then release.",
+		"exclusion": "With your Controller in Exclusion mode, depress the internal program switch for 1 second then release.",
+		"manual": "https://www.gocontrol.com/manuals/WADWAZ-1-Install.pdf"
+	}
+}

@@ -1,0 +1,54 @@
+{
+	"manufacturer": "Vision Security",
+	"manufacturerId": "0x0109",
+	"label": "ZD2102-5",
+	"description": "Door Window Sensor",
+	"devices": [
+		{
+			"productType": "0x2001",
+			"productId": "0x0105",
+			"zwaveAllianceId": 988
+		},
+		{
+			"productType": "0x2001",
+			"productId": "0x0106",
+			"zwaveAllianceId": [1705, 2823]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "External switch",
+			"description": "Determines if the external switch can be used.",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "Enable",
+					"value": 255
+				}
+			]
+		}
+	],
+	"compat": {
+		"commandClasses": {
+			"add": {
+				"0x20": {
+					// This device should send Notification Reports, but they seem to get lost often
+					// Basic Set comes through
+					"isSupported": true
+				}
+			}
+		}
+	}
+}

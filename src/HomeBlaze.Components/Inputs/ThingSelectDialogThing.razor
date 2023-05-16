@@ -1,0 +1,37 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Presentation;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+
+@if (Thing != null)
+{
+    var properties = ThingManager
+       .GetState(Thing.Id, true)
+       .Where(p => p.Value.HasThingChildren)
+       .ToArray();
+
+    if (properties.Length > 1)
+    {
+        @foreach (var property in properties)
+        {
+            <ThingSelectDialogProperty Property="property" ThingFilter="ThingFilter!" />
+        }
+    }
+    else if (properties.Length == 1)
+    {
+        foreach (var child in properties.First().Value.Children)
+        {
+            <ThingSelectDialogChild Thing="@child" ThingFilter="ThingFilter!" />
+        }
+    }
+}
+
+@code {
+    [Parameter]
+    public IThing? Thing { get; set; }
+
+    [Parameter]
+    public Func<IThing, bool>? ThingFilter { get; set; }
+}

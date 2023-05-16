@@ -1,0 +1,57 @@
+{
+	"manufacturer": "Minoston",
+	"manufacturerId": "0x0312",
+	"label": "MP20Z",
+	"description": "Zwave Plug 2 channel plugin outlet",
+	"devices": [
+		{
+			"productType": "0xff00",
+			"productId": "0xff05",
+			"zwaveAllianceId": 3406
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "~/templates/master_template.json#led_indicator_three_options_inverted"
+		},
+		{
+			"#": "2",
+			"$import": "templates/minoston_template.json#auto_off_timer",
+			"label": "Left Outlet: Auto-Off Timer",
+			"unit": "seconds"
+		},
+		{
+			"#": "3",
+			"$import": "templates/minoston_template.json#auto_off_timer",
+			"label": "Right Outlet: Auto-Off Timer",
+			"unit": "seconds"
+		},
+		{
+			"#": "4",
+			"$import": "templates/minoston_template.json#auto_on_timer",
+			"label": "Left Outlet: Auto-On Timer",
+			"unit": "seconds"
+		},
+		{
+			"#": "5",
+			"$import": "templates/minoston_template.json#auto_on_timer",
+			"label": "Right Outlet: Auto-On Timer",
+			"unit": "seconds"
+		},
+		{
+			"#": "6",
+			"$import": "~/templates/master_template.json#state_after_power_failure_off_on_prev"
+		}
+	],
+	"metadata": {
+		"inclusion": "1. Follow the instructions for your Z-Wave certified controller to include\n a device to the Z-Wave network.\n2. Once the controller is ready to include your device, press up and \n release the toggle to include it in the network.\n3. Once your controller has confirmed that the device has been included, refresh the \n Z-Wave network to optimize performance.\n4. The device is associated in the same group when it included in setting process. \n Now you can control your Z-Wave device according to groups, scenes, schedules \n and automation programmed.",
+		"exclusion": "1. Follow the instructions for your Z-Wave certified controller to exclude \n a device from the Z-Wave network.\n2. Once the controller is ready to Exclude your device, press up and \n release the front button to exclude it from the network.",
+		"reset": "1. Press and hold the top button for at least 3 seconds while you plug the smart switch into a receptacle.\n2. Use this procedure only in the event that the network primary controller is missing or otherwise inoperable.",
+		"manual": "https://minoston.com/wp-content/uploads/2020/08/MP20Z-Manual.pdf"
+	}
+}

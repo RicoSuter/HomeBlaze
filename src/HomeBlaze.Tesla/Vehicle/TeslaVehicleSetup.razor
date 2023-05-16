@@ -1,0 +1,137 @@
+﻿@using HomeBlaze.Components;
+@using HomeBlaze.Tesla.Vehicle.Models;
+@using Microsoft.Extensions.DependencyInjection;
+@using MudBlazor
+@using System.Threading
+@using Microsoft.JSInterop
+@using System.Net.Http;
+@using System.Text.Json;
+@using TeslaAuth;
+
+@inject IDialogService DialogService
+@inject IServiceProvider ServiceProvider
+@inject IJSRuntime JsRuntime
+@inject IHttpClientFactory HttpClientFactory
+
+@inherits ThingSetupComponentBase<TeslaVehicle>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@OpenLoginPage">Login with your Tesla account</MudButton>
+
+<br />
+<br />
+<MudTextField @bind-Value="@_callbackUrl" TextChanged="@((url) => LoadVehiclesAsync(url, default))"
+              Label="Paste redirect authenticate URL" Lines="5" />
+
+@if (_vehicles != null)
+{
+    <br />
+    <MudItem>
+        <MudList Clickable="true" @bind-SelectedValue="_selectedVehicle">
+            <MudDivider />
+            @foreach (var vehicle in _vehicles.Response)
+            {
+                <MudListItem Value="vehicle">
+                    @vehicle.DisplayName (@vehicle.Vin)
+                </MudListItem>
+
+                <MudDivider />
+            }
+        </MudList>
+    </MudItem>
+}
+
+@code {
+    private string? _callbackUrl;
+    private Vehicles? _vehicles;
+    private object? _selectedVehicle;
+    private Tokens? _tokens;
+
+    public override bool IsValid => !string.IsNullOrEmpty(_callbackUrl) && _selectedVehicle != null;
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    [Parameter]
+    public TeslaVehicle? Thing { get; set; }
+
+    public async void OpenLoginPage()
+    {
+        var helper = new TeslaAuthHelper("HomeBlaze", TeslaAccountRegion.USA);
+        var requestUrl = helper.GetLoginUrlForBrowser();
+        await JsRuntime.InvokeVoidAsync("open", new[] { requestUrl });
+    }
+
+    public override Task<TeslaVehicle?> CreateThingAsync(CancellationToken cancellationToken)
+    {
+        if (_tokens != null && _selectedVehicle is TeslaVehicleItem selectedVehicle)
+        {
+            var vehicle = (TeslaVehicle)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(TeslaVehicle));
+            vehicle.VehicleId = selectedVehicle.IdString;
+            vehicle.AccessToken = _tokens.AccessToken;
+            vehicle.RefreshToken = _tokens.RefreshToken;
+            vehicle.TokenExpirationDate = _tokens.CreatedAt + _tokens.ExpiresIn;
+            return Task.FromResult<TeslaVehicle?>(vehicle);
+        }
+
+        return Task.FromResult<TeslaVehicle?>(null);
+    }
+
+    public async Task LoadVehiclesAsync(string url, CancellationToken cancellationToken)
+    {
+        try
+        {
+            _vehicles = null;
+
+            var tokens = await GetAuthenticationjsonAsync();
+            if (tokens != null)
+            {
+                using var httpClient = HttpClientFactory.CreateClient();
+                await httpClient.AuthorizeAsync(
+                    tokens.RefreshToken ?? throw new InvalidOperationException("RefreshToken is null."),
+                    tokens.AccessToken ?? throw new InvalidOperationException("AccessToken is null"),
+                    tokens.CreatedAt + tokens.ExpiresIn,
+                    cancellationToken);
+
+                var message = await httpClient.GetAsync("https://owner-api.teslamotors.com/api/1/vehicles", cancellationToken);
+                var json = await message.Content.ReadAsStringAsync(cancellationToken);
+
+                _vehicles = JsonSerializer.Deserialize<Vehicles>(json);
+                _tokens = tokens;
+            }
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Failed to load vehicles.", e.ToString());
+        }
+    }
+
+    public override async Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
+    {
+        var tokens = await GetAuthenticationjsonAsync();
+        if (tokens != null && _selectedVehicle is TeslaVehicleItem selectedVehicle)
+        {
+            EditedThing!.VehicleId = selectedVehicle.IdString;
+            EditedThing!.AccessToken = tokens.AccessToken;
+            EditedThing!.RefreshToken = tokens.RefreshToken;
+            EditedThing!.TokenExpirationDate = tokens.CreatedAt + tokens.ExpiresIn;
+            return true;
+        }
+
+        return false;
+    }
+
+    private async Task<Tokens?> GetAuthenticationjsonAsync()
+    {
+        try
+        {
+            var helper = new TeslaAuthHelper("HomeBlaze", TeslaAccountRegion.USA);
+            return await helper.GetTokenAfterLoginAsync(_callbackUrl);
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Failed to add Account", e.ToString());
+        }
+
+        return null;
+    }
+}

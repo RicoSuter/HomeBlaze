@@ -1,0 +1,42 @@
+{
+	"manufacturer": "Danfoss",
+	"manufacturerId": "0x0002",
+	"label": "MT02650",
+	"description": "Devolo Thermostat (09356)",
+	"devices": [
+		{
+			"productType": "0x0005",
+			"productId": "0x0175"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Target for Wakeup and Override Notifications",
+			"maxNodes": 10,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Temperature sensor",
+			"maxNodes": 1
+		}
+	},
+	"compat": {
+		// If we don't query specific things on wake up, this device will
+		// think it is not connected and show error E5
+		"queryOnWakeup": [
+			// ["CommandClass", "API method", ...arguments]
+			["Battery", "get"],
+			["Thermostat Setpoint", "get", 1]
+		]
+	},
+	"metadata": {
+		"inclusion": "In order to include (add) a Z-Wave device to a network it must be in factory default state.\nClick on the middle button will confirm inclusion or exclusion and wakeup the device for wireless communication.\nA long push for 3 seconds on the middle buttons enters and leaves the management mode indicated by a 'M'.",
+		"exclusion": "Click on the middle button will confirm inclusion or exclusion and wakeup the device for wireless communication.\nA long push for 3 seconds on the middle buttons enters and leaves the management mode indicated by a 'M'.",
+		"reset": "Remove the batteries and keep the function button '*' pressed for 5 seconds after the batteries are inserted back.\nThis procedure should only be used when the primary controller is inoperable.",
+		"manual": "http://manuals-backend.z-wave.info/make.php?lang=en&sku=DEVE9356&cert=ZC08-15020003"
+	}
+}

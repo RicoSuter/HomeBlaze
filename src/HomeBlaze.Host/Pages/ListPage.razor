@@ -1,0 +1,16 @@
+﻿@page "/list"
+
+@using System.Threading;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Host.Logging;
+
+@inject IThingManager ThingManager
+
+<MudTreeView T="IThing" >
+    <ListTree Thing="@ThingManager?.RootThing"  />
+</MudTreeView>
+
+@code {
+
+}

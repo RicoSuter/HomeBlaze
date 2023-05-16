@@ -1,0 +1,421 @@
+{
+	"manufacturer": "Fibargroup",
+	"manufacturerId": "0x010f",
+	"label": "FGWREU-111",
+	"description": "Fibaro Walli Roller Shutter",
+	"devices": [
+		{
+			"productType": "0x1d01",
+			"productId": "0x1000"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "11",
+			"label": "LED Indicator: Color When Moving",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "White",
+					"value": 1
+				},
+				{
+					"label": "Red",
+					"value": 2
+				},
+				{
+					"label": "Green",
+					"value": 3
+				},
+				{
+					"label": "Blue",
+					"value": 4
+				},
+				{
+					"label": "Yellow",
+					"value": 5
+				},
+				{
+					"label": "Cyan",
+					"value": 6
+				},
+				{
+					"label": "Magenta",
+					"value": 7
+				}
+			]
+		},
+		{
+			"#": "12",
+			"$import": "#paramInformation/11",
+			"label": "LED Indicator: Standby Color",
+			"defaultValue": 0
+		},
+		{
+			"#": "13",
+			"$import": "~/templates/master_template.json#base_0-100_nounit",
+			"label": "LED Indicator: Brightness",
+			"defaultValue": 100,
+			"unit": "%"
+		},
+		{
+			"#": "24",
+			"$import": "~/templates/master_template.json#orientation"
+		},
+		{
+			"#": "25",
+			"label": "Output Orientation",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Q1 up, Q2 down",
+					"value": 0
+				},
+				{
+					"label": "Q1 down, Q2 up",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "30[0xff000000]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_notification_type",
+			"label": "Alarm Configuration: 1st Slot: Notification Type",
+			"defaultValue": 0
+		},
+		{
+			"#": "30[0xff0000]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_notification_event",
+			"label": "Alarm Configuration: 1st Slot: Notification Event",
+			"defaultValue": 0
+		},
+		{
+			"#": "30[0x03]",
+			"label": "Alarm Configuration: 1st Slot: Blinds Action",
+			"valueSize": 4,
+			"defaultValue": 0,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "Open",
+					"value": 1
+				},
+				{
+					"label": "Close",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "30[0xf0]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_indicator_blink_color",
+			"label": "Alarm Configuration: 1st Slot: LED Indicator"
+		},
+		{
+			"#": "31[0xff000000]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_notification_type",
+			"label": "Alarm Configuration: 2nd Slot: Notification Type",
+			"defaultValue": 5
+		},
+		{
+			"#": "31[0xff0000]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_notification_event",
+			"label": "Alarm Configuration: 2nd Slot: Notification Event",
+			"defaultValue": 255
+		},
+		{
+			"#": "31[0x03]",
+			"$import": "#paramInformation/30[0x03]",
+			"label": "Alarm Configuration: 2nd Slot: Blinds Action",
+			"defaultValue": 0
+		},
+		{
+			"#": "31[0xf0]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_indicator_blink_color",
+			"label": "Alarm Configuration: 2nd Slot: LED Indicator"
+		},
+		{
+			"#": "32[0xff000000]",
+			"label": "Alarm Configuration: 3rd Slot: Notification Type",
+			"$import": "templates/fibaro_template.json#alarm_configuration_notification_type",
+			"defaultValue": 1
+		},
+		{
+			"#": "32[0xff0000]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_notification_event",
+			"label": "Alarm Configuration: 3rd Slot: Notification Event",
+			"defaultValue": 255
+		},
+		{
+			"#": "32[0x03]",
+			"$import": "#paramInformation/30[0x03]",
+			"label": "Alarm Configuration: 3rd Slot: Blinds Action",
+			"defaultValue": 0
+		},
+		{
+			"#": "32[0xf0]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_indicator_blink_color",
+			"label": "Alarm Configuration: 3rd Slot: LED Indicator"
+		},
+		{
+			"#": "33[0xff000000]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_notification_type",
+			"label": "Alarm Configuration: 4th Slot: Notification Type",
+			"defaultValue": 2
+		},
+		{
+			"#": "33[0xff0000]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_notification_event",
+			"label": "Alarm Configuration: 4th Slot: Notification Event",
+			"defaultValue": 255
+		},
+		{
+			"#": "33[0x03]",
+			"$import": "#paramInformation/30[0x03]",
+			"label": "Alarm Configuration: 4th Slot: Blinds Action",
+			"defaultValue": 0
+		},
+		{
+			"#": "33[0xf0]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_indicator_blink_color",
+			"label": "Alarm Configuration: 4th Slot: LED Indicator"
+		},
+		{
+			"#": "34[0xff000000]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_notification_type",
+			"label": "Alarm Configuration: 5th Slot: Notification Type",
+			"defaultValue": 4
+		},
+		{
+			"#": "34[0xff0000]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_notification_event",
+			"label": "Alarm Configuration: 5th Slot: Notification Event",
+			"defaultValue": 255
+		},
+		{
+			"#": "34[0x03]",
+			"$import": "#paramInformation/30[0x03]",
+			"label": "Alarm Configuration: 5th Slot: Blinds Action",
+			"defaultValue": 0
+		},
+		{
+			"#": "34[0xf0]",
+			"$import": "templates/fibaro_template.json#alarm_configuration_indicator_blink_color",
+			"label": "Alarm Configuration: 5th Slot: LED Indicator"
+		},
+		{
+			"#": "35",
+			"label": "Alarm Duration",
+			"unit": "seconds",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 32400,
+			"defaultValue": 600,
+			"options": [
+				{
+					"label": "Infinite",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "40[0x01]",
+			"$import": "templates/fibaro_template.json#send_s1_central_scene_pressed_1x"
+		},
+		{
+			"#": "40[0x02]",
+			"$import": "templates/fibaro_template.json#send_s1_central_scene_pressed_2x"
+		},
+		{
+			"#": "40[0x04]",
+			"$import": "templates/fibaro_template.json#send_s1_central_scene_pressed_3x"
+		},
+		{
+			"#": "40[0x08]",
+			"$import": "templates/fibaro_template.json#send_s1_central_scene_hold_release"
+		},
+		{
+			"#": "41[0x01]",
+			"$import": "templates/fibaro_template.json#send_s2_central_scene_pressed_1x"
+		},
+		{
+			"#": "41[0x02]",
+			"$import": "templates/fibaro_template.json#send_s2_central_scene_pressed_2x"
+		},
+		{
+			"#": "41[0x04]",
+			"$import": "templates/fibaro_template.json#send_s2_central_scene_pressed_3x"
+		},
+		{
+			"#": "41[0x08]",
+			"$import": "templates/fibaro_template.json#send_s2_central_scene_hold_release"
+		},
+		{
+			"#": "60",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Power Report: Include Self-consumption"
+		},
+		{
+			"#": "61",
+			"$import": "templates/fibaro_template.json#power_report_threshold_relative_0-500",
+			"defaultValue": 15
+		},
+		{
+			"#": "62",
+			"$import": "templates/fibaro_template.json#reports_periodic",
+			"label": "Power Reports: Interval",
+			"maxValue": 32400
+		},
+		{
+			"#": "65",
+			"$import": "templates/fibaro_template.json#energy_report_threshold",
+			"maxValue": 500,
+			"defaultValue": 10
+		},
+		{
+			"#": "66",
+			"$import": "templates/fibaro_template.json#reports_periodic",
+			"label": "Energy Reports: Interval",
+			"maxValue": 32400
+		},
+		{
+			"#": "150[0x01]",
+			"label": "Calibration Status",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 1,
+			"readOnly": true,
+			"options": [
+				{
+					"label": "Uncalibrated",
+					"value": 0
+				},
+				{
+					"label": "Calibrated",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "150[0x02]",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Force Calibration"
+		},
+		{
+			"#": "151",
+			"label": "Operating Mode",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Roller blind with positioning",
+					"value": 1
+				},
+				{
+					"label": "Venetian blind with positioning",
+					"value": 2
+				},
+				{
+					"label": "Roller blind with built-in driver",
+					"value": 5
+				},
+				{
+					"label": "Roller blind with built-in driver (impulse)",
+					"value": 6
+				}
+			]
+		},
+		{
+			"#": "152",
+			"label": "Venetian Blinds: Full Turn Duration",
+			"unit": "0.01 seconds",
+			"valueSize": 4,
+			"minValue": 0,
+			"maxValue": 65535,
+			"defaultValue": 150
+		},
+		{
+			"#": "153",
+			"label": "Venetian Blinds: Reset Slats Position",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Controller command only",
+					"value": 0
+				},
+				{
+					"label": "Controller, momentary or limit switch operation",
+					"value": 1
+				},
+				{
+					"label": "Controlled, momentary or limit switch operation, or Multilevel Switch Stop command",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "154",
+			"label": "Motor Overrun",
+			"description": "Duration for which motor will continue to run after end switch is hit.",
+			"unit": "0.1 seconds",
+			"valueSize": 2,
+			"minValue": 1,
+			"maxValue": 255,
+			"defaultValue": 10
+		},
+		{
+			"#": "155",
+			"label": "Limit Switch Power Threshold",
+			"description": "Power threshold interpreted as reaching a limit switch.",
+			"unit": "W",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 10,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				}
+			]
+		},
+		{
+			"#": "156",
+			"label": "Blind Up Duration",
+			"unit": "0.01 seconds",
+			"valueSize": 4,
+			"minValue": 1,
+			"maxValue": 65535,
+			"defaultValue": 6000
+		},
+		{
+			"#": "157",
+			"label": "Blind Down Duration",
+			"unit": "0.01 seconds",
+			"valueSize": 4,
+			"minValue": 1,
+			"maxValue": 65535,
+			"defaultValue": 6000
+		}
+	]
+}

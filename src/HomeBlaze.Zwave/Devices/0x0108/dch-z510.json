@@ -1,0 +1,69 @@
+{
+	"manufacturer": "D-Link",
+	"manufacturerId": "0x0108",
+	"label": "DCH-Z510",
+	"description": "Siren",
+	"devices": [
+		{
+			"productType": "0x0004",
+			"productId": "0x000a",
+			"zwaveAllianceId": 1262
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "29",
+			"label": "Disable Alarm",
+			"unit": "disable_alarm",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Enable Alarm",
+					"value": 0
+				},
+				{
+					"label": "Disable Alarm",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "31",
+			"label": "Alarm Duration",
+			"description": "Play alarm sound duration, 1 tick is 30 seconds. 0 means never auto stop.",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 127,
+			"defaultValue": 0
+		},
+		{
+			"#": "7",
+			"label": "Customer Function",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Using Notification Report",
+					"value": 0
+				},
+				{
+					"label": "Using Sensor Binary Report",
+					"value": 16
+				}
+			]
+		}
+	],
+	"metadata": {
+		"inclusion": "1. Have Z-Wave™ Controller entered inclusion mode.\n2. Pressing tamper key three times within 1.5 seconds\nto enter the inclusion mode.\n3. After add successful, the LED will light ON 1 second",
+		"exclusion": "1. Have Z-Wave™ Controller entered exclusion mode.\n2. Pressing tamper key three times within 1.5 seconds to enter the exclusion mode.\nNode ID has been excluded",
+		"reset": "Notice: Use this procedure only in the event that the primary controller is lost or otherwise inoperable.\n1. Pressing tamper key four times within 1.5 seconds and do not release the tamper key in the 4 pressed, and the LED will light ON.\n2. After 3 seconds the LED will turn OFF, after that within 2 seconds, release the tamper key. If successful, the LED will light ON one second. Otherwise, the LED will flash once.\n3. IDs are excluded and all settings will reset to factory default",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/1262/DCH-Z510_Manual.pdf"
+	}
+}

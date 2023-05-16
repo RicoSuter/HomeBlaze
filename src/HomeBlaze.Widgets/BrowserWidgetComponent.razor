@@ -1,0 +1,18 @@
+﻿@using System.Reflection
+@using System.Threading
+@using HomeBlaze.Abstractions.Services;
+
+@inject IDialogService DialogService
+@inject IStateManager StateManager
+
+@if (Thing != null)
+{
+    <div style="padding: 10px">
+        <iframe src="@Thing.BrowserUrl" style="height: @(Thing.Height - 20)px; width: @(Thing.Width - 20)px" />
+    </div>
+}
+
+@code {
+    [Parameter]
+    public BrowserWidget? Thing { get; set; }
+}

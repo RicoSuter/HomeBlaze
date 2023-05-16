@@ -1,0 +1,42 @@
+{
+	"manufacturer": "Nortek Security & Control LLC",
+	"manufacturerId": "0x014f",
+	"label": "LB60Z-1",
+	"description": "Dimmable LED Light Bulb",
+	"devices": [
+		{
+			"productType": "0x4754",
+			"productId": "0x3038"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"$import": "templates/config_template.json#init_brightness"
+		},
+		{
+			"#": "9",
+			"$import": "templates/config_template.json#dim_step_zwave"
+		},
+		{
+			"#": "10",
+			"$import": "templates/config_template.json#dim_speed"
+		}
+	],
+	"metadata": {
+		"inclusion": "With the controller in inclusion mode, turn the power to the light bulb socket ON.",
+		"exclusion": "Reset the bulb by using the wall switch to turn the power to the bulb ON while the controller is in exclusion mode. The Smart LED Light Bulb will flash twice to confirm the removal.",
+		"manual": "https://www.gocontrol.com/manuals/LB60Z-1-Install.pdf"
+	}
+}

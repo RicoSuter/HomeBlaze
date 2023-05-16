@@ -1,0 +1,38 @@
+﻿@using HomeBlaze.Abstractions.Devices.Energy;
+@using HomeBlaze.Abstractions.Devices.Light;
+@using HomeBlaze.Abstractions.Sensors;
+@using HomeBlaze.Abstractions.Services;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+
+@if (Thing != null)
+{
+    <div style="width: @(Thing?.Width + "px"); padding: 10px">
+        <MudTable T="IBatteryDevice" Items="Devices" FixedHeader="true" Height="@(Thing?.Height + "px")">
+            <HeaderContent>
+                <MudTh>Battery Device</MudTh>
+                <MudTh Style="width: 170px; text-align: right">Battery</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Title">@context.Title</MudTd>
+                <MudTd DataLabel="PowerConsumption" Style="text-align: right">
+                    <MudChip Color="@(context.BatteryLevel <= 0.1m ? Color.Error : context.BatteryLevel <= 0.2m ? Color.Warning : Color.Default)">
+                        @(Math.Round(context.BatteryLevel!.Value * 100m, 0)) %
+                    </MudChip>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </div>
+}
+
+@code {
+    public IEnumerable<IBatteryDevice> Devices => ThingManager
+        .AllThings
+        .OfType<IBatteryDevice>()
+        .Where(c => c.BatteryLevel != null)
+        .OrderBy(c => c.BatteryLevel);
+
+    [Parameter]
+    public BatteryDevicesWidget? Thing { get; set; }
+}

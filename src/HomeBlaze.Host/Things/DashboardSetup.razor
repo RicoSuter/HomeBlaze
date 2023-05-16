@@ -1,0 +1,33 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors;
+@using HomeBlaze.Components.Inputs;
+@using HomeBlaze.Things;
+@using MudBlazor
+
+@inject IThingManager ThingManager
+
+@inherits ThingSetupComponent<Dashboard>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="Thing.Name" Label="Name ([a-z]+)" Required="true" Pattern="[a-z]+" />
+    <IconTextField @bind-Value="Thing.Icon" Label="Icon" Required="true" />
+
+    <br />
+    <MudSwitch @bind-Checked="@Thing.UseAutoScale" Label="Use Auto Scale (beta)" Color="Color.Info" />
+    @if (Thing.UseAutoScale)
+    {
+        <MudTextField @bind-Value="Thing.Width" Label="Width" Required="true" Pattern="[a-z]+" />
+        <MudTextField @bind-Value="Thing.Height" Label="Height" Required="true" Pattern="[a-z]+" />
+    }
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid && ThingManager
+        .AllThings
+        .OfType<Dashboard>()
+        .Where(d => d != EditedThing)
+        .All(d => d.Name != Thing.Name);
+}

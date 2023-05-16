@@ -1,0 +1,21 @@
+{
+	"manufacturer": "Nortek Security & Control LLC",
+	"manufacturerId": "0x014f",
+	"label": "EL-SC-100 / EL-SC-300",
+	"description": "Elan System Controller",
+	"devices": [
+		{
+			"productType": "0x5343",
+			"productId": "0x5a57",
+			"zwaveAllianceId": [4030, 4083]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"metadata": {
+		"reset": "1. Navigation to the Communication Device: ELAN Z-Wave Network page under Security, Climate, Lighting or\nInput/Output Tabs in Configurator 2. Management View: Network Management 3. Network Action: Reset 4.\nExecute (button to right of Network action)",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=product_documents/4083/10024525_Rev-B_Literature_Quick_Installation_Guide_System_Controller_Elan_EL-SC-300.pdf"
+	}
+}

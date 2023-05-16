@@ -1,0 +1,174 @@
+{
+	"manufacturer": "Zipato",
+	"manufacturerId": "0x0131",
+	"label": "NE-NAS-AB02Z",
+	"description": "Indoor Siren",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0x1083",
+			"zwaveAllianceId": 3046
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 1,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Siren Status",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "7",
+			"label": "Operating Mode",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Alarm",
+					"value": 1
+				},
+				{
+					"label": "Doorbell",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "1",
+			"label": "Alarm Volume",
+			"valueSize": 1,
+			"defaultValue": 2,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "Low",
+					"value": 1
+				},
+				{
+					"label": "Medium",
+					"value": 2
+				},
+				{
+					"label": "High",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "2",
+			"label": "Alarm Duration",
+			"valueSize": 1,
+			"defaultValue": 2,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 0
+				},
+				{
+					"label": "30 Seconds",
+					"value": 1
+				},
+				{
+					"label": "1 Minute",
+					"value": 2
+				},
+				{
+					"label": "5 Minutes",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "5",
+			"label": "Alarm Sound",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 10,
+			"defaultValue": 9,
+			"unsigned": true
+		},
+		{
+			"#": "8",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Alarm LED",
+			"defaultValue": 1
+		},
+		{
+			"#": "3",
+			"label": "Doorbell Duration",
+			"unit": "seconds",
+			"valueSize": 1,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 1,
+			"unsigned": true,
+			"options": [
+				{
+					"label": "Disable",
+					"value": 255
+				}
+			]
+		},
+		{
+			"#": "4",
+			"label": "Doorbell Volume",
+			"valueSize": 1,
+			"defaultValue": 2,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Low",
+					"value": 1
+				},
+				{
+					"label": "Medium",
+					"value": 2
+				},
+				{
+					"label": "High",
+					"value": 3
+				}
+			]
+		},
+		{
+			"#": "6",
+			"label": "Doorbell Sound",
+			"valueSize": 1,
+			"minValue": 1,
+			"maxValue": 10,
+			"defaultValue": 10,
+			"unsigned": true
+		},
+		{
+			"#": "9",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Doorbell LED"
+		}
+	],
+	"metadata": {
+		"inclusion": "The indoor siren can be included to the Z-Wave network by pressing the code button.\n1) Disassemble the siren and insert the battery into\nthe siren. Make sure the device is located within\nthe direct range of the controller.\n2) Set the controller into the inclusion mode (see\nmain controller’s operating manual).\n3) Quickly triple click the code button, LED light will\nflash red for 5 times.\n4) The Indoor siren will be detected and included\nin the Z-Wave network.\n5) Wait for the main controller to configure the siren.\n\nSMART START. This product also supports Z-Wave Smart Start option which enables easier inclusion. QR code for SmartStart inclusion is printed on the battery cover. SmartStart option is only possible when network controller is also supporting SmartStart",
+		"exclusion": "1) Make sure the siren is connected to power source. 2) Set the main controller into the exclusion mode\n(see main controller’s operating manual).\n3) Quickly triple click the code button, LED light\nwill flash red for 5 times\n4) Wait for the main controller to remove the sensor",
+		"reset": "Reset procedure will remove all information on the Z-Wave network or Z-Wave controller and restore the sensor to factory default settings. Please use this procedure only when the network primary controller is missing or otherwise inoperable.\n\n1) Remove the sensor’s cover\n2) Make sure the sensor is connected to power source \n3) Press the code button for 10 seconds, LED will flash blue for 3 seconds\n4) Release the code button\n\nNote: \nWhen the siren is being restored to factory settings, please make sure power source is connected.",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/3046/ne-nas-ab02z.eu%20-%20Zipato%20INDOOR%20SIREN-waveEU_UserManual_v1.3.pdf"
+	}
+}

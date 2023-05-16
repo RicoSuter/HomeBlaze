@@ -1,0 +1,56 @@
+{
+	"manufacturer": "AEON Labs",
+	"manufacturerId": "0x0086",
+	"label": "ZV9001T4-DIM",
+	"description": "4 Group Touch Panel Secondary Controller",
+	"devices": [
+		{
+			"productType": "0x0003",
+			"productId": "0xa10d"
+		},
+		{
+			"productType": "0x0300",
+			"productId": "0xa10b"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "3",
+			"label": "Scene Type",
+			"valueSize": 1,
+			"defaultValue": 0,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Central scene",
+					"value": 0
+				},
+				{
+					"label": "Scene activation",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "4",
+			"label": "Scene Command Target",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Controller",
+					"value": 0
+				},
+				{
+					"label": "Association Group",
+					"value": 1
+				}
+			]
+		}
+	]
+}

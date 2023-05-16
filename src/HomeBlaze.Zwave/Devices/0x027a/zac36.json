@@ -1,0 +1,327 @@
+{
+	"manufacturer": "Zooz",
+	"manufacturerId": "0x027a",
+	"label": "ZAC36",
+	"description": "Titan Water Valve Actuator",
+	"devices": [
+		{
+			"productType": "0x0101",
+			"productId": "0x0036"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Lifeline",
+			"maxNodes": 5,
+			"isLifeline": true
+		},
+		"2": {
+			"label": "Water Valve",
+			"maxNodes": 5
+		},
+		"3": {
+			"label": "Leak Sensor",
+			"maxNodes": 5
+		},
+		"4": {
+			"label": "Overheat Alarm",
+			"maxNodes": 5
+		},
+		"5": {
+			"label": "Freeze Alarm",
+			"maxNodes": 5
+		}
+	},
+	"paramInformation": [
+		{
+			"#": "17",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Invert Water Valve Report",
+			"description": "When enabled, the device will report off (0x00) when the valve is open, and on (0xff) when the valve is closed; "
+		},
+		{
+			"#": "18",
+			"$import": "templates/zooz_template.json#basic_set_value_disable_on_off",
+			"label": "Association Group 2: Basic Set Value (On)",
+			"description": "Note: If parameter 17 is enabled, this level will be set when the valve is off"
+		},
+		{
+			"#": "19",
+			"$import": "templates/zooz_template.json#basic_set_value_disable_on_off",
+			"label": "Association Group 2: Basic Set Value (Off)",
+			"description": "Note: If parameter 17 is enabled, this level will be set when the valve is on",
+			"defaultValue": 2
+		},
+		{
+			"#": "49",
+			"$import": "templates/zooz_template.json#basic_set_value_disable_on_off",
+			"label": "Association Group 3: Water Leak Basic Set Value (Trigger)"
+		},
+		{
+			"#": "50",
+			"$import": "templates/zooz_template.json#basic_set_value_disable_on_off",
+			"label": "Association Group 3: Water Leak Basic Set Value (Cancel)",
+			"defaultValue": 0
+		},
+		{
+			"#": "33",
+			"label": "Temperature Report Unit",
+			"valueSize": 1,
+			"defaultValue": 2,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Disable reports",
+					"value": 0
+				},
+				{
+					"label": "Celsius",
+					"value": 1
+				},
+				{
+					"label": "Fahrenheit",
+					"value": 2
+				}
+			]
+		},
+		{
+			"#": "35[0xff]",
+			"label": "Temperature Report Offset",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true
+		},
+		{
+			"#": "35[0xff00]",
+			"label": "Temperature Report Offset: Unit",
+			"valueSize": 2,
+			"defaultValue": 1,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Celsius (Negative)",
+					"value": 16
+				},
+				{
+					"label": "Celsius (Positive)",
+					"value": 0
+				},
+				{
+					"label": "Fahrenheit (Negative)",
+					"value": 1
+				},
+				{
+					"label": "Fahrenheit (Positive)",
+					"value": 17
+				}
+			]
+		},
+		{
+			"#": "34[0xff]",
+			"label": "Temperature Change Reporting: Threshold",
+			"valueSize": 2,
+			"unit": "°F/C",
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 0,
+			"unsigned": true
+		},
+		{
+			"#": "34[0xff00]",
+			"$import": "~/templates/master_template.json#temperature_scale_celsius_fahrenheit",
+			"label": "Temperature Change Reporting: Unit",
+			"valueSize": 2,
+			"defaultValue": 1
+		},
+		{
+			"#": "36[0xff]",
+			"label": "Overheat Trigger: Temperature",
+			"valueSize": 2,
+			"unit": "°F/C",
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 104,
+			"unsigned": true
+		},
+		{
+			"#": "36[0xff00]",
+			"$import": "~/templates/master_template.json#temperature_scale_celsius_fahrenheit",
+			"label": "Overheat Trigger: Unit",
+			"valueSize": 2,
+			"defaultValue": 1
+		},
+		{
+			"#": "37[0xff]",
+			"label": "Overheat Recover: Temperature",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 86,
+			"unsigned": true
+		},
+		{
+			"#": "37[0xff00]",
+			"$import": "~/templates/master_template.json#temperature_scale_celsius_fahrenheit",
+			"label": "Overheat Recover: Unit",
+			"valueSize": 2,
+			"defaultValue": 1
+		},
+		{
+			"#": "38",
+			"$import": "templates/zooz_template.json#basic_set_value_disable_on_off",
+			"label": "Association Group 4: Overheat Basic Set Value (Trigger)",
+			"defaultValue": 0
+		},
+		{
+			"#": "39",
+			"$import": "templates/zooz_template.json#basic_set_value_disable_on_off",
+			"label": "Association Group 4: Overheat Basic Set Value (Cancel)",
+			"defaultValue": 0
+		},
+		{
+			"#": "40[0xff]",
+			"label": "Freeze Threshold: Temperature",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 32,
+			"unsigned": true
+		},
+		{
+			"#": "40[0xff00]",
+			"$import": "~/templates/master_template.json#temperature_scale_celsius_fahrenheit",
+			"label": "Freeze Threshold: Unit",
+			"valueSize": 2,
+			"defaultValue": 1
+		},
+		{
+			"#": "41[0xff]",
+			"label": "Freeze Recover: Temperature",
+			"valueSize": 2,
+			"minValue": 0,
+			"maxValue": 255,
+			"defaultValue": 36,
+			"unsigned": true
+		},
+		{
+			"#": "41[0xff00]",
+			"$import": "~/templates/master_template.json#temperature_scale_celsius_fahrenheit",
+			"label": "Freeze Recover: Unit",
+			"valueSize": 2,
+			"defaultValue": 1
+		},
+		{
+			"#": "43",
+			"$import": "templates/zooz_template.json#basic_set_value_disable_on_off",
+			"label": "Association Group 5: Freeze Basic Set Value (Trigger)",
+			"defaultValue": 0
+		},
+		{
+			"#": "44",
+			"$import": "templates/zooz_template.json#basic_set_value_disable_on_off",
+			"label": "Association Group 5: Freeze Basic Set Value (Cancel)",
+			"defaultValue": 0
+		},
+		{
+			"#": "51",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Allow Valve Control - Water Leak Detected",
+			"defaultValue": 1
+		},
+		{
+			"#": "42",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Allow Valve Control - Water Leak Detected During Freeze Mode",
+			"defaultValue": 1
+		},
+		{
+			"#": "97",
+			"label": "Auto Test Mode",
+			"description": "Causes the valve to periodically make a 1/8 turn to ensure it is operational",
+			"valueSize": 1,
+			"defaultValue": 3,
+			"unsigned": true,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Enable when included/excluded",
+					"value": 3
+				},
+				{
+					"label": "Enable when included",
+					"value": 2
+				},
+				{
+					"label": "Enable when excluded",
+					"value": 1
+				}
+			]
+		},
+		{
+			"#": "98",
+			"label": "Auto Test Mode: Frequency",
+			"valueSize": 1,
+			"unit": "days",
+			"minValue": 1,
+			"maxValue": 30,
+			"defaultValue": 14,
+			"unsigned": true
+		},
+		{
+			"#": "65",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Sound Alarms and Notifications",
+			"defaultValue": 1
+		},
+		{
+			"#": "66",
+			"$import": "~/templates/master_template.json#base_0-99_nounit",
+			"label": "LED Brightness Level",
+			"unit": "%",
+			"defaultValue": 80
+		},
+		{
+			"#": "67",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Touch Keylock Protection"
+		},
+		{
+			"#": "81[0x01]",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Notification Report: Water Valve Open",
+			"defaultValue": 1
+		},
+		{
+			"#": "81[0x02]",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Notification Report: Overheat Detection",
+			"defaultValue": 1
+		},
+		{
+			"#": "81[0x04]",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Notification Report: Freeze Detection",
+			"defaultValue": 1
+		},
+		{
+			"#": "81[0x08]",
+			"$import": "~/templates/master_template.json#base_enable_disable",
+			"label": "Notification Report: Local Water Leak Sensor Probe Detection",
+			"defaultValue": 1
+		}
+	],
+	"metadata": {
+		"inclusion": "Set your Z-Wave Gateway into Inclusion mode / Add device.\ni. Start: Short press Touch Sense Button 3 times.\nii. Processing: Yellow LED and short beep sound keeping continue. For security inclusion support, you may need to entering first 5 digit\nthat show on QR Code label, please refer to the instructions of central controller.\niii. Success: Green LED on 1 second with 2 short beep sounds.\niv. The LED indication changes to Green LED slow blinking from Yellow LED blinking.",
+		"exclusion": "Set your Z-Wave Gateway into Exclusion mode / Remove device.\ni. Start: Short press Touch Sense Button 3 times.\nii. Processing: Yellow LED and short beep sound keeping continue.\niii. Success: Green LED on 1 second with 2 short beep sounds.\niv. The LED indication Changes to Yellow LED blinking",
+		"reset": "Start: Long hold Touch Sense Button for 10 seconds then short click 5 times.\nii. Processing: Yellow LED ON 1 second then wait 2-5 seconds.\niii. Success: Green LED on 2 second with long beep sounds for 2 seconds.\n*Factory Default Reset will:\na. Remote the BVS from Z-Wave Network;\nb. Delete the association setting;\nc. Restore the configuration settings to the default",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=product_documents/3885/BVS_ZWU_v1.0.9.pdf"
+	}
+}

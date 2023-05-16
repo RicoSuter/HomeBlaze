@@ -1,0 +1,51 @@
+{
+	"manufacturer": "McoHome Technology Co., Ltd.",
+	"manufacturerId": "0x015f",
+	"label": "MH-C221",
+	"description": "MCO HOME Micro Shutter",
+	"devices": [
+		{
+			"productType": "0x0301",
+			"productId": "0x1001"
+		},
+		{
+			"productType": "0x0301",
+			"productId": "0x3001"
+		},
+		{
+			"productType": "0x0302",
+			"productId": "0x1000"
+		},
+		{
+			"productType": "0xc221",
+			"productId": "0x5102"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Watt Meter Report Period",
+			"unit": "5 seconds",
+			"valueSize": 2,
+			"minValue": 1,
+			"maxValue": 32767,
+			"defaultValue": 720,
+			"unsigned": true
+		}
+	],
+	"compat": {
+		"commandClasses": {
+			"add": {
+				"0x26": {
+					// This is a roller shutter, but it responds to the CC version request with 0
+					"isSupported": true,
+					"version": 1
+				}
+			}
+		}
+	}
+}

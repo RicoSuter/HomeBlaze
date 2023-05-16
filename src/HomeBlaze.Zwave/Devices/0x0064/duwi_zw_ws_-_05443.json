@@ -1,0 +1,24 @@
+{
+	"manufacturer": "Reitz-Group.de",
+	"manufacturerId": "0x0064",
+	"label": "ZWWS",
+	"description": "Battery powered One paddle wall controller",
+	"devices": [
+		{
+			"productType": "0x5002",
+			"productId": "0x0000",
+			"zwaveAllianceId": [339, 342]
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"associations": {
+		"1": {
+			"label": "Basic On/Off Group",
+			"maxNodes": 5,
+			"isLifeline": true
+		}
+	}
+}

@@ -1,0 +1,60 @@
+﻿@using HomeBlaze.Abstractions.Services;
+@using Microsoft.Extensions.Logging;
+@using MudBlazor
+@using System.Threading;
+
+@inject IThingManager ThingManager
+@inject ILogger<ButtonWidget> Logger
+
+<div style="width: @(Thing?.Width)px; height: @(Thing?.Height)px">
+    <div style="position: relative; left: 10px; top: 10px; 
+                transform-origin: center; @(_mouseDown ? "transform: scale(0.9);" : "")
+                width: @(Thing?.Width - 20)px; height: @(Thing?.Height - 20)px;
+                text-align: center;
+                background-color: #000000"
+
+         @onmousedown="@(() => _mouseDown = true)" 
+         @onmouseout="@(() => _mouseDown = false)" 
+         @onmouseup="@(() => OnClick())"
+         
+         @ontouchstart="@(() => _mouseDown = true)" 
+         @ontouchleave="@(() => _mouseDown = false)" 
+         @ontouchcancel="@(() => _mouseDown = false)" 
+         @ontouchmove="@(() => _mouseDown = false)"
+         @ontouchend="@(() => OnClick())">
+
+        <div style="transform: translateY(-50%) translateX(-50%); position: absolute;
+                    top: 50%; left: 50%; width: @(Thing?.Width - 20)px;">
+            <strong>@Thing?.Label</strong>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool _mouseDown = false;
+    private bool _executing = false;
+
+    [Parameter]
+    public ButtonWidget? Thing { get; set; }
+
+    public async void OnClick()
+    {
+        if (_mouseDown && !_executing)
+        {
+            _executing = true;
+            try
+            {
+                if (Thing != null)
+                {
+                    await Thing.Operation.ExecuteAsync(ThingManager, Logger, CancellationToken.None);
+                }
+            }
+            finally
+            {
+                _executing = false;
+                _mouseDown = false;
+                StateHasChanged();
+            }
+        }
+    }
+}

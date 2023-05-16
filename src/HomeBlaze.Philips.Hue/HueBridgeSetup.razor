@@ -1,0 +1,89 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Components;
+@using Microsoft.Extensions.Logging;
+@using MudBlazor
+@using System.Threading
+@using HomeBlaze.Abstractions.Services
+@using Q42.HueApi;
+@using Q42.HueApi.Models.Bridge
+
+@inject IThingManager ThingManager
+@inject IDialogService DialogService
+@inject ILogger<HueBridge> Logger
+
+@inherits ThingSetupComponentBase<HueBridge>
+
+<br />
+@if (_bridges == null)
+{
+    <MudItem>
+        <strong>Searching for Philips Hue Bridges in your network...</strong>
+    </MudItem>
+}
+else if (_bridges.Any())
+{
+    <MudItem>
+        Press the Link button on your Bridge and then select the Bridge:
+        <br />
+    </MudItem>
+
+    <MudItem>
+        <MudList Clickable="true" @bind-SelectedValue="_selectedBridge">
+            <MudDivider />
+            @foreach (var bridge in _bridges)
+            {
+                <MudListItem Value="bridge">
+                    @bridge.BridgeId (@bridge.IpAddress)
+                </MudListItem>
+
+                <MudDivider />
+            }
+        </MudList>
+    </MudItem>
+}
+else
+{
+    <MudItem>
+        No Philips Hue Bridges found.
+    </MudItem>
+}
+
+@code {
+    private List<LocatedBridge>? _bridges;
+    private object? _selectedBridge;
+
+    public override bool IsValid => _selectedBridge != null;
+
+    protected override async void OnInitialized()
+    {
+        _bridges = await HueBridgeDiscovery.FastDiscoveryWithNetworkScanFallbackAsync(
+            TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(30));
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public override async Task<HueBridge?> CreateThingAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (_selectedBridge is LocatedBridge selectedBridge)
+            {
+                var client = new LocalHueClient(selectedBridge.IpAddress);
+                var appKey = await client.RegisterAsync("HomeBlaze", "Local");
+                var bridge = new HueBridge(ThingManager, Logger)
+                {
+                    AppKey = appKey,
+                    BridgeId = selectedBridge.BridgeId
+                };
+
+                return bridge;
+            }
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Failed to add Philips Hue Bridge", e.Message);
+        }
+
+        return null;
+    }
+}

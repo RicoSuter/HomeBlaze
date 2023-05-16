@@ -1,0 +1,106 @@
+﻿@page "/"
+
+@using Blazor.Diagrams.Core
+@using Blazor.Diagrams.Core.Geometry;
+@using Blazor.Diagrams.Core.Models
+@using Blazor.Diagrams.Components
+@using HomeBlaze.Abstractions.Attributes;
+@using HomeBlaze.Abstractions.Messages;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Components.Dialogs;
+@using HomeBlaze.Host.Shared;
+@using HomeBlaze.Host.Components;
+@using HomeBlaze.Things;
+
+@using System.Reflection;
+
+@inject IThingManager ThingManager
+@inject IThingSerializer ThingSerializer
+@inject IDialogService DialogService
+@inject IEventManager EventManager
+@inject NavigationManager Navigation
+@inject IJSRuntime JsRuntime
+
+<PageTitle>Dashboard</PageTitle>
+
+<SectionContent Name="AppBar">
+    @foreach (var dashboard in _dashboards)
+    {
+        <MudToggleIconButton Icon="@dashboard.Icon"
+            ToggledIcon="@dashboard.Icon"
+            Style="@("color: white; opacity: " + (dashboard == _selectedDashboard ? "1.0" : "0.5"))"
+            Toggled="dashboard == _selectedDashboard"
+            ToggledChanged="@(value => { if (value) { Navigation.NavigateTo("?name=" + dashboard.Name); } })"
+            Class="mr-2" />
+    }
+
+    @if (_diagram != null)
+    {
+        @if (_isEditMode)
+        {
+            <MudButton StartIcon="@Icons.Filled.Add" OnClick="AddDashboard" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">Add Dashboard</MudButton>
+
+            @if (_selectedDashboard != null)
+            {
+                <MudIconButton Icon="@Icons.Filled.Edit" OnClick="EditDashboard" Variant="Variant.Filled" Color="Color.Warning" Class="ma-2"></MudIconButton>
+            }
+
+            @if (_selectedDashboard != null && _dashboards.Length > 1)
+            {
+                <MudIconButton Icon="@Icons.Filled.Delete" OnClick="DeleteDashboard" Color="Color.Error" Variant="Variant.Filled" Class="ma-2"></MudIconButton>
+            }
+        }
+
+        <MudSpacer />
+
+        @if (_isEditMode && _selectedDashboard != null)
+        {
+            <MudButton StartIcon="@Icons.Filled.Add" OnClick="AddWidget" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">Add Widget</MudButton>
+
+            @if (_diagram.GetSelectedModels().Any())
+            {
+                <MudIconButton Icon="@Icons.Filled.MoveUp" OnClick="MoveSelectedWidgetToTop" Variant="Variant.Filled" Color="Color.Warning" Class="ma-2"></MudIconButton>
+                <MudIconButton Icon="@Icons.Filled.ContentCopy" OnClick="CloneSelectedWidget" Variant="Variant.Filled" Color="Color.Warning" Class="ma-2"></MudIconButton>
+                <MudIconButton Icon="@Icons.Filled.Delete" OnClick="DeleteSelectedWidget" Color="Color.Error" Variant="Variant.Filled" Class="ma-2"></MudIconButton>
+            }
+        }
+
+        <MudIconButton OnClick="ToggleEditMode" Icon="@(_isEditMode ? Icons.Filled.Close : Icons.Filled.Edit)" />
+    }
+</SectionContent>
+
+<style>
+    .dashboard {
+        color: @(MainLayout.UseDarkTheme ? "#ffffff" : "#000000");
+    }
+
+    .locked {
+        pointer-events: none !important;
+    }
+</style>
+
+
+@if (_selectedDashboard != null)
+{
+    @if (_selectedDashboard.UseAutoScale == false)
+    {
+        <CascadingValue Value="_diagram">
+            <DiagramCanvas Class="dashboard"></DiagramCanvas>
+        </CascadingValue>
+    }
+    else
+    {
+        @* auto scale is beta *@
+        <div style="width: @(_selectedDashboard.Width)px; max-width: @(_selectedDashboard.Width)px; height: @(_selectedDashboard.Height)px">
+            <div style="transform: scale(@((_windowWidth >= _selectedDashboard.Width ?
+                (Math.Min(Math.Min(_windowWidth, 1920m) / (_selectedDashboard.Width + 10m), _windowHeight / _selectedDashboard.Height)) :
+                (Math.Min(_windowWidth / (_selectedDashboard.Width / 2), _windowHeight / _selectedDashboard.Height))))); transform-origin: 0 0;
+                width: @(_selectedDashboard.Width)px; max-width: @(_selectedDashboard.Width)px; height: @(_selectedDashboard.Height)px">
+                <CascadingValue Value="_diagram">
+                    <DiagramCanvas Class="dashboard"></DiagramCanvas>
+                </CascadingValue>
+            </div>
+        </div>
+    }
+}

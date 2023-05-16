@@ -1,0 +1,19 @@
+﻿@using System.Threading;
+@using HomeBlaze.Components;
+@using MudBlazor;
+
+@inherits ThingSetupComponent<ThanksMisterWallPanel>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Host" Label="Host" Required="true" />
+    <MudTextField @bind-Value="@Thing.Port" Label="Port" Required="true" />
+
+    <br />
+    <MudSwitch @bind-Checked="@Thing.RelaunchOnStartup" Label="Relaunch on Startup" Color="Color.Info" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

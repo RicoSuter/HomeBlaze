@@ -1,0 +1,41 @@
+{
+	"manufacturer": "Jasco",
+	"manufacturerId": "0x0063",
+	"label": "34194 / ZW6302",
+	"description": "Portable Motion Sensor, 500S",
+	"devices": [
+		{
+			"productType": "0x4953",
+			"productId": "0x3134",
+			"zwaveAllianceId": 2124
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "13",
+			"$import": "templates/jasco_template.json#pir_sensitivity"
+		},
+		{
+			"#": "18",
+			"$import": "templates/jasco_template.json#pir_timeout_duration"
+		},
+		{
+			"#": "20",
+			"$import": "templates/jasco_template.json#report_method"
+		},
+		{
+			"#": "28",
+			"$import": "templates/jasco_template.json#led_indication"
+		}
+	],
+	"metadata": {
+		"inclusion": "1. Follow the instructions for your Z-Wave certified controller to include a device to the Z-Wave network. \n2. Once the controller is ready to include your device, press and release the program button to include it in the network. \n3. The blue LED will activate for 3 seconds to confirm it has been included",
+		"exclusion": "1. Follow the instructions for your Z-Wave certified controller to exclude a device from the Z-Wave network. \n 2. Once the controller is ready to exclude your device, press and release the program button to exclude it from the network.",
+		"reset": "1. Press the program button 10 times within 6 seconds. \n2. The blue LED will blink for 3 seconds. \nNote: This should only be done in the event your primary controller is missing or otherwise inoperable",
+		"manual": "https://products.z-wavealliance.org/ProductManual/File?folder=&filename=MarketCertificationFiles/2124/34194%20QSG%20and%20Parameter%20List.pdf"
+	}
+}

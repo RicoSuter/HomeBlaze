@@ -1,0 +1,86 @@
+﻿@using HomeBlaze.Components;
+@using Microsoft.Extensions.DependencyInjection;
+@using MudBlazor
+@using XboxWebApi.Authentication
+@using System.Threading
+@using Microsoft.JSInterop
+
+@inject IDialogService DialogService
+@inject IServiceProvider ServiceProvider
+@inject IJSRuntime JsRuntime
+
+@inherits ThingSetupComponentBase<XboxLiveAccount>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@OpenLoginPage">Login with your Xbox account</MudButton>
+
+<br />
+<br />
+<MudTextField @bind-Value="@_callbackUrl" Label="Paste redirect authenticate URL" Lines="5" />
+
+@code {
+    private string? _callbackUrl;
+
+    public override bool IsValid => !string.IsNullOrEmpty(_callbackUrl);
+
+    [CascadingParameter]
+    public MudDialogInstance? DialogInstance { get; set; }
+
+    [Parameter]
+    public XboxLiveAccount? Thing { get; set; }
+
+    public async void OpenLoginPage()
+    {
+        var requestUrl = AuthenticationService.GetWindowsLiveAuthenticationUrl();
+        await JsRuntime.InvokeVoidAsync("open", new[] { requestUrl });
+    }
+
+    public override async Task<XboxLiveAccount?> CreateThingAsync(CancellationToken cancellationToken)
+    {
+        var authenticationJson = await GetAuthenticationjsonAsync();
+        if (authenticationJson != null)
+        {
+            var account = (XboxLiveAccount)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(XboxLiveAccount));
+            account.AuthenticationJson = authenticationJson;
+            return account;
+        }
+
+        return null;
+    }
+
+    public override async Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
+    {
+        var authenticationJson = await GetAuthenticationjsonAsync();
+        if (authenticationJson != null)
+        {
+            EditedThing!.AuthenticationJson = authenticationJson;
+            return true;
+        }
+
+        return false;
+    }
+
+    private async Task<string?> GetAuthenticationjsonAsync()
+    {
+        try
+        {
+            var response = AuthenticationService.ParseWindowsLiveResponse(_callbackUrl);
+            var authenticator = new AuthenticationService(response);
+
+            var success = await authenticator.AuthenticateAsync();
+            if (!success)
+            {
+                await DialogService.ShowMessageBox("Error", "Authentication failed.");
+            }
+            else
+            {
+                return AuthenticationService.DumpToJson(authenticator);
+            };
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Failed to add Account", e.ToString());
+        }
+
+        return null;
+    }
+}

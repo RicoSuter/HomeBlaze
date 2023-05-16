@@ -1,0 +1,35 @@
+{
+	"manufacturer": "Willis Electric Co., Ltd.",
+	"manufacturerId": "0x015d",
+	"label": "Zen24",
+	"description": "Toggle Dimmer",
+	"devices": [
+		{
+			"productType": "0x0111",
+			"productId": "0x1f1c"
+		}
+	],
+	"firmwareVersion": {
+		"min": "0.0",
+		"max": "255.255"
+	},
+	"paramInformation": [
+		{
+			"#": "1",
+			"label": "Control Mode",
+			"valueSize": 1,
+			"defaultValue": 1,
+			"allowManualEntry": false,
+			"options": [
+				{
+					"label": "Mode 1",
+					"value": 0
+				},
+				{
+					"label": "Mode 2",
+					"value": 1
+				}
+			]
+		}
+	]
+}
