@@ -9,6 +9,7 @@
 		<PackageReference Include="MudBlazor" Version="6.1.6" />
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.1" />
+		<PackageReference Include="TeslaAuth" Version="2.3.0" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />

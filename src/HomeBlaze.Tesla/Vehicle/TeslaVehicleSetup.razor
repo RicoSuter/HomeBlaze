@@ -19,9 +19,14 @@
 
 <br />
 <br />
-<MudTextField @bind-Value="@_callbackUrl" TextChanged="@((url) => LoadVehiclesAsync(url, default))"
-              Label="Paste redirect authenticate URL" Lines="5" />
+<MudTextField @bind-Value="@_callbackUrl" Label="Paste redirect authenticate URL" Lines="5" />
 
+<br />
+<MudButton Variant="Variant.Filled" OnClick="@(_ => LoadVehiclesAsync(default))" 
+    Color="Color.Primary">Load Vehicles</MudButton>
+
+<br />
+<br />
 @if (_vehicles != null)
 {
     <br />
@@ -41,6 +46,8 @@
 }
 
 @code {
+    private TeslaAuthHelper _helper = new TeslaAuthHelper("HomeBlaze", TeslaAccountRegion.USA);
+
     private string? _callbackUrl;
     private Vehicles? _vehicles;
     private object? _selectedVehicle;
@@ -56,33 +63,17 @@
 
     public async void OpenLoginPage()
     {
-        var helper = new TeslaAuthHelper("HomeBlaze", TeslaAccountRegion.USA);
-        var requestUrl = helper.GetLoginUrlForBrowser();
+        var requestUrl = _helper.GetLoginUrlForBrowser();
         await JsRuntime.InvokeVoidAsync("open", new[] { requestUrl });
     }
 
-    public override Task<TeslaVehicle?> CreateThingAsync(CancellationToken cancellationToken)
-    {
-        if (_tokens != null && _selectedVehicle is TeslaVehicleItem selectedVehicle)
-        {
-            var vehicle = (TeslaVehicle)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(TeslaVehicle));
-            vehicle.VehicleId = selectedVehicle.IdString;
-            vehicle.AccessToken = _tokens.AccessToken;
-            vehicle.RefreshToken = _tokens.RefreshToken;
-            vehicle.TokenExpirationDate = _tokens.CreatedAt + _tokens.ExpiresIn;
-            return Task.FromResult<TeslaVehicle?>(vehicle);
-        }
-
-        return Task.FromResult<TeslaVehicle?>(null);
-    }
-
-    public async Task LoadVehiclesAsync(string url, CancellationToken cancellationToken)
+    public async Task LoadVehiclesAsync(CancellationToken cancellationToken)
     {
         try
         {
             _vehicles = null;
 
-            var tokens = await GetAuthenticationjsonAsync();
+            var tokens = await GetAuthenticationTokensAsync();
             if (tokens != null)
             {
                 using var httpClient = HttpClientFactory.CreateClient();
@@ -105,9 +96,24 @@
         }
     }
 
+    public override Task<TeslaVehicle?> CreateThingAsync(CancellationToken cancellationToken)
+    {
+        if (_tokens != null && _selectedVehicle is TeslaVehicleItem selectedVehicle)
+        {
+            var vehicle = (TeslaVehicle)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(TeslaVehicle));
+            vehicle.VehicleId = selectedVehicle.IdString;
+            vehicle.AccessToken = _tokens.AccessToken;
+            vehicle.RefreshToken = _tokens.RefreshToken;
+            vehicle.TokenExpirationDate = _tokens.CreatedAt + _tokens.ExpiresIn;
+            return Task.FromResult<TeslaVehicle?>(vehicle);
+        }
+
+        return Task.FromResult<TeslaVehicle?>(null);
+    }
+
     public override async Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
     {
-        var tokens = await GetAuthenticationjsonAsync();
+        var tokens = await GetAuthenticationTokensAsync();
         if (tokens != null && _selectedVehicle is TeslaVehicleItem selectedVehicle)
         {
             EditedThing!.VehicleId = selectedVehicle.IdString;
@@ -118,18 +124,17 @@
         }
 
         return false;
-    }
+    }   
 
-    private async Task<Tokens?> GetAuthenticationjsonAsync()
+    private async Task<Tokens?> GetAuthenticationTokensAsync()
     {
         try
         {
-            var helper = new TeslaAuthHelper("HomeBlaze", TeslaAccountRegion.USA);
-            return await helper.GetTokenAfterLoginAsync(_callbackUrl);
+            return await _helper.GetTokenAfterLoginAsync(_callbackUrl);
         }
         catch (Exception e)
         {
-            await DialogService.ShowMessageBox("Failed to add Account", e.ToString());
+            await DialogService.ShowMessageBox("Failed to authenticate.", e.ToString());
         }
 
         return null;
