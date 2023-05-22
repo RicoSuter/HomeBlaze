@@ -65,7 +65,7 @@
 
     public async Task AddPresenceThingAsync()
     {
-        (var success, var thing) = await ThingSelectDialog.ShowAsync(DialogService, true, (thing) => thing is IPresenceSensor);
+        (var success, var thing) = await ThingSelectDialog.ShowAsync(DialogService, true, (thing) => thing is IPresenceSensor || thing is IDoorSensor);
         if (success && thing != null && 
             !Thing.PresenceThingIds.Contains(thing.Id))
         {

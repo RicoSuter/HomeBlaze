@@ -104,12 +104,21 @@ namespace HomeBlaze.Dynamic
         private Task SearchIntruderAsync(IEvent @event, CancellationToken cancellationToken)
         {
             if (@event is ThingStateChangedEvent changedEvent &&
-                PresenceThingIds.Contains(changedEvent.Thing.Id) &&
-                changedEvent.Thing is IPresenceSensor presenceSensor &&
-                presenceSensor.IsPresent == true)
+                PresenceThingIds.Contains(changedEvent.Thing.Id))
             {
-                PresenceTime = DateTimeOffset.Now;
-                _thingManager.DetectChanges(this);
+                var isPresent = 
+                    changedEvent.Thing is IPresenceSensor presenceSensor &&
+                    presenceSensor.IsPresent == true;
+
+                var isDoorOpen =
+                    changedEvent.Thing is IDoorSensor doorSensor &&
+                    doorSensor.DoorState == DoorState.Open;
+
+                if (isPresent || isDoorOpen)
+                {
+                    PresenceTime = DateTimeOffset.Now;
+                    _thingManager.DetectChanges(this);
+                }
             }
 
             return Task.CompletedTask;
