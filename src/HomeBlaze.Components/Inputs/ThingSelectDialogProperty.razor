@@ -8,7 +8,7 @@
 @if (Property != null)
 {
     var children = Property.Value.Value.Children
-        .Where(c => ThingFilter == null || ThingFilter(c))
+        .Where(c => ThingFilter == null || ThingFilter(c) || ThingManager.TryGetMetadata(c)?.Children.Any() == true)
         .Where(c => c.Id != null)
         .ToArray();
 

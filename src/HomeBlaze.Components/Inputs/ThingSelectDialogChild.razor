@@ -9,8 +9,8 @@
 {
     var iconProvider = Thing as IIconProvider;
 
-    var hasChildren = ThingManager.GetState(Thing.Id, true).Any(p => p.Value.HasThingChildren);
     var canBeSelected = ThingFilter == null || ThingFilter(Thing!);
+    var hasChildren = ThingManager.TryGetMetadata(Thing)?.Children.Any() == true;
     if (hasChildren || canBeSelected)
     {
         <MudTreeViewItem T="IThing" Text="@(Thing.Title ?? Thing.Id)" 

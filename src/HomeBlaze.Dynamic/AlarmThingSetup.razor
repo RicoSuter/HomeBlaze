@@ -1,0 +1,80 @@
+﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Devices.Light;
+@using HomeBlaze.Abstractions.Sensors;
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors
+@using HomeBlaze.Components.Inputs
+@using MudBlazor
+
+@inherits ThingSetupComponent<AlarmThing>
+
+@inject IThingManager ThingManager
+@inject IDialogService DialogService;
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Title" Label="Title" Required="true" />
+    <br />
+
+    <MudSwitch @bind-Checked="@Thing.IsEnabled" Label="Enabled" Color="Color.Info" />
+    <br />
+    <br />
+
+    <MudTabs>
+        <MudTabPanel Text="Detection">
+            <br />
+            <MudPaper>
+                <MudList Clickable="true">
+                    @foreach (var thingId in Thing.PresenceThingIds)
+                    {
+                        <MudListItem>
+                            @(ThingManager.TryGetById(thingId)?.Title ?? thingId)
+
+                            <MudIconButton Icon="@Icons.Filled.Delete" Style="float: right"
+                                       OnClick="@(() => RemovePresenceThing(thingId))"
+                                       Color="Color.Error" Variant="Variant.Filled" Class="ma-2">
+                            </MudIconButton>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+
+            <br />
+            <MudButton OnClick="AddPresenceThingAsync" Variant="Variant.Filled"
+                       Color="Color.Primary">Add Thing</MudButton>
+
+        </MudTabPanel>
+        <MudTabPanel Text="Actions">
+            <br />
+            <ThingSelect Label="Blinking Lightbulb"
+                         @bind-ThingId="Thing.BlinkingLightbulbId"
+                         ThingFilter="((thing) => thing is ILightbulb)" />
+
+            <br />
+            <ThingSelect Label="Notification Publisher"
+                         @bind-ThingId="Thing.NotificationPublisherId" 
+                         ThingFilter="((thing) => thing is INotificationPublisher)" />
+        </MudTabPanel>
+    </MudTabs>
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+
+    public async Task AddPresenceThingAsync()
+    {
+        (var success, var thing) = await ThingSelectDialog.ShowAsync(DialogService, true, (thing) => thing is IPresenceSensor);
+        if (success && thing != null && 
+            !Thing.PresenceThingIds.Contains(thing.Id))
+        {
+            Thing.PresenceThingIds.Add(thing.Id);
+        }
+    }
+
+    public void RemovePresenceThing(string thingId)
+    {
+        Thing.PresenceThingIds.Remove(thingId);
+    }
+}

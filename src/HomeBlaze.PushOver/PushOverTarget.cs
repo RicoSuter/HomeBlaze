@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HomeBlaze.PushOver
 {
-    public class PushOverTarget : IThing, IIconProvider
+    public class PushOverTarget : IThing, IIconProvider, INotificationPublisher
     {
         public string IconName => "fas fa-user";
 

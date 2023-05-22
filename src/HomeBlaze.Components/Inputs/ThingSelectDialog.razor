@@ -59,7 +59,7 @@
         .Where(t => ThingFilter == null || ThingFilter(t))
         .Where(t => t.Title?.ToLowerInvariant().Contains(_filter.ToLowerInvariant()) == true);
 
-    public static async Task<Tuple<bool, IThing?>?> ShowAsync(IDialogService dialogService, 
+    public static async Task<Tuple<bool, IThing?>> ShowAsync(IDialogService dialogService, 
         bool required, Func<IThing, bool>? thingFilter)
     {
         var result = await dialogService.Show<ThingSelectDialog>(string.Empty,
@@ -73,6 +73,6 @@
                 MaxWidth = MaxWidth.Medium
             }).Result;
 
-        return result?.Data as Tuple<bool, IThing?>;
+        return result?.Data as Tuple<bool, IThing?> ?? new Tuple<bool, IThing?>(false, null);
     }
 }
