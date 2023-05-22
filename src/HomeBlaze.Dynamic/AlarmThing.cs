@@ -135,6 +135,8 @@ namespace HomeBlaze.Dynamic
             var lightbulb = _thingManager.TryGetById(BlinkingLightbulbId) as ILightbulb;
             if (lightbulb != null)
             {
+                var dimmerLightbulb = lightbulb as IDimmerLightbulb;
+
 #pragma warning disable CS4014
 
                 Task.Run(async () =>
@@ -142,6 +144,12 @@ namespace HomeBlaze.Dynamic
                     for (int i = 0; i < 120; i++)
                     {
                         lightbulb.TurnOnAsync(cancellationToken);
+                      
+                        if (dimmerLightbulb != null)
+                        {
+                            dimmerLightbulb.DimmAsync(100, cancellationToken);
+                        }
+
                         await Task.Delay(TimeSpan.FromSeconds(2.5), cancellationToken);
 
                         lightbulb.TurnOffAsync(cancellationToken);
