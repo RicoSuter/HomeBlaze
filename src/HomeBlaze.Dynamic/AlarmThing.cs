@@ -141,19 +141,20 @@ namespace HomeBlaze.Dynamic
 
                 Task.Run(async () =>
                 {
+                    lightbulb.TurnOnAsync(cancellationToken);
+
+                    if (dimmerLightbulb != null)
+                    {
+                        dimmerLightbulb.DimmAsync(100, cancellationToken);
+                    }
+
                     for (int i = 0; i < 120; i++)
                     {
-                        lightbulb.TurnOnAsync(cancellationToken);
-                      
-                        if (dimmerLightbulb != null)
-                        {
-                            dimmerLightbulb.DimmAsync(100, cancellationToken);
-                        }
-
                         await Task.Delay(TimeSpan.FromSeconds(2.5), cancellationToken);
-
                         lightbulb.TurnOffAsync(cancellationToken);
+
                         await Task.Delay(TimeSpan.FromSeconds(2.5), cancellationToken);
+                        lightbulb.TurnOnAsync(cancellationToken);
 
                         if (AlarmTime == null)
                         {
