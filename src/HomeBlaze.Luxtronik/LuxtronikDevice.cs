@@ -108,6 +108,9 @@ namespace HomeBlaze.Luxtronik
         public decimal? TotalProducedWaterEnergy { get; private set; }
 
         [State(Unit = StateUnit.WattHour, IsCumulative = true)]
+        public decimal? TotalProducedCoolingEnergy { get; private set; }
+
+        [State(Unit = StateUnit.WattHour, IsCumulative = true)]
         public decimal? TotalProducedEnergy { get; private set; }
 
 
@@ -116,6 +119,9 @@ namespace HomeBlaze.Luxtronik
 
         [State(Unit = StateUnit.WattHour, IsCumulative = true)]
         public decimal? TotalConsumedWaterEnergy { get; private set; }
+
+        [State(Unit = StateUnit.WattHour, IsCumulative = true)]
+        public decimal? TotalConsumedCoolingEnergy { get; private set; }
 
         [State(Unit = StateUnit.WattHour, IsCumulative = true)]
         public decimal? TotalConsumedEnergy { get; private set; }
@@ -206,6 +212,7 @@ namespace HomeBlaze.Luxtronik
                                         var xmlDocument = XDocument.Parse(xml);
 
                                         ProcessValues(xmlDocument);
+                                        LastUpdated = DateTimeOffset.Now;
                                     }
                                 }
                                 IsAuthenticated = true;
@@ -252,35 +259,37 @@ namespace HomeBlaze.Luxtronik
 
                 var sections = _metadataXml?.Root?.Elements("item");
 
-                var temperatures = sections?.ElementAt(0).Elements("item");
-                var incoming = sections?.ElementAt(1).Elements("item");
-                var state = sections?.ElementAt(7).Elements("item");
+                var temperatures = GetSection(sections, new[] { "Temperaturen" });
+                var incoming = GetSection(sections, new[] { "Eingänge" });
+                var state = GetSection(sections, new[] { "Anlagenstatus" });
 
-                var energy = sections?.ElementAt(8).Elements("item");
-                var heatEnergy = energy?.ElementAt(0).Elements("item");
-                var powerEnergy = energy?.ElementAt(1).Elements("item");
+                var energy = GetSection(sections, new[] { "Energiemonitor" });
+                var heatEnergy = GetSection(energy, new[] { "Wärmemenge" });
+                var powerEnergy = GetSection(energy, new[] { "Eingesetzte Energie" });
 
-                HeatPumpType = GetString(allValues, state, 0);
-                SoftwareVersion = GetString(allValues, state, 1);
-                OperationMode = GetString(allValues, state, 7);
-                PowerProduction = GetDecimal(allValues, state, 8) * 1000;
+                HeatPumpType = GetString(allValues, state, new[] { "Wärmepumpen Typ" });
+                SoftwareVersion = GetString(allValues, state, new[] { "Softwarestand" });
+                OperationMode = GetString(allValues, state, new[] { "Betriebszustand" });
+                PowerProduction = GetDecimal(allValues, state, new[] { "Leistung Ist" }) * 1000;
 
-                FlowTemperature.Temperature = GetDecimal(allValues, temperatures, 0);
-                ReturnTemperature.Temperature = GetDecimal(allValues, temperatures, 1);
-                OutsideTemperature.Temperature = GetDecimal(allValues, temperatures, 5);
-                WaterTemperature.Temperature = GetDecimal(allValues, temperatures, 7);
-                HeatSourceInletTemperature.Temperature = GetDecimal(allValues, temperatures, 9);
-                HeatSourceOutletTemperature.Temperature = GetDecimal(allValues, temperatures, 10);
+                FlowTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Vorlauf" });
+                ReturnTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Rücklauf" });
+                OutsideTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Außentemperatur" });
+                WaterTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Warmwasser-Ist" });
+                HeatSourceInletTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Wärmequelle-Ein" });
+                HeatSourceOutletTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Wärmequelle-Aus" });
 
-                FlowRate = GetDecimal(allValues, incoming, 6);
+                FlowRate = GetDecimal(allValues, incoming, new[] { "Durchfluss" });
 
-                TotalProducedHeatEnergy = GetDecimal(allValues, heatEnergy, 0) * 1000;
-                TotalProducedWaterEnergy = GetDecimal(allValues, heatEnergy, 1) * 1000;
-                TotalProducedEnergy = GetDecimal(allValues, heatEnergy, 2) * 1000;
+                TotalProducedHeatEnergy = GetDecimal(allValues, heatEnergy, new[] { "Heizung" }) * 1000;
+                TotalProducedWaterEnergy = GetDecimal(allValues, heatEnergy, new[] { "Warmwasser" }) * 1000;
+                TotalProducedCoolingEnergy = GetDecimal(allValues, heatEnergy, new[] { "Kühlung" }) * 1000;
+                TotalProducedEnergy = GetDecimal(allValues, heatEnergy, new[] { "Gesamt" }) * 1000;
 
-                TotalConsumedHeatEnergy = GetDecimal(allValues, powerEnergy, 0) * 1000;
-                TotalConsumedWaterEnergy = GetDecimal(allValues, powerEnergy, 1) * 1000;
-                TotalConsumedEnergy = GetDecimal(allValues, powerEnergy, 2) * 1000;
+                TotalConsumedHeatEnergy = GetDecimal(allValues, powerEnergy, new[] { "Heizung" }) * 1000;
+                TotalConsumedWaterEnergy = GetDecimal(allValues, powerEnergy, new[] { "Warmwasser" }) * 1000;
+                TotalConsumedCoolingEnergy = GetDecimal(allValues, powerEnergy, new[] { "Kühlung" }) * 1000;
+                TotalConsumedEnergy = GetDecimal(allValues, powerEnergy, new[] { "Gesamt" }) * 1000;
 
                 RecalculatePowerConsumption();
                 LastUpdated = DateTimeOffset.Now;
@@ -332,9 +341,14 @@ namespace HomeBlaze.Luxtronik
             }
         }
 
-        private decimal? GetDecimal(XElement[]? allValues, IEnumerable<XElement>? section, int index)
+        private static IEnumerable<XElement>? GetSection(IEnumerable<XElement>? sections, string[] names)
         {
-            var id = section?.ElementAt(index).Attribute("id")?.Value;
+            return sections?.FirstOrDefault(s => names.Contains(s.Element("name")?.Value))?.Elements("item");
+        }
+
+        private decimal? GetDecimal(XElement[]? allValues, IEnumerable<XElement>? section, string[] names)
+        {
+            var id = section?.FirstOrDefault(s => names.Contains(s.Element("name")?.Value))?.Attribute("id")?.Value;
             var element = allValues?.SingleOrDefault(v => v.Attribute("id")?.Value == id);
 
             if (decimal.TryParse(element?.Element("value")?.Value?.Split(' ', '°')[0], out var value))
@@ -345,9 +359,9 @@ namespace HomeBlaze.Luxtronik
             return null;
         }
 
-        private string? GetString(XElement[]? allValues, IEnumerable<XElement>? section, int index)
+        private string? GetString(XElement[]? allValues, IEnumerable<XElement>? section, string[] names)
         {
-            var id = section?.ElementAt(index).Attribute("id")?.Value;
+            var id = section?.FirstOrDefault(s => names.Contains(s.Element("name")?.Value))?.Attribute("id")?.Value;
             var element = allValues?.SingleOrDefault(v => v.Attribute("id")?.Value == id);
             return element?.Element("value")?.Value;
         }
