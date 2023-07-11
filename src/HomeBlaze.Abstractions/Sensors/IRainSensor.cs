@@ -8,7 +8,7 @@ namespace HomeBlaze.Abstractions.Sensors
         /// <summary>
         /// Gets the current rain rate.
         /// </summary>
-        [State(Unit = StateUnit.Millimeter)]
+        [State(Unit = StateUnit.MillimeterPerHour)]
         public decimal? RainRate { get; }
 
         /// <summary>

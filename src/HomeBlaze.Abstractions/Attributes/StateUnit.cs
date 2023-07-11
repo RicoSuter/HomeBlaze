@@ -16,6 +16,7 @@
         Ampere,
         Meter,
         Millimeter,
+        MillimeterPerHour,
         Kilobyte,
         LiterPerHour
     }

@@ -76,6 +76,7 @@ namespace HomeBlaze.Abstractions.Attributes
                 StateUnit.Lumen => value + " lm",
                 StateUnit.Meter => value + " m",
                 StateUnit.Millimeter => value + " mm",
+                StateUnit.MillimeterPerHour => value + " mm/h",
                 StateUnit.Kilobyte => value + " kb",
                 StateUnit.LiterPerHour => value + " l/h",
                 StateUnit.Default => value?.ToString() ?? "",
