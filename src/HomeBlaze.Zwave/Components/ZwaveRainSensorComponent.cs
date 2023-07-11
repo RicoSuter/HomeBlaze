@@ -28,7 +28,7 @@ namespace HomeBlaze.Zwave.Components
         }
 
         public ZwaveRainSensorComponent(ZwaveDevice parent)
-            : base(parent, SensorType.RelativeHumidity)
+            : base(parent, SensorType.RainRate)
         {
             _parent = parent;
         }
