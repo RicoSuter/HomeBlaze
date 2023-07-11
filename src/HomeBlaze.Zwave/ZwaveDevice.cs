@@ -426,6 +426,10 @@ namespace HomeBlaze.Zwave
                 {
                     _sensorComponents.Add(component = new ZwaveRelativeHumiditySensorComponent(this));
                 }
+                else if (e.Report.Type == SensorType.RainRate)
+                {
+                    _sensorComponents.Add(component = new ZwaveRainSensorComponent(this));
+                }
                 else
                 {
                     _sensorComponents.Add(component = new ZwaveSensorComponent(this, e.Report.Type));
