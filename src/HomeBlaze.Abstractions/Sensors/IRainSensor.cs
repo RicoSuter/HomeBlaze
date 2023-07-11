@@ -23,6 +23,6 @@ namespace HomeBlaze.Abstractions.Sensors
         [State(Unit = StateUnit.Millimeter, IsCumulative = true)]
         public decimal? TotalRain { get; }
 
-        string IIconProvider.IconName => "fa-solid fa-droplet";
+        string IIconProvider.IconName => "fa-solid fa-cloud-rain";
     }
 }
