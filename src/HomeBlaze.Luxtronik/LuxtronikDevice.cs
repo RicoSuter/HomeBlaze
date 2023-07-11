@@ -94,6 +94,12 @@ namespace HomeBlaze.Luxtronik
         public LuxtronikTemperature ReturnExternalTemperature { get; private set; }
 
         [State]
+        public LuxtronikTemperature MixingCircuit1Temperature { get; }
+
+        [State]
+        public LuxtronikTemperature MixingCircuit2Temperature { get; }
+
+        [State]
         public LuxtronikTemperature HeatSourceInletTemperature { get; private set; }
 
         [State]
@@ -150,9 +156,15 @@ namespace HomeBlaze.Luxtronik
 
             OutsideTemperature = new LuxtronikTemperature(this, "outside") { Title = "Outside Temperature" };
             WaterTemperature = new LuxtronikTemperature(this, "water") { Title = "Water Temperature" };
+          
             FlowTemperature = new LuxtronikTemperature(this, "flow") { Title = "Flow Temperature" };
             ReturnTemperature = new LuxtronikTemperature(this, "return") { Title = "Return Temperature" };
             ReturnExternalTemperature = new LuxtronikTemperature(this, "return-external") { Title = "Return External Temperature" };
+
+            ReturnExternalTemperature = new LuxtronikTemperature(this, "return-external") { Title = "Return External Temperature" };
+            MixingCircuit1Temperature = new LuxtronikTemperature(this, "mixing-circuit-1") { Title = "Mixing Circuit 1" };
+            MixingCircuit2Temperature = new LuxtronikTemperature(this, "mixing-circuit-2") { Title = "Mixing Circuit 2" };
+
             HeatSourceInletTemperature = new LuxtronikTemperature(this, "heat-source-inlet") { Title = "Heat Source Inlet Temperature" };
             HeatSourceOutletTemperature = new LuxtronikTemperature(this, "heat-source-outlet") { Title = "Heat Source Outlet Temperature" };
         }
@@ -280,11 +292,16 @@ namespace HomeBlaze.Luxtronik
                 OperationMode = GetString(allValues, state, new[] { "Betriebszustand" });
                 PowerProduction = GetDecimal(allValues, state, new[] { "Leistung Ist" }) * 1000;
 
+                OutsideTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Außentemperatur" });
+                WaterTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Warmwasser-Ist" });
+
                 FlowTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Vorlauf" });
                 ReturnTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Rücklauf" });
                 ReturnExternalTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Rückl.-Extern" });
-                OutsideTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Außentemperatur" });
-                WaterTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Warmwasser-Ist" });
+
+                MixingCircuit1Temperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Mischkreis1-Vorlauf" });
+                MixingCircuit2Temperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Mischkreis2-Vorlauf" });
+
                 HeatSourceInletTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Wärmequelle-Ein" });
                 HeatSourceOutletTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Wärmequelle-Aus" });
 
