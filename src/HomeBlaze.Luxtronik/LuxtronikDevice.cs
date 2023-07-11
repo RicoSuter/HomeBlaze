@@ -91,6 +91,9 @@ namespace HomeBlaze.Luxtronik
         public LuxtronikTemperature ReturnTemperature { get; private set; }
 
         [State]
+        public LuxtronikTemperature ReturnExternalTemperature { get; private set; }
+
+        [State]
         public LuxtronikTemperature HeatSourceInletTemperature { get; private set; }
 
         [State]
@@ -149,6 +152,7 @@ namespace HomeBlaze.Luxtronik
             WaterTemperature = new LuxtronikTemperature(this, "water") { Title = "Water Temperature" };
             FlowTemperature = new LuxtronikTemperature(this, "flow") { Title = "Flow Temperature" };
             ReturnTemperature = new LuxtronikTemperature(this, "return") { Title = "Return Temperature" };
+            ReturnExternalTemperature = new LuxtronikTemperature(this, "return-external") { Title = "Return External Temperature" };
             HeatSourceInletTemperature = new LuxtronikTemperature(this, "heat-source-inlet") { Title = "Heat Source Inlet Temperature" };
             HeatSourceOutletTemperature = new LuxtronikTemperature(this, "heat-source-outlet") { Title = "Heat Source Outlet Temperature" };
         }
@@ -254,7 +258,11 @@ namespace HomeBlaze.Luxtronik
             try
             {
                 var allValues = xmlDocument.Root?.Elements("item")
-                    .SelectMany(e => e.Elements("item").Concat(e.Elements("item").SelectMany(u => u.Elements("item"))))
+                    .SelectMany(e => e
+                        .Elements("item")
+                        .Concat(e
+                            .Elements("item")
+                            .SelectMany(u => u.Elements("item"))))
                     .ToArray();
 
                 var sections = _metadataXml?.Root?.Elements("item");
@@ -274,6 +282,7 @@ namespace HomeBlaze.Luxtronik
 
                 FlowTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Vorlauf" });
                 ReturnTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Rücklauf" });
+                ReturnExternalTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Rückl.-Extern" });
                 OutsideTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Außentemperatur" });
                 WaterTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Warmwasser-Ist" });
                 HeatSourceInletTemperature.Temperature = GetDecimal(allValues, temperatures, new[] { "Wärmequelle-Ein" });
