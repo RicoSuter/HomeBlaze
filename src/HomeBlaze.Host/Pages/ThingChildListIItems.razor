@@ -1,5 +1,6 @@
 ﻿@using HomeBlaze.Abstractions.Presentation;
 @using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Sensors;
 @using HomeBlaze.Abstractions.Services;
 @using HomeBlaze.Things;
 @using System.Threading;
@@ -21,21 +22,29 @@
             {
                 <div style="float: right; line-height: 0">
                     @if (Thing is GroupBase group)
-                    {
-                        <MudIconButton OnClick="@(() => MoveThingUp(child, group))"
-                       Icon="@Icons.Filled.ArrowUpward"
-                       Disabled="@(group.Things.First() == child)"
-                       Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
-                       Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
+                        {
+                            <MudIconButton OnClick="@(() => MoveThingUp(child, group))"
+                                Icon="@Icons.Filled.ArrowUpward"
+                                Disabled="@(group.Things.First() == child)"
+                                Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
+                                Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
 
-                        <MudIconButton OnClick="@(() => MoveThingDown(child, group))"
-                       Icon="@Icons.Filled.ArrowDownward"
-                       Disabled="@(group.Things.Last() == child)"
-                       Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
-                       Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
-                    }
+                            <MudIconButton OnClick="@(() => MoveThingDown(child, group))"
+                                Icon="@Icons.Filled.ArrowDownward"
+                                Disabled="@(group.Things.Last() == child)"
+                                Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
+                                Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
+                        }
 
-                    <MudIcon Icon="@("<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/>")"></MudIcon>
+                        <MudIcon Icon="@("<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/>")"></MudIcon>
+                </div>
+            }
+
+            @if (Thing is not GroupBase && 
+                child is ITemperatureSensor temperatureSensor && temperatureSensor.Temperature != null)
+            {
+                <div style="float: right;">
+                    @temperatureSensor.Temperature <span>°C</span>
                 </div>
             }
 
