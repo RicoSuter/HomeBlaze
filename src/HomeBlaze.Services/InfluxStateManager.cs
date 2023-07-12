@@ -114,7 +114,6 @@ namespace HomeBlaze.Services
 
         public void Dispose()
         {
-            _timer.Dispose();
             _eventSubscription.Dispose();
             _writeApi.Dispose();
             _client.Dispose();
