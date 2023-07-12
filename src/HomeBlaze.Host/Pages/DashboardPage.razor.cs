@@ -221,11 +221,16 @@ namespace HomeBlaze.Host.Pages
 
         public async void DeleteDashboard(MouseEventArgs args)
         {
+            var selectedDashboard = _selectedDashboard;
             var delete = await DialogService.ShowMessageBox("Delete Dashboard", "Do you really want to delete this Dashboard?", "Delete", "No");
-            if (delete == true && _selectedDashboard != null && ThingManager?.RootThing != null)
+            if (delete == true && selectedDashboard != null && ThingManager?.RootThing != null)
             {
-                ThingManager.RootThing.RemoveThing(_selectedDashboard);
-                ThingManager.DetectChanges(ThingManager.RootThing);
+                var parent = ThingManager.TryGetParent(selectedDashboard) as IGroupThing;
+                if (parent != null)
+                {
+                    parent.RemoveThing(selectedDashboard);
+                    ThingManager.DetectChanges(parent);
+                }
             }
         }
 
