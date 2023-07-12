@@ -82,8 +82,8 @@ namespace HomeBlaze.Services
                 var flux = "from(bucket:\"" + _bucket + "\")\r\n" +
                     "|> range(start: " + from.ToUniversalTime().ToString("o") + ", " +
                              "stop: " + to.ToUniversalTime().ToString("o") + ")\r\n" +
-                    "|> filter(fn: (r) => r[\"thing\"] == \"" + thingId + "\")\r\n" +
-                    "|> filter(fn: (r) => r[\"property\"] == \"" + propertyName + "\")";
+                    "|> filter(fn: (r) => r[\"_measurement\"] == \"" + thingId + "\")\r\n" +
+                    "|> filter(fn: (r) => r[\"_field\"] == \"" + propertyName + "\")";
 
                 var list = new List<ValueTuple<DateTimeOffset, TState?>>();
                 var fluxTables = await _client.GetQueryApi().QueryAsync(flux, _organization, cancellationToken);

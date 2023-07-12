@@ -202,11 +202,18 @@ namespace HomeBlaze.Zwave
                     var report = await sensorMultiLevel.GetSupportedSensors(cancellationToken);
                     foreach (var sensorType in report.SupportedSensorTypes)
                     {
-                        await sensorMultiLevel.Get(sensorType, cancellationToken);
+                        var scaleReport = await sensorMultiLevel.GetScale(sensorType, cancellationToken);
+                        foreach (var scale in scaleReport.SupportedScales)
+                        {
+                            await sensorMultiLevel.Get(sensorType, (byte)scale, cancellationToken);
+                        }
                     }
                 }
             }
-            catch { }
+            catch (Exception e)
+            {
+                Controller.Logger.LogWarning(e, "Failed to TryRefreshSensorMultiLevelAsync.");
+            }
         }
 
         private async Task TryRefreshMultiChannelAssociationAsync(CancellationToken cancellationToken)
@@ -401,12 +408,12 @@ namespace HomeBlaze.Zwave
 
         internal void OnSwitchBinary(object? sender, ReportEventArgs<SwitchBinaryReport> e)
         {
-            Controller.Logger.LogInformation("OnSwitchMultiLevel: Z-Wave switch binary value {Value} received for node {NodeId}.", e.Report.Value, e.Report?.Node?.NodeID);
+            Controller.Logger.LogInformation("OnSwitchMultiLevel: Z-Wave switch binary value {Value} received for node {NodeId}.", e.Report.CurrentValue, e.Report?.Node?.NodeID);
         }
 
         internal void OnSwitchMultiLevel(object? sender, ReportEventArgs<SwitchMultiLevelReport> e)
         {
-            Controller.Logger.LogInformation("OnSwitchMultiLevel: Z-Wave switch multi level value {Value} received for node {NodeId}.", e.Report.Value, e.Report?.Node?.NodeID);
+            Controller.Logger.LogInformation("OnSwitchMultiLevel: Z-Wave switch multi level value {Value} received for node {NodeId}.", e.Report.CurrentValue, e.Report?.Node?.NodeID);
         }
 
         internal void OnSensorMultiLevel(object? sender, ReportEventArgs<SensorMultiLevelReport> e)
@@ -461,7 +468,7 @@ namespace HomeBlaze.Zwave
 
         internal void OnBasic(object? sender, ReportEventArgs<BasicReport> e)
         {
-            Controller.Logger.LogInformation("OnBasic: Z-Wave basic value {Value} received for node {NodeId}.", e.Report.Value, e.Report?.Node?.NodeID);
+            Controller.Logger.LogInformation("OnBasic: Z-Wave basic value {Value} received for node {NodeId}.", e.Report.CurrentValue, e.Report?.Node?.NodeID);
         }
 
         internal void OnSensorBinary(object? sender, ReportEventArgs<SensorBinaryReport> e)
