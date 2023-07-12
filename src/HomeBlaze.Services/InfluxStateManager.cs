@@ -11,7 +11,6 @@ namespace HomeBlaze.Services
     public class InfluxStateManager : IDisposable, IStateManager
     {
         private readonly InfluxDBClient _client;
-        private readonly WriteApi _writeApi;
 
         private readonly ILogger<InfluxStateManager> _logger;
         private readonly IDisposable _eventSubscription;
@@ -30,9 +29,7 @@ namespace HomeBlaze.Services
             _bucket = configuration.GetValue("Series:Bucket", "HomeBlaze");
             _organization = configuration.GetValue("Series:Organization", "HomeBlaze");
 
-            _client = new InfluxDBClient(_url, _username, _password);
-            _writeApi = _client.GetWriteApi();
-            
+            _client = new InfluxDBClient(_url, _username, _password);            
             _logger = logger;
 
             _eventSubscription = eventManager.Subscribe(message =>
@@ -63,7 +60,8 @@ namespace HomeBlaze.Services
                                 stateChangedEvent.ChangeDate.ToUniversalTime(),
                                 WritePrecision.Ns);
 
-                        _writeApi.WritePoint(point, _bucket, _organization);
+                        using var writeApi = _client.GetWriteApi();
+                        writeApi.WritePoint(point, _bucket, _organization);
                     }
                 }
             }
@@ -116,7 +114,6 @@ namespace HomeBlaze.Services
         public void Dispose()
         {
             _eventSubscription.Dispose();
-            _writeApi.Dispose();
             _client.Dispose();
         }
     }
