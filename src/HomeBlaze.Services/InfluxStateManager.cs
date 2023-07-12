@@ -14,7 +14,6 @@ namespace HomeBlaze.Services
         private readonly WriteApi _writeApi;
 
         private readonly ILogger<InfluxStateManager> _logger;
-        private readonly Timer _timer;
         private readonly IDisposable _eventSubscription;
 
         private readonly string? _url;
@@ -36,7 +35,6 @@ namespace HomeBlaze.Services
             
             _logger = logger;
 
-            _timer = new Timer(OnTimer, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
             _eventSubscription = eventManager.Subscribe(message =>
             {
                 if (message is ThingStateChangedEvent stateChangedEvent)
@@ -44,18 +42,6 @@ namespace HomeBlaze.Services
                     OnThingStateChanged(stateChangedEvent);
                 }
             });
-        }
-
-        private void OnTimer(object? state)
-        {
-            try
-            {
-                _writeApi.Flush();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Failed to flush data.");
-            }
         }
 
         private void OnThingStateChanged(ThingStateChangedEvent stateChangedEvent)
