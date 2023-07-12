@@ -69,11 +69,9 @@ namespace HomeBlaze.Services
                     if (thingId != null && newValue != null)
                     {
                         var point = PointData
-                            .Measurement("property")
-                            .Tag("property", stateChangedEvent.PropertyName)
+                            .Measurement(thingId)
                             .Tag("type", stateChangedEvent.Thing.GetType().FullName)
-                            .Tag("thing", thingId)
-                            .Field("value", newValue)
+                            .Field(stateChangedEvent.PropertyName, newValue)
                             .Timestamp(
                                 stateChangedEvent.ChangeDate.ToUniversalTime(),
                                 WritePrecision.Ns);
