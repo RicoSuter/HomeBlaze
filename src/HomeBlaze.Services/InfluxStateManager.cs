@@ -56,7 +56,8 @@ namespace HomeBlaze.Services
                     {
                         var point = PointData
                             .Measurement(thingId)
-                            .Tag("type", stateChangedEvent.Thing.GetType().FullName)
+                            .Tag("Type", stateChangedEvent.Thing.GetType().FullName)
+                            .Tag("Title", stateChangedEvent.Thing.Title)
                             .Field(stateChangedEvent.PropertyName, newValue)
                             .Timestamp(
                                 stateChangedEvent.ChangeDate.ToUniversalTime(),
