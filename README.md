@@ -118,7 +118,7 @@ docker-compose up -d
 
 **Support Z-Wave**
 
-For Z-Wave you need to run the Docker image in priviledge mode and map the USB device: 
+For Z-Wave you need to run the Docker image in priviledge mode: 
 
 ```
 version: "3"
@@ -130,8 +130,6 @@ services:
     privileged: true
     ports:
       - 9800:80
-    volumes:
-      - /dev/ttyACM1:/dev/ttyACM1
 ```
 
 **Support UDP**
