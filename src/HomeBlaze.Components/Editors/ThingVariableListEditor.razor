@@ -3,18 +3,18 @@
 @if (Variables != null)
 {
     <div style="@Style;position: relative">
-        <MudIconButton Icon="@Icons.Filled.Add" Style="position: absolute; right: 6px; top: 6px; z-index: 1000"
+        <MudIconButton Icon="@Icons.Material.Filled.Add" Style="position: absolute; right: 6px; top: 6px; z-index: 1000"
                    OnClick="@(() => Variables.Add(new ThingVariable()))"
                    Variant="Variant.Filled" Color="Color.Primary"></MudIconButton>
 
         <MudTabs>
             @foreach (var variable in Variables)
             {
-                <MudTabPanel Icon="@Icons.Outlined.Label" Text="@(!string.IsNullOrEmpty(variable.Name) ? variable.Name : "n/a")"
+                <MudTabPanel Icon="@Icons.Material.Outlined.Label" Text="@(!string.IsNullOrEmpty(variable.Name) ? variable.Name : "n/a")"
                      Tag="@variable" Style="justify-content: left">
 
                     <br />
-                    <MudIconButton Icon="@Icons.Filled.Delete" OnClick="@(() => Variables.Remove(variable))"
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => Variables.Remove(variable))"
                            Variant="Variant.Filled" Color="Color.Error"
                            Style="float: right; margin-right: 6px; margin-left: 6px; margin-top: 12px"></MudIconButton>
 

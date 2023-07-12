@@ -24,13 +24,13 @@
                     @if (Thing is GroupBase group)
                         {
                             <MudIconButton OnClick="@(() => MoveThingUp(child, group))"
-                                Icon="@Icons.Filled.ArrowUpward"
+                                Icon="@Icons.Material.Filled.ArrowUpward"
                                 Disabled="@(group.Things.First() == child)"
                                 Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
                                 Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
 
                             <MudIconButton OnClick="@(() => MoveThingDown(child, group))"
-                                Icon="@Icons.Filled.ArrowDownward"
+                                Icon="@Icons.Material.Filled.ArrowDownward"
                                 Disabled="@(group.Things.Last() == child)"
                                 Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
                                 Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>

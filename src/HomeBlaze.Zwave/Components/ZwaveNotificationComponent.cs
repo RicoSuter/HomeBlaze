@@ -1,4 +1,5 @@
 ﻿using HomeBlaze.Abstractions.Attributes;
+using ZWave.CommandClasses;
 
 namespace HomeBlaze.Zwave.Components
 {
@@ -10,7 +11,10 @@ namespace HomeBlaze.Zwave.Components
         public int Level { get; set; }
 
         [State]
-        public int Detail { get; set; }
+        public int Status { get; set; }
+
+        [State]
+        public NotificationState Event { get; internal set; }
 
         public ZwaveNotificationComponent(ZwaveDevice parent)
             : base(parent)

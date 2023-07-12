@@ -39,16 +39,16 @@
     {
         @if (_isEditMode)
         {
-            <MudButton StartIcon="@Icons.Filled.Add" OnClick="AddDashboard" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">Add Dashboard</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddDashboard" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">Add Dashboard</MudButton>
 
             @if (_selectedDashboard != null)
             {
-                <MudIconButton Icon="@Icons.Filled.Edit" OnClick="EditDashboard" Variant="Variant.Filled" Color="Color.Warning" Class="ma-2"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="EditDashboard" Variant="Variant.Filled" Color="Color.Warning" Class="ma-2"></MudIconButton>
             }
 
             @if (_selectedDashboard != null && _dashboards.Length > 1)
             {
-                <MudIconButton Icon="@Icons.Filled.Delete" OnClick="DeleteDashboard" Color="Color.Error" Variant="Variant.Filled" Class="ma-2"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteDashboard" Color="Color.Error" Variant="Variant.Filled" Class="ma-2"></MudIconButton>
             }
         }
 
@@ -56,17 +56,17 @@
 
         @if (_isEditMode && _selectedDashboard != null)
         {
-            <MudButton StartIcon="@Icons.Filled.Add" OnClick="AddWidget" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">Add Widget</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddWidget" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">Add Widget</MudButton>
 
             @if (_diagram.GetSelectedModels().Any())
             {
-                <MudIconButton Icon="@Icons.Filled.MoveUp" OnClick="MoveSelectedWidgetToTop" Variant="Variant.Filled" Color="Color.Warning" Class="ma-2"></MudIconButton>
-                <MudIconButton Icon="@Icons.Filled.ContentCopy" OnClick="CloneSelectedWidget" Variant="Variant.Filled" Color="Color.Warning" Class="ma-2"></MudIconButton>
-                <MudIconButton Icon="@Icons.Filled.Delete" OnClick="DeleteSelectedWidget" Color="Color.Error" Variant="Variant.Filled" Class="ma-2"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.MoveUp" OnClick="MoveSelectedWidgetToTop" Variant="Variant.Filled" Color="Color.Warning" Class="ma-2"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.ContentCopy" OnClick="CloneSelectedWidget" Variant="Variant.Filled" Color="Color.Warning" Class="ma-2"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteSelectedWidget" Color="Color.Error" Variant="Variant.Filled" Class="ma-2"></MudIconButton>
             }
         }
 
-        <MudIconButton OnClick="ToggleEditMode" Icon="@(_isEditMode ? Icons.Filled.Close : Icons.Filled.Edit)" />
+        <MudIconButton OnClick="ToggleEditMode" Icon="@(_isEditMode ? Icons.Material.Filled.Close : Icons.Material.Filled.Edit)" />
     }
 </SectionContent>
 

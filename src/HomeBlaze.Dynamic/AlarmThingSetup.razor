@@ -30,7 +30,7 @@
                         <MudListItem>
                             @(ThingManager.TryGetById(thingId)?.Title ?? thingId)
 
-                            <MudIconButton Icon="@Icons.Filled.Delete" Style="float: right"
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Style="float: right"
                                        OnClick="@(() => RemovePresenceThing(thingId))"
                                        Color="Color.Error" Variant="Variant.Filled" Class="ma-2">
                             </MudIconButton>

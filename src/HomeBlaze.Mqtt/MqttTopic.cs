@@ -46,7 +46,7 @@ namespace HomeBlaze.Mqtt
             {
                 _state.Clear();
 
-                var payload = Encoding.UTF8.GetString(args.ApplicationMessage.Payload);
+                var payload = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment);
                 try
                 {
                     var document = JsonDocument.Parse(payload);

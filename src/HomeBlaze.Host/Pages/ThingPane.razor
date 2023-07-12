@@ -59,7 +59,7 @@
                     @if (metadata?.CanEdit == true)
                     {
                         <MudIconButton OnClick="@(() => EditThing(Thing))"
-                           Icon="@Icons.Filled.Edit"
+                           Icon="@Icons.Material.Filled.Edit"
                            Variant="Variant.Filled"
                            Color="Color.Primary"
                            Class="ma-2">Edit</MudIconButton>
@@ -68,7 +68,7 @@
                     @if (canExtend)
                     {
                         <MudIconButton OnClick="@(() => AddThingExtension(Thing))"
-                           Icon="@Icons.Filled.BackupTable"
+                           Icon="@Icons.Material.Filled.BackupTable"
                            Variant="Variant.Filled"
                            Color="Color.Primary"
                            Class="ma-2">Extend</MudIconButton>
@@ -79,13 +79,13 @@
                         @if (metadata?.CanClone == true)
                         {
                             <MudIconButton OnClick="@(() => CloneThing(Thing, parentGroup))"
-                           Icon="@Icons.Filled.ContentCopy"
+                           Icon="@Icons.Material.Filled.ContentCopy"
                            Variant="Variant.Filled" Color="Color.Primary"
                            Class="ma-2">Clone</MudIconButton>
                         }
 
                         <MudIconButton OnClick="@(() => MoveThing(Thing, parentGroup))"
-                           Icon="@Icons.Filled.MoveUp"
+                           Icon="@Icons.Material.Filled.MoveUp"
                            Variant="Variant.Filled"
                            Color="Color.Primary"
                            Class="ma-2">Move</MudIconButton>
@@ -93,7 +93,7 @@
                         @if (metadata?.CanDelete == true)
                         {
                             <MudIconButton OnClick="@(() => DeleteThing(Thing, parentGroup))"
-                           Icon="@Icons.Filled.Delete"
+                           Icon="@Icons.Material.Filled.Delete"
                            Variant="Variant.Filled"
                            Color="Color.Error"
                            Class="ma-2">Delete</MudIconButton>
@@ -260,7 +260,7 @@
             if (parameters.Any(p => p.Value == null) && Thing?.Id != null)
             {
                 var result = await OperationParametersDialog.ShowAsync(DialogService, "Parameters", Thing.Id, operation.Name, parameters);
-                if (result != null && !result.Cancelled)
+                if (result != null && !result.Canceled)
                 {
                     await operation.ExecuteAsync(parameters, Logger, CancellationToken.None);
                 }

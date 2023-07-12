@@ -29,7 +29,7 @@
             <MudTabs>
                 @foreach (var property in Thing.Properties)
                 {
-                    <MudTabPanel Icon="@Icons.Filled.LabelImportant" Text="@(!string.IsNullOrEmpty(property.Name) ? property.Name : "n/a")" Style="justify-content: left">
+                    <MudTabPanel Icon="@Icons.Material.Filled.LabelImportant" Text="@(!string.IsNullOrEmpty(property.Name) ? property.Name : "n/a")" Style="justify-content: left">
                         <br />
                         <div style="width: 100%">
                             <ThingInterfacePropertySelect Label="Property Name" @bind-PropertyName="@property.Name" InterfaceName="@Thing.ThingInterfaceName" Required="true" />

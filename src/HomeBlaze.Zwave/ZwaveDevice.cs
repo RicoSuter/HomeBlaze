@@ -451,7 +451,7 @@ namespace HomeBlaze.Zwave
             _sensorAlarmComponent ??= new ZwaveSensorAlarmComponent(this);
             _sensorAlarmComponent.Level = e.Report.Level;
             _sensorAlarmComponent.Source = e.Report.Source;
-            _sensorAlarmComponent.AlarmType = e.Report.Type;
+            _sensorAlarmComponent.NotificationType = e.Report.Type;
             _sensorAlarmComponent.LastUpdated = DateTimeOffset.Now;
 
             Controller.ThingManager.DetectChanges(_sensorAlarmComponent);
@@ -472,16 +472,18 @@ namespace HomeBlaze.Zwave
         {
             _notificationComponent ??= new ZwaveNotificationComponent(this);
             _notificationComponent.Level = e.Report.Level;
-            _notificationComponent.Detail = (int)e.Report.Detail;
+            _notificationComponent.Status = e.Report.Status;
+            _notificationComponent.Event = e.Report.Event;
+
             _notificationComponent.LastUpdated = DateTimeOffset.Now;
 
             // TODO: Extend enum and implement other sensors
 
-            if (_notificationComponent.Detail == 22 ||
-                _notificationComponent.Detail == 23)
+            if (_notificationComponent.Status == 22 ||
+                _notificationComponent.Status == 23)
             {
                 _doorSensorComponent ??= new ZwaveDoorSensorComponent(_notificationComponent);
-                
+
                 Controller.ThingManager.DetectChanges(_doorSensorComponent);
             }
 

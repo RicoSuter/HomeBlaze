@@ -5,7 +5,7 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="MQTTnet" Version="4.1.4.563" />
+	  <PackageReference Include="MQTTnet" Version="4.2.1.781" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />

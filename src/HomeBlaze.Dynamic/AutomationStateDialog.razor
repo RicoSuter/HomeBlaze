@@ -64,7 +64,7 @@
                 MaxWidth = MaxWidth.Medium
             }).Result;
 
-        if (result?.Cancelled == false && result.Data != null)
+        if (result?.Canceled == false && result.Data != null)
         {
             JsonUtilities.PopulateObject(state!, JsonSerializer.Serialize<AutomationState>((AutomationState)result.Data));
             return true;

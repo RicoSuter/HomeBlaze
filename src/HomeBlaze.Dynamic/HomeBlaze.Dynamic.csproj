@@ -7,12 +7,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Castle.Core" Version="5.1.0" />
-		<PackageReference Include="DynamicExpresso.Core" Version="2.13.0" />
+		<PackageReference Include="Castle.Core" Version="5.1.1" />
+		<PackageReference Include="DynamicExpresso.Core" Version="2.16.1" />
 		<PackageReference Include="Z.Blazor.Diagrams" Version="2.1.6" />
-		<PackageReference Include="MudBlazor" Version="6.1.6" />
-		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.1" />
+		<PackageReference Include="MudBlazor" Version="6.7.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.9" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.9" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -47,14 +47,14 @@
         @if (!Required)
         {
             <br />
-            <MudButton StartIcon="@Icons.Filled.Delete"
+            <MudButton StartIcon="@Icons.Material.Filled.Delete"
                OnClick="@(() => { Operation = null; OperationChanged.InvokeAsync(null); })"
                Variant="Variant.Filled" Color="Color.Error" Size="Size.Small">Delete</MudButton>
         }
     }
     else
     {
-        <MudButton StartIcon="@Icons.Filled.Add"
+        <MudButton StartIcon="@Icons.Material.Filled.Add"
                OnClick="@(() => { Operation = new Operation(); OperationChanged.InvokeAsync(Operation); })"
                Variant="Variant.Filled" Color="Color.Primary">Add Operation</MudButton>
     }

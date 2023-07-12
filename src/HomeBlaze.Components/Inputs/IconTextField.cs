@@ -14,7 +14,7 @@ namespace HomeBlaze.Components.Inputs
             Adornment = Adornment.End;
         }
 
-        protected override Task SetValueAsync(string value, bool updateText = true)
+        protected override Task SetValueAsync(string value, bool updateText = true, bool force = false)
         {
             AdornmentIcon = value;
             return base.SetValueAsync(value, updateText);

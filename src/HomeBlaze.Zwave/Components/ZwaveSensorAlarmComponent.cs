@@ -14,7 +14,7 @@ namespace HomeBlaze.Zwave.Components
         public byte? Source { get; internal set; }
 
         [State]
-        public AlarmType? AlarmType { get; internal set; }
+        public NotificationType? NotificationType { get; internal set; }
 
         public ZwaveSensorAlarmComponent(ZwaveDevice parent)
             : base(parent)
