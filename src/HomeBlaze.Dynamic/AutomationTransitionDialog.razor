@@ -117,14 +117,14 @@
     {
         var result = await dialogService.Show<AutomationTransitionDialog>("Edit Transition",
             new DialogParameters
-                    {
+            {
                 { "Transition", JsonUtilities.Clone(transition)}
-                    },
+            },
             new DialogOptions
-                {
-                    FullWidth = true,
-                    MaxWidth = MaxWidth.Medium
-                }).Result;
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium
+            }).Result;
 
         if (result?.Canceled == false && result.Data != null)
         {
