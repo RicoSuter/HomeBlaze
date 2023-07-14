@@ -320,7 +320,7 @@ namespace HomeBlaze.Luxtronik
                 TotalConsumedCoolingEnergy = GetDecimal(allValues, powerEnergy, new[] { "Kühlung" }) * 1000;
                 TotalConsumedEnergy = GetDecimal(allValues, powerEnergy, new[] { "Gesamt" }) * 1000;
 
-                IsCooling = GetTimeSpan(allValues, state, new[] { "Freigabe Kühlung" }) == TimeSpan.Zero;
+                IsCooling = GetTimeSpan(allValues, times, new[] { "Freigabe Kühlung" }) == TimeSpan.Zero;
 
                 RecalculatePowerConsumption();
                 LastUpdated = DateTimeOffset.Now;
