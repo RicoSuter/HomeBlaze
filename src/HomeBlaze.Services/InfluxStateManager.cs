@@ -17,8 +17,7 @@ namespace HomeBlaze.Services
         private readonly ILogger<InfluxStateManager> _logger;
 
         private readonly string? _url;
-        private readonly string? _username;
-        private readonly string? _password;
+        private readonly string? _token;
         private readonly string? _bucket;
         private readonly string? _organization;
 
@@ -26,12 +25,11 @@ namespace HomeBlaze.Services
             : base(eventManager)
         {
             _url = configuration.GetValue<string>("Series:Url");
-            _username = configuration.GetValue<string>("Series:Username");
-            _password = configuration.GetValue<string>("Series:Password");
+            _token = configuration.GetValue<string>("Series:Token");
             _bucket = configuration.GetValue("Series:Bucket", "HomeBlaze");
             _organization = configuration.GetValue("Series:Organization", "HomeBlaze");
 
-            _client = new InfluxDBClient(_url, _username, _password);
+            _client = new InfluxDBClient(_url, _token);
             _writeApi = _client.GetWriteApiAsync();
             _logger = logger;
         }
@@ -58,12 +56,12 @@ namespace HomeBlaze.Services
                             .Measurement(thingId)
                             .Tag("Type", stateChangedEvent.Thing.GetType().FullName)
                             .Tag("Title", stateChangedEvent.Thing.Title)
-                            .Field(stateChangedEvent.PropertyName, newValue)
+                            .Field(stateChangedEvent.PropertyName, newValue is Enum ? newValue.ToString() : newValue)
                             .Timestamp(
                                 stateChangedEvent.ChangeDate.ToUniversalTime(),
                                 WritePrecision.Ns);
 
-                        await _writeApi.WritePointAsync(point, _bucket, _organization);
+                        await _writeApi.WritePointAsync(point, _bucket, _organization, cancellationToken);
                     }
                 }
             }
