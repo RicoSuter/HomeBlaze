@@ -11,7 +11,7 @@ namespace HomeBlaze.Services
     public class InfluxStateManager : IDisposable, IStateManager
     {
         private readonly InfluxDBClient _client;
-
+        private readonly WriteApiAsync _writeApi;
         private readonly ILogger<InfluxStateManager> _logger;
         private readonly IDisposable _eventSubscription;
 
@@ -29,19 +29,28 @@ namespace HomeBlaze.Services
             _bucket = configuration.GetValue("Series:Bucket", "HomeBlaze");
             _organization = configuration.GetValue("Series:Organization", "HomeBlaze");
 
-            _client = new InfluxDBClient(_url, _username, _password);            
+            _client = new InfluxDBClient(_url, _username, _password);
+            _writeApi = _client.GetWriteApiAsync();
             _logger = logger;
 
             _eventSubscription = eventManager.Subscribe(message =>
             {
                 if (message is ThingStateChangedEvent stateChangedEvent)
                 {
-                    OnThingStateChanged(stateChangedEvent);
+                    Task.Run(() => OnThingStateChangedAsync(stateChangedEvent, CancellationToken.None));
                 }
             });
         }
 
-        private void OnThingStateChanged(ThingStateChangedEvent stateChangedEvent)
+        //protected override async Task HandleMessageAsync(IEvent message, CancellationToken cancellationToken)
+        //{
+        //    if (message is ThingStateChangedEvent stateChangedEvent)
+        //    {
+        //        await OnThingStateChangedAsync(stateChangedEvent, cancellationToken);
+        //    }
+        //}
+
+        private async Task OnThingStateChangedAsync(ThingStateChangedEvent stateChangedEvent, CancellationToken cancellationToken)
         {
             try
             {
@@ -60,8 +69,7 @@ namespace HomeBlaze.Services
                                 stateChangedEvent.ChangeDate.ToUniversalTime(),
                                 WritePrecision.Ns);
 
-                        using var writeApi = _client.GetWriteApi();
-                        writeApi.WritePoint(point, _bucket, _organization);
+                        await _writeApi.WritePointAsync(point, _bucket, _organization);
                     }
                 }
             }
@@ -116,5 +124,11 @@ namespace HomeBlaze.Services
             _eventSubscription.Dispose();
             _client.Dispose();
         }
+
+        //public override void Dispose()
+        //{
+        //    _client.Dispose();
+        //    base.Dispose();
+        //}
     }
 }

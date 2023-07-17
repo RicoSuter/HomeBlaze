@@ -48,22 +48,28 @@ namespace HomeBlaze.Host
             {
                 services
                     .AddSingleton<InfluxStateManager>()
+                    //.AddHostedService(s => s.GetRequiredService<InfluxStateManager>())
+
                     .AddSingleton<BlobStateManager>()
-                    .AddSingleton<IStateManager>(s => new CombinedStateManager(
-                        s.GetRequiredService<InfluxStateManager>(), 
-                        s.GetRequiredService<BlobStateManager>()))
-                    .AddHostedService(s => (CombinedStateManager)s.GetRequiredService<IStateManager>());
+                    .AddHostedService(s => s.GetRequiredService<BlobStateManager>())
+
+                    .AddSingleton<IStateManager>(s => s.GetRequiredService<BlobStateManager>());
             }
             else if (seriesType == "InfluxDb")
             {
                 services
-                    .AddSingleton<IStateManager, InfluxStateManager>();
+                    .AddSingleton<InfluxStateManager>()
+                    //.AddHostedService(s => s.GetRequiredService<InfluxStateManager>())
+
+                    .AddSingleton<IStateManager>(s => s.GetRequiredService<InfluxStateManager>());
             }
             else
             {
                 services
-                    .AddSingleton<IStateManager, BlobStateManager>()
-                    .AddHostedService(s => (BlobStateManager)s.GetRequiredService<IStateManager>());
+                    .AddSingleton<BlobStateManager>()
+                    .AddHostedService(s => s.GetRequiredService<BlobStateManager>())
+
+                    .AddSingleton<IStateManager>(s => s.GetRequiredService<BlobStateManager>());
             }
 
             services
