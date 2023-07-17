@@ -5,16 +5,15 @@ using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Writes;
 using Microsoft.Extensions.Configuration;
-using HomeBlaze.Services.Abstractions;
-using HomeBlaze.Abstractions.Messages;
 
 namespace HomeBlaze.Services
 {
-    public class InfluxStateManager : AsyncEventListener, IDisposable, IStateManager
+    public class InfluxStateManager : IDisposable, IStateManager
     {
         private readonly InfluxDBClient _client;
-        private readonly WriteApiAsync _writeApi;
+
         private readonly ILogger<InfluxStateManager> _logger;
+        private readonly IDisposable _eventSubscription;
 
         private readonly string? _url;
         private readonly string? _username;
@@ -23,7 +22,6 @@ namespace HomeBlaze.Services
         private readonly string? _organization;
 
         public InfluxStateManager(IEventManager eventManager, IConfiguration configuration, ILogger<InfluxStateManager> logger)
-            : base(eventManager)
         {
             _url = configuration.GetValue<string>("Series:Url");
             _username = configuration.GetValue<string>("Series:Username");
@@ -31,20 +29,19 @@ namespace HomeBlaze.Services
             _bucket = configuration.GetValue("Series:Bucket", "HomeBlaze");
             _organization = configuration.GetValue("Series:Organization", "HomeBlaze");
 
-            _client = new InfluxDBClient(_url, _username, _password);
-            _writeApi = _client.GetWriteApiAsync();
+            _client = new InfluxDBClient(_url, _username, _password);            
             _logger = logger;
-        }
 
-        protected override async Task HandleMessageAsync(IEvent message, CancellationToken cancellationToken)
-        {
-            if (message is ThingStateChangedEvent stateChangedEvent)
+            _eventSubscription = eventManager.Subscribe(message =>
             {
-                await OnThingStateChangedAsync(stateChangedEvent, cancellationToken);
-            }
+                if (message is ThingStateChangedEvent stateChangedEvent)
+                {
+                    OnThingStateChanged(stateChangedEvent);
+                }
+            });
         }
 
-        private async Task OnThingStateChangedAsync(ThingStateChangedEvent stateChangedEvent, CancellationToken cancellationToken)
+        private void OnThingStateChanged(ThingStateChangedEvent stateChangedEvent)
         {
             try
             {
@@ -63,7 +60,8 @@ namespace HomeBlaze.Services
                                 stateChangedEvent.ChangeDate.ToUniversalTime(),
                                 WritePrecision.Ns);
 
-                        await _writeApi.WritePointAsync(point, _bucket, _organization);
+                        using var writeApi = _client.GetWriteApi();
+                        writeApi.WritePoint(point, _bucket, _organization);
                     }
                 }
             }
@@ -113,10 +111,10 @@ namespace HomeBlaze.Services
             }
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
+            _eventSubscription.Dispose();
             _client.Dispose();
-            base.Dispose();
         }
     }
 }
