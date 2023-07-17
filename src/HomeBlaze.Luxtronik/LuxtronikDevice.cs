@@ -135,7 +135,6 @@ namespace HomeBlaze.Luxtronik
         [State(Unit = StateUnit.WattHour, IsCumulative = true)]
         public decimal? TotalConsumedEnergy { get; private set; }
 
-
         [State]
         public decimal? TotalCoefficientOfPerformance
         {
@@ -148,6 +147,9 @@ namespace HomeBlaze.Luxtronik
 
         [State(Unit = StateUnit.LiterPerHour)]
         public decimal? FlowRate { get; private set; }
+
+        [State]
+        public bool IsCooling { get; private set; }
 
         public LuxtronikDevice(IThingManager thingManager, ILogger<LuxtronikDevice> logger)
         {
@@ -282,6 +284,7 @@ namespace HomeBlaze.Luxtronik
                 var temperatures = GetSection(sections, new[] { "Temperaturen" });
                 var incoming = GetSection(sections, new[] { "Eingänge" });
                 var state = GetSection(sections, new[] { "Anlagenstatus" });
+                var times = GetSection(sections, new[] { "Ablaufzeiten" });
 
                 var energy = GetSection(sections, new[] { "Energiemonitor" });
                 var heatEnergy = GetSection(energy, new[] { "Wärmemenge" });
@@ -316,6 +319,8 @@ namespace HomeBlaze.Luxtronik
                 TotalConsumedWaterEnergy = GetDecimal(allValues, powerEnergy, new[] { "Warmwasser" }) * 1000;
                 TotalConsumedCoolingEnergy = GetDecimal(allValues, powerEnergy, new[] { "Kühlung" }) * 1000;
                 TotalConsumedEnergy = GetDecimal(allValues, powerEnergy, new[] { "Gesamt" }) * 1000;
+
+                IsCooling = GetTimeSpan(allValues, times, new[] { "Freigabe Kühlung" }) == TimeSpan.Zero;
 
                 RecalculatePowerConsumption();
                 LastUpdated = DateTimeOffset.Now;
@@ -378,6 +383,19 @@ namespace HomeBlaze.Luxtronik
             var element = allValues?.SingleOrDefault(v => v.Attribute("id")?.Value == id);
 
             if (decimal.TryParse(element?.Element("value")?.Value?.Split(' ', '°')[0], out var value))
+            {
+                return value;
+            }
+
+            return null;
+        }
+
+        private TimeSpan? GetTimeSpan(XElement[]? allValues, IEnumerable<XElement>? section, string[] names)
+        {
+            var id = section?.FirstOrDefault(s => names.Contains(s.Element("name")?.Value))?.Attribute("id")?.Value;
+            var element = allValues?.SingleOrDefault(v => v.Attribute("id")?.Value == id);
+
+            if (TimeSpan.TryParse(element?.Element("value")?.Value?.Split(' ', '°')[0], out var value))
             {
                 return value;
             }
