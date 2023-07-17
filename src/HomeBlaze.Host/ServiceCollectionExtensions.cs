@@ -48,7 +48,7 @@ namespace HomeBlaze.Host
             {
                 services
                     .AddSingleton<InfluxStateManager>()
-                    //.AddHostedService(s => s.GetRequiredService<InfluxStateManager>())
+                    .AddHostedService(s => s.GetRequiredService<InfluxStateManager>())
 
                     .AddSingleton<BlobStateManager>()
                     .AddHostedService(s => s.GetRequiredService<BlobStateManager>())
@@ -59,7 +59,7 @@ namespace HomeBlaze.Host
             {
                 services
                     .AddSingleton<InfluxStateManager>()
-                    //.AddHostedService(s => s.GetRequiredService<InfluxStateManager>())
+                    .AddHostedService(s => s.GetRequiredService<InfluxStateManager>())
 
                     .AddSingleton<IStateManager>(s => s.GetRequiredService<InfluxStateManager>());
             }
