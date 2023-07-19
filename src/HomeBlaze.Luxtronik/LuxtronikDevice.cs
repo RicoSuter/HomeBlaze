@@ -148,7 +148,21 @@ namespace HomeBlaze.Luxtronik
         [State(Unit = StateUnit.LiterPerHour)]
         public decimal? FlowRate { get; private set; }
 
-        [State]
+
+        [State(IsCumulative = true)]
+        public TimeSpan? TotalHeatPumpOperatingTime { get; private set; }
+
+        [State(IsCumulative = true)]
+        public TimeSpan? TotalHeatingOperatingTime { get; private set; }
+
+        [State(IsCumulative = true)]
+        public TimeSpan? TotalWaterHeatingOperatingTime { get; private set; }
+
+        [State(IsCumulative = true)]
+        public TimeSpan? TotalCoolingOperatingTime { get; private set; }
+
+
+        [State(IsEstimated = true)]
         public bool IsCooling { get; private set; }
 
         public LuxtronikDevice(IThingManager thingManager, ILogger<LuxtronikDevice> logger)
@@ -158,7 +172,7 @@ namespace HomeBlaze.Luxtronik
 
             OutsideTemperature = new LuxtronikTemperature(this, "outside") { Title = "Outside Temperature" };
             WaterTemperature = new LuxtronikTemperature(this, "water") { Title = "Water Temperature" };
-          
+
             FlowTemperature = new LuxtronikTemperature(this, "flow") { Title = "Flow Temperature" };
             ReturnTemperature = new LuxtronikTemperature(this, "return") { Title = "Return Temperature" };
             ReturnExternalTemperature = new LuxtronikTemperature(this, "return-external") { Title = "Return External Temperature" };
@@ -284,7 +298,8 @@ namespace HomeBlaze.Luxtronik
                 var temperatures = GetSection(sections, new[] { "Temperaturen" });
                 var incoming = GetSection(sections, new[] { "Eingänge" });
                 var state = GetSection(sections, new[] { "Anlagenstatus" });
-                var times = GetSection(sections, new[] { "Ablaufzeiten" });
+                var elapsedTimes = GetSection(sections, new[] { "Ablaufzeiten" });
+                var operatingHours = GetSection(sections, new[] { "Betriebsstunden" });
 
                 var energy = GetSection(sections, new[] { "Energiemonitor" });
                 var heatEnergy = GetSection(energy, new[] { "Wärmemenge" });
@@ -310,6 +325,11 @@ namespace HomeBlaze.Luxtronik
 
                 FlowRate = GetDecimal(allValues, incoming, new[] { "Durchfluss" });
 
+                TotalHeatPumpOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden WP" });
+                TotalHeatingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden Heiz." });
+                TotalWaterHeatingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden WW" });
+                TotalCoolingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden Kuehl" });
+
                 TotalProducedHeatEnergy = GetDecimal(allValues, heatEnergy, new[] { "Heizung" }) * 1000;
                 TotalProducedWaterEnergy = GetDecimal(allValues, heatEnergy, new[] { "Warmwasser" }) * 1000;
                 TotalProducedCoolingEnergy = GetDecimal(allValues, heatEnergy, new[] { "Kühlung" }) * 1000;
@@ -320,7 +340,10 @@ namespace HomeBlaze.Luxtronik
                 TotalConsumedCoolingEnergy = GetDecimal(allValues, powerEnergy, new[] { "Kühlung" }) * 1000;
                 TotalConsumedEnergy = GetDecimal(allValues, powerEnergy, new[] { "Gesamt" }) * 1000;
 
-                IsCooling = GetTimeSpan(allValues, times, new[] { "Freigabe Kühlung" }) == TimeSpan.Zero;
+                // TODO: Needs to be improved
+                IsCooling =
+                    MixingCircuit1Temperature.Temperature < GetDecimal(allValues, temperatures, new[] { "Mischkreis1 VL-Soll" }) + 2 &&
+                    MixingCircuit2Temperature.Temperature < GetDecimal(allValues, temperatures, new[] { "Mischkreis2 VL-Soll" }) + 2;
 
                 RecalculatePowerConsumption();
                 LastUpdated = DateTimeOffset.Now;
@@ -382,7 +405,7 @@ namespace HomeBlaze.Luxtronik
             var id = section?.FirstOrDefault(s => names.Contains(s.Element("name")?.Value))?.Attribute("id")?.Value;
             var element = allValues?.SingleOrDefault(v => v.Attribute("id")?.Value == id);
 
-            if (decimal.TryParse(element?.Element("value")?.Value?.Split(' ', '°')[0], out var value))
+            if (decimal.TryParse(element?.Element("value")?.Value?.Split(' ', '°', 'h')[0], out var value))
             {
                 return value;
             }
@@ -395,7 +418,13 @@ namespace HomeBlaze.Luxtronik
             var id = section?.FirstOrDefault(s => names.Contains(s.Element("name")?.Value))?.Attribute("id")?.Value;
             var element = allValues?.SingleOrDefault(v => v.Attribute("id")?.Value == id);
 
-            if (TimeSpan.TryParse(element?.Element("value")?.Value?.Split(' ', '°')[0], out var value))
+            var rawValue = element?.Element("value")?.Value;
+            if (rawValue?.EndsWith("h") == true)
+            {
+                return TimeSpan.FromHours(double.Parse(rawValue[..^1]));
+            }
+
+            if (TimeSpan.TryParse(rawValue?.Split(' ', '°')[0], out var value))
             {
                 return value;
             }

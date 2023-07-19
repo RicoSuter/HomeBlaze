@@ -66,6 +66,11 @@ namespace HomeBlaze.Abstractions.Attributes
                 return "";
             }
 
+            if (value is TimeSpan timeSpan)
+            {
+                return timeSpan.TotalHours + "h";
+            }
+
             return Unit switch
             {
                 StateUnit.Percent => (int)(((decimal?)value) * 100m) + "%",
