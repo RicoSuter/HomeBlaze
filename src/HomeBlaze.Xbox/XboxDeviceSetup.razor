@@ -125,4 +125,25 @@ else
 
         return null;
     }
+
+    public override async Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (_selectedBridge is SmartGlass.Device selectedDevice)
+            {
+                EditedThing!.IpAddress = selectedDevice.Address.ToString();
+                EditedThing!.XboxLiveAccountId = _xboxLiveAccountId;
+                EditedThing!.DeviceId = selectedDevice.LiveId;
+
+                return true;
+            }
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Failed to add Xbox", e.ToString());
+        }
+
+        return false;
+    }
 }
