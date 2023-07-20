@@ -84,6 +84,33 @@ else
 
     public override async Task<NukiBridge?> CreateThingAsync(CancellationToken cancellationToken)
     {
+        var result = await UpsertBridgeAsync(cancellationToken);
+        if (result.AuthToken != null)
+        {
+            var bridge = (NukiBridge)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(NukiBridge));
+            bridge.Host = result.Host;
+            bridge.AuthToken = result.AuthToken;
+            return bridge;
+        }
+
+        return null;
+    }
+
+    public override async Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
+    {
+        var result = await UpsertBridgeAsync(cancellationToken);
+        if (result.Host != null && result.AuthToken != null)
+        {
+            EditedThing!.Host = result.Host;
+            EditedThing.AuthToken = result.AuthToken;
+            return true;
+        }
+
+        return false;
+    }
+
+    private async Task<(string? Host, string? AuthToken)> UpsertBridgeAsync(CancellationToken cancellationToken)
+    {
         try
         {
             if (_selectedBridge is BridgeModel selectedBridge)
@@ -98,14 +125,12 @@ else
 
                 if (result.RootElement.TryGetProperty("token", out var property))
                 {
-                    var bridge = (NukiBridge)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(NukiBridge));
-                    bridge.Host = selectedBridge.Host;
-                    bridge.AuthToken = property.GetString();
-                    return bridge;
+
+                    return (selectedBridge.Host, property.GetString());
                 }
                 else
                 {
-                    await DialogService.ShowMessageBox("Failed to add Nuki Bridge", 
+                    await DialogService.ShowMessageBox("Failed to add Nuki Bridge",
                         "Bridge could not be authenticated, please press the button while adding.");
                 }
             }
@@ -119,6 +144,6 @@ else
             IsWaitingForButton = false;
         }
 
-        return null;
+        return (null, null);
     }
 }
