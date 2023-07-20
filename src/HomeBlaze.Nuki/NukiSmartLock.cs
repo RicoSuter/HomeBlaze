@@ -20,8 +20,7 @@ namespace HomeBlaze.Nuki
     {
         private NukiDevice _device;
 
-        [Configuration(IsIdentifier = true)]
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id => Parent.Id + "/locks/" + _device.NukiId;
 
         public string? Title => _device?.Name ?? "n/a";
 
