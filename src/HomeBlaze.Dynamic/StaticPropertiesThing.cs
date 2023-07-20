@@ -18,7 +18,7 @@ namespace HomeBlaze.Dynamic
         [Configuration(IsIdentifier = true)]
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
-        public string? Title => $"{ExtendedThing?.Title}: Properties";
+        public string? Title => $"{ExtendedThing?.Title}: Static Properties";
 
         [Configuration]
         public string? ExtendedThingId { get; set; }
