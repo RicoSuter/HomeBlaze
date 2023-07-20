@@ -1,0 +1,43 @@
+﻿@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors
+@using HomeBlaze.Components.Inputs
+@using Microsoft.JSInterop;
+@using MudBlazor
+
+@inject IJSRuntime JsRuntime
+
+@inherits ThingSetupComponent<StaticPropertiesThing>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddProperty" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">Add Property</MudButton>
+
+    @foreach (var tuple in Thing.Properties)
+    {
+        <MudTextField Value="@tuple.Value" ValueChanged="(e => Thing.Properties[tuple.Key] = e)" 
+                      Label="@tuple.Key" Required="true" T="string" />
+
+        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="(() => RemoveProperty(tuple.Key))"
+                       Color="Color.Error" Variant="Variant.Filled"></MudIconButton>
+
+        <br />
+        <br />
+    }
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public async void AddProperty()
+    {
+        var key = await JsRuntime.InvokeAsync<string?>("prompt", "Property name:");
+        if (key != null)
+        {
+            Thing.Properties[key] = "";
+        }
+    }
+
+    public void RemoveProperty(string key)
+    {
+        Thing.Properties.Remove(key);
+    }
+}

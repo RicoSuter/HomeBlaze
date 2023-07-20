@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HomeBlaze.Abstractions
+﻿namespace HomeBlaze.Abstractions
 {
     public interface IExtensionThing : IThing
     {

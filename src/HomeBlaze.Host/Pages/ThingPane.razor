@@ -25,9 +25,9 @@
             var metadata = ThingManager.TryGetMetadata(Thing);
 
             var stateGroups = ThingManager
-            .GetState(Thing.Id, true)
-            .OrderBy(s => s.Value.Attribute.Order)
-            .GroupBy(p => p.Value.SourceThing);
+                .GetState(Thing.Id, true)
+                .OrderBy(s => s.Value.Attribute?.Order ?? 0)
+                .GroupBy(p => p.Value.SourceThing);
 
             var operations = ThingManager.GetOperations(Thing.Id, true);
         }
@@ -36,15 +36,15 @@
         <MudListSubheader>
             @if (CanClose)
             {
-                <MudFab OnClick="@(() => Navigation.NavigateToThing(ParentThing))" Color="Color.Primary"
-                StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Style="float: right; margin-right: 5px" />
+                <MudFab OnClick="@(() => Navigation.NavigateToThing(ParentThing))" Color="Color.Primary" 
+                    StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Style="float: right; margin-right: 5px" />
             }
 
             <h1 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 <MudIcon Size="Size.Small"
                      Color="@(Thing is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)"
                      Icon="@(Thing is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"></MudIcon>
-                @Thing.Title
+                @(stateGroups.SelectMany(g => g).FirstOrDefault(g => g.Key == "Title").Value.Value ?? Thing.Title)
             </h1>
         </MudListSubheader>
 
@@ -109,9 +109,11 @@
                 {
                     @foreach (var group in stateGroups.Where(g => g.Any(p => !p.Value.HasThingChildren)))
                     {
-                        @if (group.Key != Thing)
+                        @if (group.Key != Thing && !string.IsNullOrEmpty(group.Key.Title))
                         {
-                            <p><small><br />@group.Key.Title</small></p>
+                            <MudText @onclick="@(() => Navigation.NavigateToThing(group.Key))" Style="cursor: pointer">
+                                <small>@group.Key.Title</small>
+                            </MudText>
                         }
 
                         @foreach (var value in group.Where(p => !p.Value.HasThingChildren))

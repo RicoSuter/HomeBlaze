@@ -6,7 +6,7 @@ using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
-using HomeBlaze.Services.Abstractions;
+using Namotion.Reflection;
 
 namespace HomeBlaze.Components
 {
@@ -39,9 +39,12 @@ namespace HomeBlaze.Components
             {
                 Thing = (TThing)ActivatorUtilities.CreateInstance(ServiceProvider!, typeof(TThing));
 
-                if (ExtendedThing != null && Thing is ExtensionThing extensionThing)
+                if (ExtendedThing != null &&
+                    Thing is IExtensionThing extensionThing && 
+                    extensionThing.HasProperty("ExtendedThingId"))
                 {
-                    extensionThing.ExtendedThingId = ExtendedThing.Id;
+                    // TODO: Add an interface for that
+                    ((dynamic)extensionThing).ExtendedThingId = ExtendedThing.Id;
                 }
             }
         }
