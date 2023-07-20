@@ -3,6 +3,7 @@
 @using HomeBlaze.Abstractions.Sensors;
 @using HomeBlaze.Abstractions.Services;
 @using HomeBlaze.Things;
+@using HomeBlaze.Services.Extensions;
 @using System.Threading;
 
 @inject IThingManager ThingManager
@@ -48,7 +49,8 @@
                 </div>
             }
 
-            @child.Title
+            @child.GetActualTitle(ThingManager)
+            
             @if (Subtitle != null)
             {
                 <span>&nbsp;&nbsp;</span>

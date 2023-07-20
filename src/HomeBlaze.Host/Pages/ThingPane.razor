@@ -5,6 +5,7 @@
 @using HomeBlaze.Components.Dialogs;
 @using HomeBlaze.Components.Inputs;
 @using HomeBlaze.Things;
+@using HomeBlaze.Services.Extensions;
 @using System.Collections;
 @using Microsoft.Extensions.Logging;
 @using System.Threading;
@@ -44,7 +45,7 @@
                 <MudIcon Size="Size.Small"
                      Color="@(Thing is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)"
                      Icon="@(Thing is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"></MudIcon>
-                @(stateGroups.SelectMany(g => g).FirstOrDefault(g => g.Key == "Title").Value.Value ?? Thing.Title)
+                @Thing.GetActualTitle(ThingManager)
             </h1>
         </MudListSubheader>
 
@@ -150,8 +151,8 @@
                 {
                     foreach (var operation in operations)
                     {
-                        <MudButton OnClick="() => ExecuteOperation(operation)"
-                       Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">
+                        <MudButton OnClick="() => ExecuteOperation(operation)" 
+                            Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">
                             @(operation.Title ?? operation.Name)
                         </MudButton>
                     }
@@ -170,7 +171,7 @@
                         {
                             <MudList Clickable="true" SelectedValue="SelectedThing" Style="padding-top: 0; padding-bottom: 0">
                                 <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing"
-                                      Subtitle="@(group.Key != Thing ? group.Key.Title : null)"
+                                                      Subtitle="@(group.Key != Thing ? group.Key.Title : null)"
                                       Children="pair.Value.Children">
                                 </ThingChildListIItems>
                             </MudList>
@@ -183,6 +184,7 @@
                                                  pair.Value.Property?.PropertyType.Type.IsAssignableTo(typeof(IThing)) == true">
                                 <TitleContent>
                                     @pair.Key
+
                                     @if (group.Key != Thing)
                                     {
                                         <span>&nbsp;&nbsp;</span>
