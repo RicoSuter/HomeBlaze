@@ -74,10 +74,25 @@
                 </MudText>
             }
 
-            <MudText>
-                <strong>Unit: </strong>
-                @PropertyState.Attribute?.Unit
-            </MudText>
+            @if (PropertyState.Attribute != null)
+            {
+                <MudText>
+                    <strong>Unit: </strong>
+                    @PropertyState.Attribute.Unit
+                </MudText>
+                <MudText>
+                    <strong>Is Cumulative: </strong>
+                    @PropertyState.Attribute.IsCumulative
+                </MudText>
+                <MudText>
+                    <strong>Is Estimated: </strong>
+                    @PropertyState.Attribute.IsEstimated
+                </MudText>
+                <MudText>
+                    <strong>Is Signal: </strong>
+                    @PropertyState.Attribute.IsSignal
+                </MudText>
+            }
         </MudListSubheader>
     </MudPaper>
 }

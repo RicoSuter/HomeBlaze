@@ -205,7 +205,7 @@ namespace HomeBlaze.Zwave
                         var scaleReport = await sensorMultiLevel.GetScale(sensorType, cancellationToken);
                         foreach (var scale in scaleReport.SupportedScales)
                         {
-                            await sensorMultiLevel.Get(sensorType, (byte)scale, cancellationToken);
+                            await sensorMultiLevel.Get(sensorType, Convert.ToByte(scale), cancellationToken);
                         }
                     }
                 }
