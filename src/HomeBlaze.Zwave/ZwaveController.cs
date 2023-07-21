@@ -56,7 +56,7 @@ namespace HomeBlaze.Zwave
 
         protected override TimeSpan FailureInterval => TimeSpan.FromSeconds(60);
 
-        public ZwaveController(IThingManager thingManager, ILogger<ZWaveController> logger) 
+        public ZwaveController(IThingManager thingManager, ILogger<ZWaveController> logger)
             : base(thingManager, logger)
         {
             Logger = logger;
@@ -227,7 +227,7 @@ namespace HomeBlaze.Zwave
 
                 ThingManager.DetectChanges(this);
                 Logger.LogDebug("Refreshing Z-Wave devices...");
-             
+
                 var tasks = new List<Task>();
                 foreach (var thing in Things.OfType<ZwaveDevice>())
                 {
@@ -252,6 +252,9 @@ namespace HomeBlaze.Zwave
         {
             node.MessageReceived -= thing.OnMessageReceived;
             node.MessageReceived += thing.OnMessageReceived;
+
+            node.UpdateReceived -= thing.OnUpdateReceived;
+            node.UpdateReceived += thing.OnUpdateReceived;
 
             node.UnknownCommandReceived -= thing.OnUnknownCommandReceived;
             node.UnknownCommandReceived += thing.OnUnknownCommandReceived;

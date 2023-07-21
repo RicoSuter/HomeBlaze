@@ -384,6 +384,14 @@ namespace HomeBlaze.Zwave
             }
         }
 
+        internal void OnUpdateReceived(object? sender, EventArgs e)
+        {
+            if (e is NodeEventArgs nodeEventArgs)
+            {
+                Controller.Logger.LogInformation("Z-Wave update with class ID {ClassId} and command ID {CommandId} received for node {NodeId}.", nodeEventArgs.Command.ClassID, nodeEventArgs.Command.CommandID, nodeEventArgs.NodeID);
+            }
+        }
+
         internal void OnUnknownCommandReceived(object? sender, NodeEventArgs nodeEventArgs)
         {
             Controller.Logger.LogInformation("Unknown Z-Wave message with class ID {ClassId} and command ID {CommandId} received for node {NodeId}.", nodeEventArgs.Command.ClassID, nodeEventArgs.Command.CommandID, nodeEventArgs.NodeID);
