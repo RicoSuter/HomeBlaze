@@ -171,7 +171,7 @@ namespace HomeBlaze.Zwave
         {
             try
             {
-                if (Info != null)
+                if (Info == null)
                 {
                     Info = await Node.GetProtocolInfo(cancellationToken);
                 }
@@ -419,6 +419,10 @@ namespace HomeBlaze.Zwave
             {
                 Controller.Logger.LogInformation("Z-Wave message with class ID {ClassId} and command ID {CommandId} received for node {NodeId}.", nodeEventArgs.Command.ClassID, nodeEventArgs.Command.CommandID, nodeEventArgs.NodeID);
             }
+            //else if (e is CommandEventArgs commandEventArgs)
+            //{
+            //    Controller.Logger.LogInformation("Z-Wave message with class ID {ClassId} and command ID {CommandId} received.", commandEventArgs.Command.ClassID, commandEventArgs.Command.CommandID);
+            //}
         }
 
         internal void OnUpdateReceived(object? sender, EventArgs e)
