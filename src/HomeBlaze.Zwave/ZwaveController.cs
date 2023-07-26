@@ -20,15 +20,13 @@ namespace HomeBlaze.Zwave
     [ThingSetup(typeof(ZwaveControllerSetup), CanEdit = true)]
     public class ZwaveController : PollingThing, IIconProvider, IConnectedThing
     {
-        private bool _isRefreshing = false;
         private ZWaveController? _controller;
-        private Node? _controllerNode;
 
         internal ILogger Logger { get; }
 
         public string IconName => "fab fa-hubspot";
 
-        public override string? Title => $"Z-Wave Controller ({ActualSerialPort ?? "n/a"}, Node {(_controllerNode != null ? _controllerNode.NodeID : "?")})";
+        public override string? Title => $"Z-Wave Controller ({ActualSerialPort ?? "n/a"})";
 
         [State]
         public IThing[] Things { get; private set; } = Array.Empty<IThing>();
@@ -45,12 +43,16 @@ namespace HomeBlaze.Zwave
         [State]
         public bool IsRemovingNodes { get; private set; }
 
+        [State]
+        public bool IsRefreshingNodes { get; private set; } = false;
+
+        [State]
+        public bool IsRefreshingMetadata { get; private set; } = false;
+
         [Configuration]
         public string? SerialPort { get; set; } = "COM7;/dev/ttyACM1";
 
-        private string? ActualSerialPort => Environment.OSVersion.Platform == PlatformID.Unix ?
-            SerialPort?.Split(';').Where(p => !p.StartsWith("COM")).FirstOrDefault() :
-            SerialPort?.Split(';').FirstOrDefault();
+        private string? ActualSerialPort => "COM7";
 
         protected override TimeSpan PollingInterval => TimeSpan.FromSeconds(60);
 
@@ -137,7 +139,15 @@ namespace HomeBlaze.Zwave
 
                 _controller.Error += (o, e) =>
                 {
-                    Logger.LogWarning(e.Error, "Error in Z-Wave controller.");
+                    if (e.Error is OperationCanceledException)
+                    {
+                        Close();
+                        Logger.LogWarning("Z-Wave controller channel closed.");
+                    }
+                    else
+                    {
+                        Logger.LogWarning(e.Error, "Error in Z-Wave controller.");
+                    }
                 };
 
                 _controller.NodesNetworkChanged += async (o, e) =>
@@ -171,18 +181,22 @@ namespace HomeBlaze.Zwave
             }
 
             ThingManager.DetectChanges(this);
+
             await RefreshAsync(cancellationToken);
+            await RefreshMetadataAsync(cancellationToken);
         }
 
         [Operation]
         public async Task<bool> RefreshAsync(CancellationToken cancellationToken)
         {
-            // TODO: Lock (ensure refresh is not called twice at the same time)
-            if (_isRefreshing)
+            lock (this)
             {
-                return false;
+                if (IsRefreshingNodes)
+                {
+                    return false;
+                }
+                IsRefreshingNodes = true;
             }
-            _isRefreshing = true;
 
             try
             {
@@ -191,29 +205,19 @@ namespace HomeBlaze.Zwave
                     try
                     {
                         Logger.LogDebug("Refreshing Z-Wave controller...");
-                        var nodes = await Retry.RetryAsync(() => _controller.GetNodes(cancellationToken), Logger);
+                        var nodes = await _controller.DiscoverNodes(cancellationToken);
 
                         var things = new List<IThing>();
                         foreach (var node in nodes)
                         {
-                            var info = await Retry.RetryAsync(() => node.GetProtocolInfo(cancellationToken), Logger);
-                            if (info.BasicType == BasicType.StaticController ||
-                                info.BasicType == BasicType.Controller)
-                            {
-                                _controllerNode = node;
-                            }
-                            else
-                            {
-                                var thing = Things
-                                    .OfType<ZwaveDevice>()
-                                    .SingleOrDefault(d => d.NodeId == node.NodeID)?
-                                    .Update(node, info)
-                                    ?? new ZwaveDevice(node, info, this);
+                            var thing = Things
+                                .OfType<ZwaveDevice>()
+                                .SingleOrDefault(d => d.NodeId == node.NodeID)
+                                ?? new ZwaveDevice(node, this);
 
-                                things.Add(thing);
+                            things.Add(thing);
 
-                                RegisterEvents(node, thing);
-                            }
+                            RegisterEvents(node, thing);
                         }
 
                         Things = things.ToArray();
@@ -226,7 +230,44 @@ namespace HomeBlaze.Zwave
                 }
 
                 ThingManager.DetectChanges(this);
-                Logger.LogDebug("Refreshing Z-Wave devices...");
+
+                Logger.LogDebug("Refreshing Z-Wave devices info...");
+
+                var tasks = new List<Task>();
+                foreach (var thing in Things.OfType<ZwaveDevice>())
+                {
+                    tasks.Add(Task.Run(async () =>
+                    {
+                        await thing.TryRefreshInfoAsync(cancellationToken);
+                    }, cancellationToken));
+                }
+                await Task.WhenAll(tasks);
+            }
+            catch (Exception e)
+            {
+                Logger.LogWarning(e, "Failed to refresh Z-Wave controller.");
+            }
+            finally
+            {
+                IsRefreshingNodes = false;
+            }
+            return true;
+        }
+
+        private async Task RefreshMetadataAsync(CancellationToken cancellationToken)
+        {
+            lock (this)
+            {
+                if (IsRefreshingMetadata)
+                {
+                    return;
+                }
+                IsRefreshingMetadata = true;
+            }
+
+            try
+            {
+                ThingManager.DetectChanges(this);
 
                 var tasks = new List<Task>();
                 foreach (var thing in Things.OfType<ZwaveDevice>())
@@ -239,13 +280,18 @@ namespace HomeBlaze.Zwave
                         }, cancellationToken));
                     }
                 }
+
                 await Task.WhenAll(tasks);
+                ThingManager.DetectChanges(this);
+            }
+            catch (Exception e)
+            {
+                Logger.LogWarning(e, "Failed to refresh Z-Wave metadata.");
             }
             finally
             {
-                _isRefreshing = false;
+                IsRefreshingMetadata = false;
             }
-            return true;
         }
 
         private void RegisterEvents(Node node, ZwaveDevice thing)
@@ -258,6 +304,16 @@ namespace HomeBlaze.Zwave
 
             node.UnknownCommandReceived -= thing.OnUnknownCommandReceived;
             node.UnknownCommandReceived += thing.OnUnknownCommandReceived;
+
+            var notification = node.GetCommandClass<Notification>();
+            notification.Changed -= thing.OnNotification;
+            notification.Changed += thing.OnNotification;
+
+            var multiChannel = node.GetCommandClass<MultiChannel>();
+#pragma warning disable CS0618 // Type or member is obsolete
+            multiChannel.Changed -= thing.OnMultiChannel;
+            multiChannel.Changed += thing.OnMultiChannel;
+#pragma warning restore CS0618 // Type or member is obsolete
 
             var centralScene = node.GetCommandClass<CentralScene>();
             centralScene.Changed -= thing.OnCentralScene;
@@ -296,8 +352,8 @@ namespace HomeBlaze.Zwave
             switchMultiLevel.Changed += thing.OnSwitchMultiLevel;
 
             var alarm = node.GetCommandClass<Alarm>();
-            alarm.Changed -= thing.OnNotification;
-            alarm.Changed += thing.OnNotification;
+            alarm.Changed -= thing.OnAlarm;
+            alarm.Changed += thing.OnAlarm;
 
             var meter = node.GetCommandClass<Meter>();
             meter.Changed -= thing.OnMeter;
@@ -316,7 +372,7 @@ namespace HomeBlaze.Zwave
 
             _controller = null;
 
-            Things = Array.Empty<IThing>();
+            //Things = Array.Empty<IThing>();
             IsConnected = false;
 
             ThingManager.DetectChanges(this);
