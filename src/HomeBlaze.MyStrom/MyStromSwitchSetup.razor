@@ -23,4 +23,10 @@
     private bool _isFormValid;
 
     public override bool IsValid => _isFormValid;
+
+    public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
+    {
+        EditedThing!.Reset();
+        return base.UpdateEditedThingAsync(cancellationToken);
+    }
 }

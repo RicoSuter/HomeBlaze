@@ -19,9 +19,13 @@ namespace HomeBlaze.Zwave.Components
         [State]
         public NotificationType Type { get; internal set; }
 
-        public ZwaveNotificationComponent(ZwaveDevice parent)
+        [State]
+        public byte EndPointId { get; }
+
+        public ZwaveNotificationComponent(ZwaveDevice parent, byte endPointId)
             : base(parent)
         {
+            EndPointId = endPointId;
         }
     }
 }

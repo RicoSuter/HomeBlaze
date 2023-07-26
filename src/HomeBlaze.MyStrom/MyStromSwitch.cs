@@ -107,6 +107,13 @@ namespace HomeBlaze.MyStrom
             }
         }
 
+        internal void Reset()
+        {
+            Information = null;
+            ReportResponse = null;
+            TemperatureResponse = null;
+        }
+
         [Operation]
         public async Task TurnOnAsync(CancellationToken cancellationToken)
         {

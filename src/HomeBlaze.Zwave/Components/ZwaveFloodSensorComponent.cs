@@ -9,12 +9,16 @@ namespace HomeBlaze.Zwave.Components
         [State]
         public bool? IsFlooding { get; set; }
 
+        [State]
+        public byte EndPointId { get; }
+
         public ZwaveNotificationComponent ParentNotification { get; }
 
-        public ZwaveFloodSensorComponent(ZwaveNotificationComponent parent)
+        public ZwaveFloodSensorComponent(ZwaveNotificationComponent parent, byte endPointId)
             : base(parent.ParentDevice)
         {
             ParentNotification = parent;
+            EndPointId = endPointId;
         }
     }
 }

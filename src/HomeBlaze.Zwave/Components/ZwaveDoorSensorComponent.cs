@@ -1,4 +1,5 @@
-﻿using HomeBlaze.Abstractions.Sensors;
+﻿using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Sensors;
 using ZWave.CommandClasses;
 
 namespace HomeBlaze.Zwave.Components
@@ -16,10 +17,14 @@ namespace HomeBlaze.Zwave.Components
 
         public ZwaveNotificationComponent ParentNotification { get; }
 
-        public ZwaveDoorSensorComponent(ZwaveNotificationComponent parent)
+        [State]
+        public byte EndPointId { get; }
+
+        public ZwaveDoorSensorComponent(ZwaveNotificationComponent parent, byte endPointId)
             : base(parent.ParentDevice)
         {
             ParentNotification = parent;
+            EndPointId = endPointId;
         }
     }
 }

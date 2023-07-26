@@ -44,10 +44,7 @@ namespace HomeBlaze.Zwave
         public bool IsRemovingNodes { get; private set; }
 
         [State]
-        public bool IsRefreshingNodes { get; private set; } = false;
-
-        [State]
-        public bool IsRefreshingMetadata { get; private set; } = false;
+        public bool IsLoading { get; private set; } = false;
 
         [Configuration]
         public string? SerialPort { get; set; } = "COM7;/dev/ttyACM1";
@@ -185,7 +182,6 @@ namespace HomeBlaze.Zwave
             ThingManager.DetectChanges(this);
 
             await RefreshAsync(cancellationToken);
-            await RefreshMetadataAsync(cancellationToken);
         }
 
         [Operation]
@@ -193,8 +189,8 @@ namespace HomeBlaze.Zwave
         {
             lock (this)
             {
-                if (IsRefreshingNodes) return false;
-                IsRefreshingNodes = true;
+                if (IsLoading) return false;
+                IsLoading = true;
             }
 
             try
@@ -233,9 +229,17 @@ namespace HomeBlaze.Zwave
                 Logger.LogDebug("Refreshing Z-Wave devices info...");
                 ThingManager.DetectChanges(this);
 
-                foreach (var thing in Things.OfType<ZwaveDevice>())
+                foreach (var thing in Things
+                    .OfType<ZwaveDevice>())
                 {
                     await thing.TryRefreshInfoAsync(cancellationToken);
+                }
+
+                foreach (var thing in Things
+                    .OfType<ZwaveDevice>()
+                    .Where(t => t.IsListening == true))
+                {
+                    await thing.TryRefreshManufacturerInfoAsync(cancellationToken);
                 }
             }
             catch (Exception e)
@@ -244,55 +248,11 @@ namespace HomeBlaze.Zwave
             }
             finally
             {
-                IsRefreshingNodes = false;
+                IsLoading = false;
                 ThingManager.DetectChanges(this);
             }
 
             return true;
-        }
-
-        [Operation]
-        public async Task RefreshMetadataAsync(CancellationToken cancellationToken)
-        {
-            lock (this)
-            {
-                if (IsRefreshingMetadata)
-                {
-                    return;
-                }
-                IsRefreshingMetadata = true;
-            }
-
-            try
-            {
-                ThingManager.DetectChanges(this);
-
-                await Task.WhenAll(Things
-                    .OfType<ZwaveDevice>()
-                    .Where(t => t.IsListening == true)
-                    .Select(thing => Task.Run(async () =>
-                    {
-                        await thing.RefreshCommandClassesAsync(cancellationToken);
-                    }, cancellationToken)));
-
-                await Task.WhenAll(Things
-                    .OfType<ZwaveDevice>()
-                    .Where(t => t.IsListening == true)
-                    .Select(thing => Task.Run(async () =>
-                    {
-                        await thing.RefreshMetadataAsync(cancellationToken);
-                    }, cancellationToken)));
-
-                ThingManager.DetectChanges(this);
-            }
-            catch (Exception e)
-            {
-                Logger.LogWarning(e, "Failed to refresh Z-Wave metadata.");
-            }
-            finally
-            {
-                IsRefreshingMetadata = false;
-            }
         }
 
         private void RegisterEvents(Node node, ZwaveDevice thing)
