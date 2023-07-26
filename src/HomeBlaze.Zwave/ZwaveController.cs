@@ -21,7 +21,7 @@ namespace HomeBlaze.Zwave
     public class ZwaveController : PollingThing, IIconProvider, IConnectedThing
     {
         private ZWaveController? _controller;
-
+        
         internal ILogger Logger { get; }
 
         public string IconName => "fab fa-hubspot";
@@ -52,7 +52,10 @@ namespace HomeBlaze.Zwave
         [Configuration]
         public string? SerialPort { get; set; } = "COM7;/dev/ttyACM1";
 
-        private string? ActualSerialPort => "COM7";
+        //private string? ActualSerialPort => "COM7";
+        private string? ActualSerialPort => Environment.OSVersion.Platform == PlatformID.Unix ?
+            SerialPort?.Split(';').Where(p => !p.StartsWith("COM")).FirstOrDefault() :
+            SerialPort?.Split(';').FirstOrDefault();
 
         protected override TimeSpan PollingInterval => TimeSpan.FromSeconds(60);
 
