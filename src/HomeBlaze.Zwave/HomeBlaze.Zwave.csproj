@@ -16,6 +16,7 @@
 		<ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Services\HomeBlaze.Services.csproj" />
+		<!--<ProjectReference Include="..\Zwave\Zwave.csproj" />-->
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="libnserial.so.1">
@@ -24,18 +25,5 @@
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="Devices/**" />
-	</ItemGroup>
-	<ItemGroup>
-	  <EmbeddedResource Include="Components\ZwaveBatteryComponent.cs" />
-	  <EmbeddedResource Include="Components\ZwaveCentralSceneComponent.cs" />
-	  <EmbeddedResource Include="Components\ZwaveClassComponent.cs" />
-	  <EmbeddedResource Include="Components\ZwaveDoorSensorComponent.cs" />
-	  <EmbeddedResource Include="Components\ZwaveLuminanceSensorComponent.cs" />
-	  <EmbeddedResource Include="Components\ZwaveNotificationComponent.cs" />
-	  <EmbeddedResource Include="Components\ZwavePowerConsumptionComponent.cs" />
-	  <EmbeddedResource Include="Components\ZwaveSensorAlarmComponent.cs" />
-	  <EmbeddedResource Include="Components\ZwaveSensorComponent.cs" />
-	  <EmbeddedResource Include="Components\ZwaveSwitchComponent.cs" />
-	  <EmbeddedResource Include="Components\ZwaveTemperatureSensorComponent.cs" />
 	</ItemGroup>
 </Project>

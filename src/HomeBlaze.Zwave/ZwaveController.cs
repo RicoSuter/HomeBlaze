@@ -21,7 +21,7 @@ namespace HomeBlaze.Zwave
     public class ZwaveController : PollingThing, IIconProvider, IConnectedThing
     {
         private ZWaveController? _controller;
-        
+
         internal ILogger Logger { get; }
 
         public string IconName => "fab fa-hubspot";
@@ -52,7 +52,6 @@ namespace HomeBlaze.Zwave
         [Configuration]
         public string? SerialPort { get; set; } = "COM7;/dev/ttyACM1";
 
-        //private string? ActualSerialPort => "COM7";
         private string? ActualSerialPort => Environment.OSVersion.Platform == PlatformID.Unix ?
             SerialPort?.Split(';').Where(p => !p.StartsWith("COM")).FirstOrDefault() :
             SerialPort?.Split(';').FirstOrDefault();
@@ -194,15 +193,14 @@ namespace HomeBlaze.Zwave
         {
             lock (this)
             {
-                if (IsRefreshingNodes)
-                {
-                    return false;
-                }
+                if (IsRefreshingNodes) return false;
                 IsRefreshingNodes = true;
             }
 
             try
             {
+                ThingManager.DetectChanges(this);
+
                 if (_controller != null)
                 {
                     try
@@ -232,19 +230,13 @@ namespace HomeBlaze.Zwave
                     }
                 }
 
+                Logger.LogDebug("Refreshing Z-Wave devices info...");
                 ThingManager.DetectChanges(this);
 
-                Logger.LogDebug("Refreshing Z-Wave devices info...");
-
-                var tasks = new List<Task>();
                 foreach (var thing in Things.OfType<ZwaveDevice>())
                 {
-                    tasks.Add(Task.Run(async () =>
-                    {
-                        await thing.TryRefreshInfoAsync(cancellationToken);
-                    }, cancellationToken));
+                    await thing.TryRefreshInfoAsync(cancellationToken);
                 }
-                await Task.WhenAll(tasks);
             }
             catch (Exception e)
             {
@@ -253,11 +245,14 @@ namespace HomeBlaze.Zwave
             finally
             {
                 IsRefreshingNodes = false;
+                ThingManager.DetectChanges(this);
             }
+
             return true;
         }
 
-        private async Task RefreshMetadataAsync(CancellationToken cancellationToken)
+        [Operation]
+        public async Task RefreshMetadataAsync(CancellationToken cancellationToken)
         {
             lock (this)
             {
@@ -272,19 +267,22 @@ namespace HomeBlaze.Zwave
             {
                 ThingManager.DetectChanges(this);
 
-                var tasks = new List<Task>();
-                foreach (var thing in Things.OfType<ZwaveDevice>())
-                {
-                    if (thing.IsListening == true)
+                await Task.WhenAll(Things
+                    .OfType<ZwaveDevice>()
+                    .Where(t => t.IsListening == true)
+                    .Select(thing => Task.Run(async () =>
                     {
-                        tasks.Add(Task.Run(async () =>
-                        {
-                            await thing.RefreshAsync(cancellationToken);
-                        }, cancellationToken));
-                    }
-                }
+                        await thing.RefreshCommandClassesAsync(cancellationToken);
+                    }, cancellationToken)));
 
-                await Task.WhenAll(tasks);
+                await Task.WhenAll(Things
+                    .OfType<ZwaveDevice>()
+                    .Where(t => t.IsListening == true)
+                    .Select(thing => Task.Run(async () =>
+                    {
+                        await thing.RefreshMetadataAsync(cancellationToken);
+                    }, cancellationToken)));
+
                 ThingManager.DetectChanges(this);
             }
             catch (Exception e)

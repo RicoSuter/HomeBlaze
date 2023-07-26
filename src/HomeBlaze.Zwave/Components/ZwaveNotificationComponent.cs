@@ -16,6 +16,9 @@ namespace HomeBlaze.Zwave.Components
         [State]
         public NotificationState Event { get; internal set; }
 
+        [State]
+        public NotificationType Type { get; internal set; }
+
         public ZwaveNotificationComponent(ZwaveDevice parent)
             : base(parent)
         {

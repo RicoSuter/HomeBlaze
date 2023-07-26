@@ -42,6 +42,7 @@ namespace HomeBlaze.Zwave
         private ZwaveSensorAlarmComponent? _sensorAlarmComponent;
         private ZwavePowerConsumptionComponent? _powerConsumptionComponent;
         private ZwaveDoorSensorComponent? _doorSensorComponent;
+        private ZwaveFloodSensorComponent? _floodSensorComponent;
 
         private List<ZwaveClassComponent> _multiChannelComponents = new();
         private List<ZwaveSensorComponent> _sensorComponents = new();
@@ -124,23 +125,47 @@ namespace HomeBlaze.Zwave
             Node = node;
         }
 
-        [Operation]
-        public async Task RefreshAsync(CancellationToken cancellationToken)
+        public async Task RefreshCommandClassesAsync(CancellationToken cancellationToken)
         {
-            if (!IsLoadingMetadata)
+            try
+            {
+                if (VersionCommandClasses == null)
+                {
+                    VersionCommandClasses = await Node.GetSupportedCommandClasses(cancellationToken);
+                    CommandClasses = VersionCommandClasses?.Select(c => c.Class.ToString()).ToArray();
+                }
+            }
+            catch (Exception e)
+            {
+                Controller.Logger.LogWarning(e, "Failed to TryRefreshVersionCommandClassesAsync.");
+            }
+
+            UpdateThings();
+        }
+
+        [Operation]
+        public async Task RefreshMetadataAsync(CancellationToken cancellationToken)
+        {
+            if (!IsLoadingMetadata &&
+                Info is not null &&
+                Info.BasicType != ZWave.BasicType.StaticController)
             {
                 IsLoadingMetadata = true;
                 Controller.ThingManager.DetectChanges(this);
 
                 try
                 {
-                    await TryRefreshManufacturerInfoAsync(cancellationToken);
-                    await TryRefreshVersionCommandClassesAsync(cancellationToken);
-                    await TryRefreshBatteryAsync(cancellationToken);
-                    await TryRefreshMultiChannelAsync(cancellationToken);
-                    await TryRefreshMultiChannelAssociationAsync(cancellationToken);
-                    await TryRefreshSensorMultiLevelAsync(cancellationToken);
-                    await TryRefreshSensorBinaryAsync(cancellationToken);
+                    var tasks = new List<Task>
+                    {
+                        Task.Run(() => TryRefreshMultiChannelAsync(cancellationToken), cancellationToken),
+                        Task.Run(() => TryRefreshManufacturerInfoAsync(cancellationToken), cancellationToken),
+                        Task.Run(() => TryRefreshBatteryAsync(cancellationToken), cancellationToken),
+                        Task.Run(() => TryRefreshMultiChannelAssociationAsync(cancellationToken), cancellationToken),
+                        Task.Run(() => TryRefreshSensorMultiLevelAsync(cancellationToken), cancellationToken),
+                        Task.Run(() => TryRefreshSensorBinaryAsync(cancellationToken), cancellationToken),
+                    };
+
+                    await Task.WhenAll(tasks);
                 }
                 catch (Exception e)
                 {
@@ -153,6 +178,13 @@ namespace HomeBlaze.Zwave
 
                 UpdateThings();
             }
+        }
+
+        [Operation]
+        public async Task SetConfigurationAsync(byte parameter, sbyte value, CancellationToken cancellationToken)
+        {
+            var configuration = Node.GetCommandClass<Configuration>();
+            await configuration.Set(parameter, value, cancellationToken);
         }
 
         [Operation]
@@ -322,24 +354,6 @@ namespace HomeBlaze.Zwave
             UpdateThings();
         }
 
-        private async Task TryRefreshVersionCommandClassesAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                if (VersionCommandClasses == null)
-                {
-                    VersionCommandClasses = await Node.GetSupportedCommandClasses(cancellationToken);
-                    CommandClasses = VersionCommandClasses?.Select(c => c.Class.ToString()).ToArray();
-                }
-            }
-            catch (Exception e)
-            {
-                Controller.Logger.LogWarning(e, "Failed to TryRefreshVersionCommandClassesAsync.");
-            }
-
-            UpdateThings();
-        }
-
         private async Task TryRefreshManufacturerInfoAsync(CancellationToken cancellationToken)
         {
             try
@@ -410,32 +424,34 @@ namespace HomeBlaze.Zwave
 
         internal async void OnWakeUp(object? sender, ReportEventArgs<WakeUpReport> e)
         {
-            await RefreshAsync(CancellationToken.None);
+            Controller.Logger.LogInformation("Z-Wave node {NodeId} woke up.", NodeId);
+
+            await RefreshCommandClassesAsync(CancellationToken.None);
+            await RefreshMetadataAsync(CancellationToken.None);
         }
 
         internal void OnMessageReceived(object? sender, EventArgs e)
         {
             if (e is NodeEventArgs nodeEventArgs)
             {
-                Controller.Logger.LogInformation("Z-Wave message with class ID {ClassId} and command ID {CommandId} received for node {NodeId}.", nodeEventArgs.Command.ClassID, nodeEventArgs.Command.CommandID, nodeEventArgs.NodeID);
+                Controller.Logger.LogInformation("Z-Wave message with class ID {ClassId} ({Class}) and command ID {CommandId} received for node {NodeId}.",
+                    nodeEventArgs.Command.ClassID, (CommandClass)nodeEventArgs.Command.ClassID, nodeEventArgs.Command.CommandID, nodeEventArgs.NodeID);
             }
-            //else if (e is CommandEventArgs commandEventArgs)
-            //{
-            //    Controller.Logger.LogInformation("Z-Wave message with class ID {ClassId} and command ID {CommandId} received.", commandEventArgs.Command.ClassID, commandEventArgs.Command.CommandID);
-            //}
         }
 
         internal void OnUpdateReceived(object? sender, EventArgs e)
         {
             if (e is NodeEventArgs nodeEventArgs)
             {
-                Controller.Logger.LogInformation("Z-Wave update with class ID {ClassId} and command ID {CommandId} received for node {NodeId}.", nodeEventArgs.Command.ClassID, nodeEventArgs.Command.CommandID, nodeEventArgs.NodeID);
+                Controller.Logger.LogInformation("Z-Wave update with class ID {ClassId} ({Class}) and command ID {CommandId} received for node {NodeId}.",
+                    nodeEventArgs.Command.ClassID, (CommandClass)nodeEventArgs.Command.ClassID, nodeEventArgs.Command.CommandID, nodeEventArgs.NodeID);
             }
         }
 
         internal void OnUnknownCommandReceived(object? sender, NodeEventArgs nodeEventArgs)
         {
-            Controller.Logger.LogInformation("Unknown Z-Wave message with class ID {ClassId} and command ID {CommandId} received for node {NodeId}.", nodeEventArgs.Command.ClassID, nodeEventArgs.Command.CommandID, nodeEventArgs.NodeID);
+            Controller.Logger.LogInformation("Unknown Z-Wave message with class ID {ClassId} ({Class}) and command ID {CommandId} received for node {NodeId}.",
+                nodeEventArgs.Command.ClassID, (CommandClass)nodeEventArgs.Command.ClassID, nodeEventArgs.Command.CommandID, nodeEventArgs.NodeID);
         }
 
         internal void OnMeter(object? sender, ReportEventArgs<MeterReport> e)
@@ -527,6 +543,19 @@ namespace HomeBlaze.Zwave
 
         internal void OnMultiChannel(object? sender, ReportEventArgs<MultiChannelReport> e)
         {
+            if (e.Report.Report is AlarmReport alarmReport &&
+                VersionCommandClasses != null &&
+                VersionCommandClasses?.Any(c => c.Class == CommandClass.MultiChannel) == false)
+            {
+                OnAlarm(sender, new ReportEventArgs<AlarmReport>(alarmReport));
+            }
+            else if (e.Report.Report is SwitchBinaryReport switchBinaryReport &&
+                VersionCommandClasses != null &&
+                VersionCommandClasses?.Any(c => c.Class == CommandClass.MultiChannel) == false)
+            {
+                OnSwitchBinary(sender, new ReportEventArgs<SwitchBinaryReport>(switchBinaryReport));
+            }
+
             Controller.Logger.LogInformation("OnMultiChannel: Z-Wave multi channel report of type {Type} received for node {NodeId}.", e.Report.Report?.GetType().FullName, e.Report?.Node?.NodeID);
         }
 
@@ -541,6 +570,7 @@ namespace HomeBlaze.Zwave
             _notificationComponent.Level = e.Report.Level;
             _notificationComponent.Status = e.Report.Status;
             _notificationComponent.Event = e.Report.Event;
+            _notificationComponent.Type = e.Report.Type;
 
             _notificationComponent.LastUpdated = DateTimeOffset.Now;
 
@@ -552,6 +582,16 @@ namespace HomeBlaze.Zwave
                 _doorSensorComponent ??= new ZwaveDoorSensorComponent(_notificationComponent);
 
                 Controller.ThingManager.DetectChanges(_doorSensorComponent);
+            }
+
+            if (_notificationComponent.Type == NotificationType.Flood)
+            {
+                _floodSensorComponent ??= new ZwaveFloodSensorComponent(_notificationComponent);
+                _floodSensorComponent.IsFlooding =
+                    _notificationComponent.Event == NotificationState.LeakDetected ||
+                    _notificationComponent.Event == NotificationState.LeakDetectedUnknownLocation;
+
+                Controller.ThingManager.DetectChanges(_floodSensorComponent);
             }
 
             Controller.ThingManager.DetectChanges(_notificationComponent);
@@ -613,7 +653,8 @@ namespace HomeBlaze.Zwave
                 _notificationComponent,
                 _sensorAlarmComponent,
                 _powerConsumptionComponent,
-                _doorSensorComponent
+                _doorSensorComponent,
+                _floodSensorComponent
             };
 
             Things = things
