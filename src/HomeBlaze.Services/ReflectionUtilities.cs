@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Namotion.Reflection;
 using System.Collections.Concurrent;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace HomeBlaze.Services
 {
@@ -39,6 +40,7 @@ namespace HomeBlaze.Services
                 }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void SetValue(object? obj, object? value)
             {
                 Property.SetValue(obj, value);
