@@ -25,7 +25,7 @@ namespace HomeBlaze.Services.Abstractions
             await Task.Yield(); // required: do not block ASP startup
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_queue.TryTake(out var @event, 1000, stoppingToken))
+                if (_queue.TryTake(out var @event, Timeout.Infinite, stoppingToken))
                 {
                     await HandleMessageAsync(@event, stoppingToken);
                 }

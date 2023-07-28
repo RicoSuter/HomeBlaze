@@ -74,8 +74,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.RtspWebcam", "Hom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Luxtronik", "HomeBlaze.Luxtronik\HomeBlaze.Luxtronik.csproj", "{4A126B96-0AEA-4253-BCA7-504B52119078}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zwave", "Zwave\Zwave.csproj", "{B282572E-04AF-425F-85BF-E632925CF20A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -202,10 +200,6 @@ Global
 		{4A126B96-0AEA-4253-BCA7-504B52119078}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A126B96-0AEA-4253-BCA7-504B52119078}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A126B96-0AEA-4253-BCA7-504B52119078}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B282572E-04AF-425F-85BF-E632925CF20A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B282572E-04AF-425F-85BF-E632925CF20A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B282572E-04AF-425F-85BF-E632925CF20A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B282572E-04AF-425F-85BF-E632925CF20A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -234,7 +228,6 @@ Global
 		{A866943C-40E0-469F-B33D-77E166148B86} = {EE54A413-EECC-426E-A0AE-9E0A7FAEACB2}
 		{B83319FE-B797-4B99-8064-C63DE916D3FA} = {EE54A413-EECC-426E-A0AE-9E0A7FAEACB2}
 		{4A126B96-0AEA-4253-BCA7-504B52119078} = {EE54A413-EECC-426E-A0AE-9E0A7FAEACB2}
-		{B282572E-04AF-425F-85BF-E632925CF20A} = {EE54A413-EECC-426E-A0AE-9E0A7FAEACB2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {67090661-749A-440E-BA59-292FCE80B866}

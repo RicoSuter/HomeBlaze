@@ -16,7 +16,6 @@
 		<ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Components\HomeBlaze.Components.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Services\HomeBlaze.Services.csproj" />
-		<!--<ProjectReference Include="..\Zwave\Zwave.csproj" />-->
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="libnserial.so.1">
