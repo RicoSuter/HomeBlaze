@@ -1,4 +1,5 @@
-﻿using HomeBlaze.Abstractions.Attributes;
+﻿using HomeBlaze.Abstractions;
+using HomeBlaze.Abstractions.Attributes;
 using Microsoft.Extensions.Logging;
 using Namotion.Reflection;
 using System.Collections.Concurrent;
@@ -8,23 +9,43 @@ namespace HomeBlaze.Services
 {
     public static class ReflectionUtilities
     {
-        private static readonly ConcurrentDictionary<Type, ContextualPropertyInfo[]> _propertyCache =
-            new ConcurrentDictionary<Type, ContextualPropertyInfo[]>();
+        private static readonly ConcurrentDictionary<Type, StatePropertyInfo[]> _propertyCache =
+            new ConcurrentDictionary<Type, StatePropertyInfo[]>();
 
-        public static object? TryGetPropertyValue(object? obj, ContextualPropertyInfo property, ILogger logger)
+        public class StatePropertyInfo
         {
-            try
+            public required ContextualPropertyInfo Property { get; init; }
+
+            public StateAttribute? StateAttribute { get; init; }
+
+            public ScanForStateAttribute? ScanForStateAttribute { get; init; }
+
+            public ParentThingAttribute? ParentThingAttribute { get; init; }
+
+            public bool IsThingProperty { get; init; }
+
+            public bool IsThingArrayProperty { get; init; }
+
+            public object? TryGetValue(object? obj, ILogger logger)
             {
-                return obj != null ? property.GetValue(obj) : null;
+                try
+                {
+                    return obj != null ? Property.GetValue(obj) : null;
+                }
+                catch (Exception e)
+                {
+                    logger.LogWarning($"Getter of property threw an exception.", e);
+                    return null;
+                }
             }
-            catch (Exception e)
+
+            public void SetValue(object? obj, object? value)
             {
-                logger.LogWarning($"Getter of property threw an exception.", e);
-                return null;
+                Property.SetValue(obj, value);
             }
         }
 
-        public static ContextualPropertyInfo[] GetStateProperties(this Type type)
+        public static StatePropertyInfo[] GetStateProperties(this Type type)
         {
             // TODO: Use namotion.reflection types
             if (!_propertyCache.TryGetValue(type, out var pair))
@@ -46,6 +67,15 @@ namespace HomeBlaze.Services
                     .Concat(properties)
                     .DistinctBy(p => p.Name)
                     .Select(p => p.ToContextualProperty())
+                    .Select(p => new StatePropertyInfo
+                    {
+                        Property = p,
+                        StateAttribute = p.ContextAttributes.OfType<StateAttribute>().FirstOrDefault(),
+                        ScanForStateAttribute = p.ContextAttributes.OfType<ScanForStateAttribute>().FirstOrDefault(),
+                        ParentThingAttribute = p.ContextAttributes.OfType<ParentThingAttribute>().FirstOrDefault(),
+                        IsThingProperty = p.PropertyType.Type.IsAssignableTo(typeof(IThing)),
+                        IsThingArrayProperty = p.PropertyType.Type.IsAssignableTo(typeof(IEnumerable<IThing>))
+                    })
                     .ToArray();
             }
 

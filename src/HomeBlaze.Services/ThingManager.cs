@@ -439,19 +439,14 @@ namespace HomeBlaze.Services
             var metadata = TryGetMetadata(rootThing);
             foreach (var property in type.GetStateProperties())
             {
-                var stateAttribute = property.ContextAttributes.OfType<StateAttribute>().FirstOrDefault();
-                var scanForStateAttribute = property.ContextAttributes.OfType<ScanForStateAttribute>().FirstOrDefault();
-                var parentThingAttribute = property.ContextAttributes.OfType<ParentThingAttribute>().FirstOrDefault();
-
-                var newValue = ReflectionUtilities.TryGetPropertyValue(obj, property, _logger);
-
-                if (stateAttribute != null)
+                if (property.StateAttribute != null)
                 {
-                    var propertyName = prefix + stateAttribute.GetPropertyName(rootThing, property);
+                    var propertyName = prefix + property.StateAttribute.GetPropertyName(rootThing, property.Property);
 
                     var oldState = default(PropertyState);
                     metadata?.CurrentFullState?.TryGetValue(propertyName, out oldState);
 
+                    var newValue = property.TryGetValue(obj, _logger);
                     var newState = new PropertyState
                     {
                         Name = propertyName,
@@ -460,11 +455,11 @@ namespace HomeBlaze.Services
                         Value = newValue,
                         PreviousValue = Equals(oldState.Value, newValue) ? oldState.PreviousValue : oldState.Value,
 
-                        Attribute = stateAttribute,
-                        Property = property
+                        Attribute = property.StateAttribute,
+                        Property = property.Property
                     };
 
-                    if (property.PropertyType.Type.IsAssignableTo(typeof(IThing))) // TODO: cache these checks?
+                    if (property.IsThingProperty) // TODO: cache these checks?
                     {
                         var newThing = newValue as IThing;
                         if (newThing != null)
@@ -474,7 +469,7 @@ namespace HomeBlaze.Services
 
                         state[propertyName] = newState;
                     }
-                    else if (property.PropertyType.Type.IsAssignableTo(typeof(IEnumerable<IThing>)))
+                    else if (property.IsThingArrayProperty)
                     {
                         var newThings = newValue as IEnumerable<IThing>;
                         if (newThings != null)
@@ -497,8 +492,9 @@ namespace HomeBlaze.Services
                         state[propertyName] = newState;
                     }
                 }
-                else if (scanForStateAttribute != null)
+                else if (property.ScanForStateAttribute != null)
                 {
+                    var newValue = property.TryGetValue(obj, _logger);
                     if (newValue is IEnumerable enumerable)
                     {
                         foreach (var item in enumerable)
@@ -508,7 +504,7 @@ namespace HomeBlaze.Services
                     }
                     else
                     {
-                        LoadState(rootThing, newValue, property.PropertyType, state, childThings, prefix, lastUpdated);
+                        LoadState(rootThing, newValue, property.Property.PropertyType, state, childThings, prefix, lastUpdated);
                     }
                 }
             }
@@ -548,7 +544,7 @@ namespace HomeBlaze.Services
             {
                 foreach (var property in thing.GetType().GetStateProperties())
                 {
-                    var parentThingAttribute = property.ContextAttributes.OfType<ParentThingAttribute>().FirstOrDefault();
+                    var parentThingAttribute = property.ParentThingAttribute;
                     if (parentThingAttribute != null)
                     {
                         property.SetValue(thing, parent);
