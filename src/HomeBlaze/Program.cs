@@ -15,6 +15,7 @@ if (!string.IsNullOrEmpty(seqEndpoint))
         .WriteTo.Seq(seqEndpoint)
         .Enrich.WithProperty("ApplicationName", "HomeBlaze")
         .Enrich.WithProperty("MachineName", Environment.MachineName)
+        .MinimumLevel.Override("System.Net.Http.HttpClient", Serilog.Events.LogEventLevel.Warning)
         .CreateLogger();
 
     builder.Logging.AddSerilog(serilogLogger);
