@@ -5,6 +5,8 @@ using HomeBlaze.Host.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+
 var seqEndpoint = builder.Configuration.GetValue<string>("SeqEndpoint");
 if (!string.IsNullOrEmpty(seqEndpoint))
 {
