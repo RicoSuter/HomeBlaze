@@ -239,7 +239,7 @@ namespace HomeBlaze.Services
             var checkedThings = new List<IThing>();
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_changeDetectionTriggers.TryTake(out var _, 1000, stoppingToken))
+                if (_changeDetectionTriggers.TryTake(out var _, Timeout.Infinite, stoppingToken))
                 {
                     IThing[] things;
 
