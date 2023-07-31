@@ -8,17 +8,19 @@ using Namotion.Reflection;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
+using System.Threading.Tasks.Dataflow;
 
 namespace HomeBlaze.Services
 {
     public class ThingManager : BackgroundService, IThingManager
     {
-        private readonly BlockingCollection<IThing> _changeDetectionTriggers = new BlockingCollection<IThing>();
+        private readonly BufferBlock<IThing> _changeDetectionTriggers = new BufferBlock<IThing>();
         private readonly HashSet<IThing> _thingsMarkedForChangeDetection = new HashSet<IThing>();
 
         private static readonly ConcurrentDictionary<Type, Tuple<MethodInfo, OperationAttribute>[]> _operationCache
             = new ConcurrentDictionary<Type, Tuple<MethodInfo, OperationAttribute>[]>();
 
+        private readonly Dictionary<string, IThing> _thingIds = new Dictionary<string, IThing>();
         private readonly Dictionary<IThing, ThingMetadata> _things = new Dictionary<IThing, ThingMetadata>();
 
         private readonly IThingStorage _thingStorage;
@@ -56,9 +58,7 @@ namespace HomeBlaze.Services
 
             lock (_things)
             {
-                return _things.Keys
-                    .Where(t => t.Id == thingId)
-                    .FirstOrDefault();
+                return _thingIds.TryGetValue(thingId, out var thing) ? thing : null;
             }
         }
 
@@ -129,7 +129,7 @@ namespace HomeBlaze.Services
         private Dictionary<string, PropertyState> GetExtensionState(string? thingId)
         {
             var state = new Dictionary<string, PropertyState>();
-          
+
             lock (_things)
             {
                 var thing = TryGetById(thingId);
@@ -217,7 +217,7 @@ namespace HomeBlaze.Services
                 _thingsMarkedForChangeDetection.Add(thing);
             }
 
-            _changeDetectionTriggers.Add(thing);
+            _changeDetectionTriggers.Post(thing);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -231,35 +231,33 @@ namespace HomeBlaze.Services
 
             _eventManager.Publish(new RootThingLoadedEvent(RootThing));
 
-            ProcessThingChangeDetectionQueue(stoppingToken);
+            await ProcessThingChangeDetectionQueueAsync(stoppingToken);
         }
 
-        private void ProcessThingChangeDetectionQueue(CancellationToken stoppingToken)
+        private async Task ProcessThingChangeDetectionQueueAsync(CancellationToken stoppingToken)
         {
             var checkedThings = new List<IThing>();
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_changeDetectionTriggers.TryTake(out var _, Timeout.Infinite, stoppingToken))
+                await _changeDetectionTriggers.ReceiveAsync(TimeSpan.FromMilliseconds(-1), stoppingToken);
+                IThing[] things;
+
+                lock (_thingsMarkedForChangeDetection)
                 {
-                    IThing[] things;
+                    things = _thingsMarkedForChangeDetection.ToArray();
+                    _thingsMarkedForChangeDetection.Clear();
+                }
 
-                    lock (_thingsMarkedForChangeDetection)
+                checkedThings.Clear();
+                foreach (var thing in things)
+                {
+                    try
                     {
-                        things = _thingsMarkedForChangeDetection.ToArray();
-                        _thingsMarkedForChangeDetection.Clear();
+                        DetectChanges(thing, checkedThings);
                     }
-
-                    checkedThings.Clear();
-                    foreach (var thing in things)
+                    catch (Exception e)
                     {
-                        try
-                        {
-                            DetectChanges(thing, checkedThings);
-                        }
-                        catch (Exception e)
-                        {
-                            _logger.LogWarning(e, "Failed to detect changes of thing {ThingId}.", thing.Id);
-                        }
+                        _logger.LogWarning(e, "Failed to detect changes of thing {ThingId}.", thing.Id);
                     }
                 }
             }
@@ -345,6 +343,7 @@ namespace HomeBlaze.Services
                     return;
                 }
 
+                _thingIds[thing.Id] = thing;
                 _things[thing] = new ThingMetadata
                 {
                     ThingSetupAttribute = thing.GetType().GetCustomAttribute<ThingSetupAttribute>(),
@@ -380,6 +379,7 @@ namespace HomeBlaze.Services
                     .ToArray()!;
 
                 _things.Remove(thing);
+                _thingIds.Remove(thing.Id);
             }
 
             UnregisterChildren(thing, children);

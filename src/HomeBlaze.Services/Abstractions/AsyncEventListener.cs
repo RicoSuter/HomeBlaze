@@ -1,7 +1,7 @@
 ﻿using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.Hosting;
-using System.Collections.Concurrent;
+using System.Threading.Tasks.Dataflow;
 
 namespace HomeBlaze.Services.Abstractions
 {
@@ -10,12 +10,12 @@ namespace HomeBlaze.Services.Abstractions
     /// </summary>
     public abstract class AsyncEventListener : BackgroundService, IDisposable
     {
-        private readonly BlockingCollection<IEvent> _queue = new BlockingCollection<IEvent>();
+        private readonly BufferBlock<IEvent> _queue = new BufferBlock<IEvent>();
         private readonly IDisposable _subscription;
 
         public AsyncEventListener(IEventManager eventManager)
         {
-            _subscription = eventManager.Subscribe(@event => _queue.Add(@event));
+            _subscription = eventManager.Subscribe(@event => _queue.Post(@event));
         }
 
         protected abstract Task HandleMessageAsync(IEvent message, CancellationToken cancellationToken);
@@ -25,7 +25,8 @@ namespace HomeBlaze.Services.Abstractions
             await Task.Yield(); // required: do not block ASP startup
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_queue.TryTake(out var @event, Timeout.Infinite, stoppingToken))
+                var @event = await _queue.ReceiveAsync(TimeSpan.FromMilliseconds(-1), stoppingToken);
+                if (@event is not null)
                 {
                     await HandleMessageAsync(@event, stoppingToken);
                 }

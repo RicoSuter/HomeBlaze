@@ -7,8 +7,7 @@ namespace HomeBlaze.Abstractions
     {
         /// <summary>
         /// Gets the ID of the thing. 
-        /// The ID should be stable even after recreation of the thing (use e.g. the device's serial number). 
-        /// Should be null while initialization until the final stable ID is available.
+        /// The ID must be constant (i.e. the property must always return the same value).
         /// </summary>
         string Id { get; }
 
