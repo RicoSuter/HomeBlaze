@@ -97,6 +97,9 @@ namespace HomeBlaze.Zwave
             .Max();
 
         [State]
+        public DateTimeOffset? LastMessageReceived { get; private set; }
+
+        [State]
         public string? InclusionDescription => DeviceDescription?.Metadata?.Inclusion;
 
         [State]
@@ -406,6 +409,8 @@ namespace HomeBlaze.Zwave
 
         internal void OnMessageReceived(object? sender, EventArgs e)
         {
+            LastMessageReceived = DateTimeOffset.Now;
+
             if (e is NodeEventArgs nodeEventArgs)
             {
                 Controller.Logger.LogInformation("Z-Wave message with class ID {ClassId} ({Class}) and command ID {CommandId} received for node {NodeId}.",
