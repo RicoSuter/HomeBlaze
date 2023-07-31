@@ -404,6 +404,7 @@ namespace HomeBlaze.Zwave
         internal void OnMessageReceived(object? sender, EventArgs e)
         {
             LastUpdated = DateTimeOffset.Now;
+            Controller.LastUpdated = LastUpdated;
 
             if (e is NodeEventArgs nodeEventArgs)
             {

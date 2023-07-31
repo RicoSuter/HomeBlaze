@@ -44,6 +44,9 @@ namespace HomeBlaze.Zwave
         public bool IsRemovingNodes { get; private set; }
 
         [State]
+        public DateTimeOffset? LastUpdated { get; internal set; }
+
+        [State]
         public bool IsLoading { get; private set; } = false;
 
         [Configuration]
