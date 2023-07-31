@@ -91,13 +91,7 @@ namespace HomeBlaze.Zwave
         public int? ProductId => ManufacturerInfo?.ProductID;
 
         [State]
-        public DateTimeOffset? LastUpdated => Things?
-            .OfType<ZwaveClassComponent>()
-            .Select(c => c.LastUpdated)
-            .Max();
-
-        [State]
-        public DateTimeOffset? LastMessageReceived { get; private set; }
+        public DateTimeOffset? LastUpdated { get; private set; }
 
         [State]
         public string? InclusionDescription => DeviceDescription?.Metadata?.Inclusion;
@@ -409,7 +403,7 @@ namespace HomeBlaze.Zwave
 
         internal void OnMessageReceived(object? sender, EventArgs e)
         {
-            LastMessageReceived = DateTimeOffset.Now;
+            LastUpdated = DateTimeOffset.Now;
 
             if (e is NodeEventArgs nodeEventArgs)
             {
