@@ -126,6 +126,9 @@ namespace HomeBlaze.Tesla.WallConnector
                 try
                 {
                     // https://teslamotorsclub.com/tmc/threads/gen3-wall-connector-api.228034/
+                    // https://tff-forum.de/t/software-gen3-wall-connector/115905
+                    // https://github.com/dracoventions/TWCManager/issues/20
+                    // https://teslamotorsclub.com/tmc/threads/tesla-wall-connector-load-sharing-protocol.72830/page-26#post-4502118
 
                     var versionResponse = await httpClient.GetAsync($"http://{Host}/api/1/version", cancellationToken);
                     Version = JsonSerializer.Deserialize<TeslaWallConnectorVersion>(
