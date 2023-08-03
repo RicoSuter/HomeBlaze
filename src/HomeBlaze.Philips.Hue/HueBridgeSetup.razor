@@ -17,13 +17,15 @@
 @if (_bridges == null)
 {
     <MudItem>
-        <strong>Searching for Philips Hue Bridges in your network...</strong>
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+        Searching for Philips Hue Bridges...
     </MudItem>
 }
 else if (_bridges.Any())
 {
     <MudItem>
         Press the Link button on your Bridge and then select the Bridge:
+        <br />
         <br />
     </MudItem>
 

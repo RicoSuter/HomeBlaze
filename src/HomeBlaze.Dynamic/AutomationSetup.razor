@@ -49,6 +49,7 @@
     </div>
 
     <MudSwitch @bind-Checked="@Thing.IsEnabled" Label="Enabled" Color="Color.Info" />
+    <br />
     <MudButton OnClick="AddStateAsync" Variant="Variant.Filled" Color="Color.Primary">Add Node</MudButton>
 
     @if (_showDiagram)

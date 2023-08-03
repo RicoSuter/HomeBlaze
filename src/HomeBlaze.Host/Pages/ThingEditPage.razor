@@ -37,8 +37,8 @@
     @if (_json == null)
     {
         <MudButton OnClick="@(() => UpsertAsync(CancellationToken.None))"
-               Disabled="@(_processing || _component?.IsValid != true)"
-               Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">
+                   Disabled="@(_processing || _component?.IsValid != true)"
+                   Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">
             @if (_processing)
             {
                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
@@ -56,7 +56,7 @@
     @if (Thing != null)
     {
         <MudButton Variant="Variant.Filled" Color="Color.Primary"
-               OnClick="@(() => ToggleJson())" Class="ma-2" Style="float: right">
+                   OnClick="@(() => ToggleJson())" Class="ma-2" Style="float: right">
             @(_json == null ? "JSON" : "Thing")
         </MudButton>
     }
@@ -64,28 +64,65 @@
     <br />
     @if (Thing == null)
     {
-        @if (_thingTypes.Length > 1)
-        {
-            <MudSelect T="Type" Label="Thing Type" Value="_selectedThingType" ValueChanged="type => OnThingTypeChanged(type)">
-                @foreach (var thingType in _thingTypes)
+        <MudGrid>
+            <MudItem xs="12" md="4" lg="3" Class="d-flex">
+                <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+                    <div style="height: calc(100vh - 110px); overflow-y: scroll">
+                        <MudList Clickable="true"
+                                 SelectedValue="_selectedThingType"
+                                 SelectedValueChanged="type => OnThingTypeChanged((Type)type)">
+                            @foreach (var thingType in _thingTypes)
+                            {
+                                <MudListItem Value="@thingType" Icon="@Icons.Material.Filled.Inbox">
+                                    @(thingType.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName ?? thingType.Name)
+                                </MudListItem>
+                            }
+                        </MudList>
+                    </div>
+                </MudHidden>
+                <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                    <MudSelect T="object" Label="Thing Type" Value="_selectedThingType" ValueChanged="type => OnThingTypeChanged((Type)type)">
+                        @foreach (var thingType in _thingTypes)
+                        {
+                            <MudSelectItem Value="@thingType" T="object">
+                                @(thingType.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName ?? thingType.Name)
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudHidden>
+            </MudItem>
+            <MudItem xs="12" md="8" lg="9" Class="d-flex">
+                @if (_selectedThingType != null)
                 {
-                    <MudSelectItem Value="@thingType">
-                        @(thingType.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName ?? thingType.Name)
-                    </MudSelectItem>
-                }
-            </MudSelect>
-            <br />
-        }
+                    var descriptionAttribute = ((Type)_selectedThingType).GetCustomAttribute<DescriptionAttribute>(true) as DescriptionAttribute;
+                    var displayNameAttribute = ((Type)_selectedThingType).GetCustomAttribute<DisplayNameAttribute>(true) as DisplayNameAttribute;
 
-        @if (_selectedThingType != null)
-        {
-            @if (_selectedThingType.GetCustomAttribute<DescriptionAttribute>(true) is DescriptionAttribute descriptionAttribute)
-            {
-                <p>
-                    <strong>@(descriptionAttribute.Description)</strong>
-                </p>
-            }
-        }
+                    <div style="width: 100%">
+                        <h2>Create @(displayNameAttribute?.DisplayName ?? ((Type)_selectedThingType).Name)</h2>
+
+                        @if (descriptionAttribute != null)
+                        {
+                            <p>
+                                <strong>@(descriptionAttribute.Description)</strong>
+                            </p>
+                        }
+
+                        <br />
+
+                        @if (_json == null)
+                        {
+                            <div>
+                                @SetupFragment
+                            </div>
+                        }
+                        else
+                        {
+                            <MudTextField T="string" Variant="Variant.Text" @bind-Text="_json" Lines="20" />
+                        }
+                    </div>
+                }
+            </MudItem>
+        </MudGrid>
     }
     else
     {
@@ -100,32 +137,22 @@
                 <strong>@(descriptionAttribute.Description)</strong>
             </p>
         }
+
+        <br />
+
+        @if (_json == null)
+        {
+            <div>
+                @SetupFragment
+            </div>
+        }
+        else
+        {
+            <MudTextField T="string" Variant="Variant.Text" @bind-Text="_json" Lines="20" />
+        }
     }
     <br />
 
-    @if (_json == null)
-    {
-        <div>
-            @if (Thing == null)
-            {
-                @if (_thingSetupFragment != null && _selectedThingType != null)
-                {
-                    @_thingSetupFragment
-                }
-            }
-            else
-            {
-                @if (_thingSetupFragment != null)
-                {
-                    @_thingSetupFragment
-                }
-            }
-        </div>
-    }
-    else
-    {
-        <MudTextField T="string" Variant="Variant.Text" @bind-Text="_json" Lines="20" />
-    }
 </MudContainer>
 
 @code {
@@ -138,7 +165,30 @@
 
     private Type[] _thingTypes = new Type[0];
     private RenderFragment? _thingSetupFragment;
-    private Type? _selectedThingType;
+    private object? _selectedThingType;
+
+    private RenderFragment? SetupFragment
+    {
+        get
+        {
+            if (Thing == null)
+            {
+                if (_thingSetupFragment != null && _selectedThingType != null)
+                {
+                    return _thingSetupFragment;
+                }
+            }
+            else
+            {
+                @if (_thingSetupFragment != null)
+                {
+                    return _thingSetupFragment;
+                }
+            }
+
+            return null;
+        }
+    }
 
     [Parameter]
     public string? ThingId { get; set; }
@@ -226,7 +276,7 @@
         _selectedThingType = thingType;
         if (_selectedThingType != null)
         {
-            var attribute = _selectedThingType.GetCustomAttribute<ThingSetupAttribute>();
+            var attribute = ((Type)_selectedThingType).GetCustomAttribute<ThingSetupAttribute>();
             if (attribute != null)
             {
                 _thingSetupFragment = builder =>

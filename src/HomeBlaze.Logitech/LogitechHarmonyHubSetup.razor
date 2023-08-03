@@ -12,6 +12,7 @@
 @if (_hubInfos.Any() == false)
 {
     <MudItem>
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
         Searching for Logitech Harmony Hubs...
     </MudItem>
 }
@@ -19,6 +20,8 @@ else
 {
     <MudItem>
         Hubs in your Network
+        <br />
+        <br />
     </MudItem>
 
     <MudItem>

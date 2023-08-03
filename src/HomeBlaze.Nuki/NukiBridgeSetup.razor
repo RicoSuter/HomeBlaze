@@ -17,6 +17,7 @@
 @if (Bridges == null)
 {
     <MudItem>
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
         Searching for Nuki Bridges...
     </MudItem>
 }
@@ -24,6 +25,8 @@ else if (Bridges.Any())
 {
     <MudItem>
         Select the Bridge and then press the button on the Bridge.
+        <br />
+        <br />
     </MudItem>
 
     <MudItem>
@@ -44,8 +47,7 @@ else if (Bridges.Any())
     {
         <MudItem>
             <br />
-            <br />
-            <big>Please press the Nuki Bridge button within the next 30 seconds.</big>
+            <MudAlert Severity="Severity.Warning">Please press the Nuki Bridge button within the next 30 seconds</MudAlert>
         </MudItem>
     }
 }
