@@ -104,7 +104,13 @@ namespace HomeBlaze.AsusRouter
                     var clients = await Service.GetClientsAsync(cancellationToken);
 
                     Clients = clients
-                       .CreateOrUpdate(Clients, (a, b) => a.Mac == b.Client.Mac, (a, b) => a.Update(b), a => new AsusRouterClient(a))
+                       .CreateOrUpdate(Clients, 
+                            (a, b) => a.Mac == b.Client.Mac, 
+                            (a, b) => a.Update(b), 
+                            a => new AsusRouterClient(a), 
+                            keepOld: true)
+                       .OrderByDescending(c => c.IsConnected)
+                       .ThenBy(c => c.Title)
                        .ToArray();
 
                     LastUpdated = DateTimeOffset.Now;

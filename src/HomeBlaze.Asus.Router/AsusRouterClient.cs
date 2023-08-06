@@ -4,12 +4,11 @@ using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using MudBlazor;
 using PixelByProxy.Asus.Router.Models;
-using System;
 
 namespace HomeBlaze.AsusRouter
 {
     public class AsusRouterClient : IThing,
-        IIconProvider, IConnectedThing
+        IIconProvider, IConnectedThing, INetworkAdapter
     {
         internal Client Client { get; private set; }
 
@@ -37,8 +36,11 @@ namespace HomeBlaze.AsusRouter
         [State]
         public string? IpAddress => Client.Ip;
 
-        public bool IsConnected => Client.IsOnline;
+        [State]
+        public string? MacAddress => Client.Mac;
 
+        public bool IsConnected => Client.IsOnline;
+    
         public AsusRouterClient(Client client)
         {
             Client = client;

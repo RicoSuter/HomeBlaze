@@ -1,0 +1,77 @@
+﻿@page "/network"
+
+@using System.Threading
+@using HomeBlaze.Abstractions.Networking
+@using HomeBlaze.Abstractions.Services
+@using HomeBlaze.Services.Extensions
+
+@inject IThingManager ThingManager
+@inject NavigationManager Navigation
+
+<PageTitle>Network</PageTitle>
+
+<MudDataGrid FixedHeader="true" Items="Devices" Height="calc(100vh - 100px)" Filterable="true">
+    <Columns>
+        <HierarchyColumn T="NetworkDevice" />
+        <PropertyColumn Property="x => x.IpAddress" Title="IP Address" Style="width: 50px" Filterable="true" />
+        <PropertyColumn Property="@(x => x.Things.OfType<IConnectedThing>().Any(c => c.IsConnected) ? "" : "False")"
+                        Filterable="true" Title="Is Connected?" />
+        <PropertyColumn Property="x => x.Titles" Title="Titles" />
+        <PropertyColumn Property="x => x.Types" Title="Types" />
+        <PropertyColumn Property="x => x.MacAddresses" Title="MAC Addresses" />
+    </Columns>
+    <ChildRowContent>
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">@context.Item.IpAddress</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                @foreach (var thing in context.Item.Things)
+                {
+                    <MudText @onclick="@(() => Navigation.NavigateToThing(thing))" Style="cursor: pointer"
+                             Typo="Typo.subtitle1">@thing.GetActualTitle(ThingManager)</MudText>
+                    <MudText>@thing.GetType().Name</MudText>
+                    <br />
+                }
+            </MudCardContent>
+        </MudCard>
+    </ChildRowContent>
+</MudDataGrid>
+
+@code {
+    public class NetworkDevice
+    {
+        public string? IpAddress { get; set; }
+
+        public string? Titles { get; set; }
+
+        public string? Types { get; set; }
+
+        public string? MacAddresses { get; set; }
+
+        public required INetworkAdapter[] Things { get; set; }
+    }
+
+    public NetworkDevice[] Devices
+    {
+        get
+        {
+            return ThingManager.AllThings
+                .OfType<INetworkAdapter>()
+                .Where(a => a.IpAddress is not null)
+                .GroupBy(a => a.IpAddress)
+                .OrderBy(g => g.Key)
+                .Select(g => new NetworkDevice
+                    {
+                        IpAddress = g.Key,
+                        Titles = string.Join("\n", g.Select(a => a.Title)),
+                        Types = string.Join("\n", g.Select(a => a.GetType().Name)),
+                        MacAddresses = string.Join("\n", g.Select(a => a.MacAddress)),
+                        Things = g.ToArray()
+                    })
+                .ToArray();
+        }
+    }
+}

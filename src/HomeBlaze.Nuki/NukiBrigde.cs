@@ -24,7 +24,8 @@ namespace HomeBlaze.Nuki
     [DisplayName("Nuki Bridge")]
     [ThingSetup(typeof(NukiBridgeSetup), CanEdit = true)]
     public class NukiBridge : PollingThing, IIconProvider,
-        IConnectedThing, IHubDevice, IPowerConsumptionSensor
+        IConnectedThing, IHubDevice, IPowerConsumptionSensor,
+        INetworkAdapter
     {
         internal readonly IThingManager _thingManager;
         internal readonly IHttpClientFactory _httpClientFactory;
@@ -61,6 +62,12 @@ namespace HomeBlaze.Nuki
         [Configuration(IsSecret = true)]
         public string? AuthToken { get; set; }
 
+        [State]
+        public string? IpAddress => IpHelper.TryGetIpAddress(Host);
+
+        [State]
+        public int[]? Ports => IpHelper.TryGetPorts(Host);
+
         [Configuration]
         public int RefreshInterval { get; set; } = 30 * 1000;
 
@@ -86,7 +93,8 @@ namespace HomeBlaze.Nuki
                     if (Information == null)
                     {
                         var infoResponse = await httpClient.GetAsync($"http://{Host}/info?token=" + AuthToken, cancellationToken);
-                        Information = Newtonsoft.Json.JsonConvert.DeserializeObject<BridgeInformation>(await infoResponse.Content.ReadAsStringAsync(cancellationToken));
+                        var infoJson = await infoResponse.Content.ReadAsStringAsync(cancellationToken);
+                        Information = Newtonsoft.Json.JsonConvert.DeserializeObject<BridgeInformation>(infoJson);
                     }
 
                     var response = await httpClient.GetAsync($"http://{Host}/list?token=" + AuthToken, cancellationToken);
@@ -99,7 +107,7 @@ namespace HomeBlaze.Nuki
                         .ToArray();
 
                     IsConnected = true;
-                    
+
                     _logger?.LogDebug("Nuki Bridge refreshed.");
                     break;
                 }

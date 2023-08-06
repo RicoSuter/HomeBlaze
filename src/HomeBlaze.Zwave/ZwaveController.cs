@@ -4,9 +4,9 @@ using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
+using HomeBlaze.Services.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
@@ -206,21 +206,15 @@ namespace HomeBlaze.Zwave
                     {
                         Logger.LogDebug("Refreshing Z-Wave controller...");
                         var nodes = await _controller.DiscoverNodes(cancellationToken);
-
-                        var things = new List<IThing>();
-                        foreach (var node in nodes)
-                        {
-                            var thing = Things
-                                .OfType<ZwaveDevice>()
-                                .SingleOrDefault(d => d.NodeId == node.NodeID)
-                                ?? new ZwaveDevice(node, this);
-
-                            things.Add(thing);
-
-                            RegisterEvents(node, thing);
-                        }
-
-                        Things = things.ToArray();
+                        Things = nodes.CreateOrUpdate(Things,
+                            (device, node) => device.NodeID == node.NodeId,
+                            (device, node) => RegisterEvents(node, device),
+                            node =>
+                            {
+                                var device = new ZwaveDevice(node, this);
+                                RegisterEvents(node, device);
+                                return device;
+                            });
                     }
                     catch (Exception e)
                     {

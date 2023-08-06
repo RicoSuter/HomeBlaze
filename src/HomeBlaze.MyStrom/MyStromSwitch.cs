@@ -22,7 +22,8 @@ namespace HomeBlaze.MyStrom
     [ThingSetup(typeof(MyStromSwitchSetup), CanEdit = true)]
     public class MyStromSwitch : PollingThing,
         ILastUpdatedProvider, IIconProvider,
-        IConnectedThing, IPowerConsumptionSensor, ITemperatureSensor, IPowerRelay
+        IConnectedThing, IPowerConsumptionSensor, ITemperatureSensor, IPowerRelay,
+        INetworkAdapter
     {
         private readonly IHttpClientFactory _httpClientFactory;
 

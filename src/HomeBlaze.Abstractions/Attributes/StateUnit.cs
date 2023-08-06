@@ -18,6 +18,7 @@
         Millimeter,
         MillimeterPerHour,
         Kilobyte,
+        KilobytePerSecond,
         LiterPerHour
     }
 }

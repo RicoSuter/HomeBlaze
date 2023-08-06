@@ -19,7 +19,9 @@ namespace HomeBlaze.Logitech
 {
     [DisplayName("Logitech Harmony Hub")]
     [ThingSetup(typeof(LogitechHarmonyHubSetup))]
-    public class LogitechHarmonyHub : PollingThing, IIconProvider, IAsyncDisposable, IConnectedThing, IHubDevice, IActivityDevice, IActionDevice, IPowerConsumptionSensor
+    public class LogitechHarmonyHub : PollingThing, IIconProvider, IAsyncDisposable, 
+        IConnectedThing, IHubDevice, IActivityDevice, IActionDevice, IPowerConsumptionSensor,
+        INetworkAdapter
     {
         private DateTimeOffset _lastCheck = DateTimeOffset.MinValue;
         private readonly IThingManager _thingManager;
