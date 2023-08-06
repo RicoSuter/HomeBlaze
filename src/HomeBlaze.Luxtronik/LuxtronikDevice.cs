@@ -330,9 +330,11 @@ namespace HomeBlaze.Luxtronik
                 TotalHeatingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden Heiz." });
                 TotalWaterHeatingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden WW" });
 
-                var previousTotalCoolingOperatingTime = TotalCoolingOperatingTime;                
+                var previousTotalCoolingOperatingTime = TotalCoolingOperatingTime;
                 TotalCoolingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden Kuehl" });
-                if (previousTotalCoolingOperatingTime != TotalCoolingOperatingTime)
+
+                if (previousTotalCoolingOperatingTime != null &&
+                    previousTotalCoolingOperatingTime != TotalCoolingOperatingTime)
                 {
                     _totalCoolingOperatingTimeChange = DateTimeOffset.Now;
                 }
