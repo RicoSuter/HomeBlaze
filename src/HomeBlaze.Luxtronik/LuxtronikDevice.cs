@@ -31,6 +31,7 @@ namespace HomeBlaze.Luxtronik
         private ClientWebSocket? _webSocket;
         private bool _isRunning = true;
         private bool _isInitialized = false;
+        private DateTimeOffset? _totalCoolingOperatingTimeChange = null;
         private XDocument? _metadataXml;
 
         public string? Title => DisplayTitle;
@@ -328,7 +329,15 @@ namespace HomeBlaze.Luxtronik
                 TotalHeatPumpOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden WP" });
                 TotalHeatingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden Heiz." });
                 TotalWaterHeatingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden WW" });
+
+                var previousTotalCoolingOperatingTime = TotalCoolingOperatingTime;                
                 TotalCoolingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden Kuehl" });
+                if (previousTotalCoolingOperatingTime != TotalCoolingOperatingTime)
+                {
+                    _totalCoolingOperatingTimeChange = DateTimeOffset.Now;
+                }
+
+                IsCooling = DateTimeOffset.Now - _totalCoolingOperatingTimeChange < TimeSpan.FromMinutes(65);
 
                 TotalProducedHeatEnergy = GetDecimal(allValues, heatEnergy, new[] { "Heizung" }) * 1000;
                 TotalProducedWaterEnergy = GetDecimal(allValues, heatEnergy, new[] { "Warmwasser" }) * 1000;
@@ -339,11 +348,6 @@ namespace HomeBlaze.Luxtronik
                 TotalConsumedWaterEnergy = GetDecimal(allValues, powerEnergy, new[] { "Warmwasser" }) * 1000;
                 TotalConsumedCoolingEnergy = GetDecimal(allValues, powerEnergy, new[] { "Kühlung" }) * 1000;
                 TotalConsumedEnergy = GetDecimal(allValues, powerEnergy, new[] { "Gesamt" }) * 1000;
-
-                // TODO: Needs to be improved
-                IsCooling =
-                    MixingCircuit1Temperature.Temperature < GetDecimal(allValues, temperatures, new[] { "Mischkreis1 VL-Soll" }) + 2 &&
-                    MixingCircuit2Temperature.Temperature < GetDecimal(allValues, temperatures, new[] { "Mischkreis2 VL-Soll" }) + 2;
 
                 RecalculatePowerConsumption();
                 LastUpdated = DateTimeOffset.Now;
