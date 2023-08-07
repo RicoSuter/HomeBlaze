@@ -19,7 +19,8 @@ namespace HomeBlaze.Tesla.WallConnector
     [DisplayName("Tesla Wall Connector")]
     [ThingSetup(typeof(TeslaWallConnectorSetup), CanEdit = true)]
     public class TeslaWallConnector : PollingThing, IIconProvider, 
-        IConnectedThing, IPowerConsumptionSensor, IVehicleCharger
+        IConnectedThing, IPowerConsumptionSensor, IVehicleCharger,
+        INetworkAdapter
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
@@ -30,6 +31,8 @@ namespace HomeBlaze.Tesla.WallConnector
         public string IconName => "fas fa-plug";
 
         // State
+        [JsonIgnore]
+        public string? IpAddress => IpHelper.TryGetIpAddress(Host);
 
         [JsonIgnore]
         public bool IsConnected { get; private set; }

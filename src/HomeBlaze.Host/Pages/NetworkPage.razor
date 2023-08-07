@@ -3,6 +3,7 @@
 @using System.Threading
 @using HomeBlaze.Abstractions.Networking
 @using HomeBlaze.Abstractions.Services
+@using HomeBlaze.Host.Components
 @using HomeBlaze.Services.Extensions
 
 @inject IThingManager ThingManager
@@ -10,13 +11,25 @@
 
 <PageTitle>Network</PageTitle>
 
-<MudDataGrid FixedHeader="true" Items="Devices" Height="calc(100vh - 100px)" Filterable="true">
+@{
+    var devices = Devices.ToArray();
+}
+
+<SectionContent Name="AppBar">
+    <div style="position: absolute; right: 12px; top: 12px; bottom: 12px">
+        <MudButton OnClick="@(() => InvokeAsync(StateHasChanged))" 
+            Color="Color.Primary" Variant="Variant.Filled">Refresh</MudButton>
+    </div>
+    <MudText>Connected <strong>Network Devices</strong>: @devices.Count(d => d.Things.OfType<IConnectedThing>().All(c => c.IsConnected != false)) / @devices.Length</MudText>
+</SectionContent>
+
+<MudDataGrid FixedHeader="true" Items="devices" Height="calc(100vh - 64px)" Filterable="true">
     <Columns>
         <HierarchyColumn T="NetworkDevice" />
         <PropertyColumn Property="x => x.IpAddress" Title="IP Address" Style="width: 50px" Filterable="true" />
-        <PropertyColumn Property="@(x => x.Things.OfType<IConnectedThing>().Any(c => c.IsConnected) ? "" : "False")"
-                        Filterable="true" Title="Is Connected?" />
         <PropertyColumn Property="x => x.Titles" Title="Titles" />
+        <PropertyColumn Property="@(x => x.Things.OfType<IConnectedThing>().All(c => c.IsConnected != false) ? "" : "False")"
+                        Filterable="true" Title="Is Connected?" />
         <PropertyColumn Property="x => x.Types" Title="Types" />
         <PropertyColumn Property="x => x.MacAddresses" Title="MAC Addresses" />
     </Columns>

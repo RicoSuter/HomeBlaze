@@ -60,6 +60,9 @@ namespace HomeBlaze.AsusRouter
         [State]
         public string? IpAddress => Settings?.LanIp;
 
+        [State]
+        public string? MacAddress => Settings?.LanHwAddr;
+
         [State(Unit = StateUnit.Kilobyte)]
         public long? Sent => Traffic?.Sent;
 
