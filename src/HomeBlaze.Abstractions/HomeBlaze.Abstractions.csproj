@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="NJsonSchema" Version="10.9.0" />
-		<PackageReference Include="MudBlazor" Version="6.7.0" />
+		<PackageReference Include="MudBlazor" Version="6.8.0" />
 	</ItemGroup>
 
 </Project>

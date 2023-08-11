@@ -5,9 +5,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MudBlazor" Version="6.7.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.9" />
+    <PackageReference Include="MudBlazor" Version="6.8.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.10" />
     <PackageReference Include="Q42.HueApi" Version="3.22.0" />
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.20.1" />
   </ItemGroup>
