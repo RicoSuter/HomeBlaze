@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Serilog;
 using HomeBlaze.Host;
 using HomeBlaze.Host.Logging;
+using HomeBlaze.Host.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,11 @@ builder.Logging.AddProvider(new MemoryLoggerProvider());
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.WriteIndented = true)
+    .AddApplicationPart(typeof(ThingsController).Assembly);
+
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddRazorPages();
@@ -41,7 +47,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
+
+app
+    .UseRouting()
+    .UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+    });
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

@@ -152,7 +152,9 @@
                     foreach (var operation in operations)
                     {
                         <MudButton OnClick="() => ExecuteOperation(operation)" 
-                            Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">
+                            Disabled="@_isExecutingOperation.Contains(operation.Id)"
+                            Variant="Variant.Filled" 
+                            Color="Color.Primary" Class="ma-2">
                             @(operation.Title ?? operation.Name)
                         </MudButton>
                     }
@@ -223,6 +225,8 @@
 }
 
 @code {
+    private HashSet<string> _isExecutingOperation = new HashSet<string>();
+
     [Parameter]
     public decimal? PaneWidth { get; set; }
 
@@ -245,6 +249,9 @@
     {
         try
         {
+            _isExecutingOperation.Add(operation.Id);
+            await InvokeAsync(StateHasChanged);
+
             var parameters = operation.CreateParameters();
 
             foreach (var parameter in operation.Method
@@ -277,6 +284,11 @@
         catch (Exception e)
         {
             await DialogService.ShowMessageBox("Error", e.ToString());
+        }
+        finally
+        {
+            _isExecutingOperation.Remove(operation.Id);
+            await InvokeAsync(StateHasChanged);
         }
     }
 

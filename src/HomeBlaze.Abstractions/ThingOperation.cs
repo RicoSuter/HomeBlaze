@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Reflection;
 using HomeBlaze.Abstractions.Attributes;
-using Namotion.Reflection;
 using System.Text.Json;
 
 namespace HomeBlaze.Abstractions
@@ -19,6 +18,8 @@ namespace HomeBlaze.Abstractions
 
             _attribute = attribute;
         }
+
+        public string Id => Name + ":" + SourceThing.Id;
 
         public IThing SourceThing { get; }
 
