@@ -17,7 +17,7 @@
                    Disabled="@IsLoading"
                    Style="float: right; margin-left: 16px; margin-top: 8px"
                    OnClick="(() => ToggleDetails())">
-            @(_showDetails ? "Show Chart" : "Edit Series")
+            @(ShowDetails ? "Show Chart" : "Edit Series")
         </MudButton>
 
         <MudSelect T="int" Label="Type" @bind-Value="NumberOfHours" Disabled="@IsLoading">
@@ -33,7 +33,7 @@
 
         <br />
         <div style="height: calc(100vh - 150px); overflow-y: auto;">
-            @if (_showDetails)
+            @if (ShowDetails)
             {
                 @foreach (var series in AdditionalSeries)
                 {
@@ -79,6 +79,7 @@
                                                   CategoryProperty="Date"
                                                   Title="@series.Key"
                                                   LineType="LineType.Solid"
+                                                  StrokeWidth="4"
                                                   ValueProperty="Value">
                                     <RadzenMarkers MarkerType="MarkerType.None" />
                                 </RadzenLineSeries>
@@ -104,7 +105,7 @@
         </div>
     </DialogContent>
     <DialogActions>
-        @if (!_showDetails)
+        @if (!ShowDetails && !IsLoading)
         {
             <span style="position: absolute; left: 12px">
                 <strong>Average: </strong>@Math.Round(Average, 2)&nbsp;&nbsp;&nbsp;
@@ -118,22 +119,25 @@
 </MudDialog>
 
 @code {
+    private int _numberOfHours = 24;
+
     private bool IsInitialized { get; set; } = false;
     private bool IsLoading { get; set; } = true;
+    private bool ShowDetails { get; set; } = false;
 
-    private bool _showDetails = false;
-
-    private int _numberOfHours = 24;
     private int NumberOfHours
     {
         get => _numberOfHours;
         set
         {
             _numberOfHours = value;
-            Task.Run(async () => await RefreshAsync());
+            
+            if (!ShowDetails)
+            {
+                Task.Run(async () => await RefreshAsync());
+            }
         }
     }
-    private bool IsBoolean { get; set; } = false;
 
     private decimal Average { get; set; } = 0;
     private decimal Minimum { get; set; } = 0;
@@ -164,10 +168,10 @@
 
     public async void ToggleDetails()
     {
-        _showDetails = !_showDetails;
+        ShowDetails = !ShowDetails;
         await InvokeAsync(StateHasChanged);
 
-        if (!_showDetails)
+        if (!ShowDetails)
         {
             await RefreshAsync();
         }
@@ -244,9 +248,11 @@
             foreach (var series in AdditionalSeries.Where(s => !string.IsNullOrEmpty(s.ThingId) && !string.IsNullOrEmpty(s.PropertyName)))
             {
                 var thing = ThingManager.TryGetById(series.ThingId);
-                var state2 = ThingManager.TryGetPropertyState(series.ThingId, series.PropertyName, true);
+                var state = ThingManager.TryGetPropertyState(series.ThingId, series.PropertyName, true);
+
                 var rawValues2 = await StateManager.ReadStateAsync<object>(
                     series.ThingId!, series.PropertyName!, startDate, endDate, CancellationToken.None);
+
                 var values2 = rawValues2
                     .Select((v, i) => new ChartItem
                         {
@@ -256,7 +262,8 @@
                         })
                     .OrderBy(v => v.DateTime)
                     .ToArray();
-                var chartItems2 = ChartSeriesUtilities.CleanUp(state2, values2, NumberOfHours);
+
+                var chartItems2 = ChartSeriesUtilities.CleanUp(state, values2, NumberOfHours);
 
                 _series[thing?.Title + ": " + series.PropertyName] = chartItems2;
             }

@@ -1,4 +1,5 @@
 ﻿using HomeBlaze.Abstractions;
+using HomeBlaze.Components.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,6 +57,27 @@ namespace HomeBlaze.Components.Graphs
 
                     return chartItems
                         .Where(v => v.RawValue != null)
+                        .ToArray();
+                }
+                else if (state?.Property?.PropertyType.Type == typeof(bool))
+                {
+                    return values
+                        .GetSegments()
+                        .SelectMany(x =>
+                        {
+                            if (x.First.Value == 1 && x.Second.Value == 0)
+                            {
+                                return new[] { new ChartItem { DateTime = x.Second.DateTime.AddMilliseconds(-1), RawValue = true }, x.Second };
+                            }
+                            else if (x.First.Value == 0 && x.Second.Value == 1)
+                            {
+                                return new[] { new ChartItem { DateTime = x.Second.DateTime.AddMilliseconds(-1), RawValue = false }, x.Second };
+                            }
+                            else
+                            {
+                                return new[] { x.Second };
+                            }
+                        })
                         .ToArray();
                 }
                 else

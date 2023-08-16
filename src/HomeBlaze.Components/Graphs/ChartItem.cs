@@ -12,9 +12,26 @@ namespace HomeBlaze.Components.Graphs
 
         public object? RawValue { get; set; }
 
-        public double Value => double
-            .TryParse(RawValue?.ToString() ?? "", out var number) ?
-                Math.Round(number, 2) :
-                0;
+        public double Value
+        {
+            get
+            {
+                var valueString = RawValue?.ToString();
+                if (valueString == "True")
+                {
+                    return 1;
+                }
+                else if (valueString == "False")
+                {
+                    return 0;
+                }
+                else if (double.TryParse(RawValue?.ToString() ?? "", out var number))
+                {
+                    return Math.Round(number, 2);
+                }
+
+                return 0;
+            }
+        }
     }
 }
