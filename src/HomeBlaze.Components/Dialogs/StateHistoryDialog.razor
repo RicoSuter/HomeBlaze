@@ -4,8 +4,10 @@
 @using HomeBlaze.Components.Extensions;
 @using HomeBlaze.Components.Graphs;
 @using HomeBlaze.Components.Inputs
+@using HomeBlaze.Services
 @using MudBlazor
 @using Radzen.Blazor
+@using System.Text.Json.Serialization;
 
 @inject IStateManager StateManager
 @inject IThingManager ThingManager
@@ -17,7 +19,7 @@
                    Disabled="@IsLoading"
                    Style="float: right; margin-left: 16px; margin-top: 8px"
                    OnClick="(() => ToggleDetails())">
-            @(ShowDetails ? "Show Chart" : "Edit Series")
+            @(ShowDetails ? "Plot" : "Configure...")
         </MudButton>
 
         <MudSelect T="int" Label="Type" @bind-Value="NumberOfHours" Disabled="@IsLoading">
@@ -35,13 +37,16 @@
         <div style="height: calc(100vh - 150px); overflow-y: auto;">
             @if (ShowDetails)
             {
-                @foreach (var series in AdditionalSeries)
+                @foreach (var series in Series)
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                   OnClick="@(() => AdditionalSeries.Remove(series))" Style="float: right"
+                                   OnClick="@(() => Series.Remove(series))" Style="float: right"
                                    Variant="Variant.Filled" Color="Color.Error"></MudIconButton>
 
-                    <h2>Series @(AdditionalSeries.IndexOf(series) + 1)</h2>
+                    <div style="background-color: @(series.Color); padding-left: 8px; padding-top: 4px; padding-bottom: 3px">
+                        <h2>Series @(Series.IndexOf(series) + 1)</h2>
+                    </div>
+
                     <ThingSelect Label="Thing ID"
                     @bind-ThingId="series.ThingId"
                                  Required="false" />
@@ -52,34 +57,38 @@
                                          Disabled="@(series.ThingId == null)"
                                          Required="false" />
 
+                    <MudColorPicker Label="Color" @bind-Text="@series.Color" Required="true" DisableAlpha="true" />
+
                     <br />
                     <br />
                 }
 
                 <MudButton StartIcon="@Icons.Material.Filled.Add"
-                           OnClick="@(() => AdditionalSeries.Add(new AdditionalSeriesDto()))"
+                           OnClick="@(() => Series.Add(new SeriesDto()))"
                            Variant="Variant.Filled" Color="Color.Primary">Additional Series</MudButton>
             }
             else
             {
                 @if (IsLoading)
                 {
-                    <span>Loading data...</span>
+                    <br />
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
                 }
                 else
                 {
-                    @if (_series.Any(s => s.Value.Length > 0))
+                    @if (Series.Any(s => s.Values.Length > 0))
                     {
                         <RadzenChart Style="width: 100%; height: calc(100vh - 170px)">
                             <RadzenLegend Visible="false" Position="LegendPosition.Bottom"></RadzenLegend>
-                            @foreach (var series in _series)
+                            @foreach (var series in Series.Where(s => s.Values.Length > 0))
                             {
                                 <RadzenLineSeries Smooth="false"
-                                                  Data="@series.Value"
+                                                  Data="@series.Values"
                                                   CategoryProperty="Date"
-                                                  Title="@series.Key"
+                                                  Title="@(series.Thing?.Title + ": " + series.PropertyName)"
                                                   LineType="LineType.Solid"
                                                   StrokeWidth="4"
+                                                  Stroke="@series.Color"
                                                   ValueProperty="Value">
                                     <RadzenMarkers MarkerType="MarkerType.None" />
                                 </RadzenLineSeries>
@@ -98,7 +107,7 @@
                             {
                                 @($"{val.DateTime}\n    {val.RawValue ?? "(null)"}\n\n")
                             }
-                        </pre>
+                                                                        </pre>
                     }
                 }
             }
@@ -108,10 +117,19 @@
         @if (!ShowDetails && !IsLoading)
         {
             <span style="position: absolute; left: 12px">
-                <strong>Average: </strong>@Math.Round(Average, 2)&nbsp;&nbsp;&nbsp;
-                <strong>Max: </strong>@Math.Round(Maximum, 2)&nbsp;&nbsp;&nbsp;<br />
-                <strong>Min: </strong>@Math.Round(Minimum, 2)&nbsp;&nbsp;&nbsp;
-                <strong>Diff: </strong>@Math.Round(Difference, 2)
+                <span style="word-break: keep-all"><strong>Average: </strong>@Math.Round(Average, 2)&nbsp;&nbsp;&nbsp;</span>
+                <span style="word-break: keep-all"><strong>Max: </strong>@Math.Round(Maximum, 2)&nbsp;&nbsp;&nbsp;</span>
+                <span style="word-break: keep-all"><strong>Min: </strong>@Math.Round(Minimum, 2)&nbsp;&nbsp;&nbsp;</span>
+                <span style="word-break: keep-all"><strong>Diff: </strong>@Math.Round(Difference, 2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+
+                @foreach (var series in Series.Where(s => s.Values.Length > 0))
+                {
+                    <span style="word-break: keep-all">
+                        <span style="background-color: @(series.Color); min-width: 32px; height: 32px">&nbsp;</span>
+                        @series.Thing?.Title: @series.PropertyName
+                        &nbsp;&nbsp;&nbsp;
+                    </span>
+                }
             </span>
         }
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(null))" Class="px-10">Close</MudButton>
@@ -131,7 +149,7 @@
         set
         {
             _numberOfHours = value;
-            
+
             if (!ShowDetails)
             {
                 Task.Run(async () => await RefreshAsync());
@@ -144,18 +162,24 @@
     private decimal Maximum { get; set; } = 0;
     private decimal Difference { get; set; } = 0;
 
-    private List<AdditionalSeriesDto> AdditionalSeries { get; } = new List<AdditionalSeriesDto>();
+    private List<SeriesDto> Series { get; } = new List<SeriesDto>();
 
-    class AdditionalSeriesDto
+    class SeriesDto
     {
         public string? ThingId { get; set; }
 
         public string? PropertyName { get; set; }
+
+        public string Color { get; set; } = ColorUtilities.GenerateVibrantColor();
+
+        [JsonIgnore]
+        public IThing? Thing { get; set; }
+
+        [JsonIgnore]
+        public ChartItem[] Values { get; set; } = Array.Empty<ChartItem>();
     }
 
     private ChartItem[] Values { get; set; } = new ChartItem[0];
-
-    private Dictionary<string, ChartItem[]> _series = new Dictionary<string, ChartItem[]>();
 
     [Parameter]
     public IThing? Thing { get; set; }
@@ -181,10 +205,10 @@
     {
         await dialogService.Show<StateHistoryDialog>(string.Empty,
             new DialogParameters
-                        {
+                            {
                 { "Thing", thing },
                 { "PropertyName", propertyName }
-                        },
+                            },
             new DialogOptions
                 {
                     CloseOnEscapeKey = true,
@@ -202,11 +226,11 @@
     {
         IsInitialized = true;
 
-        AdditionalSeries.Add(new AdditionalSeriesDto
-        {
-            ThingId = Thing?.Id,
-            PropertyName = PropertyName
-        });
+        Series.Add(new SeriesDto
+            {
+                ThingId = Thing?.Id,
+                PropertyName = PropertyName
+            });
 
         await RefreshAsync();
     }
@@ -243,9 +267,8 @@
 
         try
         {
-            _series.Clear();
-
-            foreach (var series in AdditionalSeries.Where(s => !string.IsNullOrEmpty(s.ThingId) && !string.IsNullOrEmpty(s.PropertyName)))
+            foreach (var series in Series
+                .Where(s => !string.IsNullOrEmpty(s.ThingId) && !string.IsNullOrEmpty(s.PropertyName)))
             {
                 var thing = ThingManager.TryGetById(series.ThingId);
                 var state = ThingManager.TryGetPropertyState(series.ThingId, series.PropertyName, true);
@@ -253,7 +276,7 @@
                 var rawValues2 = await StateManager.ReadStateAsync<object>(
                     series.ThingId!, series.PropertyName!, startDate, endDate, CancellationToken.None);
 
-                var values2 = rawValues2
+                var values = rawValues2
                     .Select((v, i) => new ChartItem
                         {
                             Index = i,
@@ -263,17 +286,16 @@
                     .OrderBy(v => v.DateTime)
                     .ToArray();
 
-                var chartItems2 = ChartSeriesUtilities.CleanUp(state, values2, NumberOfHours);
-
-                _series[thing?.Title + ": " + series.PropertyName] = chartItems2;
+                series.Values = ChartSeriesUtilities.CleanUp(state, values, NumberOfHours);
+                series.Thing = thing;
             }
 
-            var chartItems = _series.First().Value;
-            if (chartItems.Any())
+            var chartItems = Series.FirstOrDefault();
+            if (chartItems?.Values.Any() == true)
             {
-                Minimum = (decimal)chartItems.Select(v => v.Value).Min();
-                Maximum = (decimal)chartItems.Select(v => v.Value).Max();
-                Average = chartItems.GetSegments().WeightedAverage(
+                Minimum = (decimal)chartItems.Values.Select(v => v.Value).Min();
+                Maximum = (decimal)chartItems.Values.Select(v => v.Value).Max();
+                Average = chartItems.Values.GetSegments().WeightedAverage(
                     s => (decimal)((s.First.Value + s.Second.Value) / 2.0),
                     s => (decimal)(s.Second.Date - s.First.Date).TotalMilliseconds);
                 Difference = Maximum - Minimum;
@@ -281,7 +303,6 @@
         }
         catch
         {
-            _series = new Dictionary<string, ChartItem[]>();
         }
         finally
         {
