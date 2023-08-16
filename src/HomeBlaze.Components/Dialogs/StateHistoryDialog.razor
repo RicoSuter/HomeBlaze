@@ -2,6 +2,7 @@
 @using HomeBlaze.Abstractions.Services;
 @using HomeBlaze.Abstractions;
 @using HomeBlaze.Components.Extensions;
+@using HomeBlaze.Components.Graphs;
 @using MudBlazor
 @using Radzen.Blazor
 
@@ -23,7 +24,7 @@
         </MudSelect>
         <br />
 
-        <div style="height: 400px; overflow-y: auto;">
+        <div style="height: calc(100vh - 150px); overflow-y: auto;">
             @if (IsLoading)
             {
                 <span>Loading data...</span>
@@ -32,7 +33,7 @@
             {
                 @if (ChartItems.Length > 0)
                 {
-                    <RadzenChart Style="width: 100%; height: 350px">
+                    <RadzenChart Style="width: 100%; height: calc(100vh - 170px)">
                         <RadzenLegend Visible="false" Position="LegendPosition.Bottom"></RadzenLegend>
                         <RadzenLineSeries Smooth="false"
                                   Data="@ChartItems"
@@ -48,13 +49,6 @@
                         <RadzenCategoryAxis Formatter="@FormatTime">
                         </RadzenCategoryAxis>
                     </RadzenChart>
-
-                    <MudItem>
-                        <strong>Average: </strong>@Math.Round(Average, 2)&nbsp;&nbsp;&nbsp;
-                        <strong>Max: </strong>@Math.Round(Maximum, 2)&nbsp;&nbsp;&nbsp;
-                        <strong>Min: </strong>@Math.Round(Minimum, 2)&nbsp;&nbsp;&nbsp;
-                        <strong>Diff: </strong>@Math.Round(Difference, 2)
-                    </MudItem>
                 }
                 else if (Values.Any())
                 {
@@ -69,6 +63,12 @@
         </div>
     </DialogContent>
     <DialogActions>
+        <span style="position: absolute; left: 12px">
+            <strong>Average: </strong>@Math.Round(Average, 2)&nbsp;&nbsp;&nbsp;
+            <strong>Max: </strong>@Math.Round(Maximum, 2)&nbsp;&nbsp;&nbsp;<br />
+            <strong>Min: </strong>@Math.Round(Minimum, 2)&nbsp;&nbsp;&nbsp;
+            <strong>Diff: </strong>@Math.Round(Difference, 2)
+        </span>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(null))" Class="px-10">Close</MudButton>
     </DialogActions>
 </MudDialog>
@@ -107,8 +107,9 @@
             },
             new DialogOptions
             {
-                FullWidth = true,
-                MaxWidth = MaxWidth.Large
+                CloseOnEscapeKey = true,
+                NoHeader = true,
+                FullScreen = true
             }).Result;
     }
 
@@ -157,64 +158,16 @@
 
         try
         {
-            if (state?.Property?.PropertyType.Type == typeof(decimal) ||
-                state?.Property?.PropertyType.Type == typeof(double) ||
-                state?.Property?.PropertyType.Type == typeof(float) ||
-                state?.Property?.PropertyType.Type == typeof(long) ||
-                state?.Property?.PropertyType.Type == typeof(int))
+            ChartItems = ChartSeriesUtilities.CleanUp(state, Values, numberOfHours);
+           
+            if (ChartItems.Any())
             {
-                var chartItems = new List<ChartItem>();
-
-                if (Values.Length > 720)
-                {
-                    var numberOfValues = numberOfHours < 24 * 2 ? 24 * 2 : numberOfHours;
-                    var valueDuration = duration / numberOfValues;
-
-                    for (int i = 0; i < numberOfValues; i++)
-                    {
-                        var start = startDate + valueDuration * i;
-                        var end = startDate + valueDuration * (i + 1);
-
-                        var values = Values
-                            .Where(v => v.DateTime >= start && v.DateTime < end)
-                            .ToArray();
-
-                        chartItems.Add(new ChartItem
-                        {
-                            Index = i,
-                            DateTime = start + valueDuration / 2,
-                            RawValue =
-                                values.Any() ?
-                                values
-                                    .Select(v => v.Value)
-                                    .Average() : null
-                        });
-                    }
-                }
-                else
-                {
-                    chartItems = Values.ToList();
-                }
-
-                chartItems = chartItems
-                    .Where(v => v.RawValue != null)
-                    .ToList();
-
-                if (chartItems.Any())
-                {
-                    Minimum = (decimal)chartItems.Select(v => v.Value).Min();
-                    Maximum = (decimal)chartItems.Select(v => v.Value).Max();
-                    Average = chartItems.GetSegments().WeightedAverage(
-                        s => (decimal)((s.First.Value + s.Second.Value) / 2.0),
-                        s => (decimal)(s.Second.Date - s.First.Date).TotalMilliseconds);
-                    Difference = Maximum - Minimum;
-
-                    ChartItems = chartItems.ToArray();
-                }
-            }
-            else
-            {
-                ChartItems = new ChartItem[0];
+                Minimum = (decimal)ChartItems.Select(v => v.Value).Min();
+                Maximum = (decimal)ChartItems.Select(v => v.Value).Max();
+                Average = ChartItems.GetSegments().WeightedAverage(
+                    s => (decimal)((s.First.Value + s.Second.Value) / 2.0),
+                    s => (decimal)(s.Second.Date - s.First.Date).TotalMilliseconds);
+                Difference = Maximum - Minimum;
             }
         }
         catch
@@ -227,21 +180,5 @@
         }
 
         await InvokeAsync(StateHasChanged);
-    }
-
-    class ChartItem
-    {
-        public int Index { get; set; }
-
-        public DateTimeOffset DateTime { get; set; }
-
-        public DateTime Date => DateTime.DateTime;
-
-        public object? RawValue { get; set; }
-
-        public double Value => double
-            .TryParse(RawValue?.ToString() ?? "", out var number) ?
-                Math.Round(number, 2) :
-                0;
     }
 }
