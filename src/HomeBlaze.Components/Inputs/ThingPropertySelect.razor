@@ -4,25 +4,24 @@
 
 @inject IThingManager ThingManager
 
-@if (ThingId != null)
-{
+@{
     var state = ThingManager.GetState(ThingId, true).Where(p => !p.Value.HasThingChildren);
+}
 
-    <MudSelect T="string" Label="@Label" Required="Required" Disabled="Disabled" Style="@Style" @ref="_select"
+<MudSelect T="string" Label="@Label" Required="Required" Disabled="Disabled" Style="@Style" @ref="_select"
            Validation="@((string? value) => state.Any(p => p.Key == value) ? (string?)null : "Property not found.")"
            Value="PropertyName" ValueChanged="@(value => PropertyNameChanged.InvokeAsync(value))">
 
-        @if (!Required)
-        {
-            <MudSelectItem Value="@(null)" T="string">&lt;None&gt;</MudSelectItem>
-        }
+    @if (!Required)
+    {
+        <MudSelectItem Value="@(null)" T="string">&lt;None&gt;</MudSelectItem>
+    }
 
-        @foreach (var pair in state)
-        {
-            <MudSelectItem Value="@pair.Key" />
-        }
-    </MudSelect>
-}
+    @foreach (var pair in state)
+    {
+        <MudSelectItem Value="@pair.Key" />
+    }
+</MudSelect>
 
 @code {
     private MudSelect<string>? _select;

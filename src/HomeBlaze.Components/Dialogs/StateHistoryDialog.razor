@@ -3,6 +3,7 @@
 @using HomeBlaze.Abstractions;
 @using HomeBlaze.Components.Extensions;
 @using HomeBlaze.Components.Graphs;
+@using HomeBlaze.Components.Inputs
 @using MudBlazor
 @using Radzen.Blazor
 
@@ -12,7 +13,14 @@
 <MudDialog>
     <TitleContent>@(Thing?.Title): @PropertyName</TitleContent>
     <DialogContent>
-        <MudSelect T="int" Label="Type" ValueChanged="(value) => RefreshAsync(value)" Value="NumberOfHours">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   Disabled="@IsLoading"
+                   Style="float: right; margin-left: 16px; margin-top: 8px"
+                   OnClick="(() => ToggleDetails())">
+            @(_showDetails ? "Show Chart" : "Edit Series")
+        </MudButton>
+
+        <MudSelect T="int" Label="Type" @bind-Value="NumberOfHours" Disabled="@IsLoading">
             <MudSelectItem Value="1" T="int">1 Hour</MudSelectItem>
             <MudSelectItem Value="4" T="int">4 Hours</MudSelectItem>
             <MudSelectItem Value="6" T="int">6 Hours</MudSelectItem>
@@ -22,53 +30,89 @@
             <MudSelectItem Value="168" T="int">7 Days</MudSelectItem>
             <MudSelectItem Value="720" T="int">30 Days</MudSelectItem>
         </MudSelect>
-        <br />
 
+        <br />
         <div style="height: calc(100vh - 150px); overflow-y: auto;">
-            @if (IsLoading)
+            @if (_showDetails)
             {
-                <span>Loading data...</span>
+                @foreach (var series in AdditionalSeries)
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   OnClick="@(() => AdditionalSeries.Remove(series))" Style="float: right"
+                                   Variant="Variant.Filled" Color="Color.Error"></MudIconButton>
+
+                    <h2>Series @(AdditionalSeries.IndexOf(series) + 1)</h2>
+                    <ThingSelect Label="Thing ID"
+                    @bind-ThingId="series.ThingId"
+                                 Required="false" />
+
+                    <ThingPropertySelect Label="Property"
+                    @bind-PropertyName="series.PropertyName"
+                                         ThingId="@series.ThingId"
+                                         Disabled="@(series.ThingId == null)"
+                                         Required="false" />
+
+                    <br />
+                    <br />
+                }
+
+                <MudButton StartIcon="@Icons.Material.Filled.Add"
+                           OnClick="@(() => AdditionalSeries.Add(new AdditionalSeriesDto()))"
+                           Variant="Variant.Filled" Color="Color.Primary">Additional Series</MudButton>
             }
             else
             {
-                @if (ChartItems.Length > 0)
+                @if (IsLoading)
                 {
-                    <RadzenChart Style="width: 100%; height: calc(100vh - 170px)">
-                        <RadzenLegend Visible="false" Position="LegendPosition.Bottom"></RadzenLegend>
-                        <RadzenLineSeries Smooth="false"
-                                  Data="@ChartItems"
-                                  CategoryProperty="Date"
-                                  Title="@PropertyName"
-                                  LineType="LineType.Solid"
-                                  ValueProperty="Value">
-                            <RadzenMarkers MarkerType="MarkerType.None" />
-                        </RadzenLineSeries>
-                        <RadzenValueAxis>
-                            <RadzenGridLines Visible="true" />
-                        </RadzenValueAxis>
-                        <RadzenCategoryAxis Formatter="@FormatTime">
-                        </RadzenCategoryAxis>
-                    </RadzenChart>
+                    <span>Loading data...</span>
                 }
-                else if (Values.Any())
+                else
                 {
-                    <pre>
-                        @foreach (var val in Values.Reverse())
-                        {
-                            @($"{val.DateTime}\n    {val.RawValue ?? "(null)"}\n\n")
-                        }
-                    </pre>
+                    @if (_series.Any(s => s.Value.Length > 0))
+                    {
+                        <RadzenChart Style="width: 100%; height: calc(100vh - 170px)">
+                            <RadzenLegend Visible="false" Position="LegendPosition.Bottom"></RadzenLegend>
+                            @foreach (var series in _series)
+                            {
+                                <RadzenLineSeries Smooth="false"
+                                                  Data="@series.Value"
+                                                  CategoryProperty="Date"
+                                                  Title="@series.Key"
+                                                  LineType="LineType.Solid"
+                                                  ValueProperty="Value">
+                                    <RadzenMarkers MarkerType="MarkerType.None" />
+                                </RadzenLineSeries>
+                            }
+                            <RadzenValueAxis>
+                                <RadzenGridLines Visible="true" />
+                            </RadzenValueAxis>
+                            <RadzenCategoryAxis Formatter="@FormatTime">
+                            </RadzenCategoryAxis>
+                        </RadzenChart>
+                    }
+                    else if (Values.Any())
+                    {
+                        <pre>
+                            @foreach (var val in Values.Reverse())
+                            {
+                                @($"{val.DateTime}\n    {val.RawValue ?? "(null)"}\n\n")
+                            }
+                        </pre>
+                    }
                 }
             }
         </div>
     </DialogContent>
     <DialogActions>
-        <span style="position: absolute; left: 12px">
-            <strong>Average: </strong>@Math.Round(Average, 2)&nbsp;&nbsp;&nbsp;
-            <strong>Max: </strong>@Math.Round(Maximum, 2)&nbsp;&nbsp;&nbsp;<br />
-            <strong>Min: </strong>@Math.Round(Minimum, 2)&nbsp;&nbsp;&nbsp;
-            <strong>Diff: </strong>@Math.Round(Difference, 2)
-        </span>
+        @if (!_showDetails)
+        {
+            <span style="position: absolute; left: 12px">
+                <strong>Average: </strong>@Math.Round(Average, 2)&nbsp;&nbsp;&nbsp;
+                <strong>Max: </strong>@Math.Round(Maximum, 2)&nbsp;&nbsp;&nbsp;<br />
+                <strong>Min: </strong>@Math.Round(Minimum, 2)&nbsp;&nbsp;&nbsp;
+                <strong>Diff: </strong>@Math.Round(Difference, 2)
+            </span>
+        }
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(null))" Class="px-10">Close</MudButton>
     </DialogActions>
 </MudDialog>
@@ -77,7 +121,18 @@
     private bool IsInitialized { get; set; } = false;
     private bool IsLoading { get; set; } = true;
 
-    private int NumberOfHours { get; set; } = 24;
+    private bool _showDetails = false;
+
+    private int _numberOfHours = 24;
+    private int NumberOfHours
+    {
+        get => _numberOfHours;
+        set
+        {
+            _numberOfHours = value;
+            Task.Run(async () => await RefreshAsync());
+        }
+    }
     private bool IsBoolean { get; set; } = false;
 
     private decimal Average { get; set; } = 0;
@@ -85,8 +140,18 @@
     private decimal Maximum { get; set; } = 0;
     private decimal Difference { get; set; } = 0;
 
-    private ChartItem[] ChartItems { get; set; } = new ChartItem[0];
+    private List<AdditionalSeriesDto> AdditionalSeries { get; } = new List<AdditionalSeriesDto>();
+
+    class AdditionalSeriesDto
+    {
+        public string? ThingId { get; set; }
+
+        public string? PropertyName { get; set; }
+    }
+
     private ChartItem[] Values { get; set; } = new ChartItem[0];
+
+    private Dictionary<string, ChartItem[]> _series = new Dictionary<string, ChartItem[]>();
 
     [Parameter]
     public IThing? Thing { get; set; }
@@ -97,20 +162,31 @@
     [CascadingParameter]
     public MudDialogInstance? DialogInstance { get; set; }
 
+    public async void ToggleDetails()
+    {
+        _showDetails = !_showDetails;
+        await InvokeAsync(StateHasChanged);
+
+        if (!_showDetails)
+        {
+            await RefreshAsync();
+        }
+    }
+
     public static async Task ShowAsync(IDialogService dialogService, IThing thing, string propertyName)
     {
         await dialogService.Show<StateHistoryDialog>(string.Empty,
             new DialogParameters
-            {
+                        {
                 { "Thing", thing },
                 { "PropertyName", propertyName }
-            },
+                        },
             new DialogOptions
-            {
-                CloseOnEscapeKey = true,
-                NoHeader = true,
-                FullScreen = true
-            }).Result;
+                {
+                    CloseOnEscapeKey = true,
+                    NoHeader = true,
+                    FullScreen = true
+                }).Result;
     }
 
     string FormatTime(object value)
@@ -121,36 +197,41 @@
     protected override async Task OnInitializedAsync()
     {
         IsInitialized = true;
-        await RefreshAsync(24);
+
+        AdditionalSeries.Add(new AdditionalSeriesDto
+        {
+            ThingId = Thing?.Id,
+            PropertyName = PropertyName
+        });
+
+        await RefreshAsync();
     }
 
-    private async Task RefreshAsync(int numberOfHours)
+    private async Task RefreshAsync()
     {
         if (!IsInitialized)
         {
             return;
         }
 
-        NumberOfHours = numberOfHours;
         IsLoading = true;
 
         var delay = Task.Delay(500);
 
-        var startDate = DateTimeOffset.Now.AddHours(numberOfHours * -1);
+        var startDate = DateTimeOffset.Now.AddHours(NumberOfHours * -1);
         var endDate = DateTimeOffset.Now;
         var duration = endDate - startDate;
-        var state = ThingManager.TryGetPropertyState(Thing?.Id, PropertyName, true);
 
         var rawValues = await StateManager.ReadStateAsync<object>(
             Thing!.Id!, PropertyName!, startDate, endDate, CancellationToken.None);
 
         Values = rawValues
             .Select((v, i) => new ChartItem
-            {
-                Index = i,
-                DateTime = v.Item1,
-                RawValue = v.Item2
-            })
+                {
+                    Index = i,
+                    DateTime = v.Item1,
+                    RawValue = v.Item2
+                })
             .OrderBy(v => v.DateTime)
             .ToArray();
 
@@ -158,13 +239,34 @@
 
         try
         {
-            ChartItems = ChartSeriesUtilities.CleanUp(state, Values, numberOfHours);
-           
-            if (ChartItems.Any())
+            _series.Clear();
+
+            foreach (var series in AdditionalSeries.Where(s => !string.IsNullOrEmpty(s.ThingId) && !string.IsNullOrEmpty(s.PropertyName)))
             {
-                Minimum = (decimal)ChartItems.Select(v => v.Value).Min();
-                Maximum = (decimal)ChartItems.Select(v => v.Value).Max();
-                Average = ChartItems.GetSegments().WeightedAverage(
+                var thing = ThingManager.TryGetById(series.ThingId);
+                var state2 = ThingManager.TryGetPropertyState(series.ThingId, series.PropertyName, true);
+                var rawValues2 = await StateManager.ReadStateAsync<object>(
+                    series.ThingId!, series.PropertyName!, startDate, endDate, CancellationToken.None);
+                var values2 = rawValues2
+                    .Select((v, i) => new ChartItem
+                        {
+                            Index = i,
+                            DateTime = v.Item1,
+                            RawValue = v.Item2
+                        })
+                    .OrderBy(v => v.DateTime)
+                    .ToArray();
+                var chartItems2 = ChartSeriesUtilities.CleanUp(state2, values2, NumberOfHours);
+
+                _series[thing?.Title + ": " + series.PropertyName] = chartItems2;
+            }
+
+            var chartItems = _series.First().Value;
+            if (chartItems.Any())
+            {
+                Minimum = (decimal)chartItems.Select(v => v.Value).Min();
+                Maximum = (decimal)chartItems.Select(v => v.Value).Max();
+                Average = chartItems.GetSegments().WeightedAverage(
                     s => (decimal)((s.First.Value + s.Second.Value) / 2.0),
                     s => (decimal)(s.Second.Date - s.First.Date).TotalMilliseconds);
                 Difference = Maximum - Minimum;
@@ -172,7 +274,7 @@
         }
         catch
         {
-            ChartItems = new ChartItem[0];
+            _series = new Dictionary<string, ChartItem[]>();
         }
         finally
         {

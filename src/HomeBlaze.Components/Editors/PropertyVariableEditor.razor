@@ -5,9 +5,9 @@
 {
     <MudTextField @bind-Value="@Variable.Name" Label="Variable Name" />
 
-    <ThingSelect Label="Thing ID" @bind-ThingId="Variable.ThingId" Required="true" />
-    <ThingPropertySelect Label="Property" @bind-PropertyName="@Variable.PropertyName" 
-                         ThingId="@Variable.ThingId" Disabled="@(Variable.ThingId == null)" Required="true" />
+    <ThingSelect Label="Thing ID" @bind-ThingId="Variable.ThingId" Required="false" />
+    <ThingPropertySelect Label="Property" @bind-PropertyName="@Variable.PropertyName"
+                         ThingId="@Variable.ThingId" Disabled="@(Variable.ThingId == null)" Required="false" />
 
     <MudSelect Label="Aggregation" @bind-Value="Variable.WindowAggregation">
     @foreach (AggregationType item in Enum.GetValues(typeof(AggregationType)))
