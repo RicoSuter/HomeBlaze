@@ -74,7 +74,7 @@ namespace HomeBlaze.RtspWebcam
                             .WithFrameOutputCount(1)
                             .ForceFormat("image2")
                             .ForcePixelFormat("yuvj420p"))
-                        .ProcessAsynchronously();
+                        .ProcessAsynchronously(throwOnError: false);
 
                     var image = result ? 
                         await File.ReadAllBytesAsync(imageFile, cancellationToken) : 
@@ -87,8 +87,12 @@ namespace HomeBlaze.RtspWebcam
                 if (Image != null)
                 {
                     ImageType = "image/jpeg";
-                    IsConnected = true;
                     LastUpdated = DateTimeOffset.Now;
+                    IsConnected = true;
+                }
+                else
+                {
+                    IsConnected = false;
                 }
             }
         }
