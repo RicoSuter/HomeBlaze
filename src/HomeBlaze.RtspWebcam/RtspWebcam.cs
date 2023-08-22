@@ -1,19 +1,13 @@
-﻿using HomeBlaze.Abstractions;
+﻿using FFMpegCore;
+using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.RtspWebcam.RawFramesDecoding;
-using HomeBlaze.RtspWebcam.RawFramesReceiving;
 using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.Logging;
-using RtspClientSharp;
 using System;
 using System.ComponentModel;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,30 +17,6 @@ namespace HomeBlaze.RtspWebcam
     [ThingSetup(typeof(RtspWebcamSetup), CanEdit = true)]
     public class RtspWebcam : PollingThing, IConnectedThing, ILastUpdatedProvider, IDisposable
     {
-        private RawFramesSource? _rawFramesSource;
-
-        static RtspWebcam()
-        {
-            NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), DllImportResolver);
-        }
-
-        private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
-        {
-            var architecture = Environment.Is64BitProcess ? "x64" : "x86";
-            var platform = Environment.OSVersion.Platform == PlatformID.Unix ? "Unix" : "Win";
-
-            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
-                "/Libs/" + platform + "/" + architecture + "/" + libraryName;
-
-            if (File.Exists(path))
-            {
-                return NativeLibrary.Load(path, assembly, searchPath);
-            }
-
-            // Otherwise, fallback to default import resolver.
-            return IntPtr.Zero;
-        }
-
         public override string Title => InternalTitle + " (RTSP Webcam)";
 
         // Configuration
@@ -62,6 +32,9 @@ namespace HomeBlaze.RtspWebcam
 
         [Configuration(IsSecret = true)]
         public string? Password { get; set; }
+
+        [Configuration]
+        public bool UseFfmpeg { get; set; }
 
         // State
 
@@ -84,76 +57,40 @@ namespace HomeBlaze.RtspWebcam
         {
         }
 
-        public override Task PollAsync(CancellationToken cancellationToken)
+        public async override Task PollAsync(CancellationToken cancellationToken)
         {
-            if (ServerUrl == null) return Task.CompletedTask;
-
-            var serverUri = new Uri(ServerUrl);
-
-            if (_rawFramesSource == null ||
-                IsConnected == false)
+            if (ServerUrl != null)
             {
-                try
+                var imageFile = "rtsp_temp_" + Id + ".jpg";
+
+                Image = await Task.Run(async () =>
                 {
-                    var connectionParameters =
-                        !string.IsNullOrEmpty(UserName) && !string.IsNullOrEmpty(Password) ?
-                        new ConnectionParameters(serverUri, new NetworkCredential(UserName, Password)) :
-                        new ConnectionParameters(serverUri);
+                    var url = string.IsNullOrEmpty(UserName) ? 
+                        ServerUrl : ServerUrl.Replace("rtsp://", $"rtsp://{UserName}:{Password}@");
 
-                    connectionParameters.RtpTransport = RtpTransportProtocol.TCP;
+                    var result = await FFMpegArguments
+                        .FromUrlInput(new Uri(url))
+                        .OutputToFile(imageFile, false, options => options
+                            .WithFrameOutputCount(1)
+                            .ForceFormat("image2")
+                            .ForcePixelFormat("yuvj420p"))
+                        .ProcessAsynchronously();
 
-                    _rawFramesSource?.Stop();
+                    var image = result ? 
+                        await File.ReadAllBytesAsync(imageFile, cancellationToken) : 
+                        null;
 
-                    int intervalMs = 1000;
-                    int lastTimeSnapshotSaved = Environment.TickCount - intervalMs;
+                    File.Delete(imageFile);
+                    return image;
+                });
 
-                    _rawFramesSource = new RawFramesSource(connectionParameters);
-                    _rawFramesSource.ConnectionStatusChanged += (sender, status) => Console.WriteLine(status);
-
-                    var decodedFrameSource = new DecodedFrameSource();
-                    decodedFrameSource.FrameReceived += (sender, frame) =>
-                    {
-                        int ticksNow = Environment.TickCount;
-
-                        if (Math.Abs(ticksNow - lastTimeSnapshotSaved) < intervalMs)
-                        {
-                            return;
-                        }
-
-                        lastTimeSnapshotSaved = ticksNow;
-
-                        var bitmap = frame.GetBitmap();
-
-                        var stream = new MemoryStream();
-#pragma warning disable CA1416 // Validate platform compatibility
-                        bitmap.Save(stream, ImageFormat.Jpeg);
-#pragma warning restore CA1416 // Validate platform compatibility
-
-                        Image = stream.ToArray();
-                        ImageType = "image/jpeg";
-                        IsConnected = true;
-                        LastUpdated = DateTimeOffset.Now;
-
-                        ThingManager.DetectChanges(this);
-                    };
-
-                    decodedFrameSource.SetRawFramesSource(_rawFramesSource);
-                    _rawFramesSource.Start();
-                }
-                catch
+                if (Image != null)
                 {
-                    IsConnected = false;
-                    throw;
+                    ImageType = "image/jpeg";
+                    IsConnected = true;
+                    LastUpdated = DateTimeOffset.Now;
                 }
             }
-
-            return Task.CompletedTask;
-        }
-
-        public override void Dispose()
-        {
-            _rawFramesSource?.Stop();
-            base.Dispose();
         }
     }
 }
