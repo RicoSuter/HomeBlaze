@@ -21,9 +21,9 @@
         {
             <img src="@ImageUrl" style="width: 100%" />
         }
-        else if (State?.Value is byte[] bytes)
+        else if (State?.Value is Image image)
         {
-            <img src="data:image/jpeg;base64,@Convert.ToBase64String(bytes)" style="width: 100%" />
+            <img src="data:@image.MimeType;base64,@Convert.ToBase64String(image.Data)" style="width: 100%" />
         }
     </DialogContent>
     <DialogActions>

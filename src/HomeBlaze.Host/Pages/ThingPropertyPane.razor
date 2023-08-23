@@ -55,7 +55,15 @@
             }
 
             <br />
-            <MudButton OnClick="@(() => ShowHistory())" Variant="Variant.Filled">History</MudButton>
+            @if (Thing != null && PropertyState.Value is Image)
+            {
+                <MudButton OnClick="@(() => ImageDialog.ShowAsync(DialogService, Thing, PropertyState.Name))" 
+                           Variant="Variant.Filled">Show current Image...</MudButton>
+            }
+            else
+            {
+                <MudButton OnClick="@(() => ShowHistory())" Variant="Variant.Filled">Show History...</MudButton>
+            }
             <br />
 
             <br />

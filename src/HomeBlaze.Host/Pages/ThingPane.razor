@@ -123,10 +123,11 @@
                                      Color="SelectedProperty == value.Key ? Color.Primary : Color.Default"
                                      Style="cursor: pointer">
                                 <strong>@(value.Key): </strong>
-                                @if (value.Value.Value is byte[] bytes)
+
+                                @if (value.Value.Value is Image image)
                                 {
-                                    <span>@bytes.Length bytes</span>
-                                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(bytes)" style="width: 100%" />
+                                    <span>@image.MimeType (@image.Data.Length bytes)</span>
+                                    <img src="data:@image.MimeType;base64,@Convert.ToBase64String(image.Data)" style="width: 100%" />
                                 }
                                 else if (value.Value.Value is IEnumerable enumerable && !(value.Value.Value is string))
                                 {

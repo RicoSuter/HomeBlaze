@@ -1,7 +1,9 @@
 ﻿using FFMpegCore;
+using FFMpegCore.Pipes;
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Networking;
+using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -15,8 +17,10 @@ namespace HomeBlaze.RtspWebcam
 {
     [DisplayName("RTSP Webcam")]
     [ThingSetup(typeof(RtspWebcamSetup), CanEdit = true)]
-    public class RtspWebcam : PollingThing, IConnectedThing, ILastUpdatedProvider, IDisposable
+    public class RtspWebcam : PollingThing, IConnectedThing, ILastUpdatedProvider, ICameraSensor, IDisposable
     {
+        private ILogger _logger;
+
         public override string Title => InternalTitle + " (RTSP Webcam)";
 
         // Configuration
@@ -41,10 +45,7 @@ namespace HomeBlaze.RtspWebcam
         public bool IsConnected { get; private set; }
 
         [State]
-        public byte[]? Image { get; set; }
-
-        [State]
-        public string? ImageType { get; set; }
+        public Image? Image { get; set; }
 
         protected override TimeSpan PollingInterval => TimeSpan.FromSeconds(15);
 
@@ -55,43 +56,56 @@ namespace HomeBlaze.RtspWebcam
         public RtspWebcam(IThingManager thingManager, ILogger<RtspWebcam> logger)
             : base(thingManager, logger)
         {
+            _logger = logger;
         }
 
         public async override Task PollAsync(CancellationToken cancellationToken)
         {
             if (ServerUrl != null)
             {
-                var imageFile = "rtsp_temp_" + Id + ".jpg";
-
-                Image = await Task.Run(async () =>
+                var bytes = await Task.Run(async () =>
                 {
-                    var url = string.IsNullOrEmpty(UserName) ? 
-                        ServerUrl : ServerUrl.Replace("rtsp://", $"rtsp://{UserName}:{Password}@");
+                    try
+                    {
+                        using var timeoutCts = new CancellationTokenSource(5000);
+                        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
-                    var result = await FFMpegArguments
-                        .FromUrlInput(new Uri(url))
-                        .OutputToFile(imageFile, false, options => options
-                            .WithFrameOutputCount(1)
-                            .ForceFormat("image2")
-                            .ForcePixelFormat("yuvj420p"))
-                        .ProcessAsynchronously(throwOnError: false);
+                        var url = string.IsNullOrEmpty(UserName) ?
+                            ServerUrl : ServerUrl.Replace("rtsp://", $"rtsp://{UserName}:{Password}@");
 
-                    var image = result ? 
-                        await File.ReadAllBytesAsync(imageFile, cancellationToken) : 
-                        null;
+                        using var outputStream = new MemoryStream();
 
-                    File.Delete(imageFile);
-                    return image;
+                        var result = await FFMpegArguments
+                            .FromUrlInput(new Uri(url))
+                            .OutputToPipe(new StreamPipeSink(outputStream), options => options
+                                .WithFrameOutputCount(1)
+                                .ForceFormat("image2")
+                                .ForcePixelFormat("yuvj420p"))
+                            .CancellableThrough(cts.Token)
+                            .ProcessAsynchronously(throwOnError: false);
+
+                        return outputStream.ToArray();
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.LogError(exception, "Failed to retrieve image from RTSP stream.");
+                        throw;
+                    }                 
                 });
 
-                if (Image != null)
+                if (bytes != null)
                 {
-                    ImageType = "image/jpeg";
+                    Image = new Image
+                    {
+                        Data = bytes,
+                        MimeType = "image/jpeg"
+                    };
                     LastUpdated = DateTimeOffset.Now;
                     IsConnected = true;
                 }
                 else
                 {
+                    Image = null;
                     IsConnected = false;
                 }
             }
