@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Messages;
+using HomeBlaze.Abstractions;
 
 namespace HomeBlaze.Services
 {
@@ -78,7 +79,7 @@ namespace HomeBlaze.Services
         {
             try
             {
-                if (!(stateChangedEvent.NewValue is byte[]))
+                if (stateChangedEvent.NewValue is not Image)
                 {
                     var thingId = stateChangedEvent.Thing.Id;
                     if (thingId != null)
