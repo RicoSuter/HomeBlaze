@@ -30,12 +30,14 @@
         {
             @if (_thingTypes.Length > 1)
             {
-                <MudSelect T="Type" Label="Thing Type" Value="_selectedThingType" ValueChanged="type => OnThingTypeChanged(type)" Style="margin-top: -28px">
-                    @foreach (var thingType in _thingTypes)
+                <MudSelect T="Type" Label="Thing Type" 
+                           Value="_selectedThingType" ValueChanged="type => OnThingTypeChanged(type)" 
+                           Style="margin-top: -28px">
+                    @foreach (var thingType in _thingTypes
+                        .Select(t => new { Title = t.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? t.Name, Type = t })
+                        .OrderBy(t => t.Title))
                     {
-                        <MudSelectItem Value="@thingType">
-                            @(thingType.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? thingType.Name)
-                        </MudSelectItem>
+                        <MudSelectItem Value="@thingType.Type">@(thingType.Title)</MudSelectItem>
                     }
                 </MudSelect>
                 <br />

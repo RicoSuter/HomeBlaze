@@ -21,6 +21,10 @@ namespace HomeBlaze.RtspWebcam
     {
         private ILogger _logger;
 
+        private const int ConnectionTimeout = 5000;
+        private const string ImageFormat = "image2";
+        private const string PixelFormat = "yuvj420p";
+
         public override string Title => InternalTitle + " (RTSP Webcam)";
 
         // Configuration
@@ -67,7 +71,7 @@ namespace HomeBlaze.RtspWebcam
                 {
                     try
                     {
-                        using var timeoutCts = new CancellationTokenSource(5000);
+                        using var timeoutCts = new CancellationTokenSource(ConnectionTimeout);
                         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
                         var url = string.IsNullOrEmpty(UserName) ?
@@ -79,8 +83,8 @@ namespace HomeBlaze.RtspWebcam
                             .FromUrlInput(new Uri(url))
                             .OutputToPipe(new StreamPipeSink(outputStream), options => options
                                 .WithFrameOutputCount(1)
-                                .ForceFormat("image2")
-                                .ForcePixelFormat("yuvj420p"))
+                                .ForceFormat(ImageFormat)
+                                .ForcePixelFormat(PixelFormat))
                             .CancellableThrough(cts.Token)
                             .ProcessAsynchronously(throwOnError: false);
 
@@ -90,7 +94,7 @@ namespace HomeBlaze.RtspWebcam
                     {
                         _logger.LogError(exception, "Failed to retrieve image from RTSP stream.");
                         throw;
-                    }                 
+                    }
                 });
 
                 if (bytes != null)
