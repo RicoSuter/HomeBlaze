@@ -89,6 +89,7 @@ namespace HomeBlaze.RtspWebcam
                             .CancellableThrough(cts.Token)
                             .ProcessAsynchronously(throwOnError: false);
 
+                        cts.Token.ThrowIfCancellationRequested();
                         return outputStream.ToArray();
                     }
                     catch (Exception exception)
