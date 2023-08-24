@@ -1,4 +1,5 @@
 ﻿using FFMpegCore;
+using FFMpegCore.Arguments;
 using FFMpegCore.Pipes;
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
@@ -80,7 +81,8 @@ namespace HomeBlaze.RtspWebcam
                         using var outputStream = new MemoryStream();
 
                         var result = await FFMpegArguments
-                            .FromUrlInput(new Uri(url))
+                            .FromUrlInput(new Uri(url), options => options
+                                .WithArgument(new RtspTransportArgument("tcp")))
                             .OutputToPipe(new StreamPipeSink(outputStream), options => options
                                 .WithFrameOutputCount(1)
                                 .ForceFormat(ImageFormat)
@@ -112,6 +114,18 @@ namespace HomeBlaze.RtspWebcam
                     Image = null;
                     IsConnected = false;
                 }
+            }
+        }
+
+        private class RtspTransportArgument : IArgument
+        {
+            private readonly string _transport;
+
+            public string Text => "-rtsp_transport " + _transport;
+
+            public RtspTransportArgument(string transport)
+            {
+                this._transport = transport;
             }
         }
     }
