@@ -21,7 +21,8 @@ namespace HomeBlaze.RtspWebcam
     {
         private ILogger _logger;
 
-        private const int ConnectionTimeout = 5000;
+        private readonly TimeSpan _connectionTimeout = TimeSpan.FromSeconds(10);
+
         private const string ImageFormat = "image2";
         private const string PixelFormat = "yuvj420p";
 
@@ -71,7 +72,7 @@ namespace HomeBlaze.RtspWebcam
                 {
                     try
                     {
-                        using var timeoutCts = new CancellationTokenSource(ConnectionTimeout);
+                        using var timeoutCts = new CancellationTokenSource(_connectionTimeout);
                         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
                         var url = string.IsNullOrEmpty(UserName) ?
