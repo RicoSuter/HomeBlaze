@@ -19,6 +19,7 @@
         MillimeterPerHour,
         Kilobyte,
         KilobytePerSecond,
+        MegabitsPerSecond,
         LiterPerHour
     }
 }

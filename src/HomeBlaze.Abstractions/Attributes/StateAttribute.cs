@@ -68,7 +68,8 @@ namespace HomeBlaze.Abstractions.Attributes
 
             if (value is TimeSpan timeSpan)
             {
-                return timeSpan.TotalHours + "h";
+                return timeSpan.TotalSeconds < 5 ? timeSpan.TotalMilliseconds + " ms" :
+                                                   timeSpan.TotalHours + " h";
             }
 
             return Unit switch
@@ -84,6 +85,7 @@ namespace HomeBlaze.Abstractions.Attributes
                 StateUnit.MillimeterPerHour => value + " mm/h",
                 StateUnit.Kilobyte => value + " kb",
                 StateUnit.KilobytePerSecond => value + " kb/s",
+                StateUnit.MegabitsPerSecond => value + " MBit/s",
                 StateUnit.LiterPerHour => value + " l/h",
                 StateUnit.Default => value?.ToString() ?? "",
                 _ => $"{value} {Unit}",
