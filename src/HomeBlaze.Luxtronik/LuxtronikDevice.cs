@@ -31,8 +31,12 @@ namespace HomeBlaze.Luxtronik
         private ClientWebSocket? _webSocket;
         private bool _isRunning = true;
         private bool _isInitialized = false;
-        private DateTimeOffset? _totalCoolingOperatingTimeChange = null;
         private XDocument? _metadataXml;
+
+        private DateTimeOffset? _totalHeatPumpOperatingTimeChange = null;
+        private DateTimeOffset? _totalHeatingOperatingTimeChange = null;
+        private DateTimeOffset? _totalWaterHeatingOperatingTimeChange = null;
+        private DateTimeOffset? _totalCoolingOperatingTimeChange = null;
 
         public string? Title => DisplayTitle;
 
@@ -164,7 +168,17 @@ namespace HomeBlaze.Luxtronik
 
 
         [State(IsEstimated = true)]
+        public bool IsHeatPumpOperating { get; private set; }
+
+        [State(IsEstimated = true)]
+        public bool IsHeating { get; private set; }
+
+        [State(IsEstimated = true)]
+        public bool IsWaterHeating { get; private set; }
+
+        [State(IsEstimated = true)]
         public bool IsCooling { get; private set; }
+
 
         public LuxtronikDevice(IThingManager thingManager, ILogger<LuxtronikDevice> logger)
         {
@@ -326,12 +340,33 @@ namespace HomeBlaze.Luxtronik
 
                 FlowRate = GetDecimal(allValues, incoming, new[] { "Durchfluss" });
 
+                var previousTotalHeatPumpOperatingTime = TotalHeatPumpOperatingTime;
+                var previousTotalHeatingOperatingTime = TotalHeatingOperatingTime;
+                var previousTotalWaterHeatingOperatingTime = TotalWaterHeatingOperatingTime;
+                var previousTotalCoolingOperatingTime = TotalCoolingOperatingTime;
+
                 TotalHeatPumpOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden WP" });
                 TotalHeatingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden Heiz." });
                 TotalWaterHeatingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden WW" });
-
-                var previousTotalCoolingOperatingTime = TotalCoolingOperatingTime;
                 TotalCoolingOperatingTime = GetTimeSpan(allValues, operatingHours, new[] { "Betriebstunden Kuehl" });
+
+                if (previousTotalHeatPumpOperatingTime != null &&
+                   previousTotalHeatPumpOperatingTime != TotalHeatPumpOperatingTime)
+                {
+                    _totalHeatPumpOperatingTimeChange = DateTimeOffset.Now;
+                }
+
+                if (previousTotalHeatingOperatingTime != null &&
+                   previousTotalHeatingOperatingTime != TotalHeatingOperatingTime)
+                {
+                    _totalHeatingOperatingTimeChange = DateTimeOffset.Now;
+                }
+
+                if (previousTotalWaterHeatingOperatingTime != null &&
+                   previousTotalWaterHeatingOperatingTime != TotalWaterHeatingOperatingTime)
+                {
+                    _totalWaterHeatingOperatingTimeChange = DateTimeOffset.Now;
+                }
 
                 if (previousTotalCoolingOperatingTime != null &&
                     previousTotalCoolingOperatingTime != TotalCoolingOperatingTime)
@@ -339,6 +374,9 @@ namespace HomeBlaze.Luxtronik
                     _totalCoolingOperatingTimeChange = DateTimeOffset.Now;
                 }
 
+                IsHeatPumpOperating = DateTimeOffset.Now - _totalHeatPumpOperatingTimeChange < TimeSpan.FromMinutes(65);
+                IsHeating = DateTimeOffset.Now - _totalHeatingOperatingTimeChange < TimeSpan.FromMinutes(65);
+                IsWaterHeating = DateTimeOffset.Now - _totalWaterHeatingOperatingTimeChange < TimeSpan.FromMinutes(65);
                 IsCooling = DateTimeOffset.Now - _totalCoolingOperatingTimeChange < TimeSpan.FromMinutes(65);
 
                 TotalProducedHeatEnergy = GetDecimal(allValues, heatEnergy, new[] { "Heizung" }) * 1000;
@@ -363,6 +401,7 @@ namespace HomeBlaze.Luxtronik
         }
 
         private decimal? _previousTotalConsumedEnergy;
+
         private DateTimeOffset? _previousTotalConsumedEnergyTime;
 
         private void RecalculatePowerConsumption()
