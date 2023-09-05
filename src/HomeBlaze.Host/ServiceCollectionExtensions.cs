@@ -53,7 +53,7 @@ namespace HomeBlaze.Host
                     .AddSingleton<BlobStateManager>()
                     .AddHostedService(s => s.GetRequiredService<BlobStateManager>())
 
-                    .AddSingleton<IStateManager>(s => s.GetRequiredService<BlobStateManager>());
+                    .AddSingleton<IStateManager>(s => s.GetRequiredService<InfluxStateManager>());
             }
             else if (seriesType == "InfluxDb")
             {
