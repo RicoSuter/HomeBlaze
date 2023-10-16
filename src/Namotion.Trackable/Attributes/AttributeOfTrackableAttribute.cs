@@ -17,7 +17,7 @@ public class AttributeOfTrackableAttribute : Attribute
 
     public string AttributeName { get; }
 
-    public TrackableProperty GetStateProperty(TrackableProperty property, ITrackableContext variablesContext)
+    public TrackableProperty GetParent(TrackableProperty property, ITrackableContext variablesContext)
     {
         return variablesContext.AllProperties
             .Single(v => v.Parent == property.Parent &&

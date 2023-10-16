@@ -12,7 +12,7 @@ public static class TrackablePropertyJsonExtensions
         if (trackableProperty.IsAttribute)
         {
             var variable = trackableProperty.AttributeMetadata
-                .GetStateProperty(trackableProperty, trackableProperty.Context);
+                .GetParent(trackableProperty, trackableProperty.Context);
 
             return string.Join('.', variable.Path.Split('.').Select(s => JsonNamingPolicy.CamelCase.ConvertName(s)))
                 + "@" + JsonNamingPolicy.CamelCase.ConvertName(trackableProperty.AttributeMetadata!.AttributeName);
