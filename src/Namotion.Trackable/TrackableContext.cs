@@ -174,7 +174,10 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
             var trackableAttribute = property.GetCustomAttribute<TrackableAttribute>(true);
             if (trackableAttribute != null)
             {
-                trackableAttribute.CreateTrackables(proxy, property, this, trackable);
+                foreach (var child in trackableAttribute.CreateTrackables(proxy, property, this, trackable))
+                {
+                    yield return child;
+                };
             }
         }
         yield return trackable;
