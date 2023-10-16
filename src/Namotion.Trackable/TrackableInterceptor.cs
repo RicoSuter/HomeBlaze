@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -81,15 +82,15 @@ public class TrackableInterceptor : IInterceptor
                 {
                     invocation.Proceed();
 
-                    if (previousValue != null && previousValue is ITrackable)
+                    if (previousValue != null && (previousValue is ITrackable || previousValue is ICollection))
                     {
                         thingContext.Detach(previousValue);
                     }
 
-                    if (newValue != null && newValue is ITrackable)
+                    if (newValue != null && (newValue is ITrackable || newValue is ICollection))
                     {
                         thingContext.Attach(setProperty, newValue);
-                    }
+                    }                    
                 }
             }
             else if (getProperty != null)

@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
@@ -55,7 +55,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     protected virtual void Initialize()
     {
-        _trackables = CreateThings(Object, string.Empty, null)
+        _trackables = CreateThings(Object, string.Empty, null, null)
             .ToArray();
 
         foreach (var thing in _trackables
@@ -95,7 +95,26 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     internal void Attach(TrackableProperty property, object newValue)
     {
-        var newThings = CreateThings(newValue, property.Parent.Path, property)
+        if (newValue is ICollection newTrackables)
+        {
+            var index = 0;
+            foreach (var child in newTrackables.OfType<ITrackable>())
+            {
+                Attach(property, child, index);
+                index++;
+            }
+        }
+        else
+        {
+            Attach(property, newValue, null);
+        }
+    }
+
+    private void Attach(TrackableProperty property, object newValue, int? index)
+    {
+        var path = property.AbsolutePath + (index != null ? $"[{index}]" : string.Empty);
+   
+        var newThings = CreateThings(newValue, path, property, index)
             .ToArray();
 
         foreach (var thing in newThings
@@ -112,10 +131,20 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     internal void Detach(object previousValue)
     {
-        // TODO: Call RemoveThingContext
-        _trackables = _trackables
-            .Where(t => t.Object != previousValue)
-            .ToArray();
+        if (previousValue is ICollection previousTrackables)
+        {
+            foreach (var child in previousTrackables.OfType<ITrackable>())
+            {
+                Detach(child);
+            }
+        }
+        else
+        {
+            // TODO: Call RemoveThingContext
+            _trackables = _trackables
+                .Where(t => t.Object != previousValue)
+                .ToArray();
+        }
     }
 
     internal void MarkVariableAsChanged(TrackableProperty variable, bool isUpdatedFromSource)
@@ -152,14 +181,14 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
     }
 
     // TODO: make internal
-    public IEnumerable<Model.Trackable> CreateThings(object proxy, string parentTargetPath, TrackableProperty? parent)
+    public IEnumerable<Model.Trackable> CreateThings(object proxy, string parentPath, TrackableProperty? parent, int? index)
     {
         if (parent != null && proxy is ITrackableWithParent group)
         {
             group.Parent = parent.Parent.Object;
         }
 
-        var trackable = new Model.Trackable(proxy, parentTargetPath, parent);
+        var trackable = new Model.Trackable(proxy, parentPath, parent, index);
         foreach (var property in proxy.GetType()
             .BaseType! // get properties from actual type
             .GetProperties()
@@ -168,7 +197,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
             var trackableAttribute = property.GetCustomAttribute<TrackableAttribute>(true);
             if (trackableAttribute != null)
             {
-                foreach (var child in trackableAttribute.CreateTrackablesForProperty(property, this, trackable))
+                foreach (var child in trackableAttribute.CreateTrackablesForProperty(property, this, trackable, index))
                 {
                     yield return child;
                 };

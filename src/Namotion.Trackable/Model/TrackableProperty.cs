@@ -60,6 +60,16 @@ public class TrackableProperty
     public Type PropertyType => _property.PropertyType;
 
     [JsonIgnore]
+    public string AbsolutePath
+    {
+        get
+        {
+            var basePath = Parent.Path;
+            return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + _property.Name;
+        }
+    }
+
+    [JsonIgnore]
     public AttributeOfTrackableAttribute? AttributeMetadata => _property
         .GetCustomAttribute<AttributeOfTrackableAttribute>(true);
 
