@@ -14,19 +14,19 @@ public class TrackableFromSourceAttribute : TrackableAttribute
 
     public int Length { get; set; }
 
-    protected override TrackableProperty CreateTrackableProperty(PropertyInfo property, string targetPath, Model.Trackable trackable, ITrackableContext context)
+    protected override TrackableProperty CreateTrackableProperty(PropertyInfo property, string targetPath, Model.Trackable parent, ITrackableContext context)
     {
         if (property.GetCustomAttribute<TrackableFromSourceAttribute>(true) != null)
         {
-            var sourcePath = GetSourcePath(trackable.Parent?.ExtensionData[SourcingExtensions.SourcePathKey] as string, property);
-            return new TrackableProperty(property, targetPath, trackable, context)
+            var sourcePath = GetSourcePath(parent.Parent?.TryGetSourcePath(), property);
+            return new TrackableProperty(property, targetPath, parent, context)
             {
                 ExtensionData = { { SourcingExtensions.SourcePathKey, sourcePath } }
             };
         }
         else
         {
-            return base.CreateTrackableProperty(property, targetPath, trackable, context);
+            return base.CreateTrackableProperty(property, targetPath, parent, context);
         }
     }
 

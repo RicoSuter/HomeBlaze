@@ -10,14 +10,14 @@ namespace Namotion.Trackable.Attributes;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public class TrackableAttribute : Attribute
 {
-    public IEnumerable<Model.Trackable> CreateTrackables(object proxy, PropertyInfo property, ITrackableContext context, Model.Trackable trackable)
+    public IEnumerable<Model.Trackable> CreateTrackablesForProperty(PropertyInfo property, ITrackableContext context, Model.Trackable parent, object parentProxy)
     {
         if (property.GetCustomAttribute<TrackableAttribute>(true) != null)
         {
-            var propertyPath = GetPath(trackable.Path, property);
+            var propertyPath = GetPath(parent.Path, property);
 
-            var trackableProperty = CreateTrackableProperty(property, propertyPath, trackable, context);
-            trackable.Properties.Add(trackableProperty);
+            var trackableProperty = CreateTrackableProperty(property, propertyPath, parent, context);
+            parent.Properties.Add(trackableProperty);
 
             if (property.GetCustomAttributes(true).Any(a => a is RequiredAttribute ||
                                                             a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
@@ -29,7 +29,7 @@ public class TrackableAttribute : Attribute
                 foreach (var childThing in context.CreateThings(child, propertyPath, trackableProperty))
                     yield return childThing;
 
-                property.SetValue(proxy, child);
+                property.SetValue(parentProxy, child);
             }
         }
 

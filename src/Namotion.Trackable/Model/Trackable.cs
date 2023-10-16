@@ -19,7 +19,4 @@ public class Trackable
     public TrackableProperty? Parent { get; }
 
     public ICollection<TrackableProperty> Properties { get; } = new HashSet<TrackableProperty>();
-
-    [JsonExtensionData]
-    public IDictionary<string, object?> ExtensionData { get; } = new Dictionary<string, object?>();
 }
