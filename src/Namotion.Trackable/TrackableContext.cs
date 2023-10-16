@@ -1,0 +1,262 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reflection;
+
+using Microsoft.Extensions.DependencyInjection;
+
+using Namotion.Trackable.Attributes;
+using Namotion.Trackable.Model;
+using Namotion.Trackable.Utilities;
+using Namotion.Trackable.Validation;
+
+namespace Namotion.Trackable;
+
+public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, IObservable<TrackablePropertyChange>
+    where TObject : class
+{
+    private readonly Subject<TrackablePropertyChange> _changesSubject = new Subject<TrackablePropertyChange>();
+
+    private readonly TrackableInterceptor _interceptor;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly string _rootSourcePath;
+
+    private Model.Trackable[] _trackables = Array.Empty<Model.Trackable>();
+
+    public TObject Object { get; private set; }
+
+    public IReadOnlyCollection<Model.Trackable> Trackables => _trackables;
+
+    object ITrackableContext.Object => Object;
+
+    public IEnumerable<TrackableProperty> AllProperties => _trackables.SelectMany(t => t.Properties);
+
+    public TrackableContext(IEnumerable<IPropertyChangeValidator> propertyChangeValidators, IServiceProvider serviceProvider, string? rootSourcePath = null)
+    {
+        _interceptor = new TrackableInterceptor(propertyChangeValidators, this);
+        _serviceProvider = serviceProvider;
+        _rootSourcePath = rootSourcePath ?? string.Empty;
+
+        var thing = (TObject)serviceProvider.CreateProxy(typeof(TObject), this, _interceptor);
+        if (Object == null)
+        {
+            Object = thing;
+            Initialize(Object);
+        }
+    }
+
+    internal void Initialize(object obj)
+    {
+        Object = (TObject)obj;
+        Initialize();
+    }
+
+    protected virtual void Initialize()
+    {
+        _trackables = CreateThings(Object, string.Empty, _rootSourcePath, null)
+            .ToArray();
+
+        foreach (var thing in _trackables
+            .Select(t => t.Object)
+            .OfType<ITrackable>())
+        {
+            thing.AddThingContext(this);
+        }
+
+        // initialize derived property dependencies
+        foreach (var stateProperty in AllProperties
+            .Where(p => p.SetMethod == null))
+        {
+            stateProperty.GetValue();
+        }
+    }
+
+    public TChildTing Create<TChildTing>()
+    {
+        return (TChildTing)_serviceProvider.CreateProxy(typeof(TChildTing), this, _interceptor);
+    }
+
+    public object Create(Type thingType)
+    {
+        return _serviceProvider.CreateProxy(thingType, this, _interceptor);
+    }
+
+    public IDisposable Subscribe(IObserver<TrackablePropertyChange> observer)
+        => _changesSubject.Subscribe(observer);
+
+    public IObservable<TField?> Observe<TField>(Expression<Func<TObject, TField>> selector)
+    {
+        var targetPath = GetFullExpressionPath(selector);
+        return this.Select(change => change.Property.Path.StartsWith(targetPath) && change.Value is not null)
+            .Select(_ => selector.Compile().Invoke(Object));
+    }
+
+    internal void Attach(object parent, object newValue)
+    {
+        var parentThing = _trackables.FirstOrDefault(t => t.Object == parent);
+        if (parentThing != null)
+        {
+            var newThings = CreateThings(newValue, parentThing.Path, parentThing.SourcePath, parentThing)
+                .ToArray();
+
+            foreach (var thing in newThings
+                .Select(t => t.Object)
+                .OfType<ITrackable>())
+            {
+                thing.AddThingContext(this);
+            }
+
+            _trackables = _trackables
+                .Concat(newThings)
+                .ToArray();
+        }
+    }
+
+    internal void Detach(object previousValue)
+    {
+        // TODO: Call RemoveThingContext
+        _trackables = _trackables
+            .Where(t => t.Object != previousValue)
+            .ToArray();
+    }
+
+    internal void MarkVariableAsChanged(TrackableProperty variable, bool isUpdatedFromSource)
+    {
+        MarkVariableAsChanged(variable, isUpdatedFromSource, new HashSet<TrackableProperty>());
+    }
+
+    private void MarkVariableAsChanged(TrackableProperty variable, bool isUpdatedFromSource, HashSet<TrackableProperty> changedVariables)
+    {
+        _changesSubject.OnNext(new TrackablePropertyChange(variable, variable.GetValue(), isUpdatedFromSource));
+        changedVariables.Add(variable);
+
+        foreach (var dependentVariable in AllProperties
+            .Where(v => v.DependentProperties.Contains(variable) &&
+                        !changedVariables.Contains(v))
+            .ToArray())
+        {
+            MarkVariableAsChanged(dependentVariable, false, changedVariables);
+        }
+    }
+
+    private static string GetFullExpressionPath<TItem, TField>(Expression<Func<TItem, TField>> fieldSelector)
+    {
+        var parts = new List<string>();
+        var body = fieldSelector.Body;
+        while (body is MemberExpression member)
+        {
+            parts.Add(member.Member.Name);
+            body = member.Expression;
+        }
+
+        parts.Reverse();
+        return string.Join(".", parts);
+    }
+
+    private IEnumerable<Model.Trackable> CreateThings(object proxy, string parentTargetPath, string? parentSourcePath, Model.Trackable? parent)
+    {
+        if (parent != null && proxy is ITrackableWithParent group)
+        {
+            group.Parent = parent.Object;
+        }
+
+        var thing = new Model.Trackable(proxy, parentTargetPath, parentSourcePath, parent);
+        foreach (var property in proxy.GetType()
+            .BaseType! // get properties from actual type
+            .GetProperties()
+            .Where(p => p.GetMethod?.IsVirtual == true || p.SetMethod?.IsVirtual == true))
+        {
+            var targetPath = GetTargetPath(parentTargetPath, property);
+            var sourcePath = GetSourcePath(parentSourcePath, property);
+            
+            if (property.GetCustomAttribute<TrackableAttribute>(true) != null &&
+                property.GetCustomAttributes(true).Any(a => a is RequiredAttribute || 
+                                                            a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
+                property.PropertyType.IsClass &&
+                property.PropertyType.FullName?.StartsWith("System.") == false)
+            {
+                var child = Create(property.PropertyType);
+
+                foreach (var childThing in CreateThings(child, targetPath, sourcePath, thing))
+                    yield return childThing;
+
+                property.SetValue(proxy, child);
+            }
+            //else if (property.PropertyType.Type.IsArray)
+            //{
+            //    var attribute = property.GetContextAttribute<VariableSourceAttribute>();
+            //    ArrayList items = (ArrayList)Activator.CreateInstance(typeof(ArrayList).MakeGenericType(property.PropertyType.EnumerableItemType), attribute.Length);
+            //    for ( var i = 0; i < attribute.Length; i++)
+            //    {
+            //        var innerItem = (IGroup)ActivatorUtilities.CreateInstance(_serviceProvider, property.PropertyType.EnumerableItemType);
+            //        innerItem.Parent = parent;
+            //        var item = new ProxyGenerator()
+            //            .CreateInterfaceProxyWithTarget(property.PropertyType.EnumerableItemType, innerItem, new ProxyGenerationOptions(), Interceptor);
+
+            //        InitializeProperties(item, $"{parentSourcePath}.{property.Name}[{i}]", $"{parentTargetPath}.{property.Name}[{i}]");
+
+            //        items.Add(item);
+            //    }
+
+            //    property.SetValue(parent, items.ToArray());
+            //}
+            else if (property.GetCustomAttribute<TrackableFromSourceAttribute>(true) != null)
+            {
+                thing.Properties.Add(new TrackableProperty(this, targetPath, sourcePath, property, thing));
+            }
+            else if (property.GetCustomAttribute<TrackableAttribute>(true) != null)
+            {
+                thing.Properties.Add(new TrackableProperty(this, targetPath, null, property, thing));
+            }
+            else if (property.GetCustomAttribute<AttributeOfTrackableAttribute>(true) != null)
+            {
+                thing.Properties.Add(new TrackableProperty(this, targetPath, null, property, thing));
+            }
+        }
+        yield return thing;
+    }
+
+    private string? GetSourcePath(string? basePath, PropertyInfo propertyInfo)
+    {
+        var attribute = propertyInfo.GetCustomAttribute<TrackableFromSourceAttribute>(true);
+        if (attribute?.AbsolutePath != null)
+        {
+            return attribute?.AbsolutePath!;
+        }
+        else if (attribute?.RelativePath != null)
+        {
+            return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + attribute?.RelativePath;
+        }
+
+        return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + propertyInfo.Name;
+    }
+
+    private string GetTargetPath(string basePath, PropertyInfo propertyInfo)
+    {
+        return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + propertyInfo.Name;
+    }
+
+    void ITrackableContext.Initialize(object obj)
+    {
+        Initialize(obj);
+    }
+
+    void ITrackableContext.Attach(object invocationTarget, object newValue)
+    {
+        Attach(invocationTarget, newValue);
+    }
+
+    void ITrackableContext.Detach(object previousValue)
+    {
+        Detach(previousValue);
+    }
+
+    void ITrackableContext.MarkVariableAsChanged(TrackableProperty setVariable, bool isChangingFromSource)
+    {
+        MarkVariableAsChanged(setVariable, isChangingFromSource);
+    }
+}
