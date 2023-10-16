@@ -88,7 +88,7 @@ public class TrackableInterceptor : IInterceptor
 
                     if (newValue != null && newValue is ITrackable)
                     {
-                        thingContext.Attach(invocation.InvocationTarget, newValue);
+                        thingContext.Attach(setProperty, newValue);
                     }
                 }
             }

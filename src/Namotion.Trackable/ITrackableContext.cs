@@ -11,9 +11,9 @@ public interface ITrackableContext : ITrackableFactory
 
     internal void Initialize(object obj);
 
-    internal IEnumerable<Model.Trackable> CreateThings(object proxy, string parentTargetPath, string? parentSourcePath, Model.Trackable? parent);
+    internal IEnumerable<Model.Trackable> CreateThings(object proxy, string parentTargetPath, TrackableProperty? parent);
 
-    internal void Attach(object invocationTarget, object newValue);
+    internal void Attach(TrackableProperty property, object newValue);
 
     internal void Detach(object previousValue);
 

@@ -10,14 +10,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class TrackableServiceCollection
 {
-    public static IServiceCollection AddTrackedThing<TThing>(this IServiceCollection services, string? rootSourcePath = null)
+    public static IServiceCollection AddTrackedThing<TThing>(this IServiceCollection services)
         where TThing : class
     {
         services
             .AddSingleton(sp =>
             {
                 var stateChangeValidators = sp.GetServices<IPropertyChangeValidator>();
-                return new TrackableContext<TThing>(stateChangeValidators, sp, rootSourcePath);
+                return new TrackableContext<TThing>(stateChangeValidators, sp);
             })
             .AddSingleton(sp => sp.GetRequiredService<TrackableContext<TThing>>().Object);
 

@@ -23,7 +23,6 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     private readonly TrackableInterceptor _interceptor;
     private readonly IServiceProvider _serviceProvider;
-    private readonly string _rootSourcePath;
 
     private Model.Trackable[] _trackables = Array.Empty<Model.Trackable>();
 
@@ -35,11 +34,10 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     public IEnumerable<TrackableProperty> AllProperties => _trackables.SelectMany(t => t.Properties);
 
-    public TrackableContext(IEnumerable<IPropertyChangeValidator> propertyChangeValidators, IServiceProvider serviceProvider, string? rootSourcePath = null)
+    public TrackableContext(IEnumerable<IPropertyChangeValidator> propertyChangeValidators, IServiceProvider serviceProvider)
     {
         _interceptor = new TrackableInterceptor(propertyChangeValidators, this);
         _serviceProvider = serviceProvider;
-        _rootSourcePath = rootSourcePath ?? string.Empty;
 
         var thing = (TObject)serviceProvider.CreateProxy(typeof(TObject), this, _interceptor);
         if (Object == null)
@@ -57,7 +55,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     protected virtual void Initialize()
     {
-        _trackables = CreateThings(Object, string.Empty, _rootSourcePath, null)
+        _trackables = CreateThings(Object, string.Empty, null)
             .ToArray();
 
         foreach (var thing in _trackables
@@ -95,25 +93,21 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
             .Select(_ => selector.Compile().Invoke(Object));
     }
 
-    internal void Attach(object parent, object newValue)
+    internal void Attach(TrackableProperty property, object newValue)
     {
-        var parentThing = _trackables.FirstOrDefault(t => t.Object == parent);
-        if (parentThing != null)
+        var newThings = CreateThings(newValue, property.Parent.Path, property)
+            .ToArray();
+
+        foreach (var thing in newThings
+            .Select(t => t.Object)
+            .OfType<ITrackable>())
         {
-            var newThings = CreateThings(newValue, parentThing.Path, parentThing.SourcePath, parentThing)
-                .ToArray();
-
-            foreach (var thing in newThings
-                .Select(t => t.Object)
-                .OfType<ITrackable>())
-            {
-                thing.AddThingContext(this);
-            }
-
-            _trackables = _trackables
-                .Concat(newThings)
-                .ToArray();
+            thing.AddThingContext(this);
         }
+
+        _trackables = _trackables
+            .Concat(newThings)
+            .ToArray();
     }
 
     internal void Detach(object previousValue)
@@ -158,14 +152,14 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
     }
 
     // TODO: make internal
-    public IEnumerable<Model.Trackable> CreateThings(object proxy, string parentTargetPath, string? parentSourcePath, Model.Trackable? parent)
+    public IEnumerable<Model.Trackable> CreateThings(object proxy, string parentTargetPath, TrackableProperty? parent)
     {
         if (parent != null && proxy is ITrackableWithParent group)
         {
-            group.Parent = parent.Object;
+            group.Parent = parent.Parent.Object;
         }
 
-        var trackable = new Model.Trackable(proxy, parentTargetPath, parentSourcePath, parent);
+        var trackable = new Model.Trackable(proxy, parentTargetPath, parent);
         foreach (var property in proxy.GetType()
             .BaseType! // get properties from actual type
             .GetProperties()
@@ -188,9 +182,9 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         Initialize(obj);
     }
 
-    void ITrackableContext.Attach(object invocationTarget, object newValue)
+    void ITrackableContext.Attach(TrackableProperty property, object newValue)
     {
-        Attach(invocationTarget, newValue);
+        Attach(property, newValue);
     }
 
     void ITrackableContext.Detach(object previousValue)

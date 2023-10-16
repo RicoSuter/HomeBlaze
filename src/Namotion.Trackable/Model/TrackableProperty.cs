@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 
 using Namotion.Trackable.Attributes;
+using Namotion.Trackable.Sourcing;
 
 namespace Namotion.Trackable.Model;
 
@@ -14,17 +15,15 @@ public class TrackableProperty
     private readonly PropertyInfo _property;
 
     public TrackableProperty(
-        ITrackableContext context,
-        string path,
-        string? sourcePath,
         PropertyInfo property,
-        Trackable parent)
+        string path,
+        Trackable parent,
+        ITrackableContext context)
     {
         _property = property;
 
         Context = context;
         Path = path;
-        SourcePath = sourcePath;
         Parent = parent;
 
         GetMethod = property.GetMethod;
@@ -40,10 +39,6 @@ public class TrackableProperty
 
     public string Path { get; }
 
-    public string? SourcePath { get; }
-
-    public bool IsDerived => SourcePath == null;
-
     [MemberNotNullWhen(true, nameof(AttributeMetadata))]
     public bool IsAttribute => AttributeMetadata != null;
 
@@ -56,15 +51,13 @@ public class TrackableProperty
     [JsonIgnore]
     public MethodInfo? SetMethod { get; }
 
+    public bool IsDerived => SetMethod == null;
+
     [JsonIgnore]
     public string PropertyName => _property.Name;
 
     [JsonIgnore]
     public Type PropertyType => _property.PropertyType;
-
-    [JsonIgnore]
-    public TrackableFromSourceAttribute? SourceMetadata => _property
-        .GetCustomAttribute<TrackableFromSourceAttribute>(true);
 
     [JsonIgnore]
     public AttributeOfTrackableAttribute? AttributeMetadata => _property
@@ -79,6 +72,9 @@ public class TrackableProperty
         .AllProperties
         .Where(v => v.AttributeMetadata?.PropertyName == _property.Name && v.Parent == Parent)
         .ToDictionary(v => v.AttributeMetadata!.AttributeName, v => v);
+
+    [JsonExtensionData]
+    public IDictionary<string, object?> ExtensionData { get; } = new Dictionary<string, object?>();
 
     public object? GetValue()
     {
