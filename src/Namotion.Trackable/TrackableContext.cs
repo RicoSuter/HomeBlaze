@@ -157,87 +157,27 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         return string.Join(".", parts);
     }
 
-    private IEnumerable<Model.Trackable> CreateThings(object proxy, string parentTargetPath, string? parentSourcePath, Model.Trackable? parent)
+    // TODO: make internal
+    public IEnumerable<Model.Trackable> CreateThings(object proxy, string parentTargetPath, string? parentSourcePath, Model.Trackable? parent)
     {
         if (parent != null && proxy is ITrackableWithParent group)
         {
             group.Parent = parent.Object;
         }
 
-        var thing = new Model.Trackable(proxy, parentTargetPath, parentSourcePath, parent);
+        var trackable = new Model.Trackable(proxy, parentTargetPath, parentSourcePath, parent);
         foreach (var property in proxy.GetType()
             .BaseType! // get properties from actual type
             .GetProperties()
             .Where(p => p.GetMethod?.IsVirtual == true || p.SetMethod?.IsVirtual == true))
         {
-            var targetPath = GetTargetPath(parentTargetPath, property);
-            var sourcePath = GetSourcePath(parentSourcePath, property);
-            
-            if (property.GetCustomAttribute<TrackableAttribute>(true) != null &&
-                property.GetCustomAttributes(true).Any(a => a is RequiredAttribute || 
-                                                            a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
-                property.PropertyType.IsClass &&
-                property.PropertyType.FullName?.StartsWith("System.") == false)
+            var trackableAttribute = property.GetCustomAttribute<TrackableAttribute>(true);
+            if (trackableAttribute != null)
             {
-                var child = Create(property.PropertyType);
-
-                foreach (var childThing in CreateThings(child, targetPath, sourcePath, thing))
-                    yield return childThing;
-
-                property.SetValue(proxy, child);
-            }
-            //else if (property.PropertyType.Type.IsArray)
-            //{
-            //    var attribute = property.GetContextAttribute<VariableSourceAttribute>();
-            //    ArrayList items = (ArrayList)Activator.CreateInstance(typeof(ArrayList).MakeGenericType(property.PropertyType.EnumerableItemType), attribute.Length);
-            //    for ( var i = 0; i < attribute.Length; i++)
-            //    {
-            //        var innerItem = (IGroup)ActivatorUtilities.CreateInstance(_serviceProvider, property.PropertyType.EnumerableItemType);
-            //        innerItem.Parent = parent;
-            //        var item = new ProxyGenerator()
-            //            .CreateInterfaceProxyWithTarget(property.PropertyType.EnumerableItemType, innerItem, new ProxyGenerationOptions(), Interceptor);
-
-            //        InitializeProperties(item, $"{parentSourcePath}.{property.Name}[{i}]", $"{parentTargetPath}.{property.Name}[{i}]");
-
-            //        items.Add(item);
-            //    }
-
-            //    property.SetValue(parent, items.ToArray());
-            //}
-            else if (property.GetCustomAttribute<TrackableFromSourceAttribute>(true) != null)
-            {
-                thing.Properties.Add(new TrackableProperty(this, targetPath, sourcePath, property, thing));
-            }
-            else if (property.GetCustomAttribute<TrackableAttribute>(true) != null)
-            {
-                thing.Properties.Add(new TrackableProperty(this, targetPath, null, property, thing));
-            }
-            else if (property.GetCustomAttribute<AttributeOfTrackableAttribute>(true) != null)
-            {
-                thing.Properties.Add(new TrackableProperty(this, targetPath, null, property, thing));
+                trackableAttribute.CreateTrackables(proxy, property, this, trackable);
             }
         }
-        yield return thing;
-    }
-
-    private string? GetSourcePath(string? basePath, PropertyInfo propertyInfo)
-    {
-        var attribute = propertyInfo.GetCustomAttribute<TrackableFromSourceAttribute>(true);
-        if (attribute?.AbsolutePath != null)
-        {
-            return attribute?.AbsolutePath!;
-        }
-        else if (attribute?.RelativePath != null)
-        {
-            return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + attribute?.RelativePath;
-        }
-
-        return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + propertyInfo.Name;
-    }
-
-    private string GetTargetPath(string basePath, PropertyInfo propertyInfo)
-    {
-        return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + propertyInfo.Name;
+        yield return trackable;
     }
 
     void ITrackableContext.Initialize(object obj)
