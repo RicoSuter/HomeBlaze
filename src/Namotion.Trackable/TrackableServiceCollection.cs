@@ -16,15 +16,16 @@ public static class TrackableServiceCollection
         services
             .AddSingleton(sp =>
             {
-                var stateChangeValidators = sp.GetServices<IPropertyChangeValidator>();
-                return new TrackableContext<TThing>(stateChangeValidators, sp);
+                var propertyValidators = sp.GetServices<ITrackablePropertyValidator>();
+                var interceptors = sp.GetServices<ITrackableInterceptor>();
+                return new TrackableContext<TThing>(propertyValidators, interceptors, sp);
             })
             .AddSingleton(sp => sp.GetRequiredService<TrackableContext<TThing>>().Object);
 
         return services;
     }
 
-    internal static object CreateProxy(this IServiceProvider serviceProvider, Type proxyType, ITrackableContext thingContext, IInterceptor interceptor)
+    internal static object CreateProxy(this IServiceProvider serviceProvider, Type proxyType, ITrackableContext thingContext, IInterceptor[] interceptors)
     {
         var constructorArguments = proxyType
             .GetConstructors()
@@ -40,7 +41,7 @@ public static class TrackableServiceCollection
                 new Type[] { typeof(ITrackable) },
                 new ProxyGenerationOptions(),
                 constructorArguments,
-                interceptor);
+                interceptors);
 
         return thing;
     }

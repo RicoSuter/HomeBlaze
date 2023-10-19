@@ -9,7 +9,6 @@ using System.Text.Json.Serialization.Metadata;
 using Microsoft.AspNetCore.Mvc;
 
 using Namotion.Trackable.Attributes;
-using Namotion.Trackable.Validation;
 
 namespace Namotion.Trackable.AspNetCore.Controllers;
 
@@ -65,7 +64,9 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult UpdateVariables([FromBody] Dictionary<string, JsonElement> updates, [FromServices] IEnumerable<IPropertyChangeValidator> validators)
+    public ActionResult UpdateVariables(
+        [FromBody] Dictionary<string, JsonElement> updates, 
+        [FromServices] IEnumerable<ITrackablePropertyValidator> propertyValidators)
     {
         try
         {
@@ -109,7 +110,7 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
             var errors = new Dictionary<string, ValidationResult[]>();
             foreach (var update in resolvedUpdates)
             {
-                var updateErrors = validators
+                var updateErrors = propertyValidators
                     .SelectMany(v => v.Validate(update.Variable!, update.Value, _variablesContext))
                     .ToArray();
 

@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
-
+using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 
 using Namotion.Trackable.Attributes;
@@ -22,6 +22,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
     private readonly Subject<TrackablePropertyChange> _changesSubject = new Subject<TrackablePropertyChange>();
 
     private readonly TrackableInterceptor _interceptor;
+    private readonly IEnumerable<IInterceptor> _interceptors;
     private readonly IServiceProvider _serviceProvider;
 
     private Model.Trackable[] _trackables = Array.Empty<Model.Trackable>();
@@ -34,12 +35,20 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     public IEnumerable<TrackableProperty> AllProperties => _trackables.SelectMany(t => t.Properties);
 
-    public TrackableContext(IEnumerable<IPropertyChangeValidator> propertyChangeValidators, IServiceProvider serviceProvider)
+    public TrackableContext(
+        IEnumerable<ITrackablePropertyValidator> propertyValidators, 
+        IEnumerable<ITrackableInterceptor> interceptors,
+        IServiceProvider serviceProvider)
     {
-        _interceptor = new TrackableInterceptor(propertyChangeValidators, this);
+        _interceptor = new TrackableInterceptor(propertyValidators, this);
+        _interceptors = interceptors;
         _serviceProvider = serviceProvider;
 
-        var thing = (TObject)serviceProvider.CreateProxy(typeof(TObject), this, _interceptor);
+        var thing = (TObject)serviceProvider
+            .CreateProxy(typeof(TObject), this, interceptors
+                .Concat(new[] { _interceptor })
+                .ToArray());
+
         if (Object == null)
         {
             Object = thing;
@@ -75,12 +84,16 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     public TChildTing Create<TChildTing>()
     {
-        return (TChildTing)_serviceProvider.CreateProxy(typeof(TChildTing), this, _interceptor);
+        return (TChildTing)_serviceProvider.CreateProxy(typeof(TChildTing), this, _interceptors
+            .Concat(new[] { _interceptor })
+            .ToArray());
     }
 
     public object Create(Type thingType)
     {
-        return _serviceProvider.CreateProxy(thingType, this, _interceptor);
+        return _serviceProvider.CreateProxy(thingType, this, _interceptors
+            .Concat(new[] { _interceptor })
+            .ToArray());
     }
 
     public IDisposable Subscribe(IObserver<TrackablePropertyChange> observer)

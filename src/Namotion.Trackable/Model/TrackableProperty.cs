@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 
 using Namotion.Trackable.Attributes;
-using Namotion.Trackable.Sourcing;
 
 namespace Namotion.Trackable.Model;
 

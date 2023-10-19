@@ -12,18 +12,18 @@ using Namotion.Trackable.Validation;
 
 namespace Namotion.Trackable;
 
-public class TrackableInterceptor : IInterceptor
+public class TrackableInterceptor : ITrackableInterceptor
 {
     private ICollection<ITrackableContext> _trackableContexts = new HashSet<ITrackableContext>();
 
     [ThreadStatic]
     private static Stack<Tuple<TrackableProperty, List<TrackableProperty>>>? _touchedProperties;
 
-    private readonly IEnumerable<IPropertyChangeValidator> _validators;
+    private readonly IEnumerable<ITrackablePropertyValidator> _propertyValidators;
 
-    public TrackableInterceptor(IEnumerable<IPropertyChangeValidator> validators, ITrackableContext trackableContext)
+    public TrackableInterceptor(IEnumerable<ITrackablePropertyValidator> propertyValidators, ITrackableContext trackableContext)
     {
-        _validators = validators;
+        _propertyValidators = propertyValidators;
         _trackableContexts.Add(trackableContext);
     }
 
@@ -67,7 +67,7 @@ public class TrackableInterceptor : IInterceptor
 
             if (setProperty != null)
             {
-                var errors = _validators
+                var errors = _propertyValidators
                     .SelectMany(v => v.Validate(setProperty, invocation.Arguments[0], thingContext))
                     .ToArray();
 

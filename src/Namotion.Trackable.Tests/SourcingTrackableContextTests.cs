@@ -46,7 +46,8 @@ public class SourcingTrackableContextTests
     {
         var serviceCollection = new ServiceCollection();
         return new TrackableContext<T>(
-            Array.Empty<IPropertyChangeValidator>(),
+            Array.Empty<ITrackablePropertyValidator>(),
+            Array.Empty<ITrackableInterceptor>(),
             serviceCollection.BuildServiceProvider());
     }
 
