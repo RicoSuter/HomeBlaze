@@ -60,81 +60,77 @@ public class TrackableInterceptor : ITrackableInterceptor
                 .AllProperties
                 .FirstOrDefault(v => v.Parent.Object == invocation.InvocationTarget &&
                                      v.GetMethod?.Name == invocation.Method?.Name);
+           
             var setProperty = trackableContext
                 .AllProperties
                 .FirstOrDefault(v => v.Parent.Object == invocation.InvocationTarget &&
                                      v.SetMethod?.Name == invocation.Method?.Name);
 
-            HandlePropertyCall(invocation, trackableContext, getProperty, setProperty);
-        }
-    }
-
-    private void HandlePropertyCall(IInvocation invocation, ITrackableContext trackableContext, TrackableProperty? getProperty, TrackableProperty? setProperty)
-    {
-        if (setProperty != null)
-        {
-            var errors = _propertyValidators
-                .SelectMany(v => v.Validate(setProperty, invocation.Arguments[0], trackableContext))
-                .ToArray();
-
-            if (errors.Any())
+            if (setProperty != null)
             {
-                throw new ValidationException(string.Join("\n", errors.Select(e => e.ErrorMessage)));
-            }
+                var errors = _propertyValidators
+                    .SelectMany(v => v.Validate(setProperty, invocation.Arguments[0], trackableContext))
+                    .ToArray();
 
-            var previousValue = setProperty.GetValue();
-            var newValue = invocation.Arguments[0];
-            if (!Equals(previousValue, newValue))
-            {
-                invocation.Proceed();
-
-                if (previousValue != null && (previousValue is ITrackable || previousValue is ICollection))
+                if (errors.Any())
                 {
-                    trackableContext.Detach(previousValue);
+                    throw new ValidationException(string.Join("\n", errors.Select(e => e.ErrorMessage)));
                 }
 
-                if (newValue != null && (newValue is ITrackable || newValue is ICollection))
+                var previousValue = setProperty.GetValue();
+                var newValue = invocation.Arguments[0];
+                if (!Equals(previousValue, newValue))
                 {
-                    trackableContext.Attach(setProperty, newValue);
+                    invocation.Proceed();
+
+                    if (previousValue != null && (previousValue is ITrackable || previousValue is ICollection))
+                    {
+                        trackableContext.Detach(previousValue);
+                    }
+
+                    if (newValue != null && (newValue is ITrackable || newValue is ICollection))
+                    {
+                        trackableContext.Attach(setProperty, newValue);
+                    }
                 }
             }
-        }
-        else if (getProperty != null)
-        {
-            if (_touchedProperties == null)
+            else if (getProperty != null)
             {
-                _touchedProperties = new Stack<Tuple<TrackableProperty, List<TrackableProperty>>>();
-            }
+                if (_touchedProperties == null)
+                {
+                    _touchedProperties = new Stack<Tuple<TrackableProperty, List<TrackableProperty>>>();
+                }
 
-            if (getProperty.IsDerived)
-            {
-                var dependencies = new List<TrackableProperty>();
+                if (getProperty.IsDerived)
+                {
+                    var dependencies = new List<TrackableProperty>();
 
-                _touchedProperties!.Push(new Tuple<TrackableProperty, List<TrackableProperty>>(getProperty, dependencies));
+                    _touchedProperties!.Push(new Tuple<TrackableProperty, List<TrackableProperty>>(getProperty, dependencies));
 
-                invocation.Proceed();
-                getProperty.DependentProperties = dependencies.ToArray();
+                    invocation.Proceed();
+                    getProperty.DependentProperties = dependencies.ToArray();
 
-                _touchedProperties.Pop();
+                    _touchedProperties.Pop();
+                }
+                else
+                {
+                    invocation.Proceed();
+                }
+
+                if (_touchedProperties.Any())
+                {
+                    _touchedProperties.Peek().Item2.Add(getProperty);
+                }
             }
             else
             {
                 invocation.Proceed();
             }
 
-            if (_touchedProperties.Any())
+            if (setProperty != null)
             {
-                _touchedProperties.Peek().Item2.Add(getProperty);
+                trackableContext.MarkVariableAsChanged(setProperty);
             }
-        }
-        else
-        {
-            invocation.Proceed();
-        }
-
-        if (setProperty != null)
-        {
-            trackableContext.MarkVariableAsChanged(setProperty);
         }
     }
 }
