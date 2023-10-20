@@ -24,6 +24,16 @@ public static class SourcingExtensions
         return ConvertToSource(property, value);
     }
 
+    public static object? ConvertToSource(this TrackableProperty property, object? value)
+    {
+        foreach (var attribute in property.GetCustomAttributes<IStateConverter>(true))
+        {
+            value = attribute.ConvertToSource(value, property);
+        }
+
+        return value;
+    }
+
     public static void SetValueFromSource(this TrackableProperty property, object? valueFromSource)
     {
         property.Data[IsChangingFromSourceKey] = true;
@@ -47,16 +57,6 @@ public static class SourcingExtensions
         foreach (var attribute in property.GetCustomAttributes<IStateConverter>(true))
         {
             value = attribute.ConvertFromSource(value, property.PropertyType, property);
-        }
-
-        return value;
-    }
-
-    private static object? ConvertToSource(TrackableProperty property, object? value)
-    {
-        foreach (var attribute in property.GetCustomAttributes<IStateConverter>(true))
-        {
-            value = attribute.ConvertToSource(value, property);
         }
 
         return value;
