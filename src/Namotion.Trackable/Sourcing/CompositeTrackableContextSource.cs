@@ -10,27 +10,30 @@ namespace Namotion.Trackable.Sourcing;
 public class CompositeTrackableContextSource : ITrackableContextSource
 {
     private readonly IReadOnlyDictionary<string, ITrackableContextSource> _sources;
+    private readonly string _separator;
 
-    public CompositeTrackableContextSource(IReadOnlyDictionary<string, ITrackableContextSource> sources)
+    public CompositeTrackableContextSource(IReadOnlyDictionary<string, ITrackableContextSource> sources, string separator = ".")
     {
         _sources = sources
             .OrderByDescending(s => s.Key)
             .ToDictionary(s => s.Key, s => s.Value);
+
+        _separator = separator;
     }
 
     public async Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
     {
         var result = new List<KeyValuePair<string, object?>>();
 
-        var groups = sourcePaths.GroupBy(p => _sources.First(s => p.StartsWith(s.Key)));
+        var groups = sourcePaths.GroupBy(p => _sources.First(s => p.StartsWith(s.Key + _separator)));
         foreach (var group in groups)
         {
             (var path, var source) = group.Key;
             if (path is not null && source is not null)
             {
-                var innerSourcePaths = group.Select(p => p.Substring(path.Length)); ;
+                var innerSourcePaths = group.Select(p => p.Substring(path.Length + _separator.Length)); ;
                 var sourceResult = await source.ReadAsync(innerSourcePaths, cancellationToken);
-                result.AddRange(sourceResult.Select(p => new KeyValuePair<string, object?>(path + p.Key, p.Value)));
+                result.AddRange(sourceResult.Select(p => new KeyValuePair<string, object?>(path + _separator + p.Key, p.Value)));
             }
         }
 
@@ -41,16 +44,16 @@ public class CompositeTrackableContextSource : ITrackableContextSource
     {
         var disposables = new List<IDisposable>();
 
-        var groups = sourcePaths.GroupBy(p => _sources.First(s => p.StartsWith(s.Key)));
+        var groups = sourcePaths.GroupBy(p => _sources.First(s => p.StartsWith(s.Key + _separator)));
         foreach (var group in groups)
         {
             (var path, var source) = group.Key;
             if (path is not null && source is not null)
             {
-                var innerSourcePaths = group.Select(p => p.Substring(path.Length)); ;
+                var innerSourcePaths = group.Select(p => p.Substring(path.Length + _separator.Length)); ;
                 disposables.Add(await source.SubscribeAsync(
                     innerSourcePaths,
-                    (innerPath, value) => propertyUpdateAction(path + innerPath, value),
+                    (innerPath, value) => propertyUpdateAction(path + _separator + innerPath, value),
                     cancellationToken));
             }
         }
@@ -62,13 +65,13 @@ public class CompositeTrackableContextSource : ITrackableContextSource
     {
         var result = new List<KeyValuePair<string, object?>>();
 
-        var groups = propertyChanges.GroupBy(p => _sources.First(s => p.Key.StartsWith(s.Key)));
+        var groups = propertyChanges.GroupBy(p => _sources.First(s => p.Key.StartsWith(s.Key + _separator)));
         foreach (var group in groups)
         {
             (var path, var source) = group.Key;
             if (path is not null && source is not null)
             {
-                var innerSourcePaths = group.ToDictionary(p => p.Key.Substring(path.Length), p => p.Value);
+                var innerSourcePaths = group.ToDictionary(p => p.Key.Substring(path.Length + _separator.Length), p => p.Value);
                 await source.WriteAsync(innerSourcePaths, cancellationToken);
             }
         }

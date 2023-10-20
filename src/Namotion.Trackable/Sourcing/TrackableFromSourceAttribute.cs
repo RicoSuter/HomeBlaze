@@ -12,7 +12,7 @@ public class TrackableFromSourceAttribute : TrackableAttribute
 
     public string? AbsolutePath { get; set; }
 
-    public int Length { get; set; }
+    public string Separator { get; set; } = ".";
 
     protected override TrackableProperty CreateTrackableProperty(PropertyInfo property, string path, Model.Trackable parent, int? parentCollectionIndex, ITrackableContext context)
     {
@@ -41,9 +41,9 @@ public class TrackableFromSourceAttribute : TrackableAttribute
         }
         else if (attribute?.RelativePath != null)
         {
-            return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + attribute?.RelativePath;
+            return (!string.IsNullOrEmpty(basePath) ? basePath + Separator : "") + attribute?.RelativePath;
         }
 
-        return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + propertyInfo.Name;
+        return (!string.IsNullOrEmpty(basePath) ? basePath + Separator : "") + propertyInfo.Name;
     }
 }
