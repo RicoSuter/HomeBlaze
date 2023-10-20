@@ -160,14 +160,14 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
     }
 
-    internal void MarkVariableAsChanged(TrackableProperty variable, bool isUpdatedFromSource)
+    internal void MarkVariableAsChanged(TrackableProperty variable)
     {
-        MarkVariableAsChanged(variable, isUpdatedFromSource, new HashSet<TrackableProperty>());
+        MarkVariableAsChanged(variable, new HashSet<TrackableProperty>());
     }
 
-    private void MarkVariableAsChanged(TrackableProperty variable, bool isUpdatedFromSource, HashSet<TrackableProperty> changedVariables)
+    private void MarkVariableAsChanged(TrackableProperty variable, HashSet<TrackableProperty> changedVariables)
     {
-        _changesSubject.OnNext(new TrackablePropertyChange(variable, variable.GetValue(), isUpdatedFromSource));
+        _changesSubject.OnNext(new TrackablePropertyChange(variable, new Dictionary<string, object?>(variable.Data), variable.GetValue()));
         changedVariables.Add(variable);
 
         foreach (var dependentVariable in AllProperties
@@ -175,7 +175,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                         !changedVariables.Contains(v))
             .ToArray())
         {
-            MarkVariableAsChanged(dependentVariable, false, changedVariables);
+            MarkVariableAsChanged(dependentVariable, changedVariables);
         }
     }
 
@@ -234,8 +234,8 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         Detach(previousValue);
     }
 
-    void ITrackableContext.MarkVariableAsChanged(TrackableProperty setVariable, bool isChangingFromSource)
+    void ITrackableContext.MarkVariableAsChanged(TrackableProperty setVariable)
     {
-        MarkVariableAsChanged(setVariable, isChangingFromSource);
+        MarkVariableAsChanged(setVariable);
     }
 }

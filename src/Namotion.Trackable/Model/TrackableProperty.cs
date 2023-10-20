@@ -29,10 +29,6 @@ public class TrackableProperty
         SetMethod = property.SetMethod;
     }
 
-    // TODO: Make this thread-safe??
-    [JsonIgnore]
-    internal bool IsChangingFromSource { get; private set; }
-
     [JsonIgnore]
     public ITrackableContext Context { get; }
 
@@ -83,7 +79,12 @@ public class TrackableProperty
         .ToDictionary(v => v.AttributeMetadata!.AttributeName, v => v);
 
     [JsonExtensionData]
-    public IDictionary<string, object?> ExtensionData { get; } = new Dictionary<string, object?>();
+    public IDictionary<string, object?> Data { get; } = new Dictionary<string, object?>();
+
+    public IEnumerable<T> GetCustomAttributes<T>(bool inherit)
+    {
+        return _property.GetCustomAttributes(inherit).OfType<T>();
+    }
 
     public object? GetValue()
     {
@@ -93,51 +94,5 @@ public class TrackableProperty
     public void SetValue(object? value)
     {
         _property.SetValue(Parent.Object, value);
-    }
-
-    public object? GetSourceValue()
-    {
-        var value = GetValue();
-        return ConvertToSource(value);
-    }
-
-    public void SetValueFromSource(object? valueFromSource)
-    {
-        IsChangingFromSource = true;
-        try
-        {
-            var currentValue = GetValue();
-            var newValue = ConvertFromSource(valueFromSource);
-            if (!Equals(currentValue, newValue))
-            {
-                SetValue(newValue);
-            }
-        }
-        finally
-        {
-            IsChangingFromSource = false;
-        }
-    }
-
-    private object? ConvertFromSource(object? value)
-    {
-        foreach (var attribute in _property
-            .GetCustomAttributes(true)
-            .OfType<IStateConverter>())
-        {
-            value = attribute.ConvertFromSource(value, _property.PropertyType, this);
-        }
-
-        return value;
-    }
-
-    private object? ConvertToSource(object? value)
-    {
-        foreach (var attribute in _property.GetCustomAttributes(true).OfType<IStateConverter>())
-        {
-            value = attribute.ConvertToSource(value, this);
-        }
-
-        return value;
     }
 }

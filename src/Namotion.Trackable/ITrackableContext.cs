@@ -17,5 +17,5 @@ public interface ITrackableContext : ITrackableFactory
 
     internal void Detach(object previousValue);
 
-    internal void MarkVariableAsChanged(TrackableProperty setVariable, bool isChangingFromSource);
+    internal void MarkVariableAsChanged(TrackableProperty setVariable);
 }

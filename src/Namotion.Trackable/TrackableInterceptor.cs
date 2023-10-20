@@ -128,7 +128,7 @@ public class TrackableInterceptor : ITrackableInterceptor
 
             if (setProperty != null)
             {
-                thingContext.MarkVariableAsChanged(setProperty, setProperty.IsChangingFromSource);
+                thingContext.MarkVariableAsChanged(setProperty);
             }
         }
     }

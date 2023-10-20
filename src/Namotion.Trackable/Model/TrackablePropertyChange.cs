@@ -1,4 +1,7 @@
-﻿namespace Namotion.Trackable.Model;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
+namespace Namotion.Trackable.Model;
 
 public record TrackablePropertyChange
 {
@@ -6,12 +9,13 @@ public record TrackablePropertyChange
 
     public object? Value { get; }
 
-    public bool IsUpdatedFromSource { get; }
+    [JsonExtensionData]
+    public IDictionary<string, object?> PropertyDataSnapshot { get; }
 
-    public TrackablePropertyChange(TrackableProperty property, object? value, bool isUpdatedFromSource)
+    public TrackablePropertyChange(TrackableProperty property, IDictionary<string, object?> propertyDataSnapshot, object? value)
     {
         Property = property;
+        PropertyDataSnapshot = propertyDataSnapshot;
         Value = value;
-        IsUpdatedFromSource = isUpdatedFromSource;
     }
 }
