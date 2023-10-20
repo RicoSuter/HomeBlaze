@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
+using System.Collections.Generic;
 
 namespace Namotion.Trackable.Sourcing;
 
@@ -17,6 +18,8 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
 
     private readonly TimeSpan _bufferTime;
     private readonly TimeSpan _retryTime;
+
+    private HashSet<string>? _initializedProperties;
 
     public TrackableContextSourceBackgroundService(
         TrackableContext<TTrackable> trackableContext,
@@ -48,13 +51,27 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
                     .Where(p => p is not null)
                     .ToList();
 
-                var initialValues = await _source.ReadAsync(sourcePaths!, stoppingToken);
-                foreach (var value in initialValues)
+                lock (this)
                 {
-                    UpdatePropertyValueFromSource(value.Key, value.Value);
+                    _initializedProperties = new HashSet<string>();
                 }
 
+                // subscribe first and mark all properties as initialized which are updated before the read has completed 
                 using var disposable = await _source.SubscribeAsync(sourcePaths!, UpdatePropertyValueFromSource, stoppingToken);
+
+                // read all properties (subscription during read will later be ignored)
+                var initialValues = await _source.ReadAsync(sourcePaths!, stoppingToken);
+                lock (this)
+                {
+                    // ignore properties which have been updated via subscription
+                    foreach (var value in initialValues
+                        .Where(v => !_initializedProperties.Contains(v.Key)))
+                    {
+                        UpdatePropertyValueFromSource(value.Key, value.Value);
+                    }
+
+                    _initializedProperties = null;
+                }
 
                 await _trackableContext
                     .Where(change => !change.IsChangingFromSource() && change.Property.TryGetSourcePath() != null)
@@ -80,6 +97,8 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
 
     protected void UpdatePropertyValueFromSource(string sourcePath, object? value)
     {
+        MarkPropertyAsInitialized(sourcePath);
+
         var property = _trackableContext
             .AllProperties
             .FirstOrDefault(v => v.TryGetSourcePath() == sourcePath);
@@ -87,6 +106,20 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
         if (property != null)
         {
             property.SetValueFromSource(value);
+        }
+    }
+
+    private void MarkPropertyAsInitialized(string sourcePath)
+    {
+        if (_initializedProperties != null)
+        {
+            lock (this)
+            {
+                if (_initializedProperties != null)
+                {
+                    _initializedProperties.Add(sourcePath);
+                }
+            }
         }
     }
 }
