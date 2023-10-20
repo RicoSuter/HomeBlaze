@@ -18,7 +18,9 @@ public class TrackableFromSourceAttribute : TrackableAttribute
     {
         if (property.GetCustomAttribute<TrackableFromSourceAttribute>(true) != null)
         {
-            var sourcePath = GetSourcePath(parent.Parent?.TryGetSourcePath(), property);
+            var sourcePath = GetSourcePath(parent.Parent?.TryGetSourcePath() +
+                (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty), property);
+
             return new TrackableProperty(property, path, parent, context)
             {
                 Data = { { SourcingExtensions.SourcePathKey, sourcePath } }

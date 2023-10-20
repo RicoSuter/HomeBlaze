@@ -194,14 +194,14 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
     }
 
     // TODO: make internal
-    public IEnumerable<Model.Trackable> CreateThings(object proxy, string parentPath, TrackableProperty? parent, int? index)
+    public IEnumerable<Model.Trackable> CreateThings(object proxy, string parentPath, TrackableProperty? parent, int? parentCollectionIndex)
     {
         if (parent != null && proxy is ITrackableWithParent group)
         {
             group.Parent = parent.Parent.Object;
         }
 
-        var trackable = new Model.Trackable(proxy, parentPath, parent, index);
+        var trackable = new Model.Trackable(proxy, parentPath, parent);
         foreach (var property in proxy.GetType()
             .BaseType! // get properties from actual type
             .GetProperties()
@@ -210,7 +210,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
             var trackableAttribute = property.GetCustomAttribute<TrackableAttribute>(true);
             if (trackableAttribute != null)
             {
-                foreach (var child in trackableAttribute.CreateTrackablesForProperty(property, this, trackable, index))
+                foreach (var child in trackableAttribute.CreateTrackablesForProperty(property, this, trackable, parentCollectionIndex))
                 {
                     yield return child;
                 };
