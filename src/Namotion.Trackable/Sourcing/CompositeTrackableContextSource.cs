@@ -7,31 +7,88 @@ using System;
 
 namespace Namotion.Trackable.Sourcing;
 
-public class CompositeTrackableContextSource<TTrackable> : TrackableContextSource<TTrackable>
-    where TTrackable : class
+public class CompositeTrackableContextSource : ITrackableContextSource
 {
-    private readonly IReadOnlyDictionary<string, TrackableContextSource<TTrackable>> _sources;
+    private readonly IReadOnlyDictionary<string, ITrackableContextSource> _sources;
 
-    public CompositeTrackableContextSource(IReadOnlyDictionary<string, TrackableContextSource<TTrackable>> sources, TrackableContext<TTrackable> trackableContext)
-        : base(trackableContext)
+    public CompositeTrackableContextSource(IReadOnlyDictionary<string, ITrackableContextSource> sources)
     {
         _sources = sources
             .OrderByDescending(s => s.Key)
             .ToDictionary(s => s.Key, s => s.Value);
     }
 
-    public override Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
+    public async Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var result = new List<KeyValuePair<string, object?>>();
+
+        var groups = sourcePaths.GroupBy(p => _sources.First(s => p.StartsWith(s.Key)));
+        foreach (var group in groups)
+        {
+            (var path, var source) = group.Key;
+            if (path is not null && source is not null)
+            {
+                var innerSourcePaths = group.Select(p => p.Substring(path.Length)); ;
+                var sourceResult = await source.ReadAsync(innerSourcePaths, cancellationToken);
+                result.AddRange(sourceResult.Select(p => new KeyValuePair<string, object?>(path + p.Key, p.Value)));
+            }
+        }
+
+        return result.ToDictionary(p => p.Key, p => p.Value);
     }
 
-    public override Task<IDisposable> SubscribeAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
+    public async Task<IDisposable> SubscribeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var disposables = new List<IDisposable>();
+
+        var groups = sourcePaths.GroupBy(p => _sources.First(s => p.StartsWith(s.Key)));
+        foreach (var group in groups)
+        {
+            (var path, var source) = group.Key;
+            if (path is not null && source is not null)
+            {
+                var innerSourcePaths = group.Select(p => p.Substring(path.Length)); ;
+                disposables.Add(await source.SubscribeAsync(
+                    innerSourcePaths,
+                    (innerPath, value) => propertyUpdateAction(path + innerPath, value),
+                    cancellationToken));
+            }
+        }
+
+        return new CompositeDisposable(disposables);
     }
 
-    public override Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)
+    public async Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var result = new List<KeyValuePair<string, object?>>();
+
+        var groups = propertyChanges.GroupBy(p => _sources.First(s => p.Key.StartsWith(s.Key)));
+        foreach (var group in groups)
+        {
+            (var path, var source) = group.Key;
+            if (path is not null && source is not null)
+            {
+                var innerSourcePaths = group.ToDictionary(p => p.Key.Substring(path.Length), p => p.Value);
+                await source.WriteAsync(innerSourcePaths, cancellationToken);
+            }
+        }
+    }
+
+    private class CompositeDisposable : IDisposable
+    {
+        private readonly IEnumerable<IDisposable> _disposables;
+
+        public CompositeDisposable(IEnumerable<IDisposable> disposables)
+        {
+            _disposables = disposables;
+        }
+
+        public void Dispose()
+        {
+            foreach (var disposable in _disposables)
+            {
+                disposable.Dispose();
+            }
+        }
     }
 }
