@@ -23,8 +23,10 @@ public class TrackableAttribute : Attribute
             attribute.OnTrackedPropertyCreated(property, parent, parentCollectionIndex);
         }
 
-        if (propertyInfo.GetCustomAttributes(true).Any(a => a is RequiredAttribute ||
-                                                            a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
+        if (propertyInfo
+                .GetCustomAttributes(true)
+                .Any(a => a is RequiredAttribute || 
+                          a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
             propertyInfo.PropertyType.IsClass &&
             propertyInfo.PropertyType.FullName?.StartsWith("System.") == false)
         {
