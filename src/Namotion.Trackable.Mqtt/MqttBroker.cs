@@ -10,8 +10,8 @@ using System.Reactive.Linq;
 using Namotion.Trackable.Model;
 using Namotion.Trackable.Sourcing;
 using System.Linq;
-using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Text;
 
 namespace HomeBlaze.Mqtt
 {
@@ -22,6 +22,7 @@ namespace HomeBlaze.Mqtt
         private readonly ILogger _logger;
 
         private int _numberOfClients = 0;
+        private MqttServer? _mqttServer;
 
         public string IconName => "fas fa-envelope";
 
@@ -43,7 +44,7 @@ namespace HomeBlaze.Mqtt
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var mqttServer = new MqttFactory()
+            _mqttServer = new MqttFactory()
                 .CreateMqttServer(new MqttServerOptions
                 {
                     DefaultEndpointOptions =
@@ -53,22 +54,22 @@ namespace HomeBlaze.Mqtt
                     }
                 });
 
-            mqttServer.ClientConnectedAsync += ClientConnectedAsync;
-            mqttServer.ClientDisconnectedAsync += ClientDisconnectedAsync;
-            mqttServer.InterceptingPublishAsync += InterceptingPublishAsync;
+            _mqttServer.ClientConnectedAsync += ClientConnectedAsync;
+            _mqttServer.ClientDisconnectedAsync += ClientDisconnectedAsync;
+            _mqttServer.InterceptingPublishAsync += InterceptingPublishAsync;
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    await mqttServer.StartAsync();
+                    await _mqttServer.StartAsync();
                     IsListening = true;
 
                     await _trackableContext
-                        .ForEachAsync(async change => await PropertyChangedAsync(change, mqttServer), stoppingToken);
+                        .ForEachAsync(async change => await PropertyChangedAsync(change), stoppingToken);
 
                     await Task.Delay(Timeout.Infinite, stoppingToken);
-                    await mqttServer.StopAsync();
+                    await _mqttServer.StopAsync();
 
                     IsListening = false;
                 }
@@ -82,17 +83,23 @@ namespace HomeBlaze.Mqtt
             }
         }
 
-        private async Task PropertyChangedAsync(TrackedPropertyChange change, MqttServer mqttServer)
+        private async Task PropertyChangedAsync(TrackedPropertyChange change)
         {
-            var sourcePath = change.Property.TryGetSourcePath();
+            var property = change.Property;
+            await PublishPropertyValueAsync(change.Value, property);
+        }
+
+        private async Task PublishPropertyValueAsync(object? value, TrackedProperty property)
+        {
+            var sourcePath = property.TryGetSourcePath(_trackableContext);
             if (sourcePath != null)
             {
-                await mqttServer.InjectApplicationMessage(new InjectedMqttApplicationMessage(new MqttApplicationMessage
+                await _mqttServer!.InjectApplicationMessage(new InjectedMqttApplicationMessage(new MqttApplicationMessage
                 {
-                    Topic = sourcePath,
+                    Topic = string.Join('/', sourcePath.Split('.')),
                     ContentType = "application/json",
                     PayloadSegment = new ArraySegment<byte>(
-                        System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(change.Value)))
+                        Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value)))
                 }));
             }
         }
@@ -100,6 +107,16 @@ namespace HomeBlaze.Mqtt
         private Task ClientConnectedAsync(ClientConnectedEventArgs arg)
         {
             _numberOfClients++;
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(1000);
+                foreach (var property in _trackableContext.AllProperties)
+                {
+                    await PublishPropertyValueAsync(property.GetSourceValue(), property);
+                }
+            });
+
             return Task.CompletedTask;
         }
 
@@ -111,7 +128,24 @@ namespace HomeBlaze.Mqtt
 
         private Task InterceptingPublishAsync(InterceptingPublishEventArgs args)
         {
+            try
+            {
+                var sourcePath = args.ApplicationMessage.Topic.Replace('/', '.');
+                var property = _trackableContext
+                    .AllProperties
+                    .SingleOrDefault(p => p.TryGetSourcePath() == sourcePath);
 
+                if (property != null)
+                {
+                    var payload = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment);
+                    var document = JsonDocument.Parse(payload);
+                    property.SetValueFromSource(document.Deserialize(property.PropertyType));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to deserialize MQTT payload.");
+            }
 
             return Task.CompletedTask;
         }

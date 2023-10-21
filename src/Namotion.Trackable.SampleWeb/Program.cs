@@ -24,6 +24,8 @@ namespace Namotion.Trackable.SampleWeb
                 };
             });
 
+            builder.Services.AddHostedService<Simulator>();
+
             builder.Services.AddOpenApiDocument();
 
             var app = builder.Build();
@@ -35,16 +37,6 @@ namespace Namotion.Trackable.SampleWeb
             app.UseSwaggerUi3();
 
             app.Run();
-        }
-
-        [Route("api/car"), ApiController]
-        public class TrackablesController<TTrackable> : TrackablesControllerBase<TTrackable>
-            where TTrackable : class
-        {
-            public TrackablesController(TTrackable trackable, TrackableContext<TTrackable> context)
-                : base(trackable, context)
-            {
-            }
         }
 
         public class Car
@@ -60,6 +52,9 @@ namespace Namotion.Trackable.SampleWeb
                 };
             }
 
+            [TrackableFromSource(RelativePath = "name")]
+            public virtual string Name { get; set; } = "My Car";
+
             [TrackableFromSource(RelativePath = "tires")]
             public virtual Tire[] Tires { get; set; }
         }
@@ -68,6 +63,39 @@ namespace Namotion.Trackable.SampleWeb
         {
             [TrackableFromSource(RelativePath = "pressure")]
             public virtual decimal Pressure { get; set; }
+        }
+
+        [Route("api/car"), ApiController]
+        public class TrackablesController<TTrackable> : TrackablesControllerBase<TTrackable>
+            where TTrackable : class
+        {
+            public TrackablesController(TTrackable trackable, TrackableContext<TTrackable> context)
+                : base(trackable, context)
+            {
+            }
+        }
+
+        public class Simulator : BackgroundService
+        {
+            private readonly Car _car;
+
+            public Simulator(Car car)
+            {
+                _car = car;
+            }
+
+            protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+            {
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    _car.Tires[0].Pressure++;
+                    _car.Tires[1].Pressure++;
+                    _car.Tires[2].Pressure++;
+                    _car.Tires[3].Pressure++;
+
+                    await Task.Delay(1000, stoppingToken);
+                }
+            }
         }
     }
 }
