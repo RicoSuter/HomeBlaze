@@ -45,9 +45,8 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
                 // TODO: Currently newly added properties/trackable are not automatically tracked/subscribed to
 
                 var sourcePaths = _trackableContext
-                    .AllProperties // TODO: find better way below
-                    .Where(p => _trackableContext.Trackables.Any(t => t.ParentProperty == p) == false) // only properties with objects which are not trackable/trackables (value objects)
-                    .Select(p => p.TryGetSourcePath())
+                    .AllProperties
+                    .Select(p => p.TryGetSourcePath(_trackableContext))
                     .Where(p => p is not null)
                     .ToList();
 

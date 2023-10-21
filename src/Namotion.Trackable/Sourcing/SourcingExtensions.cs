@@ -1,4 +1,5 @@
 ﻿using Namotion.Trackable.Model;
+using System.Linq;
 
 namespace Namotion.Trackable.Sourcing;
 
@@ -6,6 +7,14 @@ public static class SourcingExtensions
 {
     private const string SourcePathKey = "SourcePath";
     private const string IsChangingFromSourceKey = "IsChangingFromSource";
+
+    public static string? TryGetSourcePath(this TrackedProperty property, ITrackableContext trackableContext)
+    {
+        // TODO: find better way below (better name)
+        return
+            trackableContext.Trackables.Any(t => t.ParentProperty == property) == false && 
+            property.Data.TryGetValue(SourcePathKey, out var value) ? value as string : null;
+    }
 
     public static string? TryGetSourcePath(this TrackedProperty property)
     {

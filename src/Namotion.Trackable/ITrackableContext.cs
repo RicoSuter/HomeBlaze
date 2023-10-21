@@ -7,6 +7,8 @@ public interface ITrackableContext : ITrackableFactory
 {
     IEnumerable<TrackedProperty> AllProperties { get; }
 
+    IReadOnlyCollection<Tracker> Trackables { get; }
+
     internal object Object { get; }
 
     internal void Initialize(object obj);

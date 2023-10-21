@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Namotion.Trackable.AspNetCore\Namotion.Trackable.AspNetCore.csproj" />
+    <ProjectReference Include="..\Namotion.Trackable.Mqtt\Namotion.Trackable.Mqtt.csproj" />
   </ItemGroup>
 
 </Project>

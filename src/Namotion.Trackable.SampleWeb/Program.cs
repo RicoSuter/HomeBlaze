@@ -1,3 +1,4 @@
+using HomeBlaze.Mqtt;
 using Microsoft.AspNetCore.Mvc;
 using Namotion.Trackable.AspNetCore.Controllers;
 using Namotion.Trackable.Sourcing;
@@ -13,6 +14,15 @@ namespace Namotion.Trackable.SampleWeb
 
             builder.Services.AddTrackable<Car>();
             builder.Services.AddTrackableControllers<Car, TrackablesController<Car>>();
+            builder.Services.AddHostedService(sp =>
+            {
+                return new MqttBroker<Car>(
+                    sp.GetRequiredService<TrackableContext<Car>>(),
+                    sp.GetRequiredService<ILogger<MqttBroker<Car>>>())
+                {
+
+                };
+            });
 
             builder.Services.AddOpenApiDocument();
 
