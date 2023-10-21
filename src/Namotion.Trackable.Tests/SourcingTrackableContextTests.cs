@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
 using Namotion.Trackable;
+using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Sourcing;
 using Namotion.Trackable.Validation;
-using System.ComponentModel.DataAnnotations;
 
 namespace Namotion.Things.Tests;
 
@@ -11,16 +11,17 @@ public class SourcingTrackableContextTests
 {
     public class Car
     {
-        [TrackableFromSource(RelativePath = "FLT")]
+        [Trackable, TrackableSource("mqtt", RelativePath = "FLT")]
         public required virtual Tire FrontLeftTire { get; set; }
 
-        [TrackableFromSource(RelativePath = "FRT"), Required]
+
+        [Trackable, TrackableSource("mqtt", RelativePath = "FRT")]
         public virtual Tire? FrontRightTire { get; set; }
     }
 
     public class Tire
     {
-        [TrackableFromSource(RelativePath = "pressure")]
+        [Trackable, TrackableSource("mqtt", RelativePath = "pressure")]
         public virtual decimal Pressure { get; set; }
     }
 
@@ -28,17 +29,17 @@ public class SourcingTrackableContextTests
     public void ShouldFindSourcePaths()
     {
         // Arrange
-        var thingContext = CreateContext<Car>();
-        var thing = thingContext.Object;
+        var trackableContext = CreateContext<Car>();
+        var trackable = trackableContext.Object;
 
         // Act
-        var result = thingContext.AllProperties
-            .Select(p => p.TryGetSourcePath())
+        var result = trackableContext.AllProperties
+            .Select(p => p.TryGetSourcePath("mqtt"))
             .Where(p => p != null)
             .ToArray();
 
         // Assert
-        Assert.Equal(4, result.Length);
+        Assert.Equal(3, result.Length);
     }
 
     private static TrackableContext<T> CreateContext<T>()

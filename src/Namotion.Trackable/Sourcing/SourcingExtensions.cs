@@ -8,22 +8,22 @@ public static class SourcingExtensions
     private const string SourcePathKey = "SourcePath";
     private const string IsChangingFromSourceKey = "IsChangingFromSource";
 
-    public static string? TryGetSourcePath(this TrackedProperty property, ITrackableContext trackableContext)
+    public static string? TryGetSourcePath(this TrackedProperty property, string sourceName, ITrackableContext trackableContext)
     {
         // TODO: find better way below (better name)
         return
-            trackableContext.Trackables.Any(t => t.ParentProperty == property) == false && 
-            property.Data.TryGetValue(SourcePathKey, out var value) ? value as string : null;
+            trackableContext.Trackables.Any(t => t.ParentProperty == property) == false &&
+            property.Data.TryGetValue(SourcePathKey + sourceName, out var value) ? value as string : null;
     }
 
-    public static string? TryGetSourcePath(this TrackedProperty property)
+    public static string? TryGetSourcePath(this TrackedProperty property, string sourceName)
     {
-        return property.Data.TryGetValue(SourcePathKey, out var value) ? value as string : null;
+        return property.Data.TryGetValue(SourcePathKey + sourceName, out var value) ? value as string : null;
     }
 
-    public static void SetSourcePath(this TrackedProperty property, string sourcePath)
+    public static void SetSourcePath(this TrackedProperty property, string sourceName, string sourcePath)
     {
-        property.Data[SourcePathKey] = sourcePath;
+        property.Data[SourcePathKey + sourceName] = sourcePath;
     }
 
     public static bool IsChangingFromSource(this TrackedPropertyChange change)

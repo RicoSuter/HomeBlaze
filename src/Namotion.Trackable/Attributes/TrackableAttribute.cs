@@ -1,4 +1,5 @@
 ﻿using Namotion.Trackable.Model;
+using Namotion.Trackable.Sourcing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,27 +11,29 @@ namespace Namotion.Trackable.Attributes;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public class TrackableAttribute : Attribute
 {
-    public IEnumerable<Tracker> CreateTrackersForProperty(PropertyInfo property, Tracker parent, int? parentCollectionIndex)
+    public IEnumerable<Tracker> CreateTrackersForProperty(PropertyInfo propertyInfo, Tracker parent, int? parentCollectionIndex)
     {
-        if (property.GetCustomAttribute<TrackableAttribute>(true) != null)
-        {
-            var propertyPath = GetPath(parent.Path, property);
+        var propertyPath = GetPath(parent.Path, propertyInfo);
 
-            var trackableProperty = CreateTrackableProperty(property, propertyPath, parent, parentCollectionIndex);
-            parent.Properties.Add(trackableProperty);
+        var property = CreateTrackableProperty(propertyInfo, propertyPath, parent, parentCollectionIndex);
+        parent.Properties.Add(property);
 
-            if (property.GetCustomAttributes(true).Any(a => a is RequiredAttribute ||
+        if (propertyInfo.GetCustomAttributes(true).Any(a => a is RequiredAttribute ||
                                                             a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
-                property.PropertyType.IsClass &&
-                property.PropertyType.FullName?.StartsWith("System.") == false)
-            {
-                var child = parent.Context.CreateProxy(property.PropertyType);
+            propertyInfo.PropertyType.IsClass &&
+            propertyInfo.PropertyType.FullName?.StartsWith("System.") == false)
+        {
+            var child = parent.Context.CreateProxy(propertyInfo.PropertyType);
 
-                foreach (var childThing in parent.Context.CreateTrackers(child, propertyPath, trackableProperty, parentCollectionIndex: null))
-                    yield return childThing;
+            foreach (var childThing in parent.Context.CreateTrackers(child, propertyPath, property, parentCollectionIndex: null))
+                yield return childThing;
 
-                property.SetValue(parent.Object, child);
-            }
+            propertyInfo.SetValue(parent.Object, child);
+        }
+
+        foreach (var attribute in propertyInfo.GetCustomAttributes(true).OfType<ITrackableAttribute>())
+        {
+            attribute.OnTrackedPropertyCreated(property, parent, parentCollectionIndex);
         }
     }
 

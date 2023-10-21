@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
 using Namotion.Trackable;
+using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
 using Namotion.Trackable.Sourcing;
 using Namotion.Trackable.Validation;
@@ -22,13 +23,13 @@ public class CollectionTrackableContextTests
             };
         }
 
-        [TrackableFromSource(RelativePath = "tires")]
+        [Trackable, TrackableSource("mqtt", RelativePath = "tires")]
         public virtual Tire[] Tires { get; set; }
     }
 
     public class Tire
     {
-        [TrackableFromSource(RelativePath = "pressure")]
+        [Trackable, TrackableSource("mqtt", RelativePath = "pressure")]
         public virtual decimal Pressure { get; set; }
     }
 
@@ -65,7 +66,7 @@ public class CollectionTrackableContextTests
 
         // Assert
         Assert.Equal("Tires[0].Pressure", firstTirePressure.Path);
-        Assert.Equal("tires[0].pressure", firstTirePressure.TryGetSourcePath());
+        Assert.Equal("tires[0].pressure", firstTirePressure.TryGetSourcePath("mqtt"));
     }
 
     private static TrackableContext<T> CreateContext<T>()

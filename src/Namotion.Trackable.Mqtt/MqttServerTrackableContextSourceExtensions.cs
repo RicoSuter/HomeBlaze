@@ -8,17 +8,22 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class MqttServerTrackableContextSourceExtensions
 {
-    public static IServiceCollection AddMqttServerTrackableSource<TTrackable>(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddMqttServerTrackableSource<TTrackable>(
+        this IServiceCollection serviceCollection, string sourceName)
         where TTrackable : class
     {
         return serviceCollection
-            .AddSingleton<MqttServerTrackableSource<TTrackable>>()
+            .AddSingleton(sp => new MqttServerTrackableSource<TTrackable>(
+                sourceName, 
+                sp.GetRequiredService<TrackableContext<TTrackable>>(),
+                sp.GetRequiredService<ILogger<MqttServerTrackableSource<TTrackable>>>()))
             .AddHostedService(sp => sp.GetRequiredService<MqttServerTrackableSource<TTrackable>>())
             .AddHostedService(sp =>
             {
                 return new TrackableContextSourceBackgroundService<TTrackable>(
-                    sp.GetRequiredService<TrackableContext<TTrackable>>(),
+                    sourceName,
                     sp.GetRequiredService<MqttServerTrackableSource<TTrackable>>(),
+                    sp.GetRequiredService<TrackableContext<TTrackable>>(),
                     sp.GetRequiredService<ILogger<TrackableContextSourceBackgroundService<TTrackable>>>());
             });
     }

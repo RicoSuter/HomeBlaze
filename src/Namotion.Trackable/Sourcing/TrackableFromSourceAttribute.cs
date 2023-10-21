@@ -5,44 +5,40 @@ using System.Reflection;
 
 namespace Namotion.Trackable.Sourcing;
 
-[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-public class TrackableFromSourceAttribute : TrackableAttribute
+[AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+public class TrackableSourceAttribute : Attribute, ITrackableAttribute
 {
+    public string SourceName { get; }
+
     public string? RelativePath { get; set; }
 
     public string? AbsolutePath { get; set; }
 
-    protected override TrackedProperty CreateTrackableProperty(PropertyInfo propertyInfo, string path, Tracker parent, int? parentCollectionIndex)
+    public TrackableSourceAttribute(string sourceName)
     {
-        if (propertyInfo.GetCustomAttribute<TrackableFromSourceAttribute>(true) != null)
-        {
-            var parentPath = parent.ParentProperty?.TryGetSourcePath() +
-                (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty);
-
-            var sourcePath = GetSourcePath(parentPath, propertyInfo);
-
-            var property = new TrackedProperty(propertyInfo, path, parent);
-            property.SetSourcePath(sourcePath);
-            return property;
-        }
-        else
-        {
-            return base.CreateTrackableProperty(propertyInfo, path, parent, parentCollectionIndex);
-        }
+        SourceName = sourceName;
     }
 
-    private string GetSourcePath(string? basePath, PropertyInfo propertyInfo)
+    public void OnTrackedPropertyCreated(TrackedProperty property, Tracker parent, int? parentCollectionIndex)
     {
-        var attribute = propertyInfo.GetCustomAttribute<TrackableFromSourceAttribute>(true);
-        if (attribute?.AbsolutePath != null)
+        var parentPath = parent.ParentProperty?.TryGetSourcePath(SourceName) +
+            (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty);
+
+        var sourcePath = GetSourcePath(parentPath, property);
+        property.SetSourcePath(SourceName, sourcePath);
+    }
+
+    private string GetSourcePath(string? basePath, TrackedProperty property)
+    {
+        if (AbsolutePath != null)
         {
-            return attribute?.AbsolutePath!;
+            return AbsolutePath!;
         }
-        else if (attribute?.RelativePath != null)
+        else if (RelativePath != null)
         {
-            return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + attribute?.RelativePath;
+            return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + RelativePath;
         }
 
-        return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + propertyInfo.Name;
+        return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + property.PropertyName;
     }
 }

@@ -13,6 +13,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
     where TTrackable : class
 {
     private readonly TrackableContext<TTrackable> _trackableContext;
+    private readonly string _sourceName;
     private readonly ITrackableSource _source;
     private readonly ILogger _logger;
 
@@ -22,14 +23,16 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
     private HashSet<string>? _initializedProperties;
 
     public TrackableContextSourceBackgroundService(
-        TrackableContext<TTrackable> trackableContext,
+        string sourceName,
         ITrackableSource source,
+        TrackableContext<TTrackable> trackableContext,
         ILogger logger,
         TimeSpan? bufferTime = null,
         TimeSpan? retryTime = null)
     {
-        _trackableContext = trackableContext;
+        _sourceName = sourceName;
         _source = source;
+        _trackableContext = trackableContext;
         _logger = logger;
 
         _bufferTime = bufferTime ?? TimeSpan.FromMilliseconds(8);
@@ -46,7 +49,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
 
                 var sourcePaths = _trackableContext
                     .AllProperties
-                    .Select(p => p.TryGetSourcePath(_trackableContext))
+                    .Select(p => p.TryGetSourcePath(_sourceName, _trackableContext))
                     .Where(p => p is not null)
                     .ToList();
 
@@ -73,14 +76,14 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
                 }
 
                 await _trackableContext
-                    .Where(change => !change.IsChangingFromSource() && change.Property.TryGetSourcePath() != null)
+                    .Where(change => !change.IsChangingFromSource() && change.Property.TryGetSourcePath(_sourceName) != null)
                     .BufferChanges(_bufferTime)
                     .Where(changes => changes.Any())
                     .ForEachAsync(async changes =>
                     {
                         var values = changes
                            .ToDictionary(
-                               c => c.Property.TryGetSourcePath()!,
+                               c => c.Property.TryGetSourcePath(_sourceName)!,
                                c => c.Property.ConvertToSource(c.Value));
 
                         await _source.WriteAsync(values, stoppingToken);
@@ -100,7 +103,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
 
         var property = _trackableContext
             .AllProperties
-            .FirstOrDefault(v => v.TryGetSourcePath() == sourcePath);
+            .FirstOrDefault(v => v.TryGetSourcePath(_sourceName) == sourcePath);
 
         if (property != null)
         {

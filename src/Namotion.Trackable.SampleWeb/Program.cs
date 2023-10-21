@@ -1,6 +1,6 @@
-using HomeBlaze.Mqtt;
 using Microsoft.AspNetCore.Mvc;
 using Namotion.Trackable.AspNetCore.Controllers;
+using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Sourcing;
 
 namespace Namotion.Trackable.SampleWeb
@@ -14,7 +14,7 @@ namespace Namotion.Trackable.SampleWeb
 
             builder.Services.AddTrackable<Car>();
             builder.Services.AddTrackableControllers<Car, TrackablesController<Car>>();
-            builder.Services.AddMqttServerTrackableSource<Car>();
+            builder.Services.AddMqttServerTrackableSource<Car>("mqtt");
 
             builder.Services.AddHostedService<Simulator>();
 
@@ -45,20 +45,20 @@ namespace Namotion.Trackable.SampleWeb
                 };
             }
 
-            [TrackableFromSource(RelativePath = "name")]
+            [Trackable, TrackableSource("mqtt", RelativePath = "name")]
             public virtual string Name { get; set; } = "My Car";
 
-            [TrackableFromSource(RelativePath = "tires")]
+            [Trackable, TrackableSource("mqtt", RelativePath = "tires")]
             public virtual Tire[] Tires { get; set; }
         }
 
         public class Tire
         {
-            [TrackableFromSource(RelativePath = "pressure")]
+            [Trackable, TrackableSource("mqtt", RelativePath = "pressure")]
             public virtual decimal Pressure { get; set; }
         }
 
-        [Route("api/car"), ApiController]
+        [Route("api/car")]
         public class TrackablesController<TTrackable> : TrackablesControllerBase<TTrackable>
             where TTrackable : class
         {
