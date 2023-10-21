@@ -24,14 +24,14 @@ public class CollectionTrackableContextTests
         }
 
         [Trackable]
-        [TrackableSource("mqtt", RelativePath = "tires")]
+        [TrackableSource("mqtt", "tires")]
         public virtual Tire[] Tires { get; set; }
     }
 
     public class Tire
     {
         [Trackable]
-        [TrackableSource("mqtt", RelativePath = "pressure")]
+        [TrackableSource("mqtt", "pressure")]
         public virtual decimal Pressure { get; set; }
     }
 

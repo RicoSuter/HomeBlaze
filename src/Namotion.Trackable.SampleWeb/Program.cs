@@ -46,22 +46,22 @@ namespace Namotion.Trackable.SampleWeb
             }
 
             [Trackable]
-            [TrackableSource("mqtt", RelativePath = "name")]
+            [TrackableSource("mqtt", "name")]
             public virtual string Name { get; set; } = "My Car";
 
             [Trackable]
-            [TrackableSource("mqtt", RelativePath = "tires")]
+            [TrackableSource("mqtt", "tires")]
             public virtual Tire[] Tires { get; set; }
         }
 
         public class Tire
         {
             [Trackable]
-            [TrackableSource("mqtt", RelativePath = "pressure")]
+            [TrackableSource("mqtt", "pressure")]
             public virtual decimal Pressure { get; set; }
         }
 
-        [Route("api/car")]
+        [Route("api")]
         public class TrackablesController<TTrackable> : TrackablesControllerBase<TTrackable>
             where TTrackable : class
         {

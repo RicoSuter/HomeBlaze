@@ -1,7 +1,6 @@
 ﻿using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
 using System;
-using System.Reflection;
 
 namespace Namotion.Trackable.Sourcing;
 
@@ -10,13 +9,14 @@ public class TrackableSourceAttribute : Attribute, ITrackableAttribute
 {
     public string SourceName { get; }
 
-    public string? RelativePath { get; set; }
+    public string? Path { get; }
 
     public string? AbsolutePath { get; set; }
 
-    public TrackableSourceAttribute(string sourceName)
+    public TrackableSourceAttribute(string sourceName, string? path = null)
     {
         SourceName = sourceName;
+        Path = path;
     }
 
     public void OnTrackedPropertyCreated(TrackedProperty property, Tracker parent, int? parentCollectionIndex)
@@ -34,9 +34,9 @@ public class TrackableSourceAttribute : Attribute, ITrackableAttribute
         {
             return AbsolutePath!;
         }
-        else if (RelativePath != null)
+        else if (Path != null)
         {
-            return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + RelativePath;
+            return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + Path;
         }
 
         return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + property.PropertyName;

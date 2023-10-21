@@ -12,18 +12,18 @@ public class SourcingTrackableContextTests
     public class Car
     {
         [Trackable]
-        [TrackableSource("mqtt", RelativePath = "FLT")]
+        [TrackableSource("mqtt", "FLT")]
         public required virtual Tire FrontLeftTire { get; set; }
 
         [Trackable]
-        [TrackableSource("mqtt", RelativePath = "FRT")]
+        [TrackableSource("mqtt", "FRT")]
         public virtual Tire? FrontRightTire { get; set; }
     }
 
     public class Tire
     {
         [Trackable]
-        [TrackableSource("mqtt", RelativePath = "pressure")]
+        [TrackableSource("mqtt", "pressure")]
         public virtual decimal Pressure { get; set; }
     }
 
