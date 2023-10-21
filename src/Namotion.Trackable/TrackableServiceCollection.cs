@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class TrackableServiceCollection
 {
-    public static IServiceCollection AddTrackableContext<TTrackable>(this IServiceCollection services)
+    public static IServiceCollection AddTrackable<TTrackable>(this IServiceCollection services)
         where TTrackable : class
     {
         services

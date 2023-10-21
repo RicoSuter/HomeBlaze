@@ -15,12 +15,12 @@ namespace Namotion.Trackable.AspNetCore.Controllers;
 public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
     where TTrackable : class
 {
-    private readonly TTrackable _thing;
+    private readonly TTrackable _trackable;
     private readonly TrackableContext<TTrackable> _variablesContext;
 
-    public TrackablesControllerBase(TTrackable thing, TrackableContext<TTrackable> context)
+    public TrackablesControllerBase(TTrackable trackable, TrackableContext<TTrackable> context)
     {
-        _thing = thing;
+        _trackable = trackable;
         _variablesContext = context;
     }
 
@@ -59,7 +59,7 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
             }
         }
 
-        var json = JsonSerializer.SerializeToElement(_thing, options);
+        var json = JsonSerializer.SerializeToElement(_trackable, options);
         return Ok(json);
     }
 

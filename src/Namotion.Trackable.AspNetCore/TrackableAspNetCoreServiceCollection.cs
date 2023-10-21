@@ -12,7 +12,7 @@ public static class TrackableAspNetCoreServiceCollection
     /// <typeparam name="TTrackable">The trackable type.</typeparam>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection.</returns>
-    public static IServiceCollection AddTrackableControllers<TController, TTrackable>(this IServiceCollection services)
+    public static IServiceCollection AddTrackableControllers<TTrackable, TController>(this IServiceCollection services)
         where TController : TrackablesControllerBase<TTrackable>
         where TTrackable : class
     {
