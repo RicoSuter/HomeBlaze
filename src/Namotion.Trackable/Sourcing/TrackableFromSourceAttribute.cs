@@ -19,7 +19,7 @@ public class TrackableSourceAttribute : Attribute, ITrackableAttribute
         Path = path;
     }
 
-    public void OnTrackedPropertyCreated(TrackedProperty property, Tracker parent, int? parentCollectionIndex)
+    public void ProcessCreatedTrackedProperty(TrackedProperty property, Tracker parent, int? parentCollectionIndex)
     {
         var parentPath = parent.ParentProperty?.TryGetSourcePath(SourceName) +
             (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty);

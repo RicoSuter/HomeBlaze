@@ -1,5 +1,4 @@
 ﻿using Namotion.Trackable.Model;
-using Namotion.Trackable.Sourcing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -20,12 +19,12 @@ public class TrackableAttribute : Attribute
 
         foreach (var attribute in propertyInfo.GetCustomAttributes(true).OfType<ITrackableAttribute>())
         {
-            attribute.OnTrackedPropertyCreated(property, parent, parentCollectionIndex);
+            attribute.ProcessCreatedTrackedProperty(property, parent, parentCollectionIndex);
         }
 
         if (propertyInfo
                 .GetCustomAttributes(true)
-                .Any(a => a is RequiredAttribute || 
+                .Any(a => a is RequiredAttribute ||
                           a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
             propertyInfo.PropertyType.IsClass &&
             propertyInfo.PropertyType.FullName?.StartsWith("System.") == false)

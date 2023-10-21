@@ -4,5 +4,5 @@ namespace Namotion.Trackable.Attributes;
 
 public interface ITrackableAttribute
 {
-    void OnTrackedPropertyCreated(TrackedProperty property, Tracker parent, int? parentCollectionIndex);
+    void ProcessCreatedTrackedProperty(TrackedProperty property, Tracker parent, int? parentCollectionIndex);
 }
