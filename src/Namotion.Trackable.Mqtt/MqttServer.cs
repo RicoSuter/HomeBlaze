@@ -27,7 +27,7 @@ namespace HomeBlaze.Mqtt
         private MqttServer? _mqttServer;
 
         private Action<string, object?>? _propertyUpdateAction;
-        private ConcurrentDictionary<string, object?> _state = new ConcurrentDictionary<string, object?>();
+        private ConcurrentDictionary<string, object?> _state = new();
 
         public int Port { get; set; } = 1883;
 
