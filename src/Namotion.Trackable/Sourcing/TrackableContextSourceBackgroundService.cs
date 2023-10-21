@@ -46,7 +46,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
 
                 var sourcePaths = _trackableContext
                     .AllProperties // TODO: find better way below
-                    .Where(p => _trackableContext.Trackables.Any(t => t.Parent == p) == false) // only properties with objects which are not trackable/trackables (value objects)
+                    .Where(p => _trackableContext.Trackables.Any(t => t.ParentProperty == p) == false) // only properties with objects which are not trackable/trackables (value objects)
                     .Select(p => p.TryGetSourcePath())
                     .Where(p => p is not null)
                     .ToList();

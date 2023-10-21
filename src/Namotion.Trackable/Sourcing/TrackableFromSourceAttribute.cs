@@ -12,23 +12,24 @@ public class TrackableFromSourceAttribute : TrackableAttribute
 
     public string? AbsolutePath { get; set; }
 
-    public string Separator { get; set; } = ".";
+    public int Length { get; set; }
 
-    protected override TrackableProperty CreateTrackableProperty(PropertyInfo property, string path, Model.Trackable parent, int? parentCollectionIndex, ITrackableContext context)
+    protected override TrackedProperty CreateTrackableProperty(PropertyInfo property, string targetPath, Tracker parent, int? parentCollectionIndex, ITrackableContext context)
     {
         if (property.GetCustomAttribute<TrackableFromSourceAttribute>(true) != null)
         {
-            var sourcePath = GetSourcePath(parent.Parent?.TryGetSourcePath() +
-                (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty), property);
+            var parentPath = parent.ParentProperty?.TryGetSourcePath() +
+                (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty);
 
-            return new TrackableProperty(property, path, parent, context)
+            var sourcePath = GetSourcePath(parentPath, property);
+            return new TrackedProperty(property, targetPath, parent, context)
             {
                 Data = { { SourcingExtensions.SourcePathKey, sourcePath } }
             };
         }
         else
         {
-            return base.CreateTrackableProperty(property, path, parent, parentCollectionIndex, context);
+            return base.CreateTrackableProperty(property, targetPath, parent, parentCollectionIndex, context);
         }
     }
 
@@ -41,9 +42,9 @@ public class TrackableFromSourceAttribute : TrackableAttribute
         }
         else if (attribute?.RelativePath != null)
         {
-            return (!string.IsNullOrEmpty(basePath) ? basePath + Separator : "") + attribute?.RelativePath;
+            return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + attribute?.RelativePath;
         }
 
-        return (!string.IsNullOrEmpty(basePath) ? basePath + Separator : "") + propertyInfo.Name;
+        return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + propertyInfo.Name;
     }
 }

@@ -7,19 +7,19 @@ namespace Namotion.Trackable.AspNetCore;
 
 public static class TrackablePropertyJsonExtensions
 {
-    public static string GetJsonPath(this TrackableProperty trackableProperty)
+    public static string GetJsonPath(this TrackedProperty property)
     {
-        if (trackableProperty.IsAttribute)
+        if (property.IsAttribute)
         {
-            var variable = trackableProperty.AttributeMetadata
-                .GetParent(trackableProperty, trackableProperty.Context);
+            var variable = property.AttributeMetadata
+                .GetParentProperty(property, property.Context);
 
             return string.Join('.', variable.Path.Split('.').Select(s => JsonNamingPolicy.CamelCase.ConvertName(s)))
-                + "@" + JsonNamingPolicy.CamelCase.ConvertName(trackableProperty.AttributeMetadata!.AttributeName);
+                + "@" + JsonNamingPolicy.CamelCase.ConvertName(property.AttributeMetadata!.AttributeName);
         }
         else
         {
-            return string.Join('.', trackableProperty.Path.Split('.').Select(s => JsonNamingPolicy.CamelCase.ConvertName(s)));
+            return string.Join('.', property.Path.Split('.').Select(s => JsonNamingPolicy.CamelCase.ConvertName(s)));
         }
     }
 }

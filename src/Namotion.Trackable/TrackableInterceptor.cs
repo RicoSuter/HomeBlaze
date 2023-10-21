@@ -17,7 +17,7 @@ public class TrackableInterceptor : ITrackableInterceptor
     private ICollection<ITrackableContext> _trackableContexts = new HashSet<ITrackableContext>();
 
     [ThreadStatic]
-    private static Stack<Tuple<TrackableProperty, List<TrackableProperty>>>? _touchedProperties;
+    private static Stack<Tuple<TrackedProperty, List<TrackedProperty>>>? _touchedProperties;
 
     private readonly IEnumerable<ITrackablePropertyValidator> _propertyValidators;
 
@@ -98,14 +98,14 @@ public class TrackableInterceptor : ITrackableInterceptor
             {
                 if (_touchedProperties == null)
                 {
-                    _touchedProperties = new Stack<Tuple<TrackableProperty, List<TrackableProperty>>>();
+                    _touchedProperties = new Stack<Tuple<TrackedProperty, List<TrackedProperty>>>();
                 }
 
                 if (getProperty.IsDerived)
                 {
-                    var dependencies = new List<TrackableProperty>();
+                    var dependencies = new List<TrackedProperty>();
 
-                    _touchedProperties!.Push(new Tuple<TrackableProperty, List<TrackableProperty>>(getProperty, dependencies));
+                    _touchedProperties!.Push(new Tuple<TrackedProperty, List<TrackedProperty>>(getProperty, dependencies));
 
                     invocation.Proceed();
                     getProperty.DependentProperties = dependencies.ToArray();

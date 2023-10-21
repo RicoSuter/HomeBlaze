@@ -5,17 +5,17 @@ namespace Namotion.Trackable;
 
 public interface ITrackableContext : ITrackableFactory
 {
-    IEnumerable<TrackableProperty> AllProperties { get; }
+    IEnumerable<TrackedProperty> AllProperties { get; }
 
     internal object Object { get; }
 
     internal void Initialize(object obj);
 
-    internal IEnumerable<Model.Trackable> CreateTrackables(object proxy, string parentTargetPath, TrackableProperty? parent, int? index);
+    internal IEnumerable<Tracker> CreateTrackables(object proxy, string parentTargetPath, TrackedProperty? parent, int? index);
 
-    internal void Attach(TrackableProperty property, object newValue);
+    internal void Attach(TrackedProperty property, object newValue);
 
     internal void Detach(object previousValue);
 
-    internal void MarkVariableAsChanged(TrackableProperty setVariable);
+    internal void MarkVariableAsChanged(TrackedProperty setVariable);
 }

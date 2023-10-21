@@ -7,6 +7,6 @@ namespace Namotion.Trackable;
 
 public interface ITrackablePropertyValidator
 {
-    IEnumerable<ValidationResult> Validate(TrackableProperty property, object? value, ITrackableContext context);
+    IEnumerable<ValidationResult> Validate(TrackedProperty property, object? value, ITrackableContext context);
 }
 

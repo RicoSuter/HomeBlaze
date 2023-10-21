@@ -7,24 +7,24 @@ public static class SourcingExtensions
     internal const string SourcePathKey = "SourcePath";
     internal const string IsChangingFromSourceKey = "IsChangingFromSource";
 
-    public static string? TryGetSourcePath(this TrackableProperty property)
+    public static string? TryGetSourcePath(this TrackedProperty property)
     {
         return property.Data.TryGetValue(SourcePathKey, out var value) ? value as string : null;
     }
 
     public static bool IsChangingFromSource(this TrackablePropertyChange change)
     {
-        return change.PropertyDataSnapshot.TryGetValue(IsChangingFromSourceKey, out var isChangingFromSource) && 
+        return change.PropertyDataSnapshot.TryGetValue(IsChangingFromSourceKey, out var isChangingFromSource) &&
             isChangingFromSource is bool isChangingFromSourceBool ? isChangingFromSourceBool : false;
     }
 
-    public static object? GetSourceValue(this TrackableProperty property)
+    public static object? GetSourceValue(this TrackedProperty property)
     {
         var value = property.GetValue();
         return ConvertToSource(property, value);
     }
 
-    public static object? ConvertToSource(this TrackableProperty property, object? value)
+    public static object? ConvertToSource(this TrackedProperty property, object? value)
     {
         foreach (var attribute in property.GetCustomAttributes<IStateConverter>(true))
         {
@@ -34,7 +34,7 @@ public static class SourcingExtensions
         return value;
     }
 
-    public static void SetValueFromSource(this TrackableProperty property, object? valueFromSource)
+    public static void SetValueFromSource(this TrackedProperty property, object? valueFromSource)
     {
         property.Data[IsChangingFromSourceKey] = true;
         try
@@ -52,7 +52,7 @@ public static class SourcingExtensions
         }
     }
 
-    private static object? ConvertFromSource(TrackableProperty property, object? value)
+    private static object? ConvertFromSource(TrackedProperty property, object? value)
     {
         foreach (var attribute in property.GetCustomAttributes<IStateConverter>(true))
         {

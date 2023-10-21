@@ -10,7 +10,7 @@ namespace Namotion.Trackable.Attributes;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public class TrackableAttribute : Attribute
 {
-    public IEnumerable<Model.Trackable> CreateTrackablesForProperty(PropertyInfo property, ITrackableContext context, Model.Trackable parent, int? parentCollectionIndex)
+    public IEnumerable<Tracker> CreateTrackerForProperty(PropertyInfo property, Tracker parent, int? parentCollectionIndex, ITrackableContext context)
     {
         if (property.GetCustomAttribute<TrackableAttribute>(true) != null)
         {
@@ -34,9 +34,9 @@ public class TrackableAttribute : Attribute
         }
     }
 
-    protected virtual TrackableProperty CreateTrackableProperty(PropertyInfo property, string path, Model.Trackable parent, int? parentCollectionIndex, ITrackableContext context)
+    protected virtual TrackedProperty CreateTrackableProperty(PropertyInfo property, string path, Tracker parent, int? parentCollectionIndex, ITrackableContext context)
     {
-        return new TrackableProperty(property, path, parent, context);
+        return new TrackedProperty(property, path, parent, context);
     }
 
     private string GetPath(string basePath, PropertyInfo propertyInfo)

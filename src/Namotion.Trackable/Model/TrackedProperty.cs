@@ -9,14 +9,14 @@ using Namotion.Trackable.Attributes;
 
 namespace Namotion.Trackable.Model;
 
-public class TrackableProperty
+public class TrackedProperty
 {
     private readonly PropertyInfo _property;
 
-    public TrackableProperty(
+    public TrackedProperty(
         PropertyInfo property,
         string path,
-        Trackable parent,
+        Tracker parent,
         ITrackableContext context)
     {
         _property = property;
@@ -38,7 +38,7 @@ public class TrackableProperty
     public bool IsAttribute => AttributeMetadata != null;
 
     [JsonIgnore]
-    public Trackable Parent { get; }
+    public Tracker Parent { get; }
 
     [JsonIgnore]
     public MethodInfo? GetMethod { get; }
@@ -69,11 +69,11 @@ public class TrackableProperty
         .GetCustomAttribute<AttributeOfTrackableAttribute>(true);
 
     [JsonIgnore]
-    public TrackableProperty[] DependentProperties { get; internal set; } = Array.Empty<TrackableProperty>();
+    public TrackedProperty[] DependentProperties { get; internal set; } = Array.Empty<TrackedProperty>();
 
     public IEnumerable<string> DependentPropertyPaths => DependentProperties.Select(v => v.Path);
 
-    public Dictionary<string, TrackableProperty> Attributes => Context
+    public Dictionary<string, TrackedProperty> Attributes => Context
         .AllProperties
         .Where(v => v.AttributeMetadata?.PropertyName == _property.Name && v.Parent == Parent)
         .ToDictionary(v => v.AttributeMetadata!.AttributeName, v => v);
