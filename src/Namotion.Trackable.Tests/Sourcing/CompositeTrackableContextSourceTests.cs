@@ -6,6 +6,8 @@ namespace Namotion.Trackable.Tests.Sourcing
     {
         public class TestTrackableContextSource : ITrackableContextSource
         {
+            public string Separator => ".";
+
             public Dictionary<string, object?> Data { get; } = new Dictionary<string, object?>();
 
             public Action<string, object?>? PropertyUpdateAction { get; private set; }

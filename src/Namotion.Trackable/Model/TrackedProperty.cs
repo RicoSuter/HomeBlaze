@@ -16,12 +16,10 @@ public class TrackedProperty
     public TrackedProperty(
         PropertyInfo property,
         string path,
-        Tracker parent,
-        ITrackableContext context)
+        Tracker parent)
     {
         _property = property;
 
-        Context = context;
         Path = path;
         Parent = parent;
 
@@ -30,7 +28,7 @@ public class TrackedProperty
     }
 
     [JsonIgnore]
-    public ITrackableContext Context { get; }
+    public ITrackableContext Context => Parent.Context;
 
     public string Path { get; }
 

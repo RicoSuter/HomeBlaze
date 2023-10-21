@@ -182,7 +182,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
             group.Parent = parentProperty.Parent.Object;
         }
 
-        var tracker = new Tracker(proxy, parentPath, parentProperty);
+        var tracker = new Tracker(proxy, parentPath, parentProperty, this);
         foreach (var property in proxy
             .GetType()
             .BaseType! // get properties from actual type
@@ -192,7 +192,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
             var trackableAttribute = property.GetCustomAttribute<TrackableAttribute>(true);
             if (trackableAttribute != null)
             {
-                foreach (var child in trackableAttribute.CreateTrackersForProperty(property, tracker, parentCollectionIndex, this))
+                foreach (var child in trackableAttribute.CreateTrackersForProperty(property, tracker, parentCollectionIndex))
                 {
                     yield return child;
                 };

@@ -5,6 +5,9 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="MQTTnet" Version="4.2.1.781" />
+	</ItemGroup>
+	<ItemGroup>
 	  <ProjectReference Include="..\Namotion.Trackable\Namotion.Trackable.csproj" />
 	</ItemGroup>
 </Project>

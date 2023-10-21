@@ -12,9 +12,7 @@ public class TrackableFromSourceAttribute : TrackableAttribute
 
     public string? AbsolutePath { get; set; }
 
-    public int Length { get; set; }
-
-    protected override TrackedProperty CreateTrackableProperty(PropertyInfo property, string targetPath, Tracker parent, int? parentCollectionIndex, ITrackableContext context)
+    protected override TrackedProperty CreateTrackableProperty(PropertyInfo property, string targetPath, Tracker parent, int? parentCollectionIndex)
     {
         if (property.GetCustomAttribute<TrackableFromSourceAttribute>(true) != null)
         {
@@ -22,14 +20,14 @@ public class TrackableFromSourceAttribute : TrackableAttribute
                 (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty);
 
             var sourcePath = GetSourcePath(parentPath, property);
-            return new TrackedProperty(property, targetPath, parent, context)
+            return new TrackedProperty(property, targetPath, parent)
             {
                 Data = { { SourcingExtensions.SourcePathKey, sourcePath } }
             };
         }
         else
         {
-            return base.CreateTrackableProperty(property, targetPath, parent, parentCollectionIndex, context);
+            return base.CreateTrackableProperty(property, targetPath, parent, parentCollectionIndex);
         }
     }
 
