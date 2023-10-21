@@ -12,10 +12,12 @@ using Namotion.Trackable.Sourcing;
 using System.Linq;
 using System.Text.Json;
 using System.Text;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace HomeBlaze.Mqtt
 {
-    public class MqttBroker<TTrackable> : BackgroundService
+    public class MqttServer<TTrackable> : BackgroundService, ITrackableContextSource
         where TTrackable : class
     {
         private readonly TrackableContext<TTrackable> _trackableContext;
@@ -23,6 +25,9 @@ namespace HomeBlaze.Mqtt
 
         private int _numberOfClients = 0;
         private MqttServer? _mqttServer;
+
+        private Action<string, object?>? _propertyUpdateAction;
+        private ConcurrentDictionary<string, object?> _state = new ConcurrentDictionary<string, object?>();
 
         public string IconName => "fas fa-envelope";
 
@@ -36,7 +41,9 @@ namespace HomeBlaze.Mqtt
 
         public int? NumberOfClients => _numberOfClients;
 
-        public MqttBroker(TrackableContext<TTrackable> trackableContext, ILogger<MqttBroker<TTrackable>> logger)
+        public string Separator => throw new NotImplementedException();
+
+        public MqttServer(TrackableContext<TTrackable> trackableContext, ILogger<MqttServer<TTrackable>> logger)
         {
             _trackableContext = trackableContext;
             _logger = logger;
@@ -65,9 +72,6 @@ namespace HomeBlaze.Mqtt
                     await _mqttServer.StartAsync();
                     IsListening = true;
 
-                    await _trackableContext
-                        .ForEachAsync(async change => await PropertyChangedAsync(change), stoppingToken);
-
                     await Task.Delay(Timeout.Infinite, stoppingToken);
                     await _mqttServer.StopAsync();
 
@@ -81,12 +85,6 @@ namespace HomeBlaze.Mqtt
                     await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
                 }
             }
-        }
-
-        private async Task PropertyChangedAsync(TrackedPropertyChange change)
-        {
-            var property = change.Property;
-            await PublishPropertyValueAsync(change.Value, property);
         }
 
         private async Task PublishPropertyValueAsync(object? value, TrackedProperty property)
@@ -139,7 +137,10 @@ namespace HomeBlaze.Mqtt
                 {
                     var payload = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment);
                     var document = JsonDocument.Parse(payload);
-                    property.SetValueFromSource(document.Deserialize(property.PropertyType));
+                    var value = document.Deserialize(property.PropertyType);
+
+                    _state[args.ApplicationMessage.Topic] = value;
+                    _propertyUpdateAction?.Invoke(sourcePath, value);
                 }
             }
             catch (Exception ex)
@@ -148,6 +149,33 @@ namespace HomeBlaze.Mqtt
             }
 
             return Task.CompletedTask;
+        }
+
+        public Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
+        {
+            return Task.FromResult<IReadOnlyDictionary<string, object?>>(_state
+                .Where(s => sourcePaths.Contains(s.Key.Replace(".", "/")))
+                .ToDictionary(s => s.Key, s => s.Value));
+        }
+
+        public Task<IDisposable?> SubscribeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
+        {
+            _propertyUpdateAction = propertyUpdateAction;
+            return Task.FromResult<IDisposable?>(null);
+        }
+
+        public async Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)
+        {
+            foreach ((var sourcePath, var value) in propertyChanges)
+            {
+                await _mqttServer!.InjectApplicationMessage(new InjectedMqttApplicationMessage(new MqttApplicationMessage
+                {
+                    Topic = string.Join('/', sourcePath.Split('.')),
+                    ContentType = "application/json",
+                    PayloadSegment = new ArraySegment<byte>(
+                       Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value)))
+                }));
+            }
         }
     }
 }

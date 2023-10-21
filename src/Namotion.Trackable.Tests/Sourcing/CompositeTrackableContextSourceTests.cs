@@ -17,10 +17,10 @@ namespace Namotion.Trackable.Tests.Sourcing
                 return Task.FromResult<IReadOnlyDictionary<string, object?>>(Data.Where(p => sourcePaths.Contains(p.Key)).ToDictionary(p => p.Key, p => p.Value));
             }
 
-            public Task<IDisposable> SubscribeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
+            public Task<IDisposable?> SubscribeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
             {
                 PropertyUpdateAction = propertyUpdateAction;
-                return Task.FromResult<IDisposable>(new DummyDisposable());
+                return Task.FromResult<IDisposable?>(new DummyDisposable());
             }
 
             public Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)

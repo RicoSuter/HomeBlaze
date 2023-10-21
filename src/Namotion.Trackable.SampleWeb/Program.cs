@@ -14,14 +14,15 @@ namespace Namotion.Trackable.SampleWeb
 
             builder.Services.AddTrackable<Car>();
             builder.Services.AddTrackableControllers<Car, TrackablesController<Car>>();
+
+            builder.Services.AddSingleton<MqttServer<Car>>()
+                .AddHostedService(sp => sp.GetRequiredService<MqttServer<Car>>());
             builder.Services.AddHostedService(sp =>
             {
-                return new MqttBroker<Car>(
+                return new TrackableContextSourceBackgroundService<Car>(
                     sp.GetRequiredService<TrackableContext<Car>>(),
-                    sp.GetRequiredService<ILogger<MqttBroker<Car>>>())
-                {
-
-                };
+                    sp.GetRequiredService<MqttServer<Car>>(),
+                    sp.GetRequiredService<ILogger<TrackableContextSourceBackgroundService<Car>>>());
             });
 
             builder.Services.AddHostedService<Simulator>();
