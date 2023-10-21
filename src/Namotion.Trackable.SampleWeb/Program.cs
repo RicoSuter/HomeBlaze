@@ -45,16 +45,19 @@ namespace Namotion.Trackable.SampleWeb
                 };
             }
 
-            [Trackable, TrackableSource("mqtt", RelativePath = "name")]
+            [Trackable]
+            [TrackableSource("mqtt", RelativePath = "name")]
             public virtual string Name { get; set; } = "My Car";
 
-            [Trackable, TrackableSource("mqtt", RelativePath = "tires")]
+            [Trackable]
+            [TrackableSource("mqtt", RelativePath = "tires")]
             public virtual Tire[] Tires { get; set; }
         }
 
         public class Tire
         {
-            [Trackable, TrackableSource("mqtt", RelativePath = "pressure")]
+            [Trackable]
+            [TrackableSource("mqtt", RelativePath = "pressure")]
             public virtual decimal Pressure { get; set; }
         }
 
