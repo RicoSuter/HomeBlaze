@@ -17,7 +17,7 @@ using System.Collections.Concurrent;
 
 namespace HomeBlaze.Mqtt
 {
-    public class MqttServer<TTrackable> : BackgroundService, ITrackableContextSource
+    public class MqttServerTrackableSource<TTrackable> : BackgroundService, ITrackableSource
         where TTrackable : class
     {
         private readonly TrackableContext<TTrackable> _trackableContext;
@@ -31,11 +31,11 @@ namespace HomeBlaze.Mqtt
 
         public int Port { get; set; } = 1883;
 
-        public bool IsListening { get; set; }
+        public bool IsListening { get; private set; }
 
         public int? NumberOfClients => _numberOfClients;
 
-        public MqttServer(TrackableContext<TTrackable> trackableContext, ILogger<MqttServer<TTrackable>> logger)
+        public MqttServerTrackableSource(TrackableContext<TTrackable> trackableContext, ILogger<MqttServerTrackableSource<TTrackable>> logger)
         {
             _trackableContext = trackableContext;
             _logger = logger;
@@ -79,17 +79,29 @@ namespace HomeBlaze.Mqtt
             }
         }
 
-        private async Task PublishPropertyValueAsync(object? value, TrackedProperty property)
+        public Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
         {
-            var sourcePath = property.TryGetSourcePath(_trackableContext);
-            if (sourcePath != null)
+            return Task.FromResult<IReadOnlyDictionary<string, object?>>(_state
+                .Where(s => sourcePaths.Contains(s.Key.Replace(".", "/")))
+                .ToDictionary(s => s.Key, s => s.Value));
+        }
+
+        public Task<IDisposable?> SubscribeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
+        {
+            _propertyUpdateAction = propertyUpdateAction;
+            return Task.FromResult<IDisposable?>(null);
+        }
+
+        public async Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)
+        {
+            foreach ((var sourcePath, var value) in propertyChanges)
             {
                 await _mqttServer!.InjectApplicationMessage(new InjectedMqttApplicationMessage(new MqttApplicationMessage
                 {
                     Topic = string.Join('/', sourcePath.Split('.')),
                     ContentType = "application/json",
                     PayloadSegment = new ArraySegment<byte>(
-                        Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value)))
+                       Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value)))
                 }));
             }
         }
@@ -108,6 +120,21 @@ namespace HomeBlaze.Mqtt
             });
 
             return Task.CompletedTask;
+        }
+
+        private async Task PublishPropertyValueAsync(object? value, TrackedProperty property)
+        {
+            var sourcePath = property.TryGetSourcePath(_trackableContext);
+            if (sourcePath != null)
+            {
+                await _mqttServer!.InjectApplicationMessage(new InjectedMqttApplicationMessage(new MqttApplicationMessage
+                {
+                    Topic = string.Join('/', sourcePath.Split('.')),
+                    ContentType = "application/json",
+                    PayloadSegment = new ArraySegment<byte>(
+                        Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value)))
+                }));
+            }
         }
 
         private Task ClientDisconnectedAsync(ClientDisconnectedEventArgs arg)
@@ -141,33 +168,6 @@ namespace HomeBlaze.Mqtt
             }
 
             return Task.CompletedTask;
-        }
-
-        public Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
-        {
-            return Task.FromResult<IReadOnlyDictionary<string, object?>>(_state
-                .Where(s => sourcePaths.Contains(s.Key.Replace(".", "/")))
-                .ToDictionary(s => s.Key, s => s.Value));
-        }
-
-        public Task<IDisposable?> SubscribeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
-        {
-            _propertyUpdateAction = propertyUpdateAction;
-            return Task.FromResult<IDisposable?>(null);
-        }
-
-        public async Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)
-        {
-            foreach ((var sourcePath, var value) in propertyChanges)
-            {
-                await _mqttServer!.InjectApplicationMessage(new InjectedMqttApplicationMessage(new MqttApplicationMessage
-                {
-                    Topic = string.Join('/', sourcePath.Split('.')),
-                    ContentType = "application/json",
-                    PayloadSegment = new ArraySegment<byte>(
-                       Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value)))
-                }));
-            }
         }
     }
 }

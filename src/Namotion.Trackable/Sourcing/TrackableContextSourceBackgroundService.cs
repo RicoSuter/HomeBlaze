@@ -13,7 +13,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
     where TTrackable : class
 {
     private readonly TrackableContext<TTrackable> _trackableContext;
-    private readonly ITrackableContextSource _source;
+    private readonly ITrackableSource _source;
     private readonly ILogger _logger;
 
     private readonly TimeSpan _bufferTime;
@@ -23,7 +23,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
 
     public TrackableContextSourceBackgroundService(
         TrackableContext<TTrackable> trackableContext,
-        ITrackableContextSource source,
+        ITrackableSource source,
         ILogger logger,
         TimeSpan? bufferTime = null,
         TimeSpan? retryTime = null)

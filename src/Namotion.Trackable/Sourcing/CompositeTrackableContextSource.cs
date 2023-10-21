@@ -7,13 +7,13 @@ using System;
 
 namespace Namotion.Trackable.Sourcing;
 
-public class CompositeTrackableContextSource : ITrackableContextSource
+public class CompositeTrackableContextSource : ITrackableSource
 {
-    private readonly IReadOnlyDictionary<string, ITrackableContextSource> _sources;
+    private readonly IReadOnlyDictionary<string, ITrackableSource> _sources;
 
     public string Separator { get; }
 
-    public CompositeTrackableContextSource(IReadOnlyDictionary<string, ITrackableContextSource> sources, string separator = ".")
+    public CompositeTrackableContextSource(IReadOnlyDictionary<string, ITrackableSource> sources, string separator = ".")
     {
         _sources = sources
             .OrderByDescending(s => s.Key)

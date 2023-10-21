@@ -4,7 +4,7 @@ namespace Namotion.Trackable.Tests.Sourcing
 {
     public class CompositeTrackableContextSourceTests
     {
-        public class TestTrackableContextSource : ITrackableContextSource
+        public class TestTrackableContextSource : ITrackableSource
         {
             public string Separator => ".";
 
@@ -46,7 +46,7 @@ namespace Namotion.Trackable.Tests.Sourcing
         {
             // Arrange
             var source = new TestTrackableContextSource();
-            var compositeSource = new CompositeTrackableContextSource(new Dictionary<string, ITrackableContextSource>
+            var compositeSource = new CompositeTrackableContextSource(new Dictionary<string, ITrackableSource>
             {
                 { "abc", source }
             });
@@ -67,7 +67,7 @@ namespace Namotion.Trackable.Tests.Sourcing
         {
             // Arrange
             var source = new TestTrackableContextSource();
-            var compositeSource = new CompositeTrackableContextSource(new Dictionary<string, ITrackableContextSource>
+            var compositeSource = new CompositeTrackableContextSource(new Dictionary<string, ITrackableSource>
             {
                 { "abc", source }
             });
@@ -94,7 +94,7 @@ namespace Namotion.Trackable.Tests.Sourcing
                 }
             };
 
-            var compositeSource = new CompositeTrackableContextSource(new Dictionary<string, ITrackableContextSource>
+            var compositeSource = new CompositeTrackableContextSource(new Dictionary<string, ITrackableSource>
             {
                 { "abc", source }
             });
