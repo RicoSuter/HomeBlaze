@@ -18,6 +18,11 @@ public class TrackableAttribute : Attribute
         var property = CreateTrackableProperty(propertyInfo, propertyPath, parent, parentCollectionIndex);
         parent.Properties.Add(property);
 
+        foreach (var attribute in propertyInfo.GetCustomAttributes(true).OfType<ITrackableAttribute>())
+        {
+            attribute.OnTrackedPropertyCreated(property, parent, parentCollectionIndex);
+        }
+
         if (propertyInfo.GetCustomAttributes(true).Any(a => a is RequiredAttribute ||
                                                             a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
             propertyInfo.PropertyType.IsClass &&
@@ -29,11 +34,6 @@ public class TrackableAttribute : Attribute
                 yield return childThing;
 
             propertyInfo.SetValue(parent.Object, child);
-        }
-
-        foreach (var attribute in propertyInfo.GetCustomAttributes(true).OfType<ITrackableAttribute>())
-        {
-            attribute.OnTrackedPropertyCreated(property, parent, parentCollectionIndex);
         }
     }
 
