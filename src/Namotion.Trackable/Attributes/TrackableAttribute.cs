@@ -22,6 +22,7 @@ public class TrackableAttribute : Attribute
             attribute.ProcessCreatedTrackedProperty(property, parent, parentCollectionIndex);
         }
 
+        // auto create required properties
         if (propertyInfo
                 .GetCustomAttributes(true)
                 .Any(a => a is RequiredAttribute ||
