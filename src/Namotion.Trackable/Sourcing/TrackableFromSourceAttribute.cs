@@ -16,14 +16,13 @@ public class TrackableFromSourceAttribute : TrackableAttribute
     {
         if (propertyInfo.GetCustomAttribute<TrackableFromSourceAttribute>(true) != null)
         {
-            var property = new TrackedProperty(propertyInfo, path, parent);
-
             var parentPath = parent.ParentProperty?.TryGetSourcePath() +
                 (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty);
 
             var sourcePath = GetSourcePath(parentPath, propertyInfo);
-            property.SetSourcePath(sourcePath);
 
+            var property = new TrackedProperty(propertyInfo, path, parent);
+            property.SetSourcePath(sourcePath);
             return property;
         }
         else
