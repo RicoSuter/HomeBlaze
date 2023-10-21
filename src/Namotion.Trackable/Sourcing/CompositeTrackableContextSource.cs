@@ -22,6 +22,33 @@ public class CompositeTrackableContextSource : ITrackableSource
         Separator = separator;
     }
 
+    public async Task<IDisposable?> InitializeAsync(string sourceName, IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
+    {
+        var disposables = new List<IDisposable>();
+
+        var groups = sourcePaths.GroupBy(p => _sources.First(s => p.StartsWith(s.Key + Separator)));
+        foreach (var group in groups)
+        {
+            (var path, var source) = group.Key;
+            if (path is not null && source is not null)
+            {
+                var innerSourcePaths = group.Select(p => p.Substring(path.Length + Separator.Length));
+                var disposable = await source.InitializeAsync(
+                    sourceName,
+                    innerSourcePaths,
+                    (innerPath, value) => propertyUpdateAction(path + Separator + innerPath, value),
+                    cancellationToken);
+
+                if (disposable != null)
+                {
+                    disposables.Add(disposable);
+                }
+            }
+        }
+
+        return new CompositeDisposable(disposables);
+    }
+
     public async Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
     {
         var result = new List<KeyValuePair<string, object?>>();
@@ -39,32 +66,6 @@ public class CompositeTrackableContextSource : ITrackableSource
         }
 
         return result.ToDictionary(p => p.Key, p => p.Value);
-    }
-
-    public async Task<IDisposable?> SubscribeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
-    {
-        var disposables = new List<IDisposable>();
-
-        var groups = sourcePaths.GroupBy(p => _sources.First(s => p.StartsWith(s.Key + Separator)));
-        foreach (var group in groups)
-        {
-            (var path, var source) = group.Key;
-            if (path is not null && source is not null)
-            {
-                var innerSourcePaths = group.Select(p => p.Substring(path.Length + Separator.Length));
-                var disposable = await source.SubscribeAsync(
-                    innerSourcePaths,
-                    (innerPath, value) => propertyUpdateAction(path + Separator + innerPath, value),
-                    cancellationToken);
-
-                if (disposable != null)
-                {
-                    disposables.Add(disposable);
-                }
-            }
-        }
-
-        return new CompositeDisposable(disposables);
     }
 
     public async Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)

@@ -20,10 +20,10 @@ namespace HomeBlaze.Mqtt
     public class MqttServerTrackableSource<TTrackable> : BackgroundService, ITrackableSource
         where TTrackable : class
     {
-        private readonly string _sourceName;
         private readonly TrackableContext<TTrackable> _trackableContext;
         private readonly ILogger _logger;
 
+        private string? _sourceName;
         private int _numberOfClients = 0;
         private MqttServer? _mqttServer;
 
@@ -37,11 +37,9 @@ namespace HomeBlaze.Mqtt
         public int? NumberOfClients => _numberOfClients;
 
         public MqttServerTrackableSource(
-            string sourceName,
             TrackableContext<TTrackable> trackableContext, 
             ILogger<MqttServerTrackableSource<TTrackable>> logger)
         {
-            _sourceName = sourceName;
             _trackableContext = trackableContext;
             _logger = logger;
         }
@@ -84,17 +82,18 @@ namespace HomeBlaze.Mqtt
             }
         }
 
+        public Task<IDisposable?> InitializeAsync(string sourceName, IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
+        {
+            _sourceName = sourceName;
+            _propertyUpdateAction = propertyUpdateAction;
+            return Task.FromResult<IDisposable?>(null);
+        }
+
         public Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
         {
             return Task.FromResult<IReadOnlyDictionary<string, object?>>(_state
                 .Where(s => sourcePaths.Contains(s.Key.Replace(".", "/")))
                 .ToDictionary(s => s.Key, s => s.Value));
-        }
-
-        public Task<IDisposable?> SubscribeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
-        {
-            _propertyUpdateAction = propertyUpdateAction;
-            return Task.FromResult<IDisposable?>(null);
         }
 
         public async Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)
@@ -129,7 +128,7 @@ namespace HomeBlaze.Mqtt
 
         private async Task PublishPropertyValueAsync(object? value, TrackedProperty property)
         {
-            var sourcePath = property.TryGetSourcePath(_sourceName, _trackableContext);
+            var sourcePath = property.TryGetSourcePath(_sourceName!, _trackableContext);
             if (sourcePath != null)
             {
                 await _mqttServer!.InjectApplicationMessage(new InjectedMqttApplicationMessage(new MqttApplicationMessage
@@ -155,7 +154,7 @@ namespace HomeBlaze.Mqtt
                 var sourcePath = args.ApplicationMessage.Topic.Replace('/', '.');
                 var property = _trackableContext
                     .AllProperties
-                    .SingleOrDefault(p => p.TryGetSourcePath(_sourceName) == sourcePath);
+                    .SingleOrDefault(p => p.TryGetSourcePath(_sourceName!) == sourcePath);
 
                 if (property != null)
                 {

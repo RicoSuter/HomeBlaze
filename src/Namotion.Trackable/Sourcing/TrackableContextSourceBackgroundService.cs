@@ -59,7 +59,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
                 }
 
                 // subscribe first and mark all properties as initialized which are updated before the read has completed 
-                using var disposable = await _source.SubscribeAsync(sourcePaths!, UpdatePropertyValueFromSource, stoppingToken);
+                using var disposable = await _source.InitializeAsync(_sourceName, sourcePaths!, UpdatePropertyValueFromSource, stoppingToken);
 
                 // read all properties (subscription during read will later be ignored)
                 var initialValues = await _source.ReadAsync(sourcePaths!, stoppingToken);

@@ -13,10 +13,7 @@ public static class MqttServerTrackableContextSourceExtensions
         where TTrackable : class
     {
         return serviceCollection
-            .AddSingleton(sp => new MqttServerTrackableSource<TTrackable>(
-                sourceName, 
-                sp.GetRequiredService<TrackableContext<TTrackable>>(),
-                sp.GetRequiredService<ILogger<MqttServerTrackableSource<TTrackable>>>()))
+            .AddSingleton<MqttServerTrackableSource<TTrackable>>()
             .AddHostedService(sp => sp.GetRequiredService<MqttServerTrackableSource<TTrackable>>())
             .AddHostedService(sp =>
             {
