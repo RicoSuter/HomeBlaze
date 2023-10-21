@@ -52,7 +52,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         if (Object == null)
         {
             Object = proxy;
-            Initialize(Object);
+            Initialize(proxy);
         }
     }
 

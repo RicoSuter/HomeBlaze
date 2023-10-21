@@ -4,6 +4,7 @@ using Namotion.Trackable;
 using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
 using Namotion.Trackable.Validation;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Namotion.Things.Tests;
@@ -149,6 +150,28 @@ public class TrackableContextTests
         // Assert
         Assert.Equal(5m, changes[0].Value);
         Assert.Equal(10m, changes[1].Value);
+    }
+
+    [Fact]
+    public void ShouldObserveProperty()
+    {
+        // Arrange
+        var thingContext = CreateContext<CarWithRequiredTires>();
+        var thing = thingContext.Object;
+
+        var changes = new List<decimal>();
+        thingContext
+            .Observe(c => c.FrontLeftTire.Pressure)
+            .Subscribe(changes.Add);
+
+        // Act
+        thing.FrontLeftTire.Pressure = 5;
+        thing.FrontLeftTire!.Pressure = 10;
+        thing.FrontRightTire!.Pressure = 3;
+
+        // Assert
+        Assert.Equal(5m, changes[0]);
+        Assert.Equal(10m, changes[1]);
     }
 
     private static TrackableContext<T> CreateContext<T>()
