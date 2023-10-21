@@ -78,7 +78,7 @@ public class TrackableProperty
         .Where(v => v.AttributeMetadata?.PropertyName == _property.Name && v.Parent == Parent)
         .ToDictionary(v => v.AttributeMetadata!.AttributeName, v => v);
 
-    [JsonExtensionData]
+    [JsonIgnore]
     public IDictionary<string, object?> Data { get; } = new Dictionary<string, object?>();
 
     public IEnumerable<T> GetCustomAttributes<T>(bool inherit)

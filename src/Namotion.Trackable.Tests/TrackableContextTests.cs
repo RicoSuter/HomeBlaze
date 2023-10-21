@@ -63,7 +63,7 @@ public class TrackableContextTests
         father.FirstName = "John";
 
         // Assert
-        Assert.Single(changes);
+        Assert.Equal(2, changes.Count); // firstname & fullname
         Assert.Equal("John", changes[0].Value);
     }
 

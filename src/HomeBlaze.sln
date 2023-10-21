@@ -82,6 +82,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Namotion.Trackable.AspNetCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Namotion.Trackable.Tests", "Namotion.Trackable.Tests\Namotion.Trackable.Tests.csproj", "{60F0BACD-4C8D-48EB-B9B3-225512072D75}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Namotion.Trackable.Mqtt", "Namotion.Trackable.Mqtt\Namotion.Trackable.Mqtt.csproj", "{6672B40F-10C0-44F7-8A2A-1051402A3618}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -224,6 +226,10 @@ Global
 		{60F0BACD-4C8D-48EB-B9B3-225512072D75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60F0BACD-4C8D-48EB-B9B3-225512072D75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60F0BACD-4C8D-48EB-B9B3-225512072D75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6672B40F-10C0-44F7-8A2A-1051402A3618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6672B40F-10C0-44F7-8A2A-1051402A3618}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6672B40F-10C0-44F7-8A2A-1051402A3618}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6672B40F-10C0-44F7-8A2A-1051402A3618}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -256,6 +262,7 @@ Global
 		{FFEF3063-2439-416C-A6FF-31612977B3E9} = {3FAFDF80-E35D-4817-A574-D766DAF3087C}
 		{4554A4CE-6624-4A74-984A-9A8F36A40E9F} = {3FAFDF80-E35D-4817-A574-D766DAF3087C}
 		{60F0BACD-4C8D-48EB-B9B3-225512072D75} = {3FAFDF80-E35D-4817-A574-D766DAF3087C}
+		{6672B40F-10C0-44F7-8A2A-1051402A3618} = {3FAFDF80-E35D-4817-A574-D766DAF3087C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {67090661-749A-440E-BA59-292FCE80B866}

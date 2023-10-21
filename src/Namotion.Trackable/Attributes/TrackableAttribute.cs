@@ -19,7 +19,6 @@ public class TrackableAttribute : Attribute
             var trackableProperty = CreateTrackableProperty(property, propertyPath, parent, parentCollectionIndex, context);
             parent.Properties.Add(trackableProperty);
 
-            // auto create required trackable reference
             if (property.GetCustomAttributes(true).Any(a => a is RequiredAttribute ||
                                                             a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
                 property.PropertyType.IsClass &&
@@ -27,7 +26,7 @@ public class TrackableAttribute : Attribute
             {
                 var child = context.Create(property.PropertyType);
 
-                foreach (var childThing in context.CreateThings(child, propertyPath, trackableProperty, index: null))
+                foreach (var childThing in context.CreateTrackables(child, propertyPath, trackableProperty, index: null))
                     yield return childThing;
 
                 property.SetValue(parent.Object, child);
