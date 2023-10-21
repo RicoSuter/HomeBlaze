@@ -12,7 +12,7 @@ public static class SourcingExtensions
         return property.Data.TryGetValue(SourcePathKey, out var value) ? value as string : null;
     }
 
-    public static bool IsChangingFromSource(this TrackablePropertyChange change)
+    public static bool IsChangingFromSource(this TrackedPropertyChange change)
     {
         return change.PropertyDataSnapshot.TryGetValue(IsChangingFromSourceKey, out var isChangingFromSource) &&
             isChangingFromSource is bool isChangingFromSourceBool ? isChangingFromSourceBool : false;
@@ -26,7 +26,7 @@ public static class SourcingExtensions
 
     public static object? ConvertToSource(this TrackedProperty property, object? value)
     {
-        foreach (var attribute in property.GetCustomAttributes<IStateConverter>(true))
+        foreach (var attribute in property.GetCustomAttributes<IPropertyValueConverter>(true))
         {
             value = attribute.ConvertToSource(value, property);
         }
@@ -54,7 +54,7 @@ public static class SourcingExtensions
 
     private static object? ConvertFromSource(TrackedProperty property, object? value)
     {
-        foreach (var attribute in property.GetCustomAttributes<IStateConverter>(true))
+        foreach (var attribute in property.GetCustomAttributes<IPropertyValueConverter>(true))
         {
             value = attribute.ConvertFromSource(value, property.PropertyType, property);
         }

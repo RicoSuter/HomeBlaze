@@ -2,7 +2,7 @@
 
 namespace Namotion.Trackable.Model;
 
-public record TrackablePropertyChange
+public record TrackedPropertyChange
 {
     public TrackedProperty Property { get; }
 
@@ -10,7 +10,7 @@ public record TrackablePropertyChange
 
     public IDictionary<string, object?> PropertyDataSnapshot { get; }
 
-    public TrackablePropertyChange(TrackedProperty property, IDictionary<string, object?> propertyDataSnapshot, object? value)
+    public TrackedPropertyChange(TrackedProperty property, IDictionary<string, object?> propertyDataSnapshot, object? value)
     {
         Property = property;
         PropertyDataSnapshot = propertyDataSnapshot;

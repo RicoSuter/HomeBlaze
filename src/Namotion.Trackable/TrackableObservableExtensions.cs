@@ -9,7 +9,7 @@ namespace Namotion.Trackable;
 
 public static class TrackableObservableExtensions
 {
-    public static IObservable<IEnumerable<TrackablePropertyChange>> BufferChanges(this IObservable<TrackablePropertyChange> observable, TimeSpan bufferTime)
+    public static IObservable<IEnumerable<TrackedPropertyChange>> BufferChanges(this IObservable<TrackedPropertyChange> observable, TimeSpan bufferTime)
     {
         return observable
             .Buffer(bufferTime)

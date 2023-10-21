@@ -32,13 +32,13 @@ public class TrackableInterceptor : ITrackableInterceptor
         ITrackableContext[] trackableContexts;
         lock (_trackableContexts)
         {
-            if (invocation.Method?.Name == nameof(ITrackable.AddThingContext) &&
+            if (invocation.Method?.Name == nameof(ITrackable.AddTrackableContext) &&
                 invocation.Method.DeclaringType?.IsAssignableTo(typeof(ITrackable)) == true)
             {
                 _trackableContexts.Add((ITrackableContext)invocation.Arguments[0]);
                 return;
             }
-            else if (invocation.Method?.Name == nameof(ITrackable.RemoveThingContext) &&
+            else if (invocation.Method?.Name == nameof(ITrackable.RemoveTrackableContext) &&
                      invocation.Method.DeclaringType?.IsAssignableTo(typeof(ITrackable)) == true)
             {
                 _trackableContexts.Remove((ITrackableContext)invocation.Arguments[0]);

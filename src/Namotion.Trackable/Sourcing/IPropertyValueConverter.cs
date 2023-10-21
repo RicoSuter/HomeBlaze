@@ -1,9 +1,9 @@
 ﻿using Namotion.Trackable.Model;
 using System;
 
-namespace Namotion.Trackable;
+namespace Namotion.Trackable.Sourcing;
 
-public interface IStateConverter
+public interface IPropertyValueConverter
 {
     object? ConvertFromSource(object? value, Type targetType, TrackedProperty variable);
 

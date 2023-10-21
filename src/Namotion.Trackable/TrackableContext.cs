@@ -16,10 +16,10 @@ using Namotion.Trackable.Validation;
 
 namespace Namotion.Trackable;
 
-public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, IObservable<TrackablePropertyChange>
+public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, IObservable<TrackedPropertyChange>
     where TObject : class
 {
-    private readonly Subject<TrackablePropertyChange> _changesSubject = new Subject<TrackablePropertyChange>();
+    private readonly Subject<TrackedPropertyChange> _changesSubject = new Subject<TrackedPropertyChange>();
 
     private readonly TrackableInterceptor _interceptor;
     private readonly IEnumerable<IInterceptor> _interceptors;
@@ -56,34 +56,36 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
     }
 
-    internal void Initialize(object obj)
+    internal void Initialize(object proxy)
     {
-        Object = (TObject)obj;
+        Object = (TObject)proxy;
         Attach(Object, null, null);
     }
 
-    public TChild Create<TChild>()
+    public TChild CreateProxy<TChild>()
     {
         return (TChild)_serviceProvider.CreateProxy(typeof(TChild), this, _interceptors
             .Concat(new[] { _interceptor })
             .ToArray());
     }
 
-    public object Create(Type trackableType)
+    public object CreateProxy(Type trackableType)
     {
         return _serviceProvider.CreateProxy(trackableType, this, _interceptors
             .Concat(new[] { _interceptor })
             .ToArray());
     }
 
-    public IDisposable Subscribe(IObserver<TrackablePropertyChange> observer)
+    public IDisposable Subscribe(IObserver<TrackedPropertyChange> observer)
         => _changesSubject.Subscribe(observer);
 
     public IObservable<TField?> Observe<TField>(Expression<Func<TObject, TField>> selector)
     {
-        var targetPath = GetFullExpressionPath(selector);
-        return this.Select(change => change.Property.Path.StartsWith(targetPath) && change.Value is not null)
-            .Select(_ => selector.Compile().Invoke(Object));
+        var targetPath = selector.GetFullExpressionPath();
+        var function = selector.Compile();
+        return this
+            .Select(change => change.Property.Path.StartsWith(targetPath) && change.Value is not null)
+            .Select(_ => function.Invoke(Object));
     }
 
     internal void Attach(TrackedProperty property, object newValue)
@@ -111,14 +113,14 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                 (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty)) : string
             .Empty;
 
-        var newTrackables = CreateTrackables(proxy, parentPath, parentProperty, parentCollectionIndex)
+        var newTrackables = CreateTrackers(proxy, parentPath, parentProperty, parentCollectionIndex)
             .ToArray();
 
         foreach (var thing in newTrackables
             .Select(t => t.Object)
             .OfType<ITrackable>())
         {
-            thing.AddThingContext(this);
+            thing.AddTrackableContext(this);
         }
 
         _trackers = _trackers
@@ -145,7 +147,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
         else
         {
-            // TODO: Call RemoveThingContext
+            // TODO: Call RemoveTrackableContext on all trackables (also children)
             _trackers = _trackers
                 .Where(t => t.Object != previousValue)
                 .ToArray();
@@ -159,7 +161,8 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     private void MarkVariableAsChanged(TrackedProperty property, HashSet<TrackedProperty> changedVariables)
     {
-        _changesSubject.OnNext(new TrackablePropertyChange(property, new Dictionary<string, object?>(property.Data), property.GetValue()));
+        _changesSubject.OnNext(new TrackedPropertyChange(property, new Dictionary<string, object?>(property.Data), property.GetValue()));
+      
         changedVariables.Add(property);
 
         foreach (var dependentVariable in AllProperties
@@ -171,30 +174,17 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
     }
 
-    private static string GetFullExpressionPath<TItem, TField>(Expression<Func<TItem, TField>> fieldSelector)
-    {
-        var parts = new List<string>();
-        var body = fieldSelector.Body;
-        while (body is MemberExpression member)
-        {
-            parts.Add(member.Member.Name);
-            body = member.Expression;
-        }
-
-        parts.Reverse();
-        return string.Join(".", parts);
-    }
-
     // TODO: make internal
-    public IEnumerable<Tracker> CreateTrackables(object proxy, string parentPath, TrackedProperty? parent, int? parentCollectionIndex)
+    public IEnumerable<Tracker> CreateTrackers(object proxy, string parentPath, TrackedProperty? parentProperty, int? parentCollectionIndex)
     {
-        if (parent != null && proxy is ITrackableWithParent group)
+        if (parentProperty != null && proxy is ITrackableWithParent group)
         {
-            group.Parent = parent.Parent.Object;
+            group.Parent = parentProperty.Parent.Object;
         }
 
-        var trackable = new Tracker(proxy, parentPath, parent);
-        foreach (var property in proxy.GetType()
+        var tracker = new Tracker(proxy, parentPath, parentProperty);
+        foreach (var property in proxy
+            .GetType()
             .BaseType! // get properties from actual type
             .GetProperties()
             .Where(p => p.GetMethod?.IsVirtual == true || p.SetMethod?.IsVirtual == true))
@@ -202,20 +192,20 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
             var trackableAttribute = property.GetCustomAttribute<TrackableAttribute>(true);
             if (trackableAttribute != null)
             {
-                foreach (var child in trackableAttribute.CreateTrackerForProperty(property, trackable, parentCollectionIndex, this))
+                foreach (var child in trackableAttribute.CreateTrackersForProperty(property, tracker, parentCollectionIndex, this))
                 {
                     yield return child;
                 };
             }
         }
-        yield return trackable;
+        yield return tracker;
     }
 
-    void ITrackableContext.Initialize(object obj) => Initialize(obj);
+    void ITrackableContext.Initialize(object proxy) => Initialize(proxy);
 
     void ITrackableContext.Attach(TrackedProperty property, object newValue) => Attach(property, newValue);
 
     void ITrackableContext.Detach(object previousValue) => Detach(previousValue);
 
-    void ITrackableContext.MarkVariableAsChanged(TrackedProperty setVariable) => MarkVariableAsChanged(setVariable);
+    void ITrackableContext.MarkVariableAsChanged(TrackedProperty property) => MarkVariableAsChanged(property);
 }

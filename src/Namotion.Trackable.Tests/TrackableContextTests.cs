@@ -34,7 +34,7 @@ public class TrackableContextTests
         trackable.FirstName = "Rico";
         trackable.LastName = "Suter";
 
-        var changes = new List<TrackablePropertyChange>();
+        var changes = new List<TrackedPropertyChange>();
         trackableContext.Subscribe(changes.Add);
 
         // Act
@@ -53,10 +53,10 @@ public class TrackableContextTests
         var trackableContext = CreateContext<Person>();
         var trackable = trackableContext.Object;
 
-        var father = trackableContext.Create<Person>();
+        var father = trackableContext.CreateProxy<Person>();
         trackable.Father = father;
 
-        var changes = new List<TrackablePropertyChange>();
+        var changes = new List<TrackedPropertyChange>();
         trackableContext.Subscribe(changes.Add);
 
         // Act
@@ -74,11 +74,11 @@ public class TrackableContextTests
         var trackableContext = CreateContext<Person>();
         var trackable = trackableContext.Object;
 
-        var father = trackableContext.Create<Person>();
+        var father = trackableContext.CreateProxy<Person>();
         trackable.Father = father;
         trackable.Father = null;
 
-        var changes = new List<TrackablePropertyChange>();
+        var changes = new List<TrackedPropertyChange>();
         trackableContext.Subscribe(changes.Add);
 
         // Act
@@ -92,7 +92,7 @@ public class TrackableContextTests
     {
         public Car(ITrackableFactory thingFactory)
         {
-            FrontLeftTire = thingFactory.Create<Tire>();
+            FrontLeftTire = thingFactory.CreateProxy<Tire>();
         }
 
         [Trackable]
@@ -112,7 +112,7 @@ public class TrackableContextTests
         var thingContext = CreateContext<Car>();
         var thing = thingContext.Object;
 
-        var changes = new List<TrackablePropertyChange>();
+        var changes = new List<TrackedPropertyChange>();
         thingContext.Subscribe(changes.Add);
 
         // Act
@@ -139,7 +139,7 @@ public class TrackableContextTests
         var thingContext = CreateContext<CarWithRequiredTires>();
         var thing = thingContext.Object;
 
-        var changes = new List<TrackablePropertyChange>();
+        var changes = new List<TrackedPropertyChange>();
         thingContext.Subscribe(changes.Add);
 
         // Act

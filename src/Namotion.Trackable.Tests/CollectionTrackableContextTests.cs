@@ -15,10 +15,10 @@ public class CollectionTrackableContextTests
         {
             Tires = new Tire[]
             {
-                factory.Create<Tire>(),
-                factory.Create<Tire>(),
-                factory.Create<Tire>(),
-                factory.Create<Tire>() 
+                factory.CreateProxy<Tire>(),
+                factory.CreateProxy<Tire>(),
+                factory.CreateProxy<Tire>(),
+                factory.CreateProxy<Tire>() 
             };
         }
 
@@ -39,7 +39,7 @@ public class CollectionTrackableContextTests
         var trackableContext = CreateContext<Car>();
         var trackable = trackableContext.Object;
        
-        var changes = new List<TrackablePropertyChange>();
+        var changes = new List<TrackedPropertyChange>();
         trackableContext.Subscribe(changes.Add);
 
         // Act

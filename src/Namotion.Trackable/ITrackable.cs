@@ -2,7 +2,7 @@
 
 public interface ITrackable
 {
-    void AddThingContext(ITrackableContext thingContext) { }
+    void AddTrackableContext(ITrackableContext thingContext) { }
 
-    void RemoveThingContext(ITrackableContext thingContext) { }
+    void RemoveTrackableContext(ITrackableContext thingContext) { }
 }
