@@ -29,19 +29,11 @@ namespace HomeBlaze.Mqtt
         private Action<string, object?>? _propertyUpdateAction;
         private ConcurrentDictionary<string, object?> _state = new ConcurrentDictionary<string, object?>();
 
-        public string IconName => "fas fa-envelope";
-
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-
-        public string? Title { get; set; } = "MQTT Broker";
-
         public int Port { get; set; } = 1883;
 
         public bool IsListening { get; set; }
 
         public int? NumberOfClients => _numberOfClients;
-
-        public string Separator => throw new NotImplementedException();
 
         public MqttServer(TrackableContext<TTrackable> trackableContext, ILogger<MqttServer<TTrackable>> logger)
         {

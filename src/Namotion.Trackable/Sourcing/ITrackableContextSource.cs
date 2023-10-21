@@ -7,8 +7,6 @@ namespace Namotion.Trackable.Sourcing;
 
 public interface ITrackableContextSource
 {
-    string Separator { get; }
-
     Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken);
 
     Task<IDisposable?> SubscribeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken);
