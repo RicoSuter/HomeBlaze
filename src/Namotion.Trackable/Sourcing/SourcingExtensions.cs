@@ -26,53 +26,39 @@ public static class SourcingExtensions
         property.Data[SourcePathKey + sourceName] = sourcePath;
     }
 
-    public static bool IsChangingFromSource(this TrackedPropertyChange change)
+    public static void SetValueFromSource(this TrackedProperty property, ITrackableSource source, object? value)
     {
-        return change.PropertyDataSnapshot.TryGetValue(IsChangingFromSourceKey, out var isChangingFromSource) &&
-            isChangingFromSource is bool isChangingFromSourceBool ? isChangingFromSourceBool : false;
-    }
-
-    public static object? GetSourceValue(this TrackedProperty property)
-    {
-        var value = property.GetValue();
-        return ConvertToSource(property, value);
-    }
-
-    public static object? ConvertToSource(this TrackedProperty property, object? value)
-    {
-        foreach (var attribute in property.GetCustomAttributes<IPropertyValueConverter>(true))
+        lock (property.Data)
         {
-            value = attribute.ConvertToSource(value, property);
+            property.Data[IsChangingFromSourceKey] =
+                property.Data.TryGetValue(IsChangingFromSourceKey, out var sources)
+                ? ((ITrackableSource[])sources!).Append(source).ToArray()
+                : (object)(new[] { source });
         }
 
-        return value;
-    }
-
-    public static void SetValueFromSource(this TrackedProperty property, object? valueFromSource)
-    {
-        property.Data[IsChangingFromSourceKey] = true;
         try
         {
             var currentValue = property.GetValue();
-            var newValue = ConvertFromSource(property, valueFromSource);
-            if (!Equals(currentValue, newValue))
+            if (!Equals(currentValue, value))
             {
-                property.SetValue(newValue);
+                property.SetValue(value);
             }
         }
         finally
         {
-            property.Data[IsChangingFromSourceKey] = false;
+            lock (property.Data)
+            {
+                property.Data[IsChangingFromSourceKey] = ((ITrackableSource[])property.Data[IsChangingFromSourceKey]!)
+                    .Except(new[] { source })
+                    .ToArray();
+            }
         }
     }
 
-    private static object? ConvertFromSource(TrackedProperty property, object? value)
+    public static bool IsChangingFromSource(this TrackedPropertyChange change, ITrackableSource source)
     {
-        foreach (var attribute in property.GetCustomAttributes<IPropertyValueConverter>(true))
-        {
-            value = attribute.ConvertFromSource(value, property.PropertyType, property);
-        }
-
-        return value;
+        return change.PropertyDataSnapshot.TryGetValue(IsChangingFromSourceKey, out var isChangingFromSource) &&
+            isChangingFromSource is ITrackableSource[] sources &&
+            sources.Contains(source);
     }
 }

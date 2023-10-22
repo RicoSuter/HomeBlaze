@@ -119,7 +119,7 @@ namespace HomeBlaze.Mqtt
                 await Task.Delay(1000);
                 foreach (var property in _trackableContext.AllProperties)
                 {
-                    await PublishPropertyValueAsync(property.GetSourceValue(), property);
+                    await PublishPropertyValueAsync(property.GetValue(), property);
                 }
             });
 

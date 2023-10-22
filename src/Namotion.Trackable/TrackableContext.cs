@@ -161,7 +161,9 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     private void MarkVariableAsChanged(TrackedProperty property, HashSet<TrackedProperty> changedVariables)
     {
-        _changesSubject.OnNext(new TrackedPropertyChange(property, new Dictionary<string, object?>(property.Data), property.GetValue()));
+        _changesSubject.OnNext(new TrackedPropertyChange(property, 
+            new Dictionary<string, object?>(property.Data), 
+            property.GetValue()));
       
         changedVariables.Add(property);
 
