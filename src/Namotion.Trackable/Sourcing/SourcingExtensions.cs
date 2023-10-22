@@ -5,7 +5,7 @@ namespace Namotion.Trackable.Sourcing;
 
 public static class SourcingExtensions
 {
-    private const string SourcePathKey = "SourcePath";
+    private const string SourcePathKey = "SourcePath:";
     private const string IsChangingFromSourceKey = "IsChangingFromSource";
 
     public static string? TryGetSourcePath(this TrackedProperty property, string sourceName, ITrackableContext trackableContext)
