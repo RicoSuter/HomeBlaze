@@ -37,7 +37,7 @@ namespace HomeBlaze.Mqtt
         public int? NumberOfClients => _numberOfClients;
 
         public MqttServerTrackableSource(
-            TrackableContext<TTrackable> trackableContext, 
+            TrackableContext<TTrackable> trackableContext,
             ILogger<MqttServerTrackableSource<TTrackable>> logger)
         {
             _trackableContext = trackableContext;
@@ -100,13 +100,15 @@ namespace HomeBlaze.Mqtt
         {
             foreach ((var sourcePath, var value) in propertyChanges)
             {
-                await _mqttServer!.InjectApplicationMessage(new InjectedMqttApplicationMessage(new MqttApplicationMessage
-                {
-                    Topic = string.Join('/', sourcePath.Split('.')),
-                    ContentType = "application/json",
-                    PayloadSegment = new ArraySegment<byte>(
-                       Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value)))
-                }));
+                await _mqttServer!.InjectApplicationMessage(
+                    new InjectedMqttApplicationMessage(
+                        new MqttApplicationMessage
+                        {
+                            Topic = string.Join('/', sourcePath.Split('.')),
+                            ContentType = "application/json",
+                            PayloadSegment = new ArraySegment<byte>(
+                               Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value)))
+                        }));
             }
         }
 
@@ -141,12 +143,6 @@ namespace HomeBlaze.Mqtt
             }
         }
 
-        private Task ClientDisconnectedAsync(ClientDisconnectedEventArgs arg)
-        {
-            _numberOfClients--;
-            return Task.CompletedTask;
-        }
-
         private Task InterceptingPublishAsync(InterceptingPublishEventArgs args)
         {
             try
@@ -171,6 +167,12 @@ namespace HomeBlaze.Mqtt
                 _logger.LogError(ex, "Failed to deserialize MQTT payload.");
             }
 
+            return Task.CompletedTask;
+        }
+
+        private Task ClientDisconnectedAsync(ClientDisconnectedEventArgs arg)
+        {
+            _numberOfClients--;
             return Task.CompletedTask;
         }
     }
