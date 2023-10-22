@@ -1,7 +1,9 @@
+using HotChocolate.Subscriptions;
 using Microsoft.AspNetCore.Mvc;
 using Namotion.Trackable.AspNetCore.Controllers;
 using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Sourcing;
+using System.Reactive.Linq;
 
 namespace Namotion.Trackable.SampleWeb
 {
@@ -20,10 +22,22 @@ namespace Namotion.Trackable.SampleWeb
 
             builder.Services.AddOpenApiDocument();
 
+            builder.Services
+                .AddHostedService<GraphQLSubscriptionSender>() // graphql
+
+                .AddGraphQLServer()
+                .AddInMemorySubscriptions()
+
+                // graphql
+                .AddQueryType<Query>()
+                .AddSubscriptionType<Subscription>();
+
             var app = builder.Build();
 
             app.UseHttpsRedirection();
             app.UseAuthorization();
+
+            app.MapGraphQL();
 
             app.UseOpenApi();
             app.UseSwaggerUi3();
@@ -31,6 +45,43 @@ namespace Namotion.Trackable.SampleWeb
             app.Run();
         }
 
+        public class GraphQLSubscriptionSender : BackgroundService
+        {
+            private readonly TrackableContext<Car> _trackableContext;
+            private readonly ITopicEventSender _sender;
+
+            public GraphQLSubscriptionSender(TrackableContext<Car> trackableContext, ITopicEventSender sender)
+            {
+                _trackableContext = trackableContext;
+                _sender = sender;
+            }
+
+            protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+            {
+                await _trackableContext.ForEachAsync(async (change) =>
+                {
+                    await _sender.SendAsync(nameof(Subscription.Car), _trackableContext.Object);
+                }, stoppingToken);
+            }
+        }
+
+        public class Subscription
+        {
+            [Subscribe]
+            public Car Car([EventMessage] Car car) => car;
+        }
+
+        public class Query
+        {
+            private readonly Car _car;
+
+            public Query(Car car)
+            {
+                _car = car;
+            }
+
+            public Car GetCar() => _car;
+        }
 
         public class Car
         {
@@ -61,7 +112,7 @@ namespace Namotion.Trackable.SampleWeb
             public virtual decimal Pressure { get; set; }
         }
 
-        [Route("api")]
+        [Route("api/car")]
         public class TrackablesController<TTrackable> : TrackablesControllerBase<TTrackable>
             where TTrackable : class
         {
