@@ -19,7 +19,7 @@ public class TrackableAttribute : Attribute
 
         foreach (var attribute in propertyInfo.GetCustomAttributes(true).OfType<ITrackableAttribute>())
         {
-            attribute.ProcessCreatedTrackedProperty(property, parent, parentCollectionIndex);
+            attribute.ProcessProperty(property, parent, parentCollectionIndex);
         }
 
         // auto create required properties
