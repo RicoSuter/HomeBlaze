@@ -237,17 +237,18 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
             }
 
             var property = TrackableAttribute.CurrentTrackedProperty;
-            var isAttached = true;
-
-            lock (_lock)
+            if (property != null && !IsProxyAttached(proxy))
             {
-                isAttached = property != null && Trackables.All(t => t.Object != proxy);
+                Attach(property, proxy);
             }
+        }
+    }
 
-            if (!isAttached)
-            {
-                Attach(property!, proxy);
-            }
+    private bool IsProxyAttached(object proxy)
+    {
+        lock (_lock)
+        {
+            return Trackables.Any(t => t.Object == proxy);
         }
     }
 }

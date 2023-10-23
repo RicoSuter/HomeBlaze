@@ -5,6 +5,7 @@ using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
 using Namotion.Trackable.Sources;
 using Namotion.Trackable.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Namotion.Things.Tests;
 
@@ -69,6 +70,31 @@ public class CollectionTrackableContextTests
         // Assert
         Assert.Equal("Tires[0].Pressure", firstTirePressure.Path);
         Assert.Equal("tires[0].pressure", firstTirePressure.TryGetAttributeBasedSourcePath("mqtt", trackableContext));
+    }
+
+    public class Garage
+    {
+        [Required]
+        [Trackable]
+        [TrackableSourcePath("mqtt", "car")]
+        public virtual required Car Car { get; set; }
+    }
+
+    [Fact]
+    public void ShouldHaveCorrectPaths2()
+    {
+        // Arrange
+        var trackableContext = CreateContext<Garage>();
+        var trackable = trackableContext.Object;
+
+        // Act
+        var firstTirePressure = trackableContext
+            .AllProperties
+            .First(v => v.PropertyName == nameof(Tire.Pressure));
+
+        // Assert
+        Assert.Equal("Car.Tires[0].Pressure", firstTirePressure.Path);
+        Assert.Equal("car.tires[0].pressure", firstTirePressure.TryGetAttributeBasedSourcePath("mqtt", trackableContext));
     }
 
     private static TrackableContext<T> CreateContext<T>()
