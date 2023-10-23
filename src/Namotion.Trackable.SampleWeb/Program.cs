@@ -13,20 +13,26 @@ namespace Namotion.Trackable.SampleWeb
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddAuthorization();
 
+            // trackable
             builder.Services.AddTrackable<Car>();
+
+            // trackable api controllers
             builder.Services.AddTrackableControllers<Car, TrackablesController<Car>>();
+
+            // trackable mqtt
             builder.Services.AddMqttServerTrackableSource<Car>("mqtt");
 
-            builder.Services.AddHostedService<Simulator>();
-
-            builder.Services.AddOpenApiDocument();
-
+            // trackable graphql
             builder.Services
                 .AddGraphQLServer()
                 .AddInMemorySubscriptions()
                 .AddTrackedGraphQL<Car>();
+
+            // other asp services
+            builder.Services.AddHostedService<Simulator>();
+            builder.Services.AddOpenApiDocument();
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
@@ -60,7 +66,7 @@ namespace Namotion.Trackable.SampleWeb
             public virtual string Name { get; set; } = "My Car";
 
             [Trackable]
-            [TrackableSource("mqtt", "tires")]
+            [TrackableSourcePath("mqtt", "tires")]
             public virtual Tire[] Tires { get; set; }
         }
 
