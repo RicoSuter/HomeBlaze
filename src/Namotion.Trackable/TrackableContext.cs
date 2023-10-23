@@ -27,11 +27,9 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
     private readonly IEnumerable<IInterceptor> _interceptors;
     private readonly IServiceProvider _serviceProvider;
 
-    private Tracker[] _trackers = Array.Empty<Tracker>();
+    private readonly HashSet<Tracker> _trackers = new();
 
     public TObject Object { get; private set; }
-
-    public IReadOnlyCollection<Tracker> Trackables => _trackers;
 
     object ITrackableContext.Object => Object;
 
@@ -41,7 +39,9 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         {
             lock (_lock)
             {
-                return _trackers.SelectMany(t => t.Properties);
+                return _trackers
+                    .SelectMany(t => t.Properties)
+                    .ToArray();
             }
         }
     }
@@ -120,7 +120,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
     {
         lock (_lock)
         {
-            return Trackables.SingleOrDefault(t => t.Object == proxy);
+            return _trackers.SingleOrDefault(t => t.Object == proxy);
         }
     }
 
@@ -132,13 +132,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                 (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty)) : string
             .Empty;
 
-        bool hasTracker = false;
-        lock (_lock)
-        {
-            hasTracker = _trackers.Any(t => t.Object == proxy);
-        }
-
-        if (!hasTracker)
+        if (TryGetTracker(proxy) == null)
         {
             CreateTracker(proxy, parentPath, parentProperty, parentCollectionIndex);
         }
@@ -160,10 +154,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                 // TODO: Call RemoveTrackableContext on all trackables (also children)
 
                 trackable.RemoveTrackableContext(this);
-
-                _trackers = _trackers
-                    .Where(t => t.Object != previousValue)
-                    .ToArray();
+                _trackers.RemoveWhere(t => t.Object != previousValue);
             }
         }
     }
@@ -203,7 +194,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
             tracker = new Tracker(proxy, parentPath, parentProperty, this);
             lock (_lock)
             {
-                _trackers = _trackers.Concat(new[] { tracker }).ToArray();
+                _trackers.Add(tracker);
             }
 
             ((ITrackable)tracker.Object).AddTrackableContext(this);
