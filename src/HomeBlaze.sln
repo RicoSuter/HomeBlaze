@@ -86,7 +86,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Namotion.Trackable.Mqtt", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Trackable", "Trackable", "{DB6B6B5A-4224-42A2-A5A0-E5C2822EA816}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Namotion.Trackable.SampleWeb", "Namotion.Trackable.SampleWeb\Namotion.Trackable.SampleWeb.csproj", "{62655215-2CEF-49A1-AE84-906F0F87A929}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Namotion.Trackable.SampleWeb", "Namotion.Trackable.SampleWeb\Namotion.Trackable.SampleWeb.csproj", "{62655215-2CEF-49A1-AE84-906F0F87A929}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Namotion.Trackable.GraphQL", "Namotion.Trackable.GraphQL\Namotion.Trackable.GraphQL.csproj", "{3842AFA0-33D7-4C5F-916F-0DFE5E97F2B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -238,6 +240,10 @@ Global
 		{62655215-2CEF-49A1-AE84-906F0F87A929}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62655215-2CEF-49A1-AE84-906F0F87A929}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62655215-2CEF-49A1-AE84-906F0F87A929}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3842AFA0-33D7-4C5F-916F-0DFE5E97F2B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3842AFA0-33D7-4C5F-916F-0DFE5E97F2B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3842AFA0-33D7-4C5F-916F-0DFE5E97F2B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3842AFA0-33D7-4C5F-916F-0DFE5E97F2B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -273,6 +279,7 @@ Global
 		{6672B40F-10C0-44F7-8A2A-1051402A3618} = {DB6B6B5A-4224-42A2-A5A0-E5C2822EA816}
 		{DB6B6B5A-4224-42A2-A5A0-E5C2822EA816} = {3FAFDF80-E35D-4817-A574-D766DAF3087C}
 		{62655215-2CEF-49A1-AE84-906F0F87A929} = {DB6B6B5A-4224-42A2-A5A0-E5C2822EA816}
+		{3842AFA0-33D7-4C5F-916F-0DFE5E97F2B4} = {DB6B6B5A-4224-42A2-A5A0-E5C2822EA816}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {67090661-749A-440E-BA59-292FCE80B866}

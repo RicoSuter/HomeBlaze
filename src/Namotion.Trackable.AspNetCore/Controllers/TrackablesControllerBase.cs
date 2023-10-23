@@ -15,15 +15,16 @@ namespace Namotion.Trackable.AspNetCore.Controllers;
 public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
     where TTrackable : class
 {
+    private readonly static JsonSerializerOptions _options;
+
     private readonly TrackableContext<TTrackable> _trackableContext;
 
-    public TrackablesControllerBase(TrackableContext<TTrackable> trackableContext)
+    protected TrackablesControllerBase(TrackableContext<TTrackable> trackableContext)
     {
         _trackableContext = trackableContext;
     }
 
-    [HttpGet]
-    public ActionResult<TTrackable> GetVariables()
+    static TrackablesControllerBase()
     {
         var options = new JsonSerializerOptions
         {
@@ -31,12 +32,6 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        };
-
-        options.Converters.Add(new JsonStringEnumConverter());
-        options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
-        {
-            Modifiers = { RenameAttributeProperties }
         };
 
         void RenameAttributeProperties(JsonTypeInfo typeInfo)
@@ -57,7 +52,19 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
             }
         }
 
-        var json = JsonSerializer.SerializeToElement(_trackableContext.Object, options);
+        options.Converters.Add(new JsonStringEnumConverter());
+        options.TypeInfoResolver = new DefaultJsonTypeInfoResolver
+        {
+            Modifiers = { RenameAttributeProperties }
+        };
+
+        _options = options;
+    }
+
+    [HttpGet]
+    public ActionResult<TTrackable> GetVariables()
+    {
+        var json = JsonSerializer.SerializeToElement(_trackableContext.Object, _options);
         return Ok(json);
     }
 
