@@ -2,7 +2,7 @@
 using Namotion.Trackable.Model;
 using System;
 
-namespace Namotion.Trackable.Sourcing;
+namespace Namotion.Trackable.Sources;
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
 public class TrackableSourceAttribute : Attribute, ITrackableAttribute

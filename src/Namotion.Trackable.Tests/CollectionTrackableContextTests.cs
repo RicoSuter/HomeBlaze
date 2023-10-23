@@ -3,7 +3,7 @@
 using Namotion.Trackable;
 using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
-using Namotion.Trackable.Sourcing;
+using Namotion.Trackable.Sources;
 using Namotion.Trackable.Validation;
 
 namespace Namotion.Things.Tests;

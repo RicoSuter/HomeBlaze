@@ -7,7 +7,7 @@ using System.Threading;
 using System;
 using System.Collections.Generic;
 
-namespace Namotion.Trackable.Sourcing;
+namespace Namotion.Trackable.Sources;
 
 public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundService
     where TTrackable : class
@@ -73,7 +73,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
                 }
 
                 await _trackableContext
-                    .Where(change => !change.IsChangingFromSource(_source) && 
+                    .Where(change => !change.IsChangingFromSource(_source) &&
                                      _source.TryGetSourcePath(change.Property) != null)
                     .BufferChanges(_bufferTime)
                     .Where(changes => changes.Any())

@@ -1,9 +1,9 @@
 ﻿using Namotion.Trackable.Model;
 using System.Linq;
 
-namespace Namotion.Trackable.Sourcing;
+namespace Namotion.Trackable.Sources;
 
-public static class SourcingExtensions
+public static class SourceExtensions
 {
     private const string SourcePathKey = "SourcePath:";
     private const string IsChangingFromSourceKey = "IsChangingFromSource";

@@ -1,7 +1,7 @@
 ﻿using Namotion.Trackable.Model;
-using Namotion.Trackable.Sourcing;
+using Namotion.Trackable.Sources;
 
-namespace Namotion.Trackable.Tests.Sourcing
+namespace Namotion.Trackable.Tests.Sources
 {
     public class CompositeTrackableContextSourceTests
     {

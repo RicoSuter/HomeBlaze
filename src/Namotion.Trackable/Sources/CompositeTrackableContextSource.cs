@@ -6,7 +6,7 @@ using System.Threading;
 using System;
 using Namotion.Trackable.Model;
 
-namespace Namotion.Trackable.Sourcing;
+namespace Namotion.Trackable.Sources;
 
 public class CompositeTrackableContextSource : ITrackableSource
 {

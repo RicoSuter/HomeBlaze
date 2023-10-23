@@ -2,7 +2,7 @@ using HotChocolate.Subscriptions;
 using Microsoft.AspNetCore.Mvc;
 using Namotion.Trackable.AspNetCore.Controllers;
 using Namotion.Trackable.Attributes;
-using Namotion.Trackable.Sourcing;
+using Namotion.Trackable.Sources;
 using System.Reactive.Linq;
 
 namespace Namotion.Trackable.SampleWeb

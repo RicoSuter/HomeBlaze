@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Namotion.Trackable;
-using Namotion.Trackable.Sourcing;
 using HomeBlaze.Mqtt;
+using Namotion.Trackable.Sources;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;

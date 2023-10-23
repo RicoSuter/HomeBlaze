@@ -1,6 +1,6 @@
 ﻿using Namotion.Trackable.Model;
 
-namespace Namotion.Trackable.Sourcing;
+namespace Namotion.Trackable.Sources;
 
 public interface ISourcePathProvider
 {
