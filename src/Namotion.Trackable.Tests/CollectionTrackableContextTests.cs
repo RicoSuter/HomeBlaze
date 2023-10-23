@@ -81,7 +81,7 @@ public class CollectionTrackableContextTests
     }
 
     [Fact]
-    public void ShouldHaveCorrectPaths2()
+    public void ShouldHaveCorrectDeepPaths()
     {
         // Arrange
         var trackableContext = CreateContext<Garage>();
