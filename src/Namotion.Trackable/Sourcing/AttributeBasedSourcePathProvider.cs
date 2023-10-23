@@ -15,6 +15,6 @@ public class AttributeBasedSourcePathProvider : ISourcePathProvider
 
     public string? TryGetSourcePath(TrackedProperty property)
     {
-        return property.TryGetSourcePath(_sourceName, _trackableContext);
+        return property.TryGetAttributeBasedSourcePath(_sourceName, _trackableContext);
     }
 }

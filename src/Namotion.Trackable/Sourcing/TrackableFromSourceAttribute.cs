@@ -21,11 +21,11 @@ public class TrackableSourceAttribute : Attribute, ITrackableAttribute
 
     public void ProcessProperty(TrackedProperty property, Tracker parent, int? parentCollectionIndex)
     {
-        var parentPath = parent.ParentProperty?.TryGetSourcePathPrefix(SourceName) +
+        var parentPath = parent.ParentProperty?.TryGetAttributeBasedSourcePathPrefix(SourceName) +
             (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty);
 
         var sourcePath = GetSourcePath(parentPath, property);
-        property.SetSourcePath(SourceName, sourcePath);
+        property.SetAttributeBasedSourcePath(SourceName, sourcePath);
     }
 
     private string GetSourcePath(string? basePath, TrackedProperty property)

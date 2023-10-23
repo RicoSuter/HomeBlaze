@@ -8,7 +8,7 @@ public static class SourcingExtensions
     private const string SourcePathKey = "SourcePath:";
     private const string IsChangingFromSourceKey = "IsChangingFromSource";
 
-    public static string? TryGetSourcePath(this TrackedProperty property, string sourceName, ITrackableContext trackableContext)
+    public static string? TryGetAttributeBasedSourcePath(this TrackedProperty property, string sourceName, ITrackableContext trackableContext)
     {
         // TODO: find better way below (better name)
         return
@@ -16,12 +16,12 @@ public static class SourcingExtensions
             property.Data.TryGetValue(SourcePathKey + sourceName, out var value) ? value as string : null;
     }
 
-    public static string? TryGetSourcePathPrefix(this TrackedProperty property, string sourceName)
+    public static string? TryGetAttributeBasedSourcePathPrefix(this TrackedProperty property, string sourceName)
     {
         return property.Data.TryGetValue(SourcePathKey + sourceName, out var value) ? value as string : null;
     }
 
-    public static void SetSourcePath(this TrackedProperty property, string sourceName, string sourcePath)
+    public static void SetAttributeBasedSourcePath(this TrackedProperty property, string sourceName, string sourcePath)
     {
         property.Data[SourcePathKey + sourceName] = sourcePath;
     }
