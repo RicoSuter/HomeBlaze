@@ -35,7 +35,16 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     object ITrackableContext.Object => Object;
 
-    public IEnumerable<TrackedProperty> AllProperties => _trackers.SelectMany(t => t.Properties);
+    public IEnumerable<TrackedProperty> AllProperties
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _trackers.SelectMany(t => t.Properties);
+            }
+        }
+    }
 
     public TrackableContext(
         IEnumerable<ITrackablePropertyValidator> propertyValidators,
@@ -107,6 +116,14 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
     }
 
+    private Tracker? TryGetTracker(object proxy)
+    {
+        lock (_lock)
+        {
+            return Trackables.SingleOrDefault(t => t.Object == proxy);
+        }
+    }
+
     private void Attach(object proxy, TrackedProperty? parentProperty, int? parentCollectionIndex)
     {
         var parentPath =
@@ -175,47 +192,56 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     public void CreateTracker(object proxy, string parentPath, TrackedProperty? parentProperty, int? parentCollectionIndex)
     {
-        lock (_lock)
+        var tracker = TryGetTracker(proxy);
+        if (tracker == null)
         {
-            if (_trackers.Any(t => t.Object == proxy))
+            if (parentProperty != null && proxy is ITrackableWithParent group)
             {
-                return;
+                group.Parent = parentProperty.Parent.Object;
+            }
+
+            tracker = new Tracker(proxy, parentPath, parentProperty, this);
+            lock (_lock)
+            {
+                _trackers = _trackers.Concat(new[] { tracker }).ToArray();
+            }
+
+            ((ITrackable)tracker.Object).AddTrackableContext(this);
+
+            // create tracker for children
+            foreach (var property in proxy
+                .GetType()
+                .BaseType! // get properties from actual type
+                .GetProperties()
+                .Where(p => p.GetMethod?.IsVirtual == true || p.SetMethod?.IsVirtual == true))
+            {
+                var trackableAttribute = property.GetCustomAttribute<TrackableAttribute>(true);
+                if (trackableAttribute != null)
+                {
+                    trackableAttribute.CreateTrackableProperty(property, tracker, parentCollectionIndex);
+                }
+            }
+
+            // initialize derived property dependencies
+            foreach (var stateProperty in tracker.Properties
+                .Where(p => p.SetMethod == null))
+            {
+                stateProperty.GetValue();
             }
         }
 
-        if (parentProperty != null && proxy is ITrackableWithParent group)
+        // find child trackables (created in ctor)
+        if (parentProperty != null)
         {
-            group.Parent = parentProperty.Parent.Object;
-        }
-
-        var tracker = new Tracker(proxy, parentPath, parentProperty, this);
-
-        lock (_lock)
-        {
-            _trackers = _trackers.Concat(new[] { tracker }).ToArray();
-        }
-
-        ((ITrackable)tracker.Object).AddTrackableContext(this);
-
-        // create tracker for children
-        foreach (var property in proxy
-            .GetType()
-            .BaseType! // get properties from actual type
-            .GetProperties()
-            .Where(p => p.GetMethod?.IsVirtual == true || p.SetMethod?.IsVirtual == true))
-        {
-            var trackableAttribute = property.GetCustomAttribute<TrackableAttribute>(true);
-            if (trackableAttribute != null)
+            foreach (var stateProperty in tracker.Properties
+                .Where(p => p.SetMethod != null && p.GetMethod != null))
             {
-                trackableAttribute.CreateTrackableProperty(property, tracker, parentCollectionIndex);
+                var value = stateProperty.GetValue();
+                if (value is ITrackable || value is ICollection)
+                {
+                    Attach(stateProperty, value);
+                }
             }
-        }
-
-        // initialize derived property dependencies
-        foreach (var stateProperty in tracker.Properties
-            .Where(p => p.SetMethod == null))
-        {
-            stateProperty.GetValue();
         }
     }
 
@@ -226,29 +252,4 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
     void ITrackableContext.Detach(object previousValue) => Detach(previousValue);
 
     void ITrackableContext.MarkVariableAsChanged(TrackedProperty property) => MarkVariableAsChanged(property);
-
-    void ITrackableContext.TouchProxy(object proxy)
-    {
-        if (proxy is ITrackable trackable)
-        {
-            if (Object == null)
-            {
-                Initialize(trackable);
-            }
-
-            var property = TrackableAttribute.CurrentTrackedProperty;
-            if (property != null && !IsProxyAttached(proxy))
-            {
-                Attach(property, proxy);
-            }
-        }
-    }
-
-    private bool IsProxyAttached(object proxy)
-    {
-        lock (_lock)
-        {
-            return Trackables.Any(t => t.Object == proxy);
-        }
-    }
 }

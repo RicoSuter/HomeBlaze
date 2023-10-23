@@ -9,42 +9,30 @@ namespace Namotion.Trackable.Attributes;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public class TrackableAttribute : Attribute
 {
-    [ThreadStatic]
-    internal static TrackedProperty? CurrentTrackedProperty;
-
     public void CreateTrackableProperty(PropertyInfo propertyInfo, Tracker parent, int? parentCollectionIndex)
     {
         var propertyPath = GetPath(parent.Path, propertyInfo);
 
         var property = CreateTrackableProperty(propertyInfo, propertyPath, parent, parentCollectionIndex);
+        parent.Properties.Add(property);
 
-        CurrentTrackedProperty = property;
-        try
+        foreach (var attribute in propertyInfo.GetCustomAttributes(true).OfType<ITrackableAttribute>())
         {
-            parent.Properties.Add(property);
-
-            foreach (var attribute in propertyInfo.GetCustomAttributes(true).OfType<ITrackableAttribute>())
-            {
-                attribute.ProcessProperty(property, parent, parentCollectionIndex);
-            }
-
-            // auto create required properties
-            if (propertyInfo
-                    .GetCustomAttributes(true)
-                    .Any(a => a is RequiredAttribute ||
-                              a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
-                propertyInfo.PropertyType.IsClass &&
-                propertyInfo.PropertyType.FullName?.StartsWith("System.") == false)
-            {
-                var child = parent.Context.CreateProxy(propertyInfo.PropertyType);
-
-                parent.Context.CreateTracker(child, propertyPath, property, parentCollectionIndex: null);
-                propertyInfo.SetValue(parent.Object, child);
-            }
+            attribute.ProcessProperty(property, parent, parentCollectionIndex);
         }
-        finally
+
+        // auto create required properties
+        if (propertyInfo
+                .GetCustomAttributes(true)
+                .Any(a => a is RequiredAttribute ||
+                          a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
+            propertyInfo.PropertyType.IsClass &&
+            propertyInfo.PropertyType.FullName?.StartsWith("System.") == false)
         {
-            CurrentTrackedProperty = null;
+            var child = parent.Context.CreateProxy(propertyInfo.PropertyType);
+
+            parent.Context.CreateTracker(child, propertyPath, property, parentCollectionIndex: null);
+            propertyInfo.SetValue(parent.Object, child);
         }
     }
 

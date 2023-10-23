@@ -50,7 +50,13 @@ public class TrackableInterceptor : ITrackableInterceptor
 
         foreach (var trackableContext in _trackableContexts)
         {
-            trackableContext.TouchProxy(invocation.InvocationTarget);
+            if (invocation.InvocationTarget is ITrackable trackable)
+            {
+                if (trackableContext.Object == null)
+                {
+                    trackableContext.InitializeProxy(trackable);
+                }
+            }
 
             var getProperty = trackableContext
                 .AllProperties
