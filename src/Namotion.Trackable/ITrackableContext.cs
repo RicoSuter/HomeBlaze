@@ -11,9 +11,11 @@ public interface ITrackableContext : ITrackableFactory
 
     internal object Object { get; }
 
-    internal void Initialize(object obj);
+    internal void InitializeProxy(object proxy);
 
-    internal IEnumerable<Tracker> CreateTrackers(object proxy, string parentPath, TrackedProperty? parentProperty, int? parentCollectionIndex);
+    internal void TouchProxy(object proxy);
+
+    internal void CreateTracker(object proxy, string parentPath, TrackedProperty? parentProperty, int? parentCollectionIndex);
 
     internal void Attach(TrackedProperty property, object newValue);
 

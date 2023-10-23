@@ -24,7 +24,7 @@ public class CollectionTrackableContextTests
         }
 
         [Trackable]
-        [TrackableSource("mqtt", "tires")]
+        [TrackableSourcePath("mqtt", "tires")]
         public virtual Tire[] Tires { get; set; }
     }
 

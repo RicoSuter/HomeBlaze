@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reactive.Linq;
 
 using Castle.DynamicProxy;
-
 using Namotion.Trackable.Model;
 using Namotion.Trackable.Validation;
 
@@ -14,12 +13,13 @@ namespace Namotion.Trackable;
 
 public class TrackableInterceptor : ITrackableInterceptor
 {
-    private ICollection<ITrackableContext> _trackableContexts = new HashSet<ITrackableContext>();
+    private readonly object _lock = new();
+    private readonly ICollection<ITrackableContext> _trackableContexts = new HashSet<ITrackableContext>();
+   
+    private readonly IEnumerable<ITrackablePropertyValidator> _propertyValidators;
 
     [ThreadStatic]
     private static Stack<Tuple<TrackedProperty, List<TrackedProperty>>>? _touchedProperties;
-
-    private readonly IEnumerable<ITrackablePropertyValidator> _propertyValidators;
 
     public TrackableInterceptor(IEnumerable<ITrackablePropertyValidator> propertyValidators, ITrackableContext trackableContext)
     {
@@ -30,7 +30,7 @@ public class TrackableInterceptor : ITrackableInterceptor
     public void Intercept(IInvocation invocation)
     {
         ITrackableContext[] trackableContexts;
-        lock (_trackableContexts)
+        lock (_lock)
         {
             if (invocation.Method?.Name == nameof(ITrackable.AddTrackableContext) &&
                 invocation.Method.DeclaringType?.IsAssignableTo(typeof(ITrackable)) == true)
@@ -50,11 +50,7 @@ public class TrackableInterceptor : ITrackableInterceptor
 
         foreach (var trackableContext in _trackableContexts)
         {
-            if (trackableContext.Object == null &&
-                invocation.InvocationTarget is ITrackable trackable)
-            {
-                trackableContext.Initialize(trackable);
-            }
+            trackableContext.TouchProxy(invocation.InvocationTarget);
 
             var getProperty = trackableContext
                 .AllProperties

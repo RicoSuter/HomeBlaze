@@ -12,11 +12,11 @@ public class TrackableContextWithSourceTests
     public class Car
     {
         [Trackable]
-        [TrackableSource("mqtt", "FLT")]
+        [TrackableSourcePath("mqtt", "FLT")]
         public required virtual Tire FrontLeftTire { get; set; }
 
         [Trackable]
-        [TrackableSource("mqtt", "FRT")]
+        [TrackableSourcePath("mqtt", "FRT")]
         public virtual Tire? FrontRightTire { get; set; }
     }
 
@@ -41,7 +41,7 @@ public class TrackableContextWithSourceTests
             .ToArray();
 
         // Assert
-        Assert.Equal(2, result.Length);
+        Assert.Single(result);
     }
 
     private static TrackableContext<T> CreateContext<T>()

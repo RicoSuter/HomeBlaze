@@ -6,24 +6,40 @@ namespace Namotion.Trackable.Sources;
 public static class SourceExtensions
 {
     private const string SourcePathKey = "SourcePath:";
+    private const string SourcePathPrefixKey = "SourcePathPrefix:";
+
     private const string IsChangingFromSourceKey = "IsChangingFromSource";
 
     public static string? TryGetAttributeBasedSourcePath(this TrackedProperty property, string sourceName, ITrackableContext trackableContext)
     {
-        // TODO: find better way below (better name)
-        return
-            trackableContext.Trackables.Any(t => t.ParentProperty == property) == false &&
-            property.Data.TryGetValue(SourcePathKey + sourceName, out var value) ? value as string : null;
+        lock (property.Data)
+        {
+            return property.Data.TryGetValue(SourcePathKey + sourceName, out var value) ? value as string : null;
+        }
     }
 
     public static string? TryGetAttributeBasedSourcePathPrefix(this TrackedProperty property, string sourceName)
     {
-        return property.Data.TryGetValue(SourcePathKey + sourceName, out var value) ? value as string : null;
+        lock (property.Data)
+        {
+            return property.Data.TryGetValue(SourcePathPrefixKey + sourceName, out var value) ? value as string : null;
+        }
+    }
+
+    public static void SetAttributeBasedSourcePathPrefix(this TrackedProperty property, string sourceName, string sourcePath)
+    {
+        lock (property.Data)
+        {
+            property.Data[SourcePathPrefixKey + sourceName] = sourcePath;
+        }
     }
 
     public static void SetAttributeBasedSourcePath(this TrackedProperty property, string sourceName, string sourcePath)
     {
-        property.Data[SourcePathKey + sourceName] = sourcePath;
+        lock (property.Data)
+        {
+            property.Data[SourcePathKey + sourceName] = sourcePath;
+        }
     }
 
     public static void SetValueFromSource(this TrackedProperty property, ITrackableSource source, object? value)
