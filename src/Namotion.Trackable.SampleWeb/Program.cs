@@ -116,8 +116,8 @@ namespace Namotion.Trackable.SampleWeb
         public class TrackablesController<TTrackable> : TrackablesControllerBase<TTrackable>
             where TTrackable : class
         {
-            public TrackablesController(TTrackable trackable, TrackableContext<TTrackable> context)
-                : base(trackable, context)
+            public TrackablesController(TrackableContext<TTrackable> trackableContext)
+                : base(trackableContext)
             {
             }
         }

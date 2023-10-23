@@ -15,13 +15,11 @@ namespace Namotion.Trackable.AspNetCore.Controllers;
 public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
     where TTrackable : class
 {
-    private readonly TTrackable _trackable;
-    private readonly TrackableContext<TTrackable> _variablesContext;
+    private readonly TrackableContext<TTrackable> _trackableContext;
 
-    public TrackablesControllerBase(TTrackable trackable, TrackableContext<TTrackable> context)
+    public TrackablesControllerBase(TrackableContext<TTrackable> trackableContext)
     {
-        _trackable = trackable;
-        _variablesContext = context;
+        _trackableContext = trackableContext;
     }
 
     [HttpGet]
@@ -59,7 +57,7 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
             }
         }
 
-        var json = JsonSerializer.SerializeToElement(_trackable, options);
+        var json = JsonSerializer.SerializeToElement(_trackableContext.Object, options);
         return Ok(json);
     }
 
@@ -73,7 +71,7 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
             var resolvedUpdates = updates
                 .Select(t =>
                 {
-                    var variable = _variablesContext
+                    var variable = _trackableContext
                         .AllProperties
                         .SingleOrDefault(v => v.Path.ToLowerInvariant() == t.Key.ToLowerInvariant());
 
@@ -111,7 +109,7 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
             foreach (var update in resolvedUpdates)
             {
                 var updateErrors = propertyValidators
-                    .SelectMany(v => v.Validate(update.Variable!, update.Value, _variablesContext))
+                    .SelectMany(v => v.Validate(update.Variable!, update.Value, _trackableContext))
                     .ToArray();
 
                 if (updateErrors.Any())
@@ -152,6 +150,6 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
     [HttpGet("definitions")]
     public ActionResult GetVariableDefinitions()
     {
-        return Ok(_variablesContext.AllProperties);
+        return Ok(_trackableContext.AllProperties);
     }
 }
