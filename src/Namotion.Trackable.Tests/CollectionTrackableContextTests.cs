@@ -68,7 +68,7 @@ public class CollectionTrackableContextTests
 
         // Assert
         Assert.Equal("Tires[0].Pressure", firstTirePressure.Path);
-        Assert.Equal("tires[0].pressure", firstTirePressure.TryGetSourcePath("mqtt"));
+        Assert.Equal("tires[0].pressure", firstTirePressure.TryGetSourcePath("mqtt", trackableContext));
     }
 
     private static TrackableContext<T> CreateContext<T>()

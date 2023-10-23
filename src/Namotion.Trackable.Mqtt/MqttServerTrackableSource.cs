@@ -21,9 +21,9 @@ namespace HomeBlaze.Mqtt
         where TTrackable : class
     {
         private readonly TrackableContext<TTrackable> _trackableContext;
+        private readonly ISourcePathProvider _sourcePathProvider;
         private readonly ILogger _logger;
 
-        private string? _sourceName;
         private int _numberOfClients = 0;
         private MqttServer? _mqttServer;
 
@@ -36,11 +36,14 @@ namespace HomeBlaze.Mqtt
 
         public int? NumberOfClients => _numberOfClients;
 
+
         public MqttServerTrackableSource(
             TrackableContext<TTrackable> trackableContext,
+            ISourcePathProvider sourcePathProvider,
             ILogger<MqttServerTrackableSource<TTrackable>> logger)
         {
             _trackableContext = trackableContext;
+            _sourcePathProvider = sourcePathProvider;
             _logger = logger;
         }
 
@@ -82,9 +85,8 @@ namespace HomeBlaze.Mqtt
             }
         }
 
-        public Task<IDisposable?> InitializeAsync(string sourceName, IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
+        public Task<IDisposable?> InitializeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
         {
-            _sourceName = sourceName;
             _propertyUpdateAction = propertyUpdateAction;
             return Task.FromResult<IDisposable?>(null);
         }
@@ -112,6 +114,11 @@ namespace HomeBlaze.Mqtt
             }
         }
 
+        public string? TryGetSourcePath(TrackedProperty property)
+        {
+            return _sourcePathProvider.TryGetSourcePath(property);
+        }
+
         private Task ClientConnectedAsync(ClientConnectedEventArgs arg)
         {
             _numberOfClients++;
@@ -130,7 +137,7 @@ namespace HomeBlaze.Mqtt
 
         private async Task PublishPropertyValueAsync(object? value, TrackedProperty property)
         {
-            var sourcePath = property.TryGetSourcePath(_sourceName!, _trackableContext);
+            var sourcePath = _sourcePathProvider.TryGetSourcePath(property);
             if (sourcePath != null)
             {
                 await _mqttServer!.InjectApplicationMessage(new InjectedMqttApplicationMessage(new MqttApplicationMessage
@@ -150,7 +157,7 @@ namespace HomeBlaze.Mqtt
                 var sourcePath = args.ApplicationMessage.Topic.Replace('/', '.');
                 var property = _trackableContext
                     .AllProperties
-                    .SingleOrDefault(p => p.TryGetSourcePath(_sourceName!) == sourcePath);
+                    .SingleOrDefault(p => _sourcePathProvider.TryGetSourcePath(p) == sourcePath);
 
                 if (property != null)
                 {

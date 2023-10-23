@@ -36,12 +36,12 @@ public class SourcingTrackableContextTests
 
         // Act
         var result = trackableContext.AllProperties
-            .Select(p => p.TryGetSourcePath("mqtt"))
+            .Select(p => p.TryGetSourcePath("mqtt", trackableContext))
             .Where(p => p != null)
             .ToArray();
 
         // Assert
-        Assert.Equal(3, result.Length);
+        Assert.Equal(2, result.Length);
     }
 
     private static TrackableContext<T> CreateContext<T>()

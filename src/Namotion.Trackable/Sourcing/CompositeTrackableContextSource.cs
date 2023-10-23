@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
+using Namotion.Trackable.Model;
 
 namespace Namotion.Trackable.Sourcing;
 
@@ -12,6 +13,8 @@ public class CompositeTrackableContextSource : ITrackableSource
     private readonly IReadOnlyDictionary<string, ITrackableSource> _sources;
 
     public string Separator { get; }
+
+    public ISourcePathProvider SourcePathProvider => throw new NotImplementedException();
 
     public CompositeTrackableContextSource(IReadOnlyDictionary<string, ITrackableSource> sources, string separator = ".")
     {
@@ -22,7 +25,7 @@ public class CompositeTrackableContextSource : ITrackableSource
         Separator = separator;
     }
 
-    public async Task<IDisposable?> InitializeAsync(string sourceName, IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
+    public async Task<IDisposable?> InitializeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
     {
         var disposables = new List<IDisposable>();
 
@@ -34,7 +37,6 @@ public class CompositeTrackableContextSource : ITrackableSource
             {
                 var innerSourcePaths = group.Select(p => p.Substring(path.Length + Separator.Length));
                 var disposable = await source.InitializeAsync(
-                    sourceName,
                     innerSourcePaths,
                     (innerPath, value) => propertyUpdateAction(path + Separator + innerPath, value),
                     cancellationToken);
@@ -82,6 +84,12 @@ public class CompositeTrackableContextSource : ITrackableSource
                 await source.WriteAsync(innerSourcePaths, cancellationToken);
             }
         }
+    }
+
+    public string? TryGetSourcePath(TrackedProperty property)
+    {
+        var source = _sources.First(s => property.Path.StartsWith(s.Key + Separator));
+        return source.Value.TryGetSourcePath(property);
     }
 
     private class CompositeDisposable : IDisposable

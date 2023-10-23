@@ -13,7 +13,6 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
     where TTrackable : class
 {
     private readonly TrackableContext<TTrackable> _trackableContext;
-    private readonly string _sourceName;
     private readonly ITrackableSource _source;
     private readonly ILogger _logger;
 
@@ -23,14 +22,12 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
     private HashSet<string>? _initializedProperties;
 
     public TrackableContextSourceBackgroundService(
-        string sourceName,
         ITrackableSource source,
         TrackableContext<TTrackable> trackableContext,
         ILogger logger,
         TimeSpan? bufferTime = null,
         TimeSpan? retryTime = null)
     {
-        _sourceName = sourceName;
         _source = source;
         _trackableContext = trackableContext;
         _logger = logger;
@@ -49,7 +46,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
 
                 var sourcePaths = _trackableContext
                     .AllProperties
-                    .Select(p => p.TryGetSourcePath(_sourceName, _trackableContext))
+                    .Select(p => _source.TryGetSourcePath(p))
                     .Where(p => p is not null)
                     .ToList();
 
@@ -59,7 +56,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
                 }
 
                 // subscribe first and mark all properties as initialized which are updated before the read has completed 
-                using var disposable = await _source.InitializeAsync(_sourceName, sourcePaths!, UpdatePropertyValueFromSource, stoppingToken);
+                using var disposable = await _source.InitializeAsync(sourcePaths!, UpdatePropertyValueFromSource, stoppingToken);
 
                 // read all properties (subscription during read will later be ignored)
                 var initialValues = await _source.ReadAsync(sourcePaths!, stoppingToken);
@@ -76,14 +73,15 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
                 }
 
                 await _trackableContext
-                    .Where(change => !change.IsChangingFromSource(_source) && change.Property.TryGetSourcePath(_sourceName) != null)
+                    .Where(change => !change.IsChangingFromSource(_source) && 
+                                     _source.TryGetSourcePath(change.Property) != null)
                     .BufferChanges(_bufferTime)
                     .Where(changes => changes.Any())
                     .ForEachAsync(async changes =>
                     {
                         var values = changes
                            .ToDictionary(
-                               c => c.Property.TryGetSourcePath(_sourceName)!,
+                               c => _source.TryGetSourcePath(c.Property)!,
                                c => c.Value);
 
                         await _source.WriteAsync(values, stoppingToken);
@@ -103,7 +101,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
 
         var property = _trackableContext
             .AllProperties
-            .FirstOrDefault(v => v.TryGetSourcePath(_sourceName) == sourcePath);
+            .FirstOrDefault(v => _source.TryGetSourcePath(v) == sourcePath);
 
         if (property != null)
         {

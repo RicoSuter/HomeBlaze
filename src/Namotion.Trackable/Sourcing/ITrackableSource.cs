@@ -2,12 +2,15 @@
 using System.Threading.Tasks;
 using System.Threading;
 using System;
+using Namotion.Trackable.Model;
 
 namespace Namotion.Trackable.Sourcing;
 
 public interface ITrackableSource
 {
-    Task<IDisposable?> InitializeAsync(string sourceName, IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken);
+    string? TryGetSourcePath(TrackedProperty property);
+
+    Task<IDisposable?> InitializeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken);
 
     Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken);
 

@@ -16,7 +16,7 @@ public static class SourcingExtensions
             property.Data.TryGetValue(SourcePathKey + sourceName, out var value) ? value as string : null;
     }
 
-    public static string? TryGetSourcePath(this TrackedProperty property, string sourceName)
+    public static string? TryGetSourcePathPrefix(this TrackedProperty property, string sourceName)
     {
         return property.Data.TryGetValue(SourcePathKey + sourceName, out var value) ? value as string : null;
     }

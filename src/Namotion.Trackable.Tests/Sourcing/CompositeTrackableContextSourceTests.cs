@@ -1,4 +1,5 @@
-﻿using Namotion.Trackable.Sourcing;
+﻿using Namotion.Trackable.Model;
+using Namotion.Trackable.Sourcing;
 
 namespace Namotion.Trackable.Tests.Sourcing
 {
@@ -10,7 +11,7 @@ namespace Namotion.Trackable.Tests.Sourcing
 
             public Action<string, object?>? PropertyUpdateAction { get; private set; }
 
-            public Task<IDisposable?> InitializeAsync(string sourceName, IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
+            public Task<IDisposable?> InitializeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
             {
                 PropertyUpdateAction = propertyUpdateAction;
                 return Task.FromResult<IDisposable?>(new DummyDisposable());
@@ -19,6 +20,11 @@ namespace Namotion.Trackable.Tests.Sourcing
             public Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
             {
                 return Task.FromResult<IReadOnlyDictionary<string, object?>>(Data.Where(p => sourcePaths.Contains(p.Key)).ToDictionary(p => p.Key, p => p.Value));
+            }
+
+            public string? TryGetSourcePath(TrackedProperty property)
+            {
+                return property.Path;
             }
 
             public Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)
@@ -51,7 +57,7 @@ namespace Namotion.Trackable.Tests.Sourcing
 
             // Act
             var reportedChangedPath = "";
-            await compositeSource.InitializeAsync("mqtt", new[] { "abc.def" }, (path, value) => reportedChangedPath = path, CancellationToken.None);
+            await compositeSource.InitializeAsync(new[] { "abc.def" }, (path, value) => reportedChangedPath = path, CancellationToken.None);
             
             // simulate change from inner source
             source.PropertyUpdateAction?.Invoke("def", null);
