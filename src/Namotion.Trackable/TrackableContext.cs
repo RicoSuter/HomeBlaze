@@ -181,7 +181,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
     }
 
-    public void CreateTracker(object proxy, string parentPath, TrackedProperty? parentProperty, int? parentCollectionIndex)
+    private void CreateTracker(object proxy, string parentPath, TrackedProperty? parentProperty, int? parentCollectionIndex)
     {
         var tracker = TryGetTracker(proxy);
         if (tracker == null)
@@ -209,7 +209,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                 var trackableAttribute = property.GetCustomAttribute<TrackableAttribute>(true);
                 if (trackableAttribute != null)
                 {
-                    trackableAttribute.CreateTrackableProperty(property, tracker, parentCollectionIndex);
+                    CreateTrackableProperty(trackableAttribute, property, tracker, parentCollectionIndex);
                 }
             }
 
@@ -233,6 +233,19 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                     Attach(stateProperty, value);
                 }
             }
+        }
+    }
+
+    private void CreateTrackableProperty(TrackableAttribute trackableAttribute, PropertyInfo propertyInfo, Tracker parent, int? parentCollectionIndex)
+    {
+        var propertyPath = (!string.IsNullOrEmpty(parent.Path) ? parent.Path + "." : "") + propertyInfo.Name;
+
+        var property = trackableAttribute.CreateTrackableProperty(propertyInfo, propertyPath, parent, parentCollectionIndex);
+        parent.Properties.Add(property);
+
+        foreach (var attribute in propertyInfo.GetCustomAttributes(true).OfType<ITrackableAttribute>())
+        {
+            attribute.ProcessProperty(property, parent, parentCollectionIndex);
         }
     }
 

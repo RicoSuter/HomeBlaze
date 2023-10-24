@@ -11,8 +11,6 @@ public interface ITrackableContext : ITrackableFactory
 
     internal void InitializeProxy(object proxy);
 
-    internal void CreateTracker(object proxy, string parentPath, TrackedProperty? parentProperty, int? parentCollectionIndex);
-
     internal void Attach(TrackedProperty property, object newValue);
 
     internal void Detach(object previousValue);
