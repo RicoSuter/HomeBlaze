@@ -9,16 +9,16 @@ namespace Namotion.Trackable.Attributes;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
 public class TrackableAttribute : Attribute
 {
-    public void CreateTrackableProperty(PropertyInfo propertyInfo, Tracker parent, int? parentCollectionIndex)
+    public void CreateTrackableProperty(PropertyInfo propertyInfo, Tracker parent, object? parentCollectionKey)
     {
         var propertyPath = GetPath(parent.Path, propertyInfo);
 
-        var property = CreateTrackableProperty(propertyInfo, propertyPath, parent, parentCollectionIndex);
+        var property = CreateTrackableProperty(propertyInfo, propertyPath, parent, parentCollectionKey);
         parent.Properties.Add(property);
 
         foreach (var attribute in propertyInfo.GetCustomAttributes(true).OfType<ITrackableAttribute>())
         {
-            attribute.ProcessProperty(property, parent, parentCollectionIndex);
+            attribute.ProcessProperty(property, parent, parentCollectionKey);
         }
 
         // auto create required properties
@@ -31,12 +31,12 @@ public class TrackableAttribute : Attribute
         {
             var child = parent.Context.CreateProxy(propertyInfo.PropertyType);
 
-            parent.Context.CreateTracker(child, propertyPath, property, parentCollectionIndex: null);
+            parent.Context.CreateTracker(child, propertyPath, property, parentCollectionKey: null);
             propertyInfo.SetValue(parent.Object, child);
         }
     }
 
-    protected virtual TrackedProperty CreateTrackableProperty(PropertyInfo property, string path, Tracker parent, int? parentCollectionIndex)
+    protected virtual TrackedProperty CreateTrackableProperty(PropertyInfo property, string path, Tracker parent, object? parentCollectionKey)
     {
         return new TrackedProperty(property, path, parent);
     }

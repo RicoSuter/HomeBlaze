@@ -9,24 +9,24 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Namotion.Things.Tests;
 
-public class CollectionTrackableContextTests
+public class DictionaryTrackableContextTests
 {
     public class Car
     {
         public Car(ITrackableFactory factory)
         {
-            Tires = new Tire[]
+            Tires = new Dictionary<string, Tire>
             {
-                factory.CreateProxy<Tire>(),
-                factory.CreateProxy<Tire>(),
-                factory.CreateProxy<Tire>(),
-                factory.CreateProxy<Tire>() 
+                { "FL", factory.CreateProxy<Tire>() },
+                { "FR", factory.CreateProxy<Tire>() },
+                { "RL", factory.CreateProxy<Tire>() },
+                { "RR", factory.CreateProxy<Tire>() }
             };
         }
 
         [Trackable]
         [TrackableSourcePath("mqtt", "tires")]
-        public virtual Tire[] Tires { get; set; }
+        public virtual IReadOnlyDictionary<string, Tire> Tires { get; set; }
     }
 
     public class Tire
@@ -37,26 +37,26 @@ public class CollectionTrackableContextTests
     }
 
     [Fact]
-    public void ShouldTrackAllTrackablesInArray()
+    public void ShouldTrackAllTrackablesInDictionary()
     {
         // Arrange
         var trackableContext = CreateContext<Car>();
         var trackable = trackableContext.Object;
-       
+
         var changes = new List<TrackedPropertyChange>();
         trackableContext.Subscribe(changes.Add);
 
         // Act
-        trackable.Tires[0].Pressure = 1;
-        trackable.Tires[1].Pressure = 1;
-        trackable.Tires[2].Pressure = 1;
+        trackable.Tires["FL"].Pressure = 1;
+        trackable.Tires["FR"].Pressure = 1;
+        trackable.Tires["RL"].Pressure = 1;
 
         // Assert
         Assert.Equal(3, changes.Count);
     }
 
     [Fact]
-    public void ShouldHaveCorrectArrayPaths()
+    public void ShouldHaveCorrectDictionaryPaths()
     {
         // Arrange
         var trackableContext = CreateContext<Car>();
@@ -68,8 +68,8 @@ public class CollectionTrackableContextTests
             .First(v => v.PropertyName == nameof(Tire.Pressure));
 
         // Assert
-        Assert.Equal("Tires[0].Pressure", firstTirePressure.Path);
-        Assert.Equal("tires[0].pressure", firstTirePressure.TryGetAttributeBasedSourcePath("mqtt", trackableContext));
+        Assert.Equal("Tires[FL].Pressure", firstTirePressure.Path);
+        Assert.Equal("tires[FL].pressure", firstTirePressure.TryGetAttributeBasedSourcePath("mqtt", trackableContext));
     }
 
     public class Garage
@@ -81,7 +81,7 @@ public class CollectionTrackableContextTests
     }
 
     [Fact]
-    public void ShouldHaveCorrectDeepPathsInArray()
+    public void ShouldHaveCorrectDeepPathsInDictionary()
     {
         // Arrange
         var trackableContext = CreateContext<Garage>();
@@ -93,8 +93,8 @@ public class CollectionTrackableContextTests
             .First(v => v.PropertyName == nameof(Tire.Pressure));
 
         // Assert
-        Assert.Equal("Car.Tires[0].Pressure", firstTirePressure.Path);
-        Assert.Equal("car.tires[0].pressure", firstTirePressure.TryGetAttributeBasedSourcePath("mqtt", trackableContext));
+        Assert.Equal("Car.Tires[FL].Pressure", firstTirePressure.Path);
+        Assert.Equal("car.tires[FL].pressure", firstTirePressure.TryGetAttributeBasedSourcePath("mqtt", trackableContext));
     }
 
     private static TrackableContext<T> CreateContext<T>()

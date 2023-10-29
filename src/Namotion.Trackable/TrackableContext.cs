@@ -101,7 +101,18 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
 
     internal void Attach(TrackedProperty property, object newValue)
     {
-        if (newValue is ICollection newTrackables)
+        if (newValue is IDictionary newDictionary)
+        {
+            foreach (var key in newDictionary.Keys)
+            {
+                var value = newDictionary[key];
+                if (value is ITrackable trackable)
+                {
+                    Attach(trackable, property, key);
+                }
+            }
+        }
+        else if (newValue is ICollection newTrackables)
         {
             var index = 0;
             foreach (var child in newTrackables.OfType<ITrackable>())
@@ -110,9 +121,9 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                 index++;
             }
         }
-        else
+        else if (newValue is ITrackable trackable)
         {
-            Attach(newValue, property, null);
+            Attach(trackable, property, null);
         }
     }
 
@@ -124,17 +135,17 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
     }
 
-    private void Attach(object proxy, TrackedProperty? parentProperty, int? parentCollectionIndex)
+    private void Attach(object proxy, TrackedProperty? parentProperty, object? parentCollectionKey)
     {
         var parentPath =
             parentProperty != null ? (
                 parentProperty.AbsolutePath +
-                (parentCollectionIndex != null ? $"[{parentCollectionIndex}]" : string.Empty)) : string
+                (parentCollectionKey != null ? $"[{parentCollectionKey}]" : string.Empty)) : string
             .Empty;
 
         if (TryGetTracker(proxy) == null)
         {
-            CreateTracker(proxy, parentPath, parentProperty, parentCollectionIndex);
+            CreateTracker(proxy, parentPath, parentProperty, parentCollectionKey);
         }
     }
 
@@ -142,7 +153,18 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
     {
         lock (_lock)
         {
-            if (previousValue is ICollection previousTrackables)
+            if (previousValue is IDictionary newDictionary)
+            {
+                foreach (var key in newDictionary.Keys)
+                {
+                    var value = newDictionary[key];
+                    if (value is ITrackable trackable)
+                    {
+                        Detach(trackable);
+                    }
+                }
+            }
+            else if (previousValue is ICollection previousTrackables)
             {
                 foreach (var child in previousTrackables.OfType<ITrackable>())
                 {
@@ -181,7 +203,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
     }
 
-    public void CreateTracker(object proxy, string parentPath, TrackedProperty? parentProperty, int? parentCollectionIndex)
+    public void CreateTracker(object proxy, string parentPath, TrackedProperty? parentProperty, object? parentCollectionKey)
     {
         var tracker = TryGetTracker(proxy);
         if (tracker == null)
@@ -209,7 +231,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                 var trackableAttribute = property.GetCustomAttribute<TrackableAttribute>(true);
                 if (trackableAttribute != null)
                 {
-                    trackableAttribute.CreateTrackableProperty(property, tracker, parentCollectionIndex);
+                    trackableAttribute.CreateTrackableProperty(property, tracker, parentCollectionKey);
                 }
             }
 
