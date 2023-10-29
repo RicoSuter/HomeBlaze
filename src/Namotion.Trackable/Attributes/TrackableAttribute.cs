@@ -13,10 +13,14 @@ public class TrackableAttribute : Attribute
     {
         var propertyPath = GetPath(parent.Path, propertyInfo);
 
+        // TODO: Throw if not virtual property
+
         var property = CreateTrackableProperty(propertyInfo, propertyPath, parent, parentCollectionKey);
         parent.Properties.Add(property);
 
-        foreach (var attribute in propertyInfo.GetCustomAttributes(true).OfType<ITrackableAttribute>())
+        foreach (var attribute in propertyInfo
+            .GetCustomAttributes(true)
+            .OfType<ITrackableAttribute>())
         {
             attribute.ProcessProperty(property, parent, parentCollectionKey);
         }
@@ -34,6 +38,8 @@ public class TrackableAttribute : Attribute
             parent.Context.CreateTracker(child, propertyPath, property, parentCollectionKey: null);
             propertyInfo.SetValue(parent.Object, child);
         }
+
+        // TODO: Also create arrays and dictionaries?
     }
 
     protected virtual TrackedProperty CreateTrackableProperty(PropertyInfo property, string path, Tracker parent, object? parentCollectionKey)
