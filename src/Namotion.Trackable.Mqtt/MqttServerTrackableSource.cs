@@ -36,7 +36,6 @@ namespace HomeBlaze.Mqtt
 
         public int? NumberOfClients => _numberOfClients;
 
-
         public MqttServerTrackableSource(
             TrackableContext<TTrackable> trackableContext,
             ISourcePathProvider sourcePathProvider,
