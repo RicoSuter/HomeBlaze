@@ -3,8 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Namotion.Trackable;
 using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
-using Namotion.Trackable.Validation;
-using System;
+
 using System.ComponentModel.DataAnnotations;
 
 namespace Namotion.Things.Tests;
@@ -54,7 +53,7 @@ public class TrackableContextTests
         var trackableContext = CreateContext<Person>();
         var trackable = trackableContext.Object;
 
-        var father = trackableContext.CreateProxy<Person>();
+        var father = trackableContext.Factory.CreateProxy<Person>();
         trackable.Father = father;
 
         var changes = new List<TrackedPropertyChange>();
@@ -75,7 +74,7 @@ public class TrackableContextTests
         var trackableContext = CreateContext<Person>();
         var trackable = trackableContext.Object;
 
-        var father = trackableContext.CreateProxy<Person>();
+        var father = trackableContext.Factory.CreateProxy<Person>();
         trackable.Father = father;
         trackable.Father = null;
 
@@ -180,7 +179,6 @@ public class TrackableContextTests
         var serviceCollection = new ServiceCollection();
         return new TrackableContext<T>(
             Array.Empty<ITrackablePropertyValidator>(),
-            Array.Empty<ITrackableInterceptor>(),
             serviceCollection.BuildServiceProvider());
     }
 }

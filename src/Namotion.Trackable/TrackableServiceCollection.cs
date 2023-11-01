@@ -1,7 +1,6 @@
 ﻿using Castle.DynamicProxy;
 
 using Namotion.Trackable;
-using Namotion.Trackable.Validation;
 using System;
 using System.Linq;
 
@@ -17,33 +16,11 @@ public static class TrackableServiceCollection
             .AddSingleton(sp =>
             {
                 var propertyValidators = sp.GetServices<ITrackablePropertyValidator>();
-                var interceptors = sp.GetServices<ITrackableInterceptor>();
-                return new TrackableContext<TTrackable>(propertyValidators, interceptors, sp);
+                return new TrackableContext<TTrackable>(propertyValidators, sp);
             })
             .AddSingleton(sp => sp.GetRequiredService<TrackableContext<TTrackable>>().Object);
 
         return services;
-    }
-
-    internal static object CreateProxy(this IServiceProvider serviceProvider, Type proxyType, ITrackableContext trackableContext, IInterceptor[] interceptors)
-    {
-        var constructorArguments = proxyType
-            .GetConstructors()
-            .First()
-            .GetParameters()
-            .Select(p => p.ParameterType.IsAssignableTo(typeof(ITrackableFactory)) ? trackableContext :
-                         serviceProvider.GetService(p.ParameterType))
-            .ToArray();
-
-        var thing = new ProxyGenerator()
-            .CreateClassProxy(
-                proxyType,
-                new Type[] { typeof(ITrackable) },
-                new ProxyGenerationOptions(),
-                constructorArguments,
-                interceptors);
-
-        return thing;
     }
 }
 

@@ -3,7 +3,6 @@
 using Namotion.Trackable;
 using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Sources;
-using Namotion.Trackable.Validation;
 
 namespace Namotion.Things.Tests;
 
@@ -50,7 +49,6 @@ public class TrackableContextWithSourceTests
         var serviceCollection = new ServiceCollection();
         return new TrackableContext<T>(
             Array.Empty<ITrackablePropertyValidator>(),
-            Array.Empty<ITrackableInterceptor>(),
             serviceCollection.BuildServiceProvider());
     }
 

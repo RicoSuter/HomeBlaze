@@ -7,11 +7,10 @@ using System.Reactive.Linq;
 
 using Castle.DynamicProxy;
 using Namotion.Trackable.Model;
-using Namotion.Trackable.Validation;
 
 namespace Namotion.Trackable;
 
-public class TrackableInterceptor : ITrackableInterceptor
+public class TrackableInterceptor : IInterceptor
 {
     private readonly object _lock = new();
     private readonly ICollection<ITrackableContext> _trackableContexts = new HashSet<ITrackableContext>();

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Namotion.Trackable;
 
-public interface ITrackableContext : ITrackableFactory
+public interface ITrackableContext
 {
     IEnumerable<TrackedProperty> AllProperties { get; }
 
     internal object Object { get; }
 
-    internal void InitializeProxy(object proxy);
+    internal void InitializeProxy(ITrackable proxy);
 
     internal void Attach(TrackedProperty property, object newValue);
 

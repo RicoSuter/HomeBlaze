@@ -6,30 +6,25 @@ using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
-using Castle.DynamicProxy;
-using Microsoft.Extensions.DependencyInjection;
 
 using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
 using Namotion.Trackable.Utilities;
-using Namotion.Trackable.Validation;
 
 namespace Namotion.Trackable;
 
-public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, IObservable<TrackedPropertyChange>
+public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedPropertyChange>
     where TObject : class
 {
     private readonly object _lock = new();
 
     private readonly Subject<TrackedPropertyChange> _changesSubject = new Subject<TrackedPropertyChange>();
 
-    private readonly TrackableInterceptor _interceptor;
-    private readonly IEnumerable<IInterceptor> _interceptors;
-    private readonly IServiceProvider _serviceProvider;
-
     private readonly HashSet<Tracker> _trackers = new();
-
+    
     public TObject Object { get; private set; }
+
+    public ITrackableFactory Factory { get; }
 
     object ITrackableContext.Object => Object;
 
@@ -46,45 +41,23 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
     }
 
-    public TrackableContext(
-        IEnumerable<ITrackablePropertyValidator> propertyValidators,
-        IEnumerable<ITrackableInterceptor> interceptors,
-        IServiceProvider serviceProvider)
+    public TrackableContext(IEnumerable<ITrackablePropertyValidator> propertyValidators, IServiceProvider serviceProvider)
     {
-        _interceptor = new TrackableInterceptor(this, propertyValidators);
-        _interceptors = interceptors;
-        _serviceProvider = serviceProvider;
+        Factory = new TrackableProxyFactory(this, propertyValidators, serviceProvider);
 
-        var proxy = (TObject)serviceProvider
-            .CreateProxy(typeof(TObject), this, interceptors
-                .Concat(new[] { _interceptor })
-                .ToArray());
-
+        var proxy = Factory.CreateProxy<TObject>();
         if (Object == null)
         {
             Object = proxy;
-            Initialize(proxy);
+            Initialize((ITrackable)proxy);
         }
     }
 
-    internal void Initialize(object proxy)
+    internal void Initialize(ITrackable proxy)
     {
         Object = (TObject)proxy;
-        Attach((ITrackable)Object, null, null);
-    }
-
-    public TChild CreateProxy<TChild>()
-    {
-        return (TChild)_serviceProvider.CreateProxy(typeof(TChild), this, _interceptors
-            .Concat(new[] { _interceptor })
-            .ToArray());
-    }
-
-    public object CreateProxy(Type trackableType)
-    {
-        return _serviceProvider.CreateProxy(trackableType, this, _interceptors
-            .Concat(new[] { _interceptor })
-            .ToArray());
+        proxy.AddTrackableContext(this);
+        Attach(proxy, null, null);
     }
 
     public IDisposable Subscribe(IObserver<TrackedPropertyChange> observer)
@@ -242,7 +215,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                 group.Parent = parentProperty.Parent.Object;
             }
 
-            tracker = new Tracker(proxy, parentPath, parentProperty, this);
+            tracker = new Tracker(proxy, parentPath, parentProperty, this, Factory);
             lock (_lock)
             {
                 _trackers.Add(tracker);
@@ -298,7 +271,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
     }
 
-    void ITrackableContext.InitializeProxy(object proxy) => Initialize(proxy);
+    void ITrackableContext.InitializeProxy(ITrackable proxy) => Initialize(proxy);
 
     void ITrackableContext.Attach(TrackedProperty property, object newValue) => Attach(property, newValue);
 

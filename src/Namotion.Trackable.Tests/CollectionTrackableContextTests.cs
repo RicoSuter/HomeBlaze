@@ -4,7 +4,7 @@ using Namotion.Trackable;
 using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
 using Namotion.Trackable.Sources;
-using Namotion.Trackable.Validation;
+
 using System.ComponentModel.DataAnnotations;
 
 namespace Namotion.Things.Tests;
@@ -103,7 +103,6 @@ public class CollectionTrackableContextTests
         var serviceCollection = new ServiceCollection();
         return new TrackableContext<T>(
             Array.Empty<ITrackablePropertyValidator>(),
-            Array.Empty<ITrackableInterceptor>(),
             serviceCollection.BuildServiceProvider());
     }
 }
