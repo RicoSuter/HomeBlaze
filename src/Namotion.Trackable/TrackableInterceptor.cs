@@ -16,6 +16,8 @@ public class TrackableInterceptor : IInterceptor
 
     private readonly IEnumerable<ITrackableInterceptor> _interceptors;
 
+    public IEnumerable<ITrackableContext> Contexts => _trackableContexts;
+
     [ThreadStatic]
     private static Stack<Tuple<TrackedProperty, List<TrackedProperty>>>? _touchedProperties;
 
@@ -40,6 +42,12 @@ public class TrackableInterceptor : IInterceptor
                      invocation.Method.DeclaringType?.IsAssignableTo(typeof(ITrackable)) == true)
             {
                 _trackableContexts.Remove((ITrackableContext)invocation.Arguments[0]);
+                return;
+            }
+            else if (invocation.Method?.Name == $"get_{nameof(ITrackable.Interceptor)}" &&
+                     invocation.Method.DeclaringType?.IsAssignableTo(typeof(ITrackable)) == true)
+            {
+                invocation.ReturnValue = this;
                 return;
             }
 
