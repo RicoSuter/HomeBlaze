@@ -211,15 +211,15 @@ public class TrackableInterceptor : IInterceptor
         {
             if (previousValue != null && (previousValue is ITrackable || previousValue is ICollection))
             {
-                trackableContext.Detach(previousValue);
+                trackableContext.DetachPropertyValue(setProperty, previousValue);
             }
 
             if (newValue != null && (newValue is ITrackable || newValue is ICollection))
             {
-                trackableContext.Attach(setProperty, newValue);
+                trackableContext.AttachPropertyValue(setProperty, newValue);
             }
         }
 
-        trackableContext.MarkVariableAsChanged(setProperty);
+        trackableContext.MarkPropertyAsChanged(setProperty);
     }
 }

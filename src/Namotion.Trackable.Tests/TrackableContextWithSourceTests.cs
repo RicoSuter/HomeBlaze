@@ -47,9 +47,9 @@ public class TrackableContextWithSourceTests
         where T : class
     {
         var serviceCollection = new ServiceCollection();
-        return new TrackableContext<T>(
-            Array.Empty<ITrackableInterceptor>(),
-            serviceCollection.BuildServiceProvider());
+        return new TrackableContext<T>(new TrackableProxyFactory(
+           Array.Empty<ITrackableInterceptor>(),
+           serviceCollection.BuildServiceProvider()));
     }
 
 }

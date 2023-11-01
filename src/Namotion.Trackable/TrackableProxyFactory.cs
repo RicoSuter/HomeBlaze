@@ -17,24 +17,19 @@ public class TrackableProxyFactory : ITrackableFactory
         _serviceProvider = serviceProvider;
     }
 
-    public TChild CreateProxy<TChild>()
+    public TProxy CreateProxy<TProxy>()
     {
-        return (TChild)CreateProxy(_serviceProvider, typeof(TChild));
+        return (TProxy)CreateProxy(typeof(TProxy));
     }
 
-    public object CreateProxy(Type trackableType)
-    {
-        return CreateProxy(_serviceProvider, trackableType);
-    }
-
-    private object CreateProxy(IServiceProvider serviceProvider, Type proxyType)
+    public object CreateProxy(Type proxyType)
     {
         var constructorArguments = proxyType
             .GetConstructors()
             .First()
             .GetParameters()
             .Select(p => p.ParameterType.IsAssignableTo(typeof(ITrackableFactory)) ? this :
-                         serviceProvider.GetService(p.ParameterType))
+                         _serviceProvider.GetService(p.ParameterType))
             .ToArray();
 
         var proxy = new ProxyGenerator()

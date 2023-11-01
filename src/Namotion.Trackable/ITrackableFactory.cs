@@ -6,5 +6,5 @@ public interface ITrackableFactory
 {
     TProxy CreateProxy<TProxy>();
 
-    object CreateProxy(Type thingType);
+    object CreateProxy(Type proxyType);
 }

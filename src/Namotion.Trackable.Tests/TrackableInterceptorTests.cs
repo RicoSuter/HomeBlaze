@@ -46,8 +46,8 @@ public class TrackableInterceptorTests
         where T : class
     {
         var serviceCollection = new ServiceCollection();
-        return new TrackableContext<T>(
+        return new TrackableContext<T>(new TrackableProxyFactory(
             Array.Empty<ITrackableInterceptor>(),
-            serviceCollection.BuildServiceProvider());
+            serviceCollection.BuildServiceProvider()));
     }
 }

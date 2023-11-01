@@ -6,7 +6,6 @@ using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
-using Castle.DynamicProxy;
 using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
 using Namotion.Trackable.Utilities;
@@ -21,8 +20,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     private readonly Subject<TrackedPropertyChange> _changesSubject = new Subject<TrackedPropertyChange>();
 
     private readonly HashSet<Tracker> _trackers = new();
-    private readonly IEnumerable<ITrackableInterceptor> _interceptors;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly ITrackableFactory _trackableFactory;
 
     public TObject Object { get; private set; }
 
@@ -41,51 +39,29 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    public TrackableContext(IEnumerable<ITrackableInterceptor> interceptors, IServiceProvider serviceProvider)
+    public TrackableContext(ITrackableFactory trackableFactory)
     {
-        _interceptors = interceptors;
-        _serviceProvider = serviceProvider;
+        _trackableFactory = trackableFactory;
 
         var proxy = CreateProxy<TObject>();
         if (Object == null)
         {
             Object = proxy;
-            Initialize((ITrackable)proxy);
+            InitializeProxy((ITrackable)proxy);
         }
     }
 
-    public TChild CreateProxy<TChild>()
+    public TProxy CreateProxy<TProxy>()
     {
-        return (TChild)CreateProxy(_serviceProvider, typeof(TChild));
+        return _trackableFactory.CreateProxy<TProxy>();
     }
 
-    public object CreateProxy(Type trackableType)
+    public object CreateProxy(Type proxyType)
     {
-        return CreateProxy(_serviceProvider, trackableType);
+        return _trackableFactory.CreateProxy(proxyType);
     }
 
-    private object CreateProxy(IServiceProvider serviceProvider, Type proxyType)
-    {
-        var constructorArguments = proxyType
-            .GetConstructors()
-            .First()
-            .GetParameters()
-            .Select(p => p.ParameterType.IsAssignableTo(typeof(ITrackableFactory)) ? this :
-                         serviceProvider.GetService(p.ParameterType))
-            .ToArray();
-
-        var proxy = new ProxyGenerator()
-            .CreateClassProxy(
-                proxyType,
-                new Type[] { typeof(ITrackable) },
-                new ProxyGenerationOptions(),
-                constructorArguments,
-                new TrackableInterceptor(_interceptors));
-
-        return proxy;
-    }
-
-    internal void Initialize(ITrackable proxy)
+    internal void InitializeProxy(ITrackable proxy)
     {
         Object = (TObject)proxy;
         Attach(proxy, null, null);
@@ -103,7 +79,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             .Select(_ => function.Invoke(Object));
     }
 
-    internal void Attach(TrackedProperty property, object newValue)
+    internal void AttachPropertyValue(TrackedProperty property, object newValue)
     {
         if (newValue is IDictionary newDictionary)
         {
@@ -150,7 +126,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    internal void Detach(object previousValue)
+    internal void DetachPropertyValue(TrackedProperty property, object previousValue)
     {
         lock (_lock)
         {
@@ -161,7 +137,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                     var value = newDictionary[key];
                     if (value is ITrackable trackable)
                     {
-                        Detach(trackable);
+                        DetachPropertyValue(property, trackable);
                     }
                 }
             }
@@ -169,7 +145,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             {
                 foreach (var child in previousTrackables.OfType<ITrackable>())
                 {
-                    Detach(child);
+                    DetachPropertyValue(property, child);
                 }
 
                 //if (previousTrackables is INotifyCollectionChanged notifyCollectionChanged)
@@ -214,7 +190,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    internal void MarkVariableAsChanged(TrackedProperty variable)
+    internal void MarkPropertyAsChanged(TrackedProperty variable)
     {
         MarkVariableAsChanged(variable, new HashSet<TrackedProperty>());
     }
@@ -269,7 +245,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                         var value = property.GetValue();
                         if (value != null)
                         {
-                            Attach(property, value);
+                            AttachPropertyValue(property, value);
                         }
                     }
                 }
@@ -285,7 +261,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 var value = stateProperty.GetValue();
                 if (value is ITrackable || value is ICollection)
                 {
-                    Attach(stateProperty, value);
+                    AttachPropertyValue(stateProperty, value);
                 }
             }
         }
@@ -309,11 +285,11 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         return property;
     }
 
-    void ITrackableContext.InitializeProxy(ITrackable proxy) => Initialize(proxy);
+    void ITrackableContext.InitializeProxy(ITrackable proxy) => InitializeProxy(proxy);
 
-    void ITrackableContext.Attach(TrackedProperty property, object newValue) => Attach(property, newValue);
+    void ITrackableContext.AttachPropertyValue(TrackedProperty property, object newValue) => AttachPropertyValue(property, newValue);
 
-    void ITrackableContext.Detach(object previousValue) => Detach(previousValue);
+    void ITrackableContext.DetachPropertyValue(TrackedProperty property, object previousValue) => DetachPropertyValue(property, previousValue);
 
-    void ITrackableContext.MarkVariableAsChanged(TrackedProperty property) => MarkVariableAsChanged(property);
+    void ITrackableContext.MarkPropertyAsChanged(TrackedProperty property) => MarkPropertyAsChanged(property);
 }

@@ -1,4 +1,5 @@
-﻿using Namotion.Trackable;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using Namotion.Trackable;
 using Namotion.Trackable.Validation;
 
 // ReSharper disable once CheckNamespace
@@ -11,7 +12,8 @@ public static class TrackableServiceCollection
     {
         services
             .AddSingleton<TrackableContext<TTrackable>>()
-            .AddSingleton(sp => sp.GetRequiredService<TrackableContext<TTrackable>>().Object);
+            .AddSingleton(sp => sp.GetRequiredService<TrackableContext<TTrackable>>().Object)
+            .TryAddSingleton<ITrackableFactory, TrackableProxyFactory>();
 
         return services;
     }
@@ -19,7 +21,7 @@ public static class TrackableServiceCollection
     public static IServiceCollection AddTrackableValidation(this IServiceCollection services)
     {
         services
-            .AddSingleton<ITrackableInterceptor, ValidationTrackableInterceptor>()
+            .TryAddSingleton<ITrackableInterceptor, ValidationTrackableInterceptor>()
 ;
         return services;
     }
