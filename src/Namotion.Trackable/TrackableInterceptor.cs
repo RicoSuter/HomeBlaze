@@ -50,25 +50,6 @@ public partial class TrackableInterceptor : IInterceptor
             }
         }
 
-        if (_castleInterceptors.Any())
-        {
-            invocation = new InvocationInterceptor(invocation, ProceedInternal);
-
-            foreach (var interceptor in _castleInterceptors)
-            {
-                invocation = new InvocationInterceptor(invocation, interceptor.Intercept);
-            }
-
-            invocation.Proceed();
-        }
-        else
-        {
-            ProceedInternal(invocation);
-        }
-    }
-
-    private void ProceedInternal(IInvocation invocation)
-    {
         if (invocation.Method?.Name.StartsWith("get_") == true)
         {
             OnReadProperty(invocation);
@@ -91,13 +72,6 @@ public partial class TrackableInterceptor : IInterceptor
             trackableContexts = _trackableContexts.ToArray();
         }
 
-        foreach (var interceptor in _interceptors)
-        {
-            if (interceptor.OnReadProperty(invocation) == false)
-            {
-                return;
-            }
-        }
 
         foreach (var trackableContext in trackableContexts)
         {
@@ -180,14 +154,6 @@ public partial class TrackableInterceptor : IInterceptor
 
     private void OnWriteProperty(IInvocation invocation)
     {
-        foreach (var interceptor in _interceptors)
-        {
-            if (interceptor.OnWriteProperty(invocation) == false)
-            {
-                return;
-            }
-        }
-
         ITrackableContext[] trackableContexts;
         lock (_lock)
         {

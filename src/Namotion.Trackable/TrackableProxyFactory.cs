@@ -37,8 +37,8 @@ public class TrackableProxyFactory : ITrackableFactory
                 proxyType,
                 new Type[] { typeof(ITrackable) },
                 new ProxyGenerationOptions(),
-                constructorArguments,
-                new TrackableInterceptor(_interceptors));
+                constructorArguments, // TODO: use own array with castle interceptors
+                _interceptors.OfType<IInterceptor>().Concat(new[] { new TrackableInterceptor(_interceptors) }).ToArray());
 
         return proxy;
     }
