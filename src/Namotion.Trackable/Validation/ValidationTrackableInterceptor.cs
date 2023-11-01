@@ -15,10 +15,10 @@ public class ValidationTrackableInterceptor : ITrackableInterceptor
         _propertyValidators = propertyValidators;
     }
 
-    public void OnAfterPropertyWrite(TrackedProperty setProperty, object? newValue, object? previousValue, ITrackableContext trackableContext)
+    public void OnAfterPropertyWrite(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext)
     {
         var errors = _propertyValidators
-           .SelectMany(v => v.Validate(setProperty, newValue, trackableContext))
+           .SelectMany(v => v.Validate(property, newValue, trackableContext))
            .ToArray();
 
         if (errors.Any())
