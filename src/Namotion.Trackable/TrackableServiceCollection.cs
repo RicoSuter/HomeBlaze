@@ -1,8 +1,4 @@
-﻿using Castle.DynamicProxy;
-
-using Namotion.Trackable;
-using System;
-using System.Linq;
+﻿using Namotion.Trackable;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;

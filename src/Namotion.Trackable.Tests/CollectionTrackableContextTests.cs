@@ -20,7 +20,7 @@ public class CollectionTrackableContextTests
                 factory.CreateProxy<Tire>(),
                 factory.CreateProxy<Tire>(),
                 factory.CreateProxy<Tire>(),
-                factory.CreateProxy<Tire>() 
+                factory.CreateProxy<Tire>()
             };
         }
 

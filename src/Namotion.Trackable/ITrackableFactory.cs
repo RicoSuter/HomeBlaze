@@ -4,7 +4,9 @@ namespace Namotion.Trackable;
 
 public interface ITrackableFactory
 {
-    TChildTing CreateProxy<TChildTing>();
+    TProxy CreateRootProxy<TProxy>(ITrackableContext trackableContext);
+
+    TProxy CreateProxy<TProxy>();
 
     object CreateProxy(Type thingType);
 }

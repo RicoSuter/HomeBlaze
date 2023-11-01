@@ -20,10 +20,14 @@ public class TrackableInterceptor : IInterceptor
     [ThreadStatic]
     private static Stack<Tuple<TrackedProperty, List<TrackedProperty>>>? _touchedProperties;
 
-    public TrackableInterceptor(ITrackableContext trackableContext, IEnumerable<ITrackablePropertyValidator> propertyValidators)
+    public TrackableInterceptor(IEnumerable<ITrackablePropertyValidator> propertyValidators, ITrackableContext? trackableContext)
     {
         _propertyValidators = propertyValidators;
-        _trackableContexts.Add(trackableContext);
+
+        if (trackableContext is not null)
+        {
+            _trackableContexts.Add(trackableContext);
+        }
     }
 
     public void Intercept(IInvocation invocation)
@@ -45,6 +49,11 @@ public class TrackableInterceptor : IInterceptor
             }
 
             trackableContexts = _trackableContexts.ToArray();
+        }
+
+        if (_trackableContexts.Count == 0)
+        {
+            invocation.Proceed();
         }
 
         foreach (var trackableContext in _trackableContexts)

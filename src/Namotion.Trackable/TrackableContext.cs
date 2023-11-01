@@ -43,9 +43,9 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     public TrackableContext(IEnumerable<ITrackablePropertyValidator> propertyValidators, IServiceProvider serviceProvider)
     {
-        Factory = new TrackableProxyFactory(this, propertyValidators, serviceProvider);
+        Factory = new TrackableProxyFactory(propertyValidators, serviceProvider);
 
-        var proxy = Factory.CreateProxy<TObject>();
+        var proxy = Factory.CreateRootProxy<TObject>(this);
         if (Object == null)
         {
             Object = proxy;
@@ -56,7 +56,6 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     internal void Initialize(ITrackable proxy)
     {
         Object = (TObject)proxy;
-        proxy.AddTrackableContext(this);
         Attach(proxy, null, null);
     }
 
@@ -224,24 +223,25 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             tracker.Object.AddTrackableContext(this);
 
             // create tracker for children
-            foreach (var property in proxy
+            foreach (var propertyInfo in proxy
                 .GetType()
                 .BaseType! // get properties from actual type
                 .GetProperties()
                 .Where(p => p.GetMethod?.IsVirtual == true || p.SetMethod?.IsVirtual == true))
             {
-                var trackableAttribute = property.GetCustomAttribute<TrackableAttribute>(true);
+                var trackableAttribute = propertyInfo.GetCustomAttribute<TrackableAttribute>(true);
                 if (trackableAttribute != null)
                 {
-                    CreateTrackableProperty(trackableAttribute, property, tracker, parentCollectionKey);
+                    var property = CreateTrackableProperty(trackableAttribute, propertyInfo, tracker, parentCollectionKey);
+                    if (property.GetMethod != null)
+                    {
+                        var value = property.GetValue();
+                        if (value != null)
+                        {
+                            Attach(property, value);
+                        }
+                    }
                 }
-            }
-
-            // initialize derived property dependencies
-            foreach (var stateProperty in tracker.Properties
-                .Where(p => p.SetMethod == null))
-            {
-                stateProperty.GetValue();
             }
         }
 
@@ -260,7 +260,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    private void CreateTrackableProperty(TrackableAttribute trackableAttribute, PropertyInfo propertyInfo, Tracker parent, object? parentCollectionKey)
+    private TrackedProperty CreateTrackableProperty(TrackableAttribute trackableAttribute, PropertyInfo propertyInfo, Tracker parent, object? parentCollectionKey)
     {
         var property = trackableAttribute.CreateTrackableProperty(propertyInfo, parent, parentCollectionKey);
         parent.Properties.Add(property);
@@ -269,6 +269,8 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         {
             attribute.ProcessProperty(property, parent, parentCollectionKey);
         }
+
+        return property;
     }
 
     void ITrackableContext.InitializeProxy(ITrackable proxy) => Initialize(proxy);
