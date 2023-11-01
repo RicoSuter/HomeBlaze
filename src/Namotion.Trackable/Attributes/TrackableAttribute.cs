@@ -33,7 +33,7 @@ public class TrackableAttribute : Attribute
             propertyInfo.PropertyType.IsClass &&
             propertyInfo.PropertyType.FullName?.StartsWith("System.") == false)
         {
-            var child = parent.Factory.CreateProxy(propertyInfo.PropertyType);
+            var child = parent.Context.CreateProxy(propertyInfo.PropertyType);
 
             propertyInfo.SetValue(parent.Object, child);
         }

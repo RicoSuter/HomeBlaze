@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Namotion.Trackable;
 
-public interface ITrackableContext
+public interface ITrackableContext : ITrackableFactory
 {
     IEnumerable<TrackedProperty> AllProperties { get; }
 

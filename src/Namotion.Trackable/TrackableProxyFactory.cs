@@ -17,22 +17,17 @@ public class TrackableProxyFactory : ITrackableFactory
         _serviceProvider = serviceProvider;
     }
 
-    public TChild CreateRootProxy<TChild>(ITrackableContext trackableContext)
-    {
-        return (TChild)CreateProxy(_serviceProvider, typeof(TChild), trackableContext);
-    }
-
     public TChild CreateProxy<TChild>()
     {
-        return (TChild)CreateProxy(_serviceProvider, typeof(TChild), null);
+        return (TChild)CreateProxy(_serviceProvider, typeof(TChild));
     }
 
     public object CreateProxy(Type trackableType)
     {
-        return CreateProxy(_serviceProvider, trackableType, null);
+        return CreateProxy(_serviceProvider, trackableType);
     }
 
-    private object CreateProxy(IServiceProvider serviceProvider, Type proxyType, ITrackableContext? trackableContext)
+    private object CreateProxy(IServiceProvider serviceProvider, Type proxyType)
     {
         var constructorArguments = proxyType
             .GetConstructors()
@@ -48,7 +43,7 @@ public class TrackableProxyFactory : ITrackableFactory
                 new Type[] { typeof(ITrackable) },
                 new ProxyGenerationOptions(),
                 constructorArguments,
-                new TrackableInterceptor(_interceptors, trackableContext));
+                new TrackableInterceptor(_interceptors));
 
         return proxy;
     }

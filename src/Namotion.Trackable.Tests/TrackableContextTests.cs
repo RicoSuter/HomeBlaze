@@ -53,7 +53,7 @@ public class TrackableContextTests
         var trackableContext = CreateContext<Person>();
         var trackable = trackableContext.Object;
 
-        var father = trackableContext.Factory.CreateProxy<Person>();
+        var father = trackableContext.CreateProxy<Person>();
         trackable.Father = father;
 
         var changes = new List<TrackedPropertyChange>();
@@ -74,7 +74,7 @@ public class TrackableContextTests
         var trackableContext = CreateContext<Person>();
         var trackable = trackableContext.Object;
 
-        var father = trackableContext.Factory.CreateProxy<Person>();
+        var father = trackableContext.CreateProxy<Person>();
         trackable.Father = father;
         trackable.Father = null;
 

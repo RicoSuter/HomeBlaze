@@ -19,14 +19,9 @@ public class TrackableInterceptor : IInterceptor
     [ThreadStatic]
     private static Stack<Tuple<TrackedProperty, List<TrackedProperty>>>? _touchedProperties;
 
-    public TrackableInterceptor(IEnumerable<ITrackableInterceptor> interceptors, ITrackableContext? trackableContext)
+    public TrackableInterceptor(IEnumerable<ITrackableInterceptor> interceptors)
     {
         _interceptors = interceptors;
-
-        if (trackableContext is not null)
-        {
-            _trackableContexts.Add(trackableContext);
-        }
     }
 
     public void Intercept(IInvocation invocation)
