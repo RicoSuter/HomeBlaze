@@ -9,6 +9,7 @@ using System.Text.Json.Serialization.Metadata;
 using Microsoft.AspNetCore.Mvc;
 
 using Namotion.Trackable.Attributes;
+using Namotion.Trackable.Validation;
 
 namespace Namotion.Trackable.AspNetCore.Controllers;
 

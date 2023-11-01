@@ -8,12 +8,12 @@ namespace Namotion.Trackable;
 
 public class TrackableProxyFactory : ITrackableFactory
 {
-    private readonly IEnumerable<ITrackablePropertyValidator> _propertyValidators;
+    private readonly IEnumerable<ITrackableInterceptor> _interceptors;
     private readonly IServiceProvider _serviceProvider;
 
-    public TrackableProxyFactory(IEnumerable<ITrackablePropertyValidator> propertyValidators, IServiceProvider serviceProvider)
+    public TrackableProxyFactory(IEnumerable<ITrackableInterceptor> interceptors, IServiceProvider serviceProvider)
     {
-        _propertyValidators = propertyValidators;
+        _interceptors = interceptors;
         _serviceProvider = serviceProvider;
     }
 
@@ -48,7 +48,7 @@ public class TrackableProxyFactory : ITrackableFactory
                 new Type[] { typeof(ITrackable) },
                 new ProxyGenerationOptions(),
                 constructorArguments,
-                new TrackableInterceptor(_propertyValidators, trackableContext));
+                new TrackableInterceptor(_interceptors, trackableContext));
 
         return proxy;
     }

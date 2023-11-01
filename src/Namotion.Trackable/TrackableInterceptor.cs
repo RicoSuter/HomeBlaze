@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive.Linq;
 
@@ -14,15 +13,15 @@ public class TrackableInterceptor : IInterceptor
 {
     private readonly object _lock = new();
     private readonly ICollection<ITrackableContext> _trackableContexts = new HashSet<ITrackableContext>();
-   
-    private readonly IEnumerable<ITrackablePropertyValidator> _propertyValidators;
+
+    private readonly IEnumerable<ITrackableInterceptor> _interceptors;
 
     [ThreadStatic]
     private static Stack<Tuple<TrackedProperty, List<TrackedProperty>>>? _touchedProperties;
 
-    public TrackableInterceptor(IEnumerable<ITrackablePropertyValidator> propertyValidators, ITrackableContext? trackableContext)
+    public TrackableInterceptor(IEnumerable<ITrackableInterceptor> interceptors, ITrackableContext? trackableContext)
     {
-        _propertyValidators = propertyValidators;
+        _interceptors = interceptors;
 
         if (trackableContext is not null)
         {
@@ -33,7 +32,7 @@ public class TrackableInterceptor : IInterceptor
     public void Intercept(IInvocation invocation)
     {
         ITrackableContext[] trackableContexts;
-        
+
         lock (_lock)
         {
             if (invocation.Method?.Name == nameof(ITrackable.AddTrackableContext) &&
@@ -55,7 +54,7 @@ public class TrackableInterceptor : IInterceptor
         if (invocation.Method?.Name.StartsWith("get_") == true)
         {
             HandlePropertyGetter(invocation);
-        } 
+        }
         else if (invocation.Method?.Name.StartsWith("set_") == true)
         {
             HandlePropertySetter(invocation);
@@ -63,7 +62,7 @@ public class TrackableInterceptor : IInterceptor
         else
         {
             invocation.Proceed();
-        }       
+        }
     }
 
     private void HandlePropertyGetter(IInvocation invocation)
@@ -82,10 +81,10 @@ public class TrackableInterceptor : IInterceptor
                 .AllProperties
                 .FirstOrDefault(v => v.Parent.Object == invocation.InvocationTarget &&
                                      v.GetMethod?.Name == invocation.Method?.Name);
-            
+
             if (getProperty != null)
             {
-                OnBeforePropertyRead(getProperty);
+                OnBeforePropertyRead(getProperty, trackableContext);
             }
         }
 
@@ -100,12 +99,12 @@ public class TrackableInterceptor : IInterceptor
 
             if (getProperty != null)
             {
-                OnAfterPropertyRead(getProperty, invocation.ReturnValue);
+                OnAfterPropertyRead(getProperty, invocation.ReturnValue, trackableContext);
             }
         }
     }
 
-    private static void OnBeforePropertyRead(TrackedProperty getProperty)
+    private void OnBeforePropertyRead(TrackedProperty getProperty, ITrackableContext trackableContext)
     {
         if (_touchedProperties == null)
         {
@@ -116,10 +115,20 @@ public class TrackableInterceptor : IInterceptor
         {
             _touchedProperties!.Push(new Tuple<TrackedProperty, List<TrackedProperty>>(getProperty, new List<TrackedProperty>()));
         }
+
+        foreach (var interceptor in _interceptors)
+        {
+            interceptor.OnBeforePropertyRead(getProperty, trackableContext);
+        }
     }
 
-    private static void OnAfterPropertyRead(TrackedProperty getProperty, object? newValue)
+    private void OnAfterPropertyRead(TrackedProperty getProperty, object? newValue, ITrackableContext trackableContext)
     {
+        foreach (var interceptor in _interceptors)
+        {
+            interceptor.OnAfterPropertyRead(getProperty, newValue, trackableContext);
+        }
+
         if (_touchedProperties == null)
         {
             _touchedProperties = new Stack<Tuple<TrackedProperty, List<TrackedProperty>>>();
@@ -182,18 +191,19 @@ public class TrackableInterceptor : IInterceptor
 
     private void OnBeforePropertyWrite(TrackedProperty setProperty, object? newValue, object? previousValue, ITrackableContext trackableContext)
     {
-        var errors = _propertyValidators
-            .SelectMany(v => v.Validate(setProperty, newValue, trackableContext))
-            .ToArray();
-
-        if (errors.Any())
+        foreach (var interceptor in _interceptors)
         {
-            throw new ValidationException(string.Join("\n", errors.Select(e => e.ErrorMessage)));
+            interceptor.OnBeforePropertyWrite(setProperty, newValue, previousValue, trackableContext);
         }
     }
 
     private void OnAfterPropertyWrite(TrackedProperty setProperty, object? newValue, object? previousValue, ITrackableContext trackableContext)
     {
+        foreach (var interceptor in _interceptors)
+        {
+            interceptor.OnAfterPropertyWrite(setProperty, newValue, previousValue, trackableContext);
+        }
+
         if (!Equals(previousValue, newValue))
         {
             if (previousValue != null && (previousValue is ITrackable || previousValue is ICollection))

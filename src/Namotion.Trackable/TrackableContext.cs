@@ -41,9 +41,9 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    public TrackableContext(IEnumerable<ITrackablePropertyValidator> propertyValidators, IServiceProvider serviceProvider)
+    public TrackableContext(IEnumerable<ITrackableInterceptor> interceptors, IServiceProvider serviceProvider)
     {
-        Factory = new TrackableProxyFactory(propertyValidators, serviceProvider);
+        Factory = new TrackableProxyFactory(interceptors, serviceProvider);
 
         var proxy = Factory.CreateRootProxy<TObject>(this);
         if (Object == null)

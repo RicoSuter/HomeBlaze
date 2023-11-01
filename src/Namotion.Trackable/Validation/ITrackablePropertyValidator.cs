@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 using Namotion.Trackable.Model;
 
-namespace Namotion.Trackable;
+namespace Namotion.Trackable.Validation;
 
 public interface ITrackablePropertyValidator
 {

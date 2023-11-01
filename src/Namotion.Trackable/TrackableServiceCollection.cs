@@ -9,11 +9,7 @@ public static class TrackableServiceCollection
         where TTrackable : class
     {
         services
-            .AddSingleton(sp =>
-            {
-                var propertyValidators = sp.GetServices<ITrackablePropertyValidator>();
-                return new TrackableContext<TTrackable>(propertyValidators, sp);
-            })
+            .AddSingleton<TrackableContext<TTrackable>>()
             .AddSingleton(sp => sp.GetRequiredService<TrackableContext<TTrackable>>().Object);
 
         return services;

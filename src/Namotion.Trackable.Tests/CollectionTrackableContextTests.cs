@@ -102,7 +102,7 @@ public class CollectionTrackableContextTests
     {
         var serviceCollection = new ServiceCollection();
         return new TrackableContext<T>(
-            Array.Empty<ITrackablePropertyValidator>(),
+            Array.Empty<ITrackableInterceptor>(),
             serviceCollection.BuildServiceProvider());
     }
 }
