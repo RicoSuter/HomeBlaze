@@ -1,14 +1,19 @@
-﻿using Namotion.Trackable.Model;
+﻿using Castle.DynamicProxy;
+using Namotion.Trackable.Model;
 
 namespace Namotion.Trackable;
 
 public interface ITrackableInterceptor
 {
-    void OnBeforePropertyRead(TrackedProperty property, ITrackableContext trackableContext) { }
+    bool OnReadProperty(IInvocation invocation) { return true; }
 
-    void OnAfterPropertyRead(TrackedProperty property, object? newValue, ITrackableContext trackableContext) { }
+    void OnBeforeReadProperty(TrackedProperty property, ITrackableContext trackableContext) { }
 
-    void OnBeforePropertyWrite(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext) { }
+    void OnAfterReadProperty(TrackedProperty property, object? newValue, ITrackableContext trackableContext) { }
 
-    void OnAfterPropertyWrite(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext) { }
+    bool OnWriteProperty(IInvocation invocation) { return true; }
+
+    void OnBeforeWriteProperty(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext) { }
+
+    void OnAfterWriteProperty(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext) { }
 }

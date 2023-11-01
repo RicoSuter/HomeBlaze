@@ -2,11 +2,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reactive.Linq;
+using Castle.DynamicProxy;
 using Namotion.Trackable.Model;
 
 namespace Namotion.Trackable.Validation;
 
-public class ValidationTrackableInterceptor : ITrackableInterceptor
+public class ValidationTrackableInterceptor : ITrackableInterceptor, IInterceptor
 {
     private readonly IEnumerable<ITrackablePropertyValidator> _propertyValidators;
 
@@ -15,7 +16,12 @@ public class ValidationTrackableInterceptor : ITrackableInterceptor
         _propertyValidators = propertyValidators;
     }
 
-    public void OnAfterPropertyWrite(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext)
+    public void Intercept(IInvocation invocation)
+    {
+        invocation.Proceed();
+    }
+
+    public void OnAfterWriteProperty(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext)
     {
         var errors = _propertyValidators
            .SelectMany(v => v.Validate(property, newValue, trackableContext))

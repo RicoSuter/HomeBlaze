@@ -3,18 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-
 using Castle.DynamicProxy;
 using Namotion.Trackable.Model;
 
 namespace Namotion.Trackable;
 
-public class TrackableInterceptor : IInterceptor
+public partial class TrackableInterceptor : IInterceptor
 {
     private readonly object _lock = new();
     private readonly ICollection<ITrackableContext> _trackableContexts = new HashSet<ITrackableContext>();
-
     private readonly IEnumerable<ITrackableInterceptor> _interceptors;
+    private readonly IInterceptor[] _castleInterceptors;
 
     public IEnumerable<ITrackableContext> Contexts => _trackableContexts;
 
@@ -24,12 +23,11 @@ public class TrackableInterceptor : IInterceptor
     public TrackableInterceptor(IEnumerable<ITrackableInterceptor> interceptors)
     {
         _interceptors = interceptors;
+        _castleInterceptors = _interceptors.OfType<IInterceptor>().Reverse().ToArray();
     }
 
     public void Intercept(IInvocation invocation)
     {
-        ITrackableContext[] trackableContexts;
-
         lock (_lock)
         {
             if (invocation.Method?.Name == nameof(ITrackable.AddTrackableContext) &&
@@ -50,17 +48,34 @@ public class TrackableInterceptor : IInterceptor
                 invocation.ReturnValue = this;
                 return;
             }
-
-            trackableContexts = _trackableContexts.ToArray();
         }
 
+        if (_castleInterceptors.Any())
+        {
+            invocation = new InvocationInterceptor(invocation, ProceedInternal);
+
+            foreach (var interceptor in _castleInterceptors)
+            {
+                invocation = new InvocationInterceptor(invocation, interceptor.Intercept);
+            }
+
+            invocation.Proceed();
+        }
+        else
+        {
+            ProceedInternal(invocation);
+        }
+    }
+
+    private void ProceedInternal(IInvocation invocation)
+    {
         if (invocation.Method?.Name.StartsWith("get_") == true)
         {
-            HandlePropertyGetter(invocation);
+            OnReadProperty(invocation);
         }
         else if (invocation.Method?.Name.StartsWith("set_") == true)
         {
-            HandlePropertySetter(invocation);
+            OnWriteProperty(invocation);
         }
         else
         {
@@ -68,9 +83,23 @@ public class TrackableInterceptor : IInterceptor
         }
     }
 
-    private void HandlePropertyGetter(IInvocation invocation)
+    private void OnReadProperty(IInvocation invocation)
     {
-        foreach (var trackableContext in _trackableContexts)
+        ITrackableContext[] trackableContexts;
+        lock (_lock)
+        {
+            trackableContexts = _trackableContexts.ToArray();
+        }
+
+        foreach (var interceptor in _interceptors)
+        {
+            if (interceptor.OnReadProperty(invocation) == false)
+            {
+                return;
+            }
+        }
+
+        foreach (var trackableContext in trackableContexts)
         {
             if (invocation.InvocationTarget is ITrackable trackable)
             {
@@ -87,13 +116,13 @@ public class TrackableInterceptor : IInterceptor
 
             if (getProperty != null)
             {
-                OnBeforePropertyRead(getProperty, trackableContext);
+                OnBeforeReadProperty(getProperty, trackableContext);
             }
         }
 
         invocation.Proceed();
 
-        foreach (var trackableContext in _trackableContexts)
+        foreach (var trackableContext in trackableContexts)
         {
             var getProperty = trackableContext
                 .AllProperties
@@ -102,12 +131,12 @@ public class TrackableInterceptor : IInterceptor
 
             if (getProperty != null)
             {
-                OnAfterPropertyRead(getProperty, invocation.ReturnValue, trackableContext);
+                OnAfterReadProperty(getProperty, invocation.ReturnValue, trackableContext);
             }
         }
     }
 
-    private void OnBeforePropertyRead(TrackedProperty getProperty, ITrackableContext trackableContext)
+    private void OnBeforeReadProperty(TrackedProperty getProperty, ITrackableContext trackableContext)
     {
         if (_touchedProperties == null)
         {
@@ -121,15 +150,15 @@ public class TrackableInterceptor : IInterceptor
 
         foreach (var interceptor in _interceptors)
         {
-            interceptor.OnBeforePropertyRead(getProperty, trackableContext);
+            interceptor.OnBeforeReadProperty(getProperty, trackableContext);
         }
     }
 
-    private void OnAfterPropertyRead(TrackedProperty getProperty, object? newValue, ITrackableContext trackableContext)
+    private void OnAfterReadProperty(TrackedProperty getProperty, object? newValue, ITrackableContext trackableContext)
     {
         foreach (var interceptor in _interceptors)
         {
-            interceptor.OnAfterPropertyRead(getProperty, newValue, trackableContext);
+            interceptor.OnAfterReadProperty(getProperty, newValue, trackableContext);
         }
 
         if (_touchedProperties == null)
@@ -149,13 +178,27 @@ public class TrackableInterceptor : IInterceptor
         }
     }
 
-    private void HandlePropertySetter(IInvocation invocation)
+    private void OnWriteProperty(IInvocation invocation)
     {
+        foreach (var interceptor in _interceptors)
+        {
+            if (interceptor.OnWriteProperty(invocation) == false)
+            {
+                return;
+            }
+        }
+
+        ITrackableContext[] trackableContexts;
+        lock (_lock)
+        {
+            trackableContexts = _trackableContexts.ToArray();
+        }
+
         var methodName = invocation.Method.Name.Replace("set_", "get_");
         var previousValue = invocation.InvocationTarget.GetType().GetMethod(methodName)?.Invoke(invocation.InvocationTarget, null);
         var newValue = invocation.Arguments[0];
 
-        foreach (var trackableContext in _trackableContexts)
+        foreach (var trackableContext in trackableContexts)
         {
             if (invocation.InvocationTarget is ITrackable trackable)
             {
@@ -172,13 +215,13 @@ public class TrackableInterceptor : IInterceptor
 
             if (setProperty != null)
             {
-                OnBeforePropertyWrite(setProperty, newValue, previousValue, trackableContext);
+                OnBeforeWriteProperty(setProperty, newValue, previousValue, trackableContext);
             }
         }
 
         invocation.Proceed();
 
-        foreach (var trackableContext in _trackableContexts)
+        foreach (var trackableContext in trackableContexts)
         {
             var setProperty = trackableContext
                 .AllProperties
@@ -187,24 +230,24 @@ public class TrackableInterceptor : IInterceptor
 
             if (setProperty != null)
             {
-                OnAfterPropertyWrite(setProperty, newValue, previousValue, trackableContext);
+                OnAfterWriteProperty(setProperty, newValue, previousValue, trackableContext);
             }
         }
     }
 
-    private void OnBeforePropertyWrite(TrackedProperty setProperty, object? newValue, object? previousValue, ITrackableContext trackableContext)
+    private void OnBeforeWriteProperty(TrackedProperty setProperty, object? newValue, object? previousValue, ITrackableContext trackableContext)
     {
         foreach (var interceptor in _interceptors)
         {
-            interceptor.OnBeforePropertyWrite(setProperty, newValue, previousValue, trackableContext);
+            interceptor.OnBeforeWriteProperty(setProperty, newValue, previousValue, trackableContext);
         }
     }
 
-    private void OnAfterPropertyWrite(TrackedProperty setProperty, object? newValue, object? previousValue, ITrackableContext trackableContext)
+    private void OnAfterWriteProperty(TrackedProperty setProperty, object? newValue, object? previousValue, ITrackableContext trackableContext)
     {
         foreach (var interceptor in _interceptors)
         {
-            interceptor.OnAfterPropertyWrite(setProperty, newValue, previousValue, trackableContext);
+            interceptor.OnAfterWriteProperty(setProperty, newValue, previousValue, trackableContext);
         }
 
         if (!Equals(previousValue, newValue))
