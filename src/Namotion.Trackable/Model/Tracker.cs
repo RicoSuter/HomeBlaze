@@ -5,15 +5,15 @@ namespace Namotion.Trackable.Model;
 
 public class Tracker
 {
-    public Tracker(object thing, string path, TrackedProperty? parentProperty, ITrackableContext context)
+    public Tracker(ITrackable proxy, string path, TrackedProperty? parentProperty, ITrackableContext context)
     {
-        Object = thing;
+        Object = proxy;
         Path = path;
         ParentProperty = parentProperty;
         Context = context;
     }
 
-    public object Object { get; }
+    public ITrackable Object { get; }
 
     public string Path { get; }
 

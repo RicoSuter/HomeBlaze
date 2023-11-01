@@ -25,13 +25,13 @@ public static class TrackableServiceCollection
         return services;
     }
 
-    internal static object CreateProxy(this IServiceProvider serviceProvider, Type proxyType, ITrackableContext thingContext, IInterceptor[] interceptors)
+    internal static object CreateProxy(this IServiceProvider serviceProvider, Type proxyType, ITrackableContext trackableContext, IInterceptor[] interceptors)
     {
         var constructorArguments = proxyType
             .GetConstructors()
             .First()
             .GetParameters()
-            .Select(p => p.ParameterType.IsAssignableTo(typeof(ITrackableFactory)) ? thingContext :
+            .Select(p => p.ParameterType.IsAssignableTo(typeof(ITrackableFactory)) ? trackableContext :
                          serviceProvider.GetService(p.ParameterType))
             .ToArray();
 

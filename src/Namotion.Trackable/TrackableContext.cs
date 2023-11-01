@@ -51,7 +51,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         IEnumerable<ITrackableInterceptor> interceptors,
         IServiceProvider serviceProvider)
     {
-        _interceptor = new TrackableInterceptor(propertyValidators, this);
+        _interceptor = new TrackableInterceptor(this, propertyValidators);
         _interceptors = interceptors;
         _serviceProvider = serviceProvider;
 
@@ -70,7 +70,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
     internal void Initialize(object proxy)
     {
         Object = (TObject)proxy;
-        Attach(Object, null, null);
+        Attach((ITrackable)Object, null, null);
     }
 
     public TChild CreateProxy<TChild>()
@@ -111,6 +111,11 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                     Attach(trackable, property, key);
                 }
             }
+
+            //if (newDictionary is INotifyCollectionChanged notifyCollectionChanged)
+            //{
+            //    notifyCollectionChanged.CollectionChanged += OnCollectionChanged;
+            //}
         }
         else if (newValue is ICollection newTrackables)
         {
@@ -127,15 +132,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
     }
 
-    private Tracker? TryGetTracker(object proxy)
-    {
-        lock (_lock)
-        {
-            return _trackers.SingleOrDefault(t => t.Object == proxy);
-        }
-    }
-
-    private void Attach(object proxy, TrackedProperty? parentProperty, object? parentCollectionKey)
+    private void Attach(ITrackable proxy, TrackedProperty? parentProperty, object? parentCollectionKey)
     {
         var parentPath =
             parentProperty != null ? (
@@ -170,6 +167,11 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                 {
                     Detach(child);
                 }
+
+                //if (previousTrackables is INotifyCollectionChanged notifyCollectionChanged)
+                //{
+                //    notifyCollectionChanged.CollectionChanged -= OnCollectionChanged;
+                //}
             }
             else if (previousValue is ITrackable trackable)
             {
@@ -178,6 +180,33 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                 trackable.RemoveTrackableContext(this);
                 _trackers.RemoveWhere(t => t.Object != previousValue);
             }
+        }
+    }
+
+    //private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    //{
+    //    if (e.NewItems is not null)
+    //    {
+    //        foreach (var trackable in e.NewItems.OfType<ITrackable>())
+    //        {
+    //            Attach(trackable, null, null); // TODO: get parent somehow
+    //        }
+    //    }
+
+    //    if (e.OldItems is not null)
+    //    {
+    //        foreach (var trackable in e.OldItems.OfType<ITrackable>())
+    //        {
+    //            Detach(trackable);
+    //        }
+    //    }
+    //}
+
+    private Tracker? TryGetTracker(object proxy)
+    {
+        lock (_lock)
+        {
+            return _trackers.SingleOrDefault(t => t.Object == proxy);
         }
     }
 
@@ -203,7 +232,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
         }
     }
 
-    private void CreateTracker(object proxy, string parentPath, TrackedProperty? parentProperty, object? parentCollectionKey)
+    private void CreateTracker(ITrackable proxy, string parentPath, TrackedProperty? parentProperty, object? parentCollectionKey)
     {
         var tracker = TryGetTracker(proxy);
         if (tracker == null)
@@ -219,7 +248,7 @@ public class TrackableContext<TObject> : ITrackableContext, ITrackableFactory, I
                 _trackers.Add(tracker);
             }
 
-            ((ITrackable)tracker.Object).AddTrackableContext(this);
+            tracker.Object.AddTrackableContext(this);
 
             // create tracker for children
             foreach (var property in proxy

@@ -21,7 +21,7 @@ public class TrackableInterceptor : ITrackableInterceptor
     [ThreadStatic]
     private static Stack<Tuple<TrackedProperty, List<TrackedProperty>>>? _touchedProperties;
 
-    public TrackableInterceptor(IEnumerable<ITrackablePropertyValidator> propertyValidators, ITrackableContext trackableContext)
+    public TrackableInterceptor(ITrackableContext trackableContext, IEnumerable<ITrackablePropertyValidator> propertyValidators)
     {
         _propertyValidators = propertyValidators;
         _trackableContexts.Add(trackableContext);
