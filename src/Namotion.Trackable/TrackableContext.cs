@@ -80,7 +80,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 new Type[] { typeof(ITrackable) },
                 new ProxyGenerationOptions(),
                 constructorArguments,
-        new TrackableInterceptor(_interceptors));
+                new TrackableInterceptor(_interceptors));
 
         return proxy;
     }
@@ -258,8 +258,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             foreach (var propertyInfo in proxy
                 .GetType()
                 .BaseType! // get properties from actual type
-                .GetProperties()
-                .Where(p => p.GetMethod?.IsVirtual == true || p.SetMethod?.IsVirtual == true))
+                .GetProperties())
             {
                 var trackableAttribute = propertyInfo.GetCustomAttribute<TrackableAttribute>(true);
                 if (trackableAttribute != null)
@@ -294,6 +293,11 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     private TrackedProperty CreateTrackableProperty(TrackableAttribute trackableAttribute, PropertyInfo propertyInfo, Tracker parent, object? parentCollectionKey)
     {
+        if (propertyInfo.GetMethod?.IsVirtual == false || propertyInfo.SetMethod?.IsVirtual == false)
+        {
+            throw new InvalidOperationException($"Trackable property {propertyInfo.DeclaringType?.Name}.{propertyInfo.Name} must be virtual.");
+        }
+
         var property = trackableAttribute.CreateTrackableProperty(propertyInfo, parent, parentCollectionKey);
         parent.Properties.Add(property);
 
