@@ -284,7 +284,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             .GetCustomAttributes(true)
             .OfType<ITrackablePropertyInitializer>())
         {
-            attribute.InitializeProperty(property, parent, parentCollectionKey);
+            attribute.InitializeProperty(this, property, parent, parentCollectionKey);
         }
 
         TryInitializeRequiredProperty(propertyInfo, parent);

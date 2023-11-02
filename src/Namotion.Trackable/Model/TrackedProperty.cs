@@ -5,8 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
-using Namotion.Trackable.Attributes;
-
 namespace Namotion.Trackable.Model;
 
 public class TrackedProperty
@@ -32,9 +30,9 @@ public class TrackedProperty
 
     public string Path { get; }
 
-    [JsonIgnore]
-    [MemberNotNullWhen(true, nameof(AttributeMetadata))]
-    public bool IsAttribute => AttributeMetadata != null;
+    [MemberNotNullWhen(true, nameof(AttributedProperty))]
+    [MemberNotNullWhen(true, nameof(AttributeName))]
+    public bool IsAttribute => AttributedProperty != null;
 
     [JsonIgnore]
     public Tracker Parent { get; }
@@ -64,8 +62,10 @@ public class TrackedProperty
     }
 
     [JsonIgnore]
-    public AttributeOfTrackableAttribute? AttributeMetadata => _property
-        .GetCustomAttribute<AttributeOfTrackableAttribute>(true);
+    public TrackedProperty? AttributedProperty { get; set; }
+
+    [JsonIgnore]
+    public string? AttributeName { get; set; }
 
     [JsonIgnore]
     public TrackedProperty[] DependentProperties { get; internal set; } = Array.Empty<TrackedProperty>();
@@ -74,8 +74,8 @@ public class TrackedProperty
 
     public Dictionary<string, TrackedProperty> Attributes => Context
         .AllProperties
-        .Where(v => v.AttributeMetadata?.PropertyName == _property.Name && v.Parent == Parent)
-        .ToDictionary(v => v.AttributeMetadata!.AttributeName, v => v);
+        .Where(p => p.AttributedProperty == this)
+        .ToDictionary(v => v.AttributeName!, v => v);
 
     [JsonIgnore]
     public IDictionary<string, object?> Data { get; } = new Dictionary<string, object?>();
