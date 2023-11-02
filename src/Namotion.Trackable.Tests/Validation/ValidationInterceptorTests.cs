@@ -40,6 +40,7 @@ public class ValidationInterceptorTests
         {
             trackable.FirstName = "Suter"; // not allowed
         });
+        Assert.Equal("Rico", trackable.FirstName);
     }
 
     private static TrackableContext<T> CreateContext<T>(params ITrackablePropertyValidator[] propertyValidators)

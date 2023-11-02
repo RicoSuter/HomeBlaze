@@ -21,7 +21,7 @@ public class ValidationTrackableInterceptor : ITrackableInterceptor, IIntercepto
         invocation.Proceed();
     }
 
-    public void OnAfterWriteProperty(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext)
+    public void OnBeforeWriteProperty(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext)
     {
         var errors = _propertyValidators
            .SelectMany(v => v.Validate(property, newValue, trackableContext))
