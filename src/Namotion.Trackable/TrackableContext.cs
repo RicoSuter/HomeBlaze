@@ -115,11 +115,9 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     private void Attach(ITrackable proxy, TrackedProperty? parentProperty, object? parentCollectionKey)
     {
-        var parentPath =
-            parentProperty != null ? (
-                parentProperty.AbsolutePath +
-                (parentCollectionKey != null ? $"[{parentCollectionKey}]" : string.Empty)) : string
-            .Empty;
+        var parentPath = parentProperty != null ?
+            (parentProperty.Path + (parentCollectionKey != null ? $"[{parentCollectionKey}]" : string.Empty)) :
+            string.Empty;
 
         if (TryGetTracker(proxy) == null)
         {

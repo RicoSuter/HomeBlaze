@@ -52,16 +52,6 @@ public class TrackedProperty
     public Type PropertyType => _property.PropertyType;
 
     [JsonIgnore]
-    public string AbsolutePath
-    {
-        get
-        {
-            var basePath = Parent.Path;
-            return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + _property.Name;
-        }
-    }
-
-    [JsonIgnore]
     public TrackedProperty? AttributedProperty { get; set; }
 
     [JsonIgnore]
