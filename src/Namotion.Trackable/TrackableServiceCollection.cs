@@ -13,7 +13,7 @@ public static class TrackableServiceCollection
         services
             .AddSingleton<TrackableContext<TTrackable>>()
             .AddSingleton(sp => sp.GetRequiredService<TrackableContext<TTrackable>>().Object)
-            .TryAddSingleton<ITrackableFactory, TrackableProxyFactory>();
+            .TryAddSingleton<ITrackableFactory, TrackableFactory>();
 
         return services;
     }

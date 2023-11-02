@@ -1,5 +1,4 @@
-﻿using Castle.DynamicProxy;
-using Namotion.Trackable.Model;
+﻿using Namotion.Trackable.Model;
 
 namespace Namotion.Trackable;
 

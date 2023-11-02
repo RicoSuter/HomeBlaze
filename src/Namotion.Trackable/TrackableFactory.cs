@@ -6,12 +6,12 @@ using Castle.DynamicProxy;
 
 namespace Namotion.Trackable;
 
-public class TrackableProxyFactory : ITrackableFactory
+public class TrackableFactory : ITrackableFactory
 {
     private readonly IEnumerable<ITrackableInterceptor> _interceptors;
     private readonly IServiceProvider _serviceProvider;
 
-    public TrackableProxyFactory(IEnumerable<ITrackableInterceptor> interceptors, IServiceProvider serviceProvider)
+    public TrackableFactory(IEnumerable<ITrackableInterceptor> interceptors, IServiceProvider serviceProvider)
     {
         _interceptors = interceptors;
         _serviceProvider = serviceProvider;
