@@ -68,6 +68,9 @@ namespace Namotion.Trackable.SampleWeb
             [Trackable]
             [TrackableSourcePath("mqtt", "tires")]
             public virtual Tire[] Tires { get; set; }
+
+            [Trackable]
+            public virtual decimal AveragePressure => Tires.Average(t => t.Pressure);
         }
 
         public class Tire
@@ -75,6 +78,12 @@ namespace Namotion.Trackable.SampleWeb
             [Trackable]
             [TrackableSource("mqtt", "pressure")]
             public virtual decimal Pressure { get; set; }
+
+            [AttributeOfTrackable(nameof(Pressure), "minimum")]
+            public virtual decimal Pressure_Minimum { get; set; } = 0.0m;
+
+            [AttributeOfTrackable(nameof(Pressure), "maximum")]
+            public virtual decimal Pressure_Maximum { get; set; } = 4.0m;
         }
 
         [OpenApiTag("Car")]
@@ -101,10 +110,10 @@ namespace Namotion.Trackable.SampleWeb
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    _car.Tires[0].Pressure++;
-                    _car.Tires[1].Pressure++;
-                    _car.Tires[2].Pressure++;
-                    _car.Tires[3].Pressure++;
+                    _car.Tires[0].Pressure = Random.Shared.Next(0, 40) / 10m;
+                    _car.Tires[1].Pressure = Random.Shared.Next(0, 40) / 10m;
+                    _car.Tires[2].Pressure = Random.Shared.Next(0, 40) / 10m;
+                    _car.Tires[3].Pressure = Random.Shared.Next(0, 40) / 10m;
 
                     await Task.Delay(1000, stoppingToken);
                 }

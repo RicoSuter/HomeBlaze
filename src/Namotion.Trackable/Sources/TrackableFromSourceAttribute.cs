@@ -5,7 +5,7 @@ using System;
 namespace Namotion.Trackable.Sources;
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
-public class TrackableSourceAttribute : Attribute, ITrackableAttribute
+public class TrackableSourceAttribute : Attribute, ITrackablePropertyInitializer
 {
     public string SourceName { get; }
 
@@ -19,7 +19,7 @@ public class TrackableSourceAttribute : Attribute, ITrackableAttribute
         Path = path;
     }
 
-    public void ProcessProperty(TrackedProperty property, Tracker parent, object? parentCollectionKey)
+    public void InitializeProperty(TrackedProperty property, Tracker parent, object? parentCollectionKey)
     {
         var parentPath = parent.ParentProperty?.TryGetAttributeBasedSourcePathPrefix(SourceName) +
             (parentCollectionKey != null ? $"[{parentCollectionKey}]" : string.Empty);

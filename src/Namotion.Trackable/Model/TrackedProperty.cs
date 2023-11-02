@@ -32,6 +32,7 @@ public class TrackedProperty
 
     public string Path { get; }
 
+    [JsonIgnore]
     [MemberNotNullWhen(true, nameof(AttributeMetadata))]
     public bool IsAttribute => AttributeMetadata != null;
 

@@ -6,7 +6,7 @@ namespace Namotion.Trackable
 {
     internal static class ExpressionExtensions
     {
-        internal static string GetFullExpressionPath<TItem, TField>(this Expression<Func<TItem, TField>> fieldSelector)
+        internal static string GetExpressionPath<TItem, TField>(this Expression<Func<TItem, TField>> fieldSelector)
         {
             var parts = new List<string>();
             var body = fieldSelector.Body;

@@ -5,7 +5,7 @@ using System.Linq;
 namespace Namotion.Trackable.Attributes;
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-public class AttributeOfTrackableAttribute : Attribute
+public class AttributeOfTrackableAttribute : TrackableAttribute
 {
     public AttributeOfTrackableAttribute(string propertyName, string attributeName)
     {

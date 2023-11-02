@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
@@ -72,7 +73,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     public IObservable<TField?> Observe<TField>(Expression<Func<TObject, TField>> selector)
     {
-        var targetPath = selector.GetFullExpressionPath();
+        var targetPath = selector.GetExpressionPath();
         var function = selector.Compile();
         return this
             .Select(change => change.Property.Path.StartsWith(targetPath) && change.Value is not null)
@@ -239,7 +240,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 var trackableAttribute = propertyInfo.GetCustomAttribute<TrackableAttribute>(true);
                 if (trackableAttribute != null)
                 {
-                    var property = CreateTrackableProperty(trackableAttribute, propertyInfo, tracker, parentCollectionKey);
+                    var property = CreateTrackableProperty(propertyInfo, tracker, parentCollectionKey);
                     if (property.GetMethod != null)
                     {
                         var value = property.GetValue();
@@ -267,22 +268,41 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    private TrackedProperty CreateTrackableProperty(TrackableAttribute trackableAttribute, PropertyInfo propertyInfo, Tracker parent, object? parentCollectionKey)
+    private TrackedProperty CreateTrackableProperty(PropertyInfo propertyInfo, Tracker parent, object? parentCollectionKey)
     {
         if (propertyInfo.GetMethod?.IsVirtual == false || propertyInfo.SetMethod?.IsVirtual == false)
         {
             throw new InvalidOperationException($"Trackable property {propertyInfo.DeclaringType?.Name}.{propertyInfo.Name} must be virtual.");
         }
 
-        var property = trackableAttribute.CreateTrackableProperty(propertyInfo, parent, parentCollectionKey);
+        var propertyPath = (!string.IsNullOrEmpty(parent.Path) ? parent.Path + "." : "") + propertyInfo.Name;
+
+        var property = new TrackedProperty(propertyInfo, propertyPath, parent);
         parent.Properties.Add(property);
 
-        foreach (var attribute in propertyInfo.GetCustomAttributes(true).OfType<ITrackableAttribute>())
+        foreach (var attribute in propertyInfo
+            .GetCustomAttributes(true)
+            .OfType<ITrackablePropertyInitializer>())
         {
-            attribute.ProcessProperty(property, parent, parentCollectionKey);
+            attribute.InitializeProperty(property, parent, parentCollectionKey);
         }
 
+        TryInitializeRequiredProperty(propertyInfo, parent);
         return property;
+    }
+
+    private static void TryInitializeRequiredProperty(PropertyInfo propertyInfo, Tracker parent)
+    {
+        if (propertyInfo
+                .GetCustomAttributes(true)
+                .Any(a => a is RequiredAttribute ||
+                            a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
+            propertyInfo.PropertyType.IsClass &&
+            propertyInfo.PropertyType.FullName?.StartsWith("System.") == false)
+        {
+            var child = parent.Context.CreateProxy(propertyInfo.PropertyType);
+            propertyInfo.SetValue(parent.Object, child);
+        }
     }
 
     void ITrackableContext.InitializeProxy(ITrackable proxy) => InitializeProxy(proxy);

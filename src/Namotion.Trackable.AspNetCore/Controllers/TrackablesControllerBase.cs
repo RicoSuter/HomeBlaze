@@ -158,6 +158,6 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
     [HttpGet("definitions")]
     public ActionResult GetVariableDefinitions()
     {
-        return Ok(_trackableContext.AllProperties);
+        return Ok(_trackableContext.AllProperties.Where(p => !p.IsAttribute));
     }
 }
