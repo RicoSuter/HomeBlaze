@@ -105,14 +105,14 @@ public partial class TrackableInterceptor : IInterceptor
 
     private void OnBeforeReadProperty(TrackedProperty property, ITrackableContext trackableContext)
     {
-        if (_touchedProperties == null)
-        {
-            _touchedProperties = new Stack<Tuple<TrackedProperty, List<TrackedProperty>>>();
-        }
-
         if (property.IsDerived)
         {
-            _touchedProperties!.Push(new Tuple<TrackedProperty, List<TrackedProperty>>(property, new List<TrackedProperty>()));
+            if (_touchedProperties == null)
+            {
+                _touchedProperties = new Stack<Tuple<TrackedProperty, List<TrackedProperty>>>();
+            }
+
+            _touchedProperties.Push(new Tuple<TrackedProperty, List<TrackedProperty>>(property, new List<TrackedProperty>()));
         }
 
         foreach (var interceptor in _interceptors)
@@ -128,18 +128,13 @@ public partial class TrackableInterceptor : IInterceptor
             interceptor.OnAfterReadProperty(property, newValue, trackableContext);
         }
 
-        if (_touchedProperties == null)
-        {
-            _touchedProperties = new Stack<Tuple<TrackedProperty, List<TrackedProperty>>>();
-        }
-
         if (property.IsDerived)
         {
-            var result = _touchedProperties.Pop();
-            property.DependentProperties = result.Item2.ToArray();
+            var result = _touchedProperties?.Pop();
+            property.DependentProperties = result?.Item2.ToArray() ?? Array.Empty<TrackedProperty>();
         }
 
-        if (_touchedProperties.Any())
+        if (_touchedProperties?.Any() == true)
         {
             _touchedProperties.Peek().Item2.Add(property);
         }
