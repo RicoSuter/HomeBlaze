@@ -72,7 +72,6 @@ public partial class TrackableInterceptor : IInterceptor
     private void OnReadProperty(IInvocation invocation)
     {
         var trackableContexts = _trackableContexts;
-
         var propertyName = invocation.Method.Name.Substring(4);
 
         foreach (var trackableContext in trackableContexts)

@@ -20,7 +20,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     private readonly Subject<TrackedPropertyChange> _changesSubject = new Subject<TrackedPropertyChange>();
 
-    private readonly HashSet<Tracker> _trackers = new();
+    private readonly Dictionary<object, Tracker> _trackers = new();
     private readonly ITrackableFactory _trackableFactory;
 
     public TObject Object { get; private set; }
@@ -34,6 +34,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             lock (_lock)
             {
                 return _trackers
+                    .Values
                     .SelectMany(t => t.Properties.Values)
                     .ToArray();
             }
@@ -157,7 +158,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 // TODO: Call RemoveTrackableContext on all trackables (also children)
 
                 trackable.RemoveTrackableContext(this);
-                _trackers.RemoveWhere(t => t.Object != previousValue);
+                _trackers.Remove(previousValue);
             }
         }
     }
@@ -185,7 +186,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     {
         lock (_lock)
         {
-            return _trackers.SingleOrDefault(t => t.Object == proxy);
+            return _trackers.TryGetValue(proxy, out var tracker) ? tracker : null;
         }
     }
 
@@ -232,7 +233,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             tracker = new Tracker(proxy, parentPath, parentProperty, this);
             lock (_lock)
             {
-                _trackers.Add(tracker);
+                _trackers[proxy] = tracker;
             }
 
             tracker.Object.AddTrackableContext(this);
