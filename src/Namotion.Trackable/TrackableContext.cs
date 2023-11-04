@@ -16,10 +16,9 @@ namespace Namotion.Trackable;
 public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedPropertyChange>
     where TObject : class
 {
-    private readonly object _lock = new();
-
     private readonly Subject<TrackedPropertyChange> _changesSubject = new Subject<TrackedPropertyChange>();
 
+    // TODO: Switch to concurrent dict
     private readonly Dictionary<object, Tracker> _trackers = new();
     private readonly ITrackableFactory _trackableFactory;
 
@@ -31,13 +30,11 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     {
         get
         {
-            lock (_lock)
-            {
+            lock (_trackers)
                 return _trackers
                     .Values
                     .SelectMany(t => t.Properties.Values)
                     .ToArray();
-            }
         }
     }
 
@@ -128,38 +125,36 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     internal void DetachPropertyValue(TrackedProperty property, object previousValue)
     {
-        lock (_lock)
+        if (previousValue is IDictionary newDictionary)
         {
-            if (previousValue is IDictionary newDictionary)
+            foreach (var key in newDictionary.Keys)
             {
-                foreach (var key in newDictionary.Keys)
+                var value = newDictionary[key];
+                if (value is ITrackable trackable)
                 {
-                    var value = newDictionary[key];
-                    if (value is ITrackable trackable)
-                    {
-                        DetachPropertyValue(property, trackable);
-                    }
+                    DetachPropertyValue(property, trackable);
                 }
             }
-            else if (previousValue is ICollection previousTrackables)
+        }
+        else if (previousValue is ICollection previousTrackables)
+        {
+            foreach (var child in previousTrackables.OfType<ITrackable>())
             {
-                foreach (var child in previousTrackables.OfType<ITrackable>())
-                {
-                    DetachPropertyValue(property, child);
-                }
-
-                //if (previousTrackables is INotifyCollectionChanged notifyCollectionChanged)
-                //{
-                //    notifyCollectionChanged.CollectionChanged -= OnCollectionChanged;
-                //}
+                DetachPropertyValue(property, child);
             }
-            else if (previousValue is ITrackable trackable)
-            {
-                // TODO: Call RemoveTrackableContext on all trackables (also children)
 
-                trackable.RemoveTrackableContext(this);
-                _trackers.Remove(previousValue);
-            }
+            //if (previousTrackables is INotifyCollectionChanged notifyCollectionChanged)
+            //{
+            //    notifyCollectionChanged.CollectionChanged -= OnCollectionChanged;
+            //}
+        }
+        else if (previousValue is ITrackable trackable)
+        {
+            // TODO: Call RemoveTrackableContext on all trackables (also children)
+
+            trackable.RemoveTrackableContext(this);
+            lock (_trackers)
+                _trackers.Remove(previousValue, out var _);
         }
     }
 
@@ -184,18 +179,13 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     public Tracker? TryGetTracker(object proxy)
     {
-        lock (_lock)
-        {
+        lock (_trackers)
             return _trackers.TryGetValue(proxy, out var tracker) ? tracker : null;
-        }
     }
 
     public TrackedProperty? TryGetTrackedProperty(object proxy, string propertyName)
     {
-        lock (_lock)
-        {
-            return TryGetTracker(proxy)?.TryGetProperty(propertyName);
-        }
+        return TryGetTracker(proxy)?.TryGetProperty(propertyName);
     }
 
     internal void MarkPropertyAsChanged(TrackedProperty variable)
@@ -231,10 +221,8 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             }
 
             tracker = new Tracker(proxy, parentPath, parentProperty, this);
-            lock (_lock)
-            {
+            lock (_trackers)
                 _trackers[proxy] = tracker;
-            }
 
             tracker.Object.AddTrackableContext(this);
 
@@ -248,7 +236,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 if (trackableAttribute != null)
                 {
                     var property = CreateTrackableProperty(propertyInfo, tracker, parentCollectionKey);
-                  
+
                     tracker.AddProperty(property);
 
                     if (property.GetMethod != null)
@@ -261,6 +249,8 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                     }
                 }
             }
+
+            tracker.FreezeProperties();
         }
 
         // find child trackables (created in ctor)

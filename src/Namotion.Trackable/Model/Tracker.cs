@@ -1,12 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
 namespace Namotion.Trackable.Model;
 
 public class Tracker
 {
-    private ConcurrentDictionary<string, TrackedProperty> _properties = new();
+    private IDictionary<string, TrackedProperty> _properties = new ConcurrentDictionary<string, TrackedProperty>();
 
     public Tracker(ITrackable proxy, string path, TrackedProperty? parentProperty, ITrackableContext context)
     {
@@ -22,7 +23,7 @@ public class Tracker
 
     public TrackedProperty? ParentProperty { get; }
 
-    public IReadOnlyDictionary<string, TrackedProperty> Properties => _properties;
+    public IReadOnlyDictionary<string, TrackedProperty> Properties => (IReadOnlyDictionary<string, TrackedProperty>)_properties;
 
     public ITrackableContext Context { get; }
 
@@ -37,5 +38,10 @@ public class Tracker
     internal void AddProperty(TrackedProperty property)
     {
         _properties[property.PropertyName] = property;
+    }
+
+    internal void FreezeProperties()
+    {
+        _properties = new ReadOnlyDictionary<string, TrackedProperty>(_properties);
     }
 }
