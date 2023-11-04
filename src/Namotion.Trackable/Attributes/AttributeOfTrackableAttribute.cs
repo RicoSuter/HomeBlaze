@@ -1,6 +1,5 @@
 ﻿using Namotion.Trackable.Model;
 using System;
-using System.Linq;
 
 namespace Namotion.Trackable.Attributes;
 
@@ -20,9 +19,7 @@ public class AttributeOfTrackableAttribute : TrackableAttribute, ITrackablePrope
     public void InitializeProperty(ITrackableContext context, TrackedProperty property, Tracker parent, object? parentCollectionKey)
     {
         property.AttributeName = AttributeName;
-        property.AttributedProperty = context
-            .AllProperties
-            .Single(v => v.Parent == property.Parent &&
-                         v.PropertyName == PropertyName);
+        property.AttributedProperty = property.Parent.TryGetProperty(PropertyName) ?? 
+            throw new InvalidOperationException($"The attributed property {PropertyName} could not be found for attribute {AttributeName}.");
     }
 }
