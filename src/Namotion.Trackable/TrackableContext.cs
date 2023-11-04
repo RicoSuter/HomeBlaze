@@ -227,11 +227,10 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 .BaseType! // get properties from actual type
                 .GetProperties())
             {
-                var trackableAttribute = propertyInfo.GetCustomAttribute<TrackableAttribute>(true);
-                if (trackableAttribute != null)
+                var attributes = propertyInfo.GetCustomAttributes(true);
+                if (attributes.Any(a => a is TrackableAttribute))
                 {
-                    var property = CreateTrackableProperty(propertyInfo, tracker, parentCollectionKey);
-
+                    var property = CreateTrackableProperty(propertyInfo, attributes, tracker, parentCollectionKey);
                     tracker.AddProperty(property);
 
                     if (property.GetMethod != null)
@@ -247,24 +246,9 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
             tracker.FreezeProperties();
         }
-
-        // find child trackables (created in ctor)
-        if (parentProperty != null)
-        {
-            foreach (var backedProperty in tracker
-                .Properties.Values
-                .Where(p => p.SetMethod != null && p.GetMethod != null))
-            {
-                var value = backedProperty.GetValue();
-                if (value is ITrackable || value is ICollection)
-                {
-                    AttachPropertyValue(backedProperty, value);
-                }
-            }
-        }
     }
 
-    private TrackedProperty CreateTrackableProperty(PropertyInfo propertyInfo, Tracker parent, object? parentCollectionKey)
+    private TrackedProperty CreateTrackableProperty(PropertyInfo propertyInfo, object[] attributes, Tracker parent, object? parentCollectionKey)
     {
         if (propertyInfo.GetMethod?.IsVirtual == false || 
             propertyInfo.SetMethod?.IsVirtual == false)
@@ -274,7 +258,6 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
         var propertyPath = !string.IsNullOrEmpty(parent.Path) ? $"{parent.Path}.{propertyInfo.Name}" : propertyInfo.Name;
         var property = new TrackedProperty(propertyInfo, propertyPath, parent);
-        var attributes = propertyInfo.GetCustomAttributes(true);
 
         foreach (var attribute in attributes.OfType<ITrackablePropertyInitializer>())
         {
