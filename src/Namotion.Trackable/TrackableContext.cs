@@ -269,7 +269,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
         foreach (var attribute in attributes.OfType<ITrackablePropertyInitializer>())
         {
-            attribute.InitializeProperty(this, property, parent, parentCollectionKey);
+            attribute.InitializeProperty(property, parent, parentCollectionKey, this);
         }
 
         TryInitializeRequiredProperty(propertyInfo, attributes, parent);

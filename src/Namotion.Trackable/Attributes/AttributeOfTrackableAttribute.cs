@@ -16,7 +16,7 @@ public class AttributeOfTrackableAttribute : TrackableAttribute, ITrackablePrope
 
     public string AttributeName { get; }
 
-    public void InitializeProperty(ITrackableContext context, TrackedProperty property, Tracker parent, object? parentCollectionKey)
+    public void InitializeProperty(TrackedProperty property, Tracker parent, object? parentCollectionKey, ITrackableContext context)
     {
         property.AttributeName = AttributeName;
         property.AttributedProperty = property.Parent.TryGetProperty(PropertyName) ?? 
