@@ -9,11 +9,14 @@ public class Tracker
 {
     private IDictionary<string, TrackedProperty> _properties = new ConcurrentDictionary<string, TrackedProperty>();
 
-    public Tracker(ITrackable proxy, string path, TrackedProperty? parentProperty, ITrackableContext context)
+    public Tracker(ITrackable proxy, string path, TrackedProperty? parentProperty, object? parentCollectionKey, ITrackableContext context)
     {
         Object = proxy;
         Path = path;
+
         ParentProperty = parentProperty;
+        ParentCollectionKey = parentCollectionKey;
+
         Context = context;
     }
 
@@ -22,6 +25,8 @@ public class Tracker
     public string Path { get; }
 
     public TrackedProperty? ParentProperty { get; }
+
+    public object? ParentCollectionKey { get; }
 
     public IEnumerable<TrackedProperty> Properties => _properties.Values;
 

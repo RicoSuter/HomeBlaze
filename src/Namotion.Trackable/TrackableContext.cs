@@ -223,7 +223,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 group.Parent = parentProperty.Parent.Object;
             }
 
-            tracker = new Tracker(proxy, parentPath, parentProperty, this);
+            tracker = new Tracker(proxy, parentPath, parentProperty, parentCollectionKey, this);
             lock (_trackers)
             {
                 _trackers[proxy] = tracker;
