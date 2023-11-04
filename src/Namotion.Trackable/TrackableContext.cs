@@ -266,32 +266,28 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     private TrackedProperty CreateTrackableProperty(PropertyInfo propertyInfo, Tracker parent, object? parentCollectionKey)
     {
-        if (propertyInfo.GetMethod?.IsVirtual == false || propertyInfo.SetMethod?.IsVirtual == false)
+        if (propertyInfo.GetMethod?.IsVirtual == false || 
+            propertyInfo.SetMethod?.IsVirtual == false)
         {
             throw new InvalidOperationException($"Trackable property {propertyInfo.DeclaringType?.Name}.{propertyInfo.Name} must be virtual.");
         }
 
-        var propertyPath = (!string.IsNullOrEmpty(parent.Path) ? parent.Path + "." : "") + propertyInfo.Name;
-
+        var propertyPath = !string.IsNullOrEmpty(parent.Path) ? $"{parent.Path}.{propertyInfo.Name}" : propertyInfo.Name;
         var property = new TrackedProperty(propertyInfo, propertyPath, parent);
+        var attributes = propertyInfo.GetCustomAttributes(true);
 
-        foreach (var attribute in propertyInfo
-            .GetCustomAttributes(true)
-            .OfType<ITrackablePropertyInitializer>())
+        foreach (var attribute in attributes.OfType<ITrackablePropertyInitializer>())
         {
             attribute.InitializeProperty(this, property, parent, parentCollectionKey);
         }
 
-        TryInitializeRequiredProperty(propertyInfo, parent);
+        TryInitializeRequiredProperty(propertyInfo, attributes, parent);
         return property;
     }
 
-    private static void TryInitializeRequiredProperty(PropertyInfo propertyInfo, Tracker parent)
+    private static void TryInitializeRequiredProperty(PropertyInfo propertyInfo, object[] attributes, Tracker parent)
     {
-        if (propertyInfo
-                .GetCustomAttributes(true)
-                .Any(a => a is RequiredAttribute ||
-                            a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
+        if (attributes.Any(a => a is RequiredAttribute || a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
             propertyInfo.PropertyType.IsClass &&
             propertyInfo.PropertyType.FullName?.StartsWith("System.") == false)
         {
