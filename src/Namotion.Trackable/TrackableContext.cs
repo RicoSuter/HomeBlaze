@@ -33,10 +33,12 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         get
         {
             lock (_trackers)
+            {
                 return _trackers
                     .Values
                     .SelectMany(t => t.Properties.Values)
                     .ToArray();
+            }
         }
     }
 
@@ -156,7 +158,9 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
             trackable.RemoveTrackableContext(this);
             lock (_trackers)
-                _trackers.Remove(previousValue, out var _);
+            {
+                _trackers.Remove(previousValue);
+            }
         }
     }
 
@@ -182,7 +186,9 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     public Tracker? TryGetTracker(object proxy)
     {
         lock (_trackers)
+        {
             return _trackers.TryGetValue(proxy, out var tracker) ? tracker : null;
+        }
     }
 
     internal void MarkPropertyAsChanged(TrackedProperty variable)
@@ -219,7 +225,9 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
             tracker = new Tracker(proxy, parentPath, parentProperty, this);
             lock (_trackers)
+            {
                 _trackers[proxy] = tracker;
+            }
 
             tracker.Object.AddTrackableContext(this);
 
