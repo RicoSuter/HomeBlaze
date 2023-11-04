@@ -19,7 +19,7 @@ public partial class TrackableInterceptor : IInterceptor
     public IEnumerable<ITrackableContext> Contexts => _trackableContexts;
 
     [ThreadStatic]
-    private static Stack<List<TrackedProperty>>? _touchedProperties;
+    private static Stack<HashSet<TrackedProperty>>? _touchedProperties;
 
     public TrackableInterceptor(IEnumerable<ITrackableInterceptor> interceptors)
     {
@@ -109,10 +109,10 @@ public partial class TrackableInterceptor : IInterceptor
         {
             if (_touchedProperties == null)
             {
-                _touchedProperties = new Stack<List<TrackedProperty>>();
+                _touchedProperties = new Stack<HashSet<TrackedProperty>>();
             }
 
-            _touchedProperties.Push(new List<TrackedProperty>());
+            _touchedProperties.Push(new HashSet<TrackedProperty>());
         }
 
         foreach (var interceptor in _interceptors)
@@ -130,13 +130,12 @@ public partial class TrackableInterceptor : IInterceptor
 
         if (property.IsDerived)
         {
-            var result = _touchedProperties?.Pop();
-            property.DependentProperties = result?.ToArray() ?? Array.Empty<TrackedProperty>();
+            property.DependentProperties = _touchedProperties?.Pop();
         }
 
-        if (_touchedProperties?.Any() == true)
+        if (_touchedProperties?.TryPeek(out var touchedProperty) == true)
         {
-            _touchedProperties.Peek().Add(property);
+            touchedProperty.Add(property);
         }
     }
 

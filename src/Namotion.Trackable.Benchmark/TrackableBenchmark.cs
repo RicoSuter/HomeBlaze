@@ -39,16 +39,16 @@ namespace Namotion.Trackable.Benchmark
             }
         }
 
-        //[Benchmark]
-        //public void IncrementDerivedAverage()
-        //{
-        //    _object.Tires[0].Pressure += 5;
-        //    _object.Tires[1].Pressure += 6;
-        //    _object.Tires[2].Pressure += 7;
-        //    _object.Tires[3].Pressure += 8;
+        [Benchmark]
+        public void IncrementDerivedAverage()
+        {
+            _object.Tires[0].Pressure += 5;
+            _object.Tires[1].Pressure += 6;
+            _object.Tires[2].Pressure += 7;
+            _object.Tires[3].Pressure += 8;
 
-        //    var average = _object.AveragePressure;
-        //}
+            var average = _object.AveragePressure;
+        }
 
         //[Benchmark]
         //public void Write()

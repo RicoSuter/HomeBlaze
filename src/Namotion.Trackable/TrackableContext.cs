@@ -205,7 +205,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         changedVariables.Add(property);
 
         foreach (var dependentVariable in AllProperties
-            .Where(v => v.DependentProperties.Contains(property) &&
+            .Where(v => v.DependentProperties?.Contains(property) == true &&
                         !changedVariables.Contains(v))
             .ToArray())
         {

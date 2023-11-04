@@ -58,9 +58,9 @@ public class TrackedProperty
     public string? AttributeName { get; set; }
 
     [JsonIgnore]
-    public TrackedProperty[] DependentProperties { get; internal set; } = Array.Empty<TrackedProperty>();
+    public IEnumerable<TrackedProperty>? DependentProperties { get; internal set; }
 
-    public IEnumerable<string> DependentPropertyPaths => DependentProperties.Select(v => v.Path);
+    public IEnumerable<string> DependentPropertyPaths => DependentProperties?.Select(v => v.Path) ?? Array.Empty<string>();
 
     public Dictionary<string, TrackedProperty> Attributes => Context
         .AllProperties
