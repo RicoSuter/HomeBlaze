@@ -34,7 +34,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             lock (_lock)
             {
                 return _trackers
-                    .SelectMany(t => t.Properties)
+                    .SelectMany(t => t.Properties.Values)
                     .ToArray();
             }
         }
@@ -181,11 +181,19 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     //    }
     //}
 
-    private Tracker? TryGetTracker(object proxy)
+    public Tracker? TryGetTracker(object proxy)
     {
         lock (_lock)
         {
             return _trackers.SingleOrDefault(t => t.Object == proxy);
+        }
+    }
+
+    public TrackedProperty? TryGetTrackedProperty(object proxy, string propertyName)
+    {
+        lock (_lock)
+        {
+            return TryGetTracker(proxy)?.TryGetProperty(propertyName);
         }
     }
 
@@ -254,7 +262,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         // find child trackables (created in ctor)
         if (parentProperty != null)
         {
-            foreach (var stateProperty in tracker.Properties
+            foreach (var stateProperty in tracker.Properties.Values
                 .Where(p => p.SetMethod != null && p.GetMethod != null))
             {
                 var value = stateProperty.GetValue();
@@ -276,7 +284,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         var propertyPath = (!string.IsNullOrEmpty(parent.Path) ? parent.Path + "." : "") + propertyInfo.Name;
 
         var property = new TrackedProperty(propertyInfo, propertyPath, parent);
-        parent.Properties.Add(property);
+        parent.AddProperty(property);
 
         foreach (var attribute in propertyInfo
             .GetCustomAttributes(true)

@@ -5,6 +5,8 @@ namespace Namotion.Trackable.Model;
 
 public class Tracker
 {
+    private Dictionary<string, TrackedProperty> _properties = new Dictionary<string, TrackedProperty>();
+
     public Tracker(ITrackable proxy, string path, TrackedProperty? parentProperty, ITrackableContext context)
     {
         Object = proxy;
@@ -19,10 +21,20 @@ public class Tracker
 
     public TrackedProperty? ParentProperty { get; }
 
-    public ICollection<TrackedProperty> Properties { get; } = new HashSet<TrackedProperty>();
+    public IReadOnlyDictionary<string, TrackedProperty> Properties => _properties;
 
     public ITrackableContext Context { get; }
 
     [JsonIgnore]
     public IDictionary<string, object?> Data { get; } = new Dictionary<string, object?>();
+
+    public TrackedProperty? TryGetProperty(string propertyName)
+    {
+        return Properties.TryGetValue(propertyName, out var property) ? property : null;
+    }
+
+    internal void AddProperty(TrackedProperty property)
+    {
+        _properties[property.PropertyName] = property;
+    }
 }

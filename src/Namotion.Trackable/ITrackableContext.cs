@@ -5,6 +5,10 @@ namespace Namotion.Trackable;
 
 public interface ITrackableContext : ITrackableFactory
 {
+    Tracker? TryGetTracker(object proxy);
+
+    TrackedProperty? TryGetTrackedProperty(object proxy, string propertyName);
+
     IEnumerable<TrackedProperty> AllProperties { get; }
 
     internal object Object { get; }
