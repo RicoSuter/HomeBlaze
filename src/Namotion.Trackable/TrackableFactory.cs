@@ -8,6 +8,10 @@ namespace Namotion.Trackable;
 
 public class TrackableFactory : ITrackableFactory
 {
+    private readonly ProxyGenerator _proxyGenerator = new();
+    private readonly Type[] _additionalInterfacesToProxy = new Type[] { typeof(ITrackable) };
+    private readonly ProxyGenerationOptions _proxyGenerationOptions = new();
+
     private readonly IEnumerable<ITrackableInterceptor> _interceptors;
     private readonly IServiceProvider _serviceProvider;
 
@@ -32,12 +36,13 @@ public class TrackableFactory : ITrackableFactory
                          _serviceProvider.GetService(p.ParameterType))
             .ToArray();
 
-        var proxy = new ProxyGenerator()
+        var proxy = _proxyGenerator
             .CreateClassProxy(
                 proxyType,
-                new Type[] { typeof(ITrackable) },
-                new ProxyGenerationOptions(),
-                constructorArguments, // TODO: use own array with castle interceptors
+                _additionalInterfacesToProxy,
+                _proxyGenerationOptions,
+                constructorArguments, 
+                // TODO: use own array with castle interceptors
                 _interceptors.OfType<IInterceptor>().Concat(new[] { new TrackableInterceptor(_interceptors) }).ToArray());
 
         return proxy;

@@ -73,7 +73,7 @@ public class TrackedProperty
     /// <summary>
     /// Gets the last known value of this property.
     /// </summary>
-    public object? CurrentValue { get; internal set; }
+    public object? LastValue { get; internal set; }
 
     public IEnumerable<T> GetCustomAttributes<T>(bool inherit)
     {
