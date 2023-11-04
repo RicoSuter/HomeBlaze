@@ -28,7 +28,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     object ITrackableContext.Object => Object;
 
-    public IEnumerable<TrackedProperty> AllProperties
+    public TrackedProperty[] AllProperties
     {
         get
         {
@@ -193,23 +193,21 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     internal void MarkPropertyAsChanged(TrackedProperty variable)
     {
-        MarkVariableAsChanged(variable, new HashSet<TrackedProperty>());
+        MarkVariableAsChanged(variable, AllProperties, new HashSet<TrackedProperty>());
     }
 
-    private void MarkVariableAsChanged(TrackedProperty property, HashSet<TrackedProperty> changedVariables)
+    private void MarkVariableAsChanged(TrackedProperty property, TrackedProperty[] allProperties, HashSet<TrackedProperty> markedVariables)
     {
         _changesSubject.OnNext(new TrackedPropertyChange(property,
             new Dictionary<string, object?>(property.Data),
             property.GetValue()));
 
-        changedVariables.Add(property);
+        markedVariables.Add(property);
 
-        foreach (var dependentVariable in AllProperties
-            .Where(v => v.DependentProperties?.Contains(property) == true &&
-                        !changedVariables.Contains(v))
-            .ToArray())
+        foreach (var dependentVariable in allProperties
+            .Where(v => v.DependentProperties?.Contains(property) == true && !markedVariables.Contains(v)))
         {
-            MarkVariableAsChanged(dependentVariable, changedVariables);
+            MarkVariableAsChanged(dependentVariable, allProperties, markedVariables);
         }
     }
 

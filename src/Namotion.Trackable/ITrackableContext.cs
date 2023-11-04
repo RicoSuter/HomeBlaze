@@ -7,7 +7,7 @@ public interface ITrackableContext : ITrackableFactory
 {
     Tracker? TryGetTracker(object proxy);
 
-    IEnumerable<TrackedProperty> AllProperties { get; }
+    TrackedProperty[] AllProperties { get; }
 
     internal object Object { get; }
 
