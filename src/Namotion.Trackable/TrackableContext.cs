@@ -36,7 +36,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             {
                 return _trackers
                     .Values
-                    .SelectMany(t => t.Properties.Values)
+                    .SelectMany(t => t.Properties)
                     .ToArray();
             }
         }

@@ -23,7 +23,7 @@ public class Tracker
 
     public TrackedProperty? ParentProperty { get; }
 
-    public IReadOnlyDictionary<string, TrackedProperty> Properties => (IReadOnlyDictionary<string, TrackedProperty>)_properties;
+    public IEnumerable<TrackedProperty> Properties => _properties.Values;
 
     public ITrackableContext Context { get; }
 
@@ -32,7 +32,7 @@ public class Tracker
 
     public TrackedProperty? TryGetProperty(string propertyName)
     {
-        return Properties.TryGetValue(propertyName, out var property) ? property : null;
+        return _properties.TryGetValue(propertyName, out var property) ? property : null;
     }
 
     internal void AddProperty(TrackedProperty property)

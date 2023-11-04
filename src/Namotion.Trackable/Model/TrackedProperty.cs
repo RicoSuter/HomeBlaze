@@ -25,9 +25,6 @@ public class TrackedProperty
         SetMethod = property.SetMethod;
     }
 
-    [JsonIgnore]
-    public ITrackableContext Context => Parent.Context;
-
     public string Path { get; }
 
     [MemberNotNullWhen(true, nameof(AttributedProperty))]
@@ -62,8 +59,8 @@ public class TrackedProperty
 
     public IEnumerable<string> DependentPropertyPaths => DependentProperties?.Select(v => v.Path) ?? Array.Empty<string>();
 
-    public Dictionary<string, TrackedProperty> Attributes => Context
-        .AllProperties
+    public Dictionary<string, TrackedProperty> Attributes => Parent
+        .Properties
         .Where(p => p.AttributedProperty == this)
         .ToDictionary(v => v.AttributeName!, v => v);
 
