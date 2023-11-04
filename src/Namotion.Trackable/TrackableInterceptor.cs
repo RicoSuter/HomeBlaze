@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using Castle.DynamicProxy;
-using Namotion.Reflection;
 using Namotion.Trackable.Model;
 
 namespace Namotion.Trackable;
@@ -149,6 +148,7 @@ public partial class TrackableInterceptor : IInterceptor
         var newValue = invocation.Arguments[0];
         var previousValue = invocation.Method.DeclaringType?
             .GetProperty(propertyName)?
+            //.ToContextualProperty() // TODO: Check performance
             .GetValue(invocation.InvocationTarget, null);
 
         foreach (var trackableContext in trackableContexts)
