@@ -25,7 +25,7 @@ namespace Namotion.Trackable.Benchmark
         {
             for (int i = 0; i < 100000; ++i)
             {
-                benchmark.WriteAndRead();
+                benchmark.IncrementDerivedAverage();
             }
         }
     }
