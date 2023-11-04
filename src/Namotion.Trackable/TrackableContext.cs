@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -16,7 +17,8 @@ namespace Namotion.Trackable;
 public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedPropertyChange>
     where TObject : class
 {
-    private readonly Subject<TrackedPropertyChange> _changesSubject = new Subject<TrackedPropertyChange>();
+    private readonly Subject<TrackedPropertyChange> _changesSubject = new();
+    private readonly ConcurrentDictionary<PropertyInfo, object[]> _propertyInfoAttributesCache = new();
 
     // TODO: Switch to concurrent dict
     private readonly Dictionary<object, Tracker> _trackers = new();
@@ -227,7 +229,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 .BaseType! // get properties from actual type
                 .GetProperties())
             {
-                var attributes = propertyInfo.GetCustomAttributes(true);
+                var attributes = _propertyInfoAttributesCache.GetOrAdd(propertyInfo, pi => pi.GetCustomAttributes(true));
                 if (attributes.Any(a => a is TrackableAttribute))
                 {
                     var property = CreateTrackableProperty(propertyInfo, attributes, tracker, parentCollectionKey);
