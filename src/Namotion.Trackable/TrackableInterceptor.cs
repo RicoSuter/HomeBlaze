@@ -149,8 +149,7 @@ public partial class TrackableInterceptor : IInterceptor
         var newValue = invocation.Arguments[0];
         var previousValue = invocation.Method.DeclaringType?
             .GetProperty(propertyName)?
-            .ToContextualProperty()
-            .GetValue(invocation.InvocationTarget);
+            .GetValue(invocation.InvocationTarget, null);
 
         foreach (var trackableContext in trackableContexts)
         {
