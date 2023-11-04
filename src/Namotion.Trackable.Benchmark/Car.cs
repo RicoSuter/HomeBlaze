@@ -10,10 +10,10 @@ namespace Namotion.Trackable.Benchmark
         {
             Tires = new Tire[]
             {
-                    factory.CreateProxy<Tire>(),
-                    factory.CreateProxy<Tire>(),
-                    factory.CreateProxy<Tire>(),
-                    factory.CreateProxy<Tire>()
+                factory.CreateProxy<Tire>(),
+                factory.CreateProxy<Tire>(),
+                factory.CreateProxy<Tire>(),
+                factory.CreateProxy<Tire>()
             };
         }
 

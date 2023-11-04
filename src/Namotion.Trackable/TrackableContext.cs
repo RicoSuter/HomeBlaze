@@ -183,11 +183,6 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             return _trackers.TryGetValue(proxy, out var tracker) ? tracker : null;
     }
 
-    public TrackedProperty? TryGetTrackedProperty(object proxy, string propertyName)
-    {
-        return TryGetTracker(proxy)?.TryGetProperty(propertyName);
-    }
-
     internal void MarkPropertyAsChanged(TrackedProperty variable)
     {
         MarkVariableAsChanged(variable, new HashSet<TrackedProperty>());

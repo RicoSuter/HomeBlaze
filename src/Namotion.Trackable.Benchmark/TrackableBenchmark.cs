@@ -9,7 +9,8 @@ namespace Namotion.Trackable.Benchmark
     {
 #pragma warning disable CS8618
 
-        protected Car _object;
+        private Car _object;
+        private TrackableFactory _factory;
 
 #pragma warning restore CS8618
 
@@ -21,10 +22,11 @@ namespace Namotion.Trackable.Benchmark
         {
             if (Type == "trackable")
             {
-                var context = new TrackableContext<Car>(new TrackableFactory(
+                _factory = new TrackableFactory(
                     Array.Empty<ITrackableInterceptor>(),
-                    new ServiceCollection().BuildServiceProvider()));
+                    new ServiceCollection().BuildServiceProvider());
 
+                var context = new TrackableContext<Car>(_factory);
                 _object = context.Object;
             }
             else
@@ -48,29 +50,43 @@ namespace Namotion.Trackable.Benchmark
             var average = _object.AveragePressure;
         }
 
-        [Benchmark]
-        public void Write()
-        {
-            _object.Tires[0].Pressure = 5;
-            _object.Tires[1].Pressure = 6;
-            _object.Tires[2].Pressure = 7;
-            _object.Tires[3].Pressure = 8;
-        }
+        //[Benchmark]
+        //public void Write()
+        //{
+        //    _object.Tires[0].Pressure = 5;
+        //    _object.Tires[1].Pressure = 6;
+        //    _object.Tires[2].Pressure = 7;
+        //    _object.Tires[3].Pressure = 8;
+        //}
 
-        [Benchmark]
-        public decimal Read()
-        {
-            return 
-                _object.Tires[0].Pressure +
-                _object.Tires[1].Pressure +
-                _object.Tires[2].Pressure +
-                _object.Tires[3].Pressure;
-        }
+        //[Benchmark]
+        //public decimal Read()
+        //{
+        //    return 
+        //        _object.Tires[0].Pressure +
+        //        _object.Tires[1].Pressure +
+        //        _object.Tires[2].Pressure +
+        //        _object.Tires[3].Pressure;
+        //}
 
-        [Benchmark]
-        public void DerivedAverage()
-        {
-            var average = _object.AveragePressure;
-        }
+        //[Benchmark]
+        //public void DerivedAverage()
+        //{
+        //    var average = _object.AveragePressure;
+        //}
+
+        //[Benchmark]
+        //public void ChangeAllTiresAndCheckPressure()
+        //{
+        //    _object.Tires = new Tire[]
+        //    {
+        //        _factory?.CreateProxy<Tire>() ?? new Tire(),
+        //        _factory?.CreateProxy<Tire>() ?? new Tire(),
+        //        _factory?.CreateProxy<Tire>() ?? new Tire(),
+        //        _factory?.CreateProxy<Tire>() ?? new Tire()
+        //    };
+
+        //    var average = _object.AveragePressure;
+        //}
     }
 }

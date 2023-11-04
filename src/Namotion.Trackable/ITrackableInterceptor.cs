@@ -8,7 +8,7 @@ public interface ITrackableInterceptor
 
     void OnAfterReadProperty(TrackedProperty property, object? newValue, ITrackableContext trackableContext) { }
 
-    void OnBeforeWriteProperty(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext) { }
+    void OnBeforeWriteProperty(TrackedProperty property, object? newValue, object? currentValue, ITrackableContext trackableContext) { }
 
     void OnAfterWriteProperty(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext) { }
 }

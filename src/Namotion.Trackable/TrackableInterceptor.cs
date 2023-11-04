@@ -83,7 +83,7 @@ public partial class TrackableInterceptor : IInterceptor
                 }
             }
 
-            var property = trackableContext.TryGetTrackedProperty(invocation.InvocationTarget, propertyName);
+            var property = trackableContext.TryGetTracker(invocation.InvocationTarget)?.TryGetProperty(propertyName);
             if (property != null)
             {
                 OnBeforeReadProperty(property, trackableContext);
@@ -94,9 +94,10 @@ public partial class TrackableInterceptor : IInterceptor
 
         foreach (var trackableContext in trackableContexts)
         {
-            var property = trackableContext.TryGetTrackedProperty(invocation.InvocationTarget, propertyName);
+            var property = trackableContext.TryGetTracker(invocation.InvocationTarget)?.TryGetProperty(propertyName);
             if (property != null)
             {
+                property.CurrentValue = invocation.ReturnValue;
                 OnAfterReadProperty(property, invocation.ReturnValue, trackableContext);
             }
         }
@@ -142,14 +143,8 @@ public partial class TrackableInterceptor : IInterceptor
     private void OnWriteProperty(IInvocation invocation)
     {
         var trackableContexts = _trackableContexts;
-
         var propertyName = invocation.Method.Name.Substring(4);
-      
         var newValue = invocation.Arguments[0];
-        var previousValue = invocation.Method.DeclaringType?
-            .GetProperty(propertyName)?
-            //.ToContextualProperty() // TODO: Check performance
-            .GetValue(invocation.InvocationTarget, null);
 
         foreach (var trackableContext in trackableContexts)
         {
@@ -161,10 +156,10 @@ public partial class TrackableInterceptor : IInterceptor
                 }
             }
 
-            var property = trackableContext.TryGetTrackedProperty(invocation.InvocationTarget, propertyName);
+            var property = trackableContext.TryGetTracker(invocation.InvocationTarget)?.TryGetProperty(propertyName);
             if (property != null)
             {
-                OnBeforeWriteProperty(property, newValue, previousValue, trackableContext);
+                OnBeforeWriteProperty(property, newValue, property.CurrentValue, trackableContext);
             }
         }
 
@@ -172,19 +167,21 @@ public partial class TrackableInterceptor : IInterceptor
 
         foreach (var trackableContext in trackableContexts)
         {
-            var property = trackableContext.TryGetTrackedProperty(invocation.InvocationTarget, propertyName);
+            var property = trackableContext.TryGetTracker(invocation.InvocationTarget)?.TryGetProperty(propertyName);
             if (property != null)
             {
+                var previousValue = property.CurrentValue;
+                property.CurrentValue = newValue;
                 OnAfterWriteProperty(property, newValue, previousValue, trackableContext);
             }
         }
     }
 
-    private void OnBeforeWriteProperty(TrackedProperty property, object? newValue, object? previousValue, ITrackableContext trackableContext)
+    private void OnBeforeWriteProperty(TrackedProperty property, object? newValue, object? currentValue, ITrackableContext trackableContext)
     {
         foreach (var interceptor in _interceptors)
         {
-            interceptor.OnBeforeWriteProperty(property, newValue, previousValue, trackableContext);
+            interceptor.OnBeforeWriteProperty(property, newValue, currentValue, trackableContext);
         }
     }
 

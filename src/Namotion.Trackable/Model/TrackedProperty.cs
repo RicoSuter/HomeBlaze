@@ -70,6 +70,11 @@ public class TrackedProperty
     [JsonIgnore]
     public IDictionary<string, object?> Data { get; } = new Dictionary<string, object?>();
 
+    /// <summary>
+    /// Gets the last known value of this property.
+    /// </summary>
+    public object? CurrentValue { get; internal set; }
+
     public IEnumerable<T> GetCustomAttributes<T>(bool inherit)
     {
         return _property.GetCustomAttributes(inherit).OfType<T>();
