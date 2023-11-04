@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Namotion.Trackable.Model;
 
 public class Tracker
 {
-    private Dictionary<string, TrackedProperty> _properties = new Dictionary<string, TrackedProperty>();
+    private ConcurrentDictionary<string, TrackedProperty> _properties = new();
 
     public Tracker(ITrackable proxy, string path, TrackedProperty? parentProperty, ITrackableContext context)
     {

@@ -248,6 +248,9 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 if (trackableAttribute != null)
                 {
                     var property = CreateTrackableProperty(propertyInfo, tracker, parentCollectionKey);
+                  
+                    tracker.AddProperty(property);
+
                     if (property.GetMethod != null)
                     {
                         var value = property.GetValue();
@@ -263,13 +266,14 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         // find child trackables (created in ctor)
         if (parentProperty != null)
         {
-            foreach (var stateProperty in tracker.Properties.Values
+            foreach (var backedProperty in tracker
+                .Properties.Values
                 .Where(p => p.SetMethod != null && p.GetMethod != null))
             {
-                var value = stateProperty.GetValue();
+                var value = backedProperty.GetValue();
                 if (value is ITrackable || value is ICollection)
                 {
-                    AttachPropertyValue(stateProperty, value);
+                    AttachPropertyValue(backedProperty, value);
                 }
             }
         }
@@ -285,7 +289,6 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         var propertyPath = (!string.IsNullOrEmpty(parent.Path) ? parent.Path + "." : "") + propertyInfo.Name;
 
         var property = new TrackedProperty(propertyInfo, propertyPath, parent);
-        parent.AddProperty(property);
 
         foreach (var attribute in propertyInfo
             .GetCustomAttributes(true)
