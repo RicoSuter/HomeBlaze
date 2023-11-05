@@ -10,8 +10,13 @@ public class ReflectionTrackedProperty : TrackedProperty
 
     private readonly PropertyInfo _property;
 
-    public ReflectionTrackedProperty(PropertyInfo property, Tracker parent) 
-        : base(property.Name, parent)
+    public ReflectionTrackedProperty(PropertyInfo property, Tracker parent)
+        : this(property.Name, property, parent)
+    {
+    }
+
+    public ReflectionTrackedProperty(string name, PropertyInfo property, Tracker parent) 
+        : base(name, parent)
     {
         _property = property;
 

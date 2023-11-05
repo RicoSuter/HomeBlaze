@@ -63,7 +63,7 @@ public abstract class TrackedProperty
     /// </summary>
     public object? Value { get; internal set; }
 
-    public void ToAttribute(string attributeName, string propertyName)
+    public void ConvertToAttribute(string attributeName, string propertyName)
     {
         AttributeName = attributeName;
         AttributedProperty = Parent.TryGetProperty(propertyName) ??

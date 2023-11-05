@@ -21,7 +21,7 @@ public class StaticTrackedProperty : TrackedProperty
     public static TrackedProperty CreateAttribute(string propertyName, string attributeName, Tracker parent, object? value)
     {
         var property = new StaticTrackedProperty($"{propertyName}.{attributeName}", parent, value);
-        property.ToAttribute(attributeName, propertyName);
+        property.ConvertToAttribute(attributeName, propertyName);
         return property;
     }
 

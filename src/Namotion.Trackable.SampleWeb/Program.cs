@@ -81,10 +81,11 @@ namespace Namotion.Trackable.SampleWeb
             [Unit("bar")]
             public virtual decimal Pressure { get; set; }
 
-            [AttributeOfTrackable(nameof(Pressure), "minimum")]
+            [Unit("bar")]
+            [AttributeOfTrackable(nameof(Pressure), "Minimum")]
             public virtual decimal Pressure_Minimum { get; set; } = 0.0m;
 
-            [AttributeOfTrackable(nameof(Pressure), "maximum")]
+            [AttributeOfTrackable(nameof(Pressure), "Maximum")]
             public virtual decimal Pressure_Maximum { get; set; } = 4.0m;
         }
 
@@ -96,6 +97,7 @@ namespace Namotion.Trackable.SampleWeb
             {
                 _unit = unit;
             }
+
             public void InitializeProperty(TrackedProperty property, Tracker parent, object? parentCollectionKey, ITrackableContext context)
             {
                 property.Parent.AddProperty(StaticTrackedProperty.CreateAttribute(property.Name, "Unit", parent, _unit));

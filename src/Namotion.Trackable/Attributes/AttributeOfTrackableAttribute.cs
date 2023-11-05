@@ -1,10 +1,11 @@
 ﻿using Namotion.Trackable.Model;
 using System;
+using System.Reflection;
 
 namespace Namotion.Trackable.Attributes;
 
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-public class AttributeOfTrackableAttribute : TrackableAttribute, ITrackablePropertyInitializer
+public class AttributeOfTrackableAttribute : TrackableAttribute
 {
     public AttributeOfTrackableAttribute(string propertyName, string attributeName)
     {
@@ -16,8 +17,10 @@ public class AttributeOfTrackableAttribute : TrackableAttribute, ITrackablePrope
 
     public string AttributeName { get; }
 
-    public void InitializeProperty(TrackedProperty property, Tracker parent, object? parentCollectionKey, ITrackableContext context)
+    public override TrackedProperty CreateProperty(PropertyInfo propertyInfo, Tracker parent)
     {
-        property.ToAttribute(AttributeName, PropertyName);
+        var property = new ReflectionTrackedProperty($"{PropertyName}.{AttributeName}", propertyInfo, parent);
+        property.ConvertToAttribute(AttributeName, PropertyName);
+        return property;
     }
 }
