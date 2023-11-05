@@ -40,7 +40,7 @@ public class Tracker
         return _properties.TryGetValue(propertyName, out var property) ? property : null;
     }
 
-    internal void AddProperty(TrackedProperty property)
+    public void AddProperty(TrackedProperty property)
     {
         _properties[property.Name] = property;
     }

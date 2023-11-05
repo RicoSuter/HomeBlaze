@@ -238,9 +238,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 var attributes = _propertyInfoAttributesCache.GetOrAdd(propertyInfo, pi => pi.GetCustomAttributes(true));
                 if (attributes.Any(a => a is TrackableAttribute))
                 {
-                    var property = CreateTrackableProperty(propertyInfo, attributes, tracker, parentCollectionKey);
-                    tracker.AddProperty(property);
-
+                    var property = CreateAndAddTrackableProperty(propertyInfo, attributes, tracker, parentCollectionKey);
                     if (property.IsReadable)
                     {
                         var value = property.GetValue();
@@ -256,7 +254,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    private TrackedProperty CreateTrackableProperty(PropertyInfo propertyInfo, object[] attributes, Tracker parent, object? parentCollectionKey)
+    private TrackedProperty CreateAndAddTrackableProperty(PropertyInfo propertyInfo, object[] attributes, Tracker parent, object? parentCollectionKey)
     {
         if (propertyInfo.GetMethod?.IsVirtual == false || 
             propertyInfo.SetMethod?.IsVirtual == false)
@@ -264,8 +262,8 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             throw new InvalidOperationException($"Trackable property {propertyInfo.DeclaringType?.Name}.{propertyInfo.Name} must be virtual.");
         }
 
-        var propertyPath = !string.IsNullOrEmpty(parent.Path) ? $"{parent.Path}.{propertyInfo.Name}" : propertyInfo.Name;
-        var property = new TrackedProperty(propertyInfo, propertyPath, parent);
+        var property = new ReflectionTrackedProperty(propertyInfo, parent);
+        parent.AddProperty(property);
 
         foreach (var attribute in attributes.OfType<ITrackablePropertyInitializer>())
         {

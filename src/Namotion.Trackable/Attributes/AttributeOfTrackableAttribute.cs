@@ -18,8 +18,6 @@ public class AttributeOfTrackableAttribute : TrackableAttribute, ITrackablePrope
 
     public void InitializeProperty(TrackedProperty property, Tracker parent, object? parentCollectionKey, ITrackableContext context)
     {
-        property.AttributeName = AttributeName;
-        property.AttributedProperty = property.Parent.TryGetProperty(PropertyName) ?? 
-            throw new InvalidOperationException($"The attributed property {PropertyName} could not be found for attribute {AttributeName}.");
+        property.ToAttribute(AttributeName, PropertyName);
     }
 }

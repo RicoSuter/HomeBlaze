@@ -2,43 +2,30 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace Namotion.Trackable.Model;
 
-public class TrackedProperty
+public abstract class TrackedProperty
 {
-    private MethodInfo? _getMethod;
-    private MethodInfo? _setMethod;
-
-    private readonly PropertyInfo _property;
-
-    public TrackedProperty(
-        PropertyInfo property,
-        string path,
-        Tracker parent)
+    public TrackedProperty(string name, Tracker parent)
     {
-        _property = property;
-
-        Path = path;
+        Name = name;
         Parent = parent;
-
-        _getMethod = property.GetMethod;
-        _setMethod = property.SetMethod;
+        Path = !string.IsNullOrEmpty(parent.Path) ? $"{parent.Path}.{name}" : name;
     }
 
     [JsonIgnore]
-    public string Name => _property.Name;
+    public string Name { get; protected set; }
 
     /// <summary>
     /// Gets the full property path with the trackable context object as root.
     /// </summary>
     public string Path { get; }
 
-    public bool IsReadable => _getMethod != null;
+    public abstract bool IsReadable { get; }
 
-    public bool IsWriteable => _setMethod != null;
+    public abstract bool IsWriteable { get; }
 
     [MemberNotNullWhen(true, nameof(AttributedProperty))]
     [MemberNotNullWhen(true, nameof(AttributeName))]
@@ -47,16 +34,16 @@ public class TrackedProperty
     [JsonIgnore]
     public Tracker Parent { get; }
 
-    public bool IsDerived => _setMethod == null;
+    public abstract bool IsDerived { get; }
 
     [JsonIgnore]
-    public Type PropertyType => _property.PropertyType;
+    public abstract Type PropertyType { get; }
 
     [JsonIgnore]
-    public TrackedProperty? AttributedProperty { get; set; }
+    public TrackedProperty? AttributedProperty { get; private set; }
 
     [JsonIgnore]
-    public string? AttributeName { get; set; }
+    public string? AttributeName { get; private set; }
 
     [JsonIgnore]
     public IEnumerable<TrackedProperty>? DependentProperties { get; internal set; }
@@ -76,13 +63,20 @@ public class TrackedProperty
     /// </summary>
     public object? LastValue { get; internal set; }
 
-    public object? GetValue()
+    public void ToAttribute(string attributeName, string propertyName)
     {
-        return _property.GetValue(Parent.Object);
+        AttributeName = attributeName;
+        AttributedProperty = Parent.TryGetProperty(propertyName) ??
+            throw new InvalidOperationException($"Cannot find property {propertyName}.");
     }
 
-    public void SetValue(object? value)
+    public virtual object? GetValue()
     {
-        _property.SetValue(Parent.Object, value);
+        throw new NotImplementedException();
+    }
+
+    public virtual void SetValue(object? value)
+    {
+        throw new NotImplementedException();
     }
 }

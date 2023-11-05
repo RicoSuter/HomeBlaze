@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Namotion.Trackable.AspNetCore.Controllers;
 using Namotion.Trackable.Attributes;
 using Namotion.Trackable.GraphQL;
+using Namotion.Trackable.Model;
 using Namotion.Trackable.Sources;
 using NSwag.Annotations;
 
@@ -77,6 +78,7 @@ namespace Namotion.Trackable.SampleWeb
         {
             [Trackable]
             [TrackableSource("mqtt", "pressure")]
+            [Unit("bar")]
             public virtual decimal Pressure { get; set; }
 
             [AttributeOfTrackable(nameof(Pressure), "minimum")]
@@ -84,6 +86,20 @@ namespace Namotion.Trackable.SampleWeb
 
             [AttributeOfTrackable(nameof(Pressure), "maximum")]
             public virtual decimal Pressure_Maximum { get; set; } = 4.0m;
+        }
+
+        public class UnitAttribute : Attribute, ITrackablePropertyInitializer
+        {
+            private readonly string _unit;
+
+            public UnitAttribute(string unit)
+            {
+                _unit = unit;
+            }
+            public void InitializeProperty(TrackedProperty property, Tracker parent, object? parentCollectionKey, ITrackableContext context)
+            {
+                property.Parent.AddProperty(StaticTrackedProperty.CreateAttribute(property.Name, "Unit", parent, _unit));
+            }
         }
 
         [OpenApiTag("Car")]
