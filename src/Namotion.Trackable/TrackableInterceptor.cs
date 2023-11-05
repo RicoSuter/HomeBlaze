@@ -195,7 +195,7 @@ public partial class TrackableInterceptor : IInterceptor
         {
             if (previousValue != null && (previousValue is ITrackable || previousValue is ICollection))
             {
-                trackableContext.DetachPropertyValue(property, previousValue);
+                trackableContext.DetachPropertyValue(property);
             }
 
             if (newValue != null && (newValue is ITrackable || newValue is ICollection))

@@ -21,14 +21,25 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     private readonly ConcurrentDictionary<PropertyInfo, object[]> _propertyInfoAttributesCache = new();
 
     // TODO: Switch to concurrent dict
-    private readonly Dictionary<object, Tracker> _trackers = new();
+    private readonly Dictionary<ITrackable, Tracker> _trackers = new();
     private readonly ITrackableFactory _trackableFactory;
 
     public TObject Object { get; private set; }
 
     object ITrackableContext.Object => Object;
 
-    public TrackedProperty[] AllProperties
+    public IReadOnlyCollection<Tracker> AllTrackers
+    {
+        get
+        {
+            lock (_trackers)
+            {
+                return _trackers.Values;
+            }
+        }
+    }
+
+    public IReadOnlyCollection<TrackedProperty> AllProperties
     {
         get
         {
@@ -67,7 +78,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     internal void InitializeProxy(ITrackable proxy)
     {
         Object = (TObject)proxy;
-        Attach(proxy, null, null);
+        AttachTrackable(proxy, null, null);
     }
 
     public IDisposable Subscribe(IObserver<TrackedPropertyChange> observer)
@@ -91,7 +102,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 var value = newDictionary[key];
                 if (value is ITrackable trackable)
                 {
-                    Attach(trackable, property, key);
+                    AttachTrackable(trackable, property, key);
                 }
             }
 
@@ -105,117 +116,42 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             var index = 0;
             foreach (var child in newTrackables.OfType<ITrackable>())
             {
-                Attach(child, property, index);
+                AttachTrackable(child, property, index);
                 index++;
             }
         }
         else if (newValue is ITrackable trackable)
         {
-            Attach(trackable, property, null);
+            AttachTrackable(trackable, property, null);
         }
     }
 
-    private void Attach(ITrackable proxy, TrackedProperty? parentProperty, object? parentCollectionKey)
-    {
-        var parentPath = parentProperty != null ?
-            (parentProperty.Path + (parentCollectionKey != null ? $"[{parentCollectionKey}]" : string.Empty)) :
-            string.Empty;
-
-        if (TryGetTracker(proxy) == null)
-        {
-            CreateTracker(proxy, parentPath, parentProperty, parentCollectionKey);
-        }
-    }
-
-    internal void DetachPropertyValue(TrackedProperty property, object previousValue)
-    {
-        if (previousValue is IDictionary newDictionary)
-        {
-            foreach (var key in newDictionary.Keys)
-            {
-                var value = newDictionary[key];
-                if (value is ITrackable trackable)
-                {
-                    DetachPropertyValue(property, trackable);
-                }
-            }
-        }
-        else if (previousValue is ICollection previousTrackables)
-        {
-            foreach (var child in previousTrackables.OfType<ITrackable>())
-            {
-                DetachPropertyValue(property, child);
-            }
-
-            //if (previousTrackables is INotifyCollectionChanged notifyCollectionChanged)
-            //{
-            //    notifyCollectionChanged.CollectionChanged -= OnCollectionChanged;
-            //}
-        }
-        else if (previousValue is ITrackable trackable)
-        {
-            // TODO: Call RemoveTrackableContext on all trackables (also children)
-
-            trackable.RemoveTrackableContext(this);
-            lock (_trackers)
-            {
-                _trackers.Remove(previousValue);
-            }
-        }
-    }
-
-    //private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    //{
-    //    if (e.NewItems is not null)
-    //    {
-    //        foreach (var trackable in e.NewItems.OfType<ITrackable>())
-    //        {
-    //            Attach(trackable, null, null); // TODO: get parent somehow
-    //        }
-    //    }
-
-    //    if (e.OldItems is not null)
-    //    {
-    //        foreach (var trackable in e.OldItems.OfType<ITrackable>())
-    //        {
-    //            Detach(trackable);
-    //        }
-    //    }
-    //}
-
-    public Tracker? TryGetTracker(object proxy)
+    internal void DetachPropertyValue(TrackedProperty property)
     {
         lock (_trackers)
         {
-            return _trackers.TryGetValue(proxy, out var tracker) ? tracker : null;
+            foreach (var tuple in _trackers.Where(t => t.Value.ParentProperty == property))
+            {
+                tuple.Key.RemoveTrackableContext(this);
+                _trackers.Remove(tuple.Key);
+
+                foreach (var childProperty in tuple.Value.Properties)
+                {
+                    DetachPropertyValue(childProperty);
+                }
+            }
         }
     }
 
-    internal void MarkPropertyAsChanged(TrackedProperty variable)
-    {
-        MarkVariableAsChanged(variable, AllProperties, new HashSet<TrackedProperty>());
-    }
-
-    private void MarkVariableAsChanged(TrackedProperty property, TrackedProperty[] allProperties, HashSet<TrackedProperty> markedVariables)
-    {
-        _changesSubject.OnNext(new TrackedPropertyChange(property,
-            new Dictionary<string, object?>(property.Data),
-            property.GetValue()));
-
-        markedVariables.Add(property);
-
-        foreach (var dependentVariable in allProperties
-            .Where(v => v.DependentProperties?.Contains(property) == true && !markedVariables.Contains(v)))
-        {
-            MarkVariableAsChanged(dependentVariable, allProperties, markedVariables);
-        }
-    }
-
-    private void CreateTracker(ITrackable proxy, string parentPath, TrackedProperty? parentProperty, object? parentCollectionKey)
+    private void AttachTrackable(ITrackable proxy, TrackedProperty? parentProperty, object? parentCollectionKey)
     {
         var tracker = TryGetTracker(proxy);
         if (tracker == null)
         {
+            var parentPath = parentProperty != null ?
+                (parentProperty.Path + (parentCollectionKey != null ? $"[{parentCollectionKey}]" : string.Empty)) :
+                string.Empty;
+
             if (parentProperty != null && proxy is ITrackableWithParent group)
             {
                 group.Parent = parentProperty.Parent.Object;
@@ -255,9 +191,56 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
+    //private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    //{
+    //    if (e.NewItems is not null)
+    //    {
+    //        foreach (var trackable in e.NewItems.OfType<ITrackable>())
+    //        {
+    //            Attach(trackable, null, null); // TODO: get parent somehow
+    //        }
+    //    }
+
+    //    if (e.OldItems is not null)
+    //    {
+    //        foreach (var trackable in e.OldItems.OfType<ITrackable>())
+    //        {
+    //            Detach(trackable);
+    //        }
+    //    }
+    //}
+
+    public Tracker? TryGetTracker(object proxy)
+    {
+        lock (_trackers)
+        {
+            return _trackers.TryGetValue((ITrackable)proxy, out var tracker) ? tracker : null;
+        }
+    }
+
+    internal void MarkPropertyAsChanged(TrackedProperty variable)
+    {
+        MarkVariableAsChanged(variable, AllProperties, new HashSet<TrackedProperty>());
+    }
+
+    private void MarkVariableAsChanged(TrackedProperty property, IReadOnlyCollection<TrackedProperty> allProperties, HashSet<TrackedProperty> markedVariables)
+    {
+        _changesSubject.OnNext(new TrackedPropertyChange(property,
+            new Dictionary<string, object?>(property.Data),
+            property.GetValue()));
+
+        markedVariables.Add(property);
+
+        foreach (var dependentVariable in allProperties
+            .Where(v => v.DependentProperties?.Contains(property) == true && !markedVariables.Contains(v)))
+        {
+            MarkVariableAsChanged(dependentVariable, allProperties, markedVariables);
+        }
+    }
+
     private TrackedProperty CreateAndAddTrackableProperty(PropertyInfo propertyInfo, TrackableAttribute trackableAttribute, object[] attributes, Tracker parent, object? parentCollectionKey)
     {
-        if (propertyInfo.GetMethod?.IsVirtual == false || 
+        if (propertyInfo.GetMethod?.IsVirtual == false ||
             propertyInfo.SetMethod?.IsVirtual == false)
         {
             throw new InvalidOperationException($"Trackable property {propertyInfo.DeclaringType?.Name}.{propertyInfo.Name} must be virtual.");
@@ -290,7 +273,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     void ITrackableContext.AttachPropertyValue(TrackedProperty property, object newValue) => AttachPropertyValue(property, newValue);
 
-    void ITrackableContext.DetachPropertyValue(TrackedProperty property, object previousValue) => DetachPropertyValue(property, previousValue);
+    void ITrackableContext.DetachPropertyValue(TrackedProperty property) => DetachPropertyValue(property);
 
     void ITrackableContext.MarkPropertyAsChanged(TrackedProperty property) => MarkPropertyAsChanged(property);
 }

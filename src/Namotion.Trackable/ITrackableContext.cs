@@ -7,7 +7,9 @@ public interface ITrackableContext : ITrackableFactory
 {
     Tracker? TryGetTracker(object proxy);
 
-    TrackedProperty[] AllProperties { get; }
+    IReadOnlyCollection<Tracker> AllTrackers { get; }
+
+    IReadOnlyCollection<TrackedProperty> AllProperties { get; }
 
     internal object Object { get; }
 
@@ -15,7 +17,7 @@ public interface ITrackableContext : ITrackableFactory
 
     internal void AttachPropertyValue(TrackedProperty property, object newValue);
 
-    internal void DetachPropertyValue(TrackedProperty property, object previousValue);
+    internal void DetachPropertyValue(TrackedProperty property);
 
     internal void MarkPropertyAsChanged(TrackedProperty setVariable);
 }

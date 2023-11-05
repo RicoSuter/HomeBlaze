@@ -97,6 +97,19 @@ public class CollectionTrackableContextTests
         Assert.Equal("car.tires[0].pressure", firstTirePressure.TryGetAttributeBasedSourcePath("mqtt", trackableContext));
     }
 
+    [Fact]
+    public void ShouldCorrectlyDetatchTrackers()
+    {
+        // Arrange
+        var trackableContext = CreateContext<Garage>();
+        var trackable = trackableContext.Object;
+
+        // Act & Assert
+        Assert.Equal(6, trackableContext.AllTrackers.Count);
+        trackable.Car = trackableContext.CreateProxy<Car>();
+        Assert.Equal(6, trackableContext.AllTrackers.Count);
+    }
+
     private static TrackableContext<T> CreateContext<T>()
         where T : class
     {
