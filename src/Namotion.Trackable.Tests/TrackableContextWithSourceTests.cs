@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-
-using Namotion.Trackable;
 using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Sources;
 
-namespace Namotion.Things.Tests;
+namespace Namotion.Trackable.Tests;
 
 public class TrackableContextWithSourceTests
 {

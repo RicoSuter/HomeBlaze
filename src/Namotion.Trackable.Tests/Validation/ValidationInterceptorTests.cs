@@ -1,12 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-
-using Namotion.Trackable;
 using Namotion.Trackable.Attributes;
-using Namotion.Trackable.Model;
 using Namotion.Trackable.Validation;
 using System.ComponentModel.DataAnnotations;
 
-namespace Namotion.Things.Tests;
+namespace Namotion.Trackable.Tests.Validation;
 
 public class ValidationInterceptorTests
 {

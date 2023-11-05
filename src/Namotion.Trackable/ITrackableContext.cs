@@ -17,7 +17,7 @@ public interface ITrackableContext : ITrackableFactory
 
     internal void AttachPropertyValue(TrackedProperty property, object newValue);
 
-    internal void DetachPropertyValue(TrackedProperty property);
+    internal void DetachPropertyValue(TrackedProperty property, object? newValue);
 
     internal void MarkPropertyAsChanged(TrackedProperty setVariable);
 }

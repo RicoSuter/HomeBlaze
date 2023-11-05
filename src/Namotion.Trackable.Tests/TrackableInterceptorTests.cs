@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-
-using Namotion.Trackable;
 using Namotion.Trackable.Attributes;
 
-namespace Namotion.Things.Tests;
+namespace Namotion.Trackable.Tests;
 
 public class TrackableInterceptorTests
 {

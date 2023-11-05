@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using Castle.DynamicProxy;
@@ -130,12 +131,32 @@ public partial class TrackableInterceptor : IInterceptor
 
         if (property.IsDerived)
         {
-            property.DependentProperties = _touchedProperties?.Pop();
+            var newProperties = _touchedProperties!.Pop();
+            var previouslyRequiredProperties = property.RequiredProperties;
+            if (previouslyRequiredProperties != null)
+            {
+                foreach (var previouslyRequiredProperty in previouslyRequiredProperties)
+                {
+                    if (!newProperties.Contains(previouslyRequiredProperty))
+                    {
+                        lock (previouslyRequiredProperty.UsedByProperties)
+                            ((HashSet<TrackedProperty>)previouslyRequiredProperty.UsedByProperties).Remove(property);
+                    }
+                }
+            }
+
+            foreach (var newlyRequiredProperty in newProperties)
+            {
+                lock (newlyRequiredProperty.UsedByProperties)
+                    ((HashSet<TrackedProperty>)newlyRequiredProperty.UsedByProperties).Add(property);
+            }
+
+            property.RequiredProperties = newProperties.ToImmutableHashSet();
         }
 
-        if (_touchedProperties?.TryPeek(out var touchedProperty) == true)
+        if (_touchedProperties?.TryPeek(out var touchedProperties) == true)
         {
-            touchedProperty.Add(property);
+            touchedProperties.Add(property);
         }
     }
 
@@ -195,7 +216,7 @@ public partial class TrackableInterceptor : IInterceptor
         {
             if (previousValue != null && (previousValue is ITrackable || previousValue is ICollection))
             {
-                trackableContext.DetachPropertyValue(property);
+                trackableContext.DetachPropertyValue(property, newValue);
             }
 
             if (newValue != null && (newValue is ITrackable || newValue is ICollection))

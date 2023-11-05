@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-using Namotion.Trackable;
 using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
 using Namotion.Trackable.Sources;
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Namotion.Things.Tests;
+namespace Namotion.Trackable.Tests;
 
 public class CollectionTrackableContextTests
 {
@@ -42,7 +41,7 @@ public class CollectionTrackableContextTests
         // Arrange
         var trackableContext = CreateContext<Car>();
         var trackable = trackableContext.Object;
-       
+
         var changes = new List<TrackedPropertyChange>();
         trackableContext.Subscribe(changes.Add);
 

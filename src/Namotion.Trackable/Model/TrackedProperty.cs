@@ -47,10 +47,24 @@ public abstract class TrackedProperty
     [JsonIgnore]
     public string? AttributeName { get; private set; }
 
+    /// <summary>
+    /// Gets the properties which are used to calculate the value of this derived property.
+    /// </summary>
     [JsonIgnore]
-    public IEnumerable<TrackedProperty>? DependentProperties { get; internal set; }
+    public IImmutableSet<TrackedProperty> RequiredProperties { get; internal set; } = ImmutableHashSet<TrackedProperty>.Empty;
 
-    public IEnumerable<string> DependentPropertyPaths => DependentProperties?.Select(v => v.Path) ?? Array.Empty<string>();
+    // TODO: Make all these immutable below
+
+    /// <summary>
+    /// Gets the properties which use this property.
+    /// </summary>
+    [JsonIgnore]
+    public IEnumerable<TrackedProperty> UsedByProperties { get; private set; } = new HashSet<TrackedProperty>();
+
+    [JsonIgnore]
+    public IEnumerable<Tracker> Children { get; internal set; } = new HashSet<Tracker>();
+
+    public IEnumerable<string> DependentPropertyPaths => RequiredProperties?.Select(v => v.Path) ?? Array.Empty<string>();
 
     public Dictionary<string, TrackedProperty> Attributes => Parent
         .Properties

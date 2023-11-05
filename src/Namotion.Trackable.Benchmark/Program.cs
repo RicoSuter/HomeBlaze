@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Namotion.Trackable.Benchmark
 {
@@ -23,9 +25,19 @@ namespace Namotion.Trackable.Benchmark
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void RunCode(TrackableBenchmark benchmark)
         {
-            for (int i = 0; i < 10000000; ++i)
+            var watch = Stopwatch.StartNew();
+
+            var outer = 100;
+            var inner = 100;
+
+            var total = outer * inner;
+            for (int i = 0; i < outer; ++i)
             {
-                benchmark.IncrementDerivedAverage();
+                for (int j = 0; j < inner; ++j)
+                {
+                    benchmark.ChangeAllTires();
+                }
+                Console.WriteLine($"{i * inner}/{total} ({watch.ElapsedMilliseconds / (i + 1m) / inner} ms)");
             }
         }
     }

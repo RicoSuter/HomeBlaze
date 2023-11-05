@@ -26,6 +26,9 @@ namespace Namotion.Trackable.Benchmark
         public virtual Tire[] Tires { get; set; }
 
         [Trackable]
+        public virtual Car[]? PreviousCars { get; set; }
+
+        [Trackable]
         public virtual decimal AveragePressure => Tires.Average(t => t.Pressure);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,19 +15,44 @@ namespace Namotion.Trackable.Benchmark
 
 #pragma warning restore CS8618
 
-        [Params("regular", "trackable")]
+        [Params(
+            "regular_small",
+            "trackable_small", 
+            "regular_huge", 
+            "trackable_huge"
+        )]
         public string? Type;
 
         [GlobalSetup]
         public void Setup()
         {
-            if (Type == "regular")
+            if (Type == "regular_small")
             {
                 var factory = new TrackableFactory(
                     Array.Empty<ITrackableInterceptor>(),
                     new ServiceCollection().BuildServiceProvider());
 
                 _object = new Car(factory);
+            }
+            else if (Type == "trackable_small")
+            {
+                _factory = new TrackableFactory(
+                    Array.Empty<ITrackableInterceptor>(),
+                    new ServiceCollection().BuildServiceProvider());
+
+                var context = new TrackableContext<Car>(_factory);
+                _object = context.Object;
+            }
+            else if (Type == "regular_huge")
+            {
+                var factory = new TrackableFactory(
+                    Array.Empty<ITrackableInterceptor>(),
+                    new ServiceCollection().BuildServiceProvider());
+
+                _object = new Car(factory);
+                _object.PreviousCars = Enumerable.Range(0, 10000)
+                   .Select(i => factory.CreateProxy<Car>())
+                   .ToArray();
             }
             else
             {
@@ -36,6 +62,9 @@ namespace Namotion.Trackable.Benchmark
 
                 var context = new TrackableContext<Car>(_factory);
                 _object = context.Object;
+                _object.PreviousCars = Enumerable.Range(0, 10000)
+                    .Select(i => _factory.CreateProxy<Car>())
+                    .ToArray();
             }
         }
 
@@ -48,6 +77,8 @@ namespace Namotion.Trackable.Benchmark
             _object.Tires[3].Pressure += 8;
 
             var average = _object.AveragePressure;
+
+            _object.PreviousCars = null;
         }
 
         //[Benchmark]
