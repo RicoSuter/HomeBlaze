@@ -157,7 +157,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 group.Parent = parentProperty.Parent.Object;
             }
 
-            tracker = new Tracker(proxy, parentPath, parentProperty, parentCollectionKey, this);
+            tracker = new Tracker(proxy, parentPath, parentProperty, parentCollectionKey);
             lock (_trackers)
             {
                 _trackers[proxy] = tracker;
@@ -225,9 +225,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     private void MarkVariableAsChanged(TrackedProperty property, IReadOnlyCollection<TrackedProperty> allProperties, HashSet<TrackedProperty> markedVariables)
     {
-        _changesSubject.OnNext(new TrackedPropertyChange(property,
-            new Dictionary<string, object?>(property.Data),
-            property.GetValue()));
+        _changesSubject.OnNext(new TrackedPropertyChange(property, property.Data, property.GetValue()));
 
         markedVariables.Add(property);
 
@@ -258,13 +256,13 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         return property;
     }
 
-    private static void TryInitializeRequiredProperty(PropertyInfo propertyInfo, object[] attributes, Tracker parent)
+    private void TryInitializeRequiredProperty(PropertyInfo propertyInfo, object[] attributes, Tracker parent)
     {
         if (attributes.Any(a => a is RequiredAttribute || a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
             propertyInfo.PropertyType.IsClass &&
             propertyInfo.PropertyType.FullName?.StartsWith("System.") == false)
         {
-            var child = parent.Context.CreateProxy(propertyInfo.PropertyType);
+            var child = CreateProxy(propertyInfo.PropertyType);
             propertyInfo.SetValue(parent.Object, child);
         }
     }

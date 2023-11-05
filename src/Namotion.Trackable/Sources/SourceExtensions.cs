@@ -1,4 +1,5 @@
 ﻿using Namotion.Trackable.Model;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace Namotion.Trackable.Sources;
@@ -30,7 +31,7 @@ public static class SourceExtensions
     {
         lock (property.Data)
         {
-            property.Data[SourcePathPrefixKey + sourceName] = sourcePath;
+            property.Data = property.Data.SetItem(SourcePathPrefixKey + sourceName, sourcePath);
         }
     }
 
@@ -38,7 +39,7 @@ public static class SourceExtensions
     {
         lock (property.Data)
         {
-            property.Data[SourcePathKey + sourceName] = sourcePath;
+            property.Data = property.Data.SetItem(SourcePathKey + sourceName, sourcePath);
         }
     }
 
@@ -46,10 +47,10 @@ public static class SourceExtensions
     {
         lock (property.Data)
         {
-            property.Data[IsChangingFromSourceKey] =
+            property.Data = property.Data.SetItem(IsChangingFromSourceKey, 
                 property.Data.TryGetValue(IsChangingFromSourceKey, out var sources)
                 ? ((ITrackableSource[])sources!).Append(source).ToArray()
-                : (object)(new[] { source });
+                : (object)(new[] { source }));
         }
 
         try
@@ -64,9 +65,10 @@ public static class SourceExtensions
         {
             lock (property.Data)
             {
-                property.Data[IsChangingFromSourceKey] = ((ITrackableSource[])property.Data[IsChangingFromSourceKey]!)
+                property.Data = property.Data.SetItem(IsChangingFromSourceKey,
+                    ((ITrackableSource[])property.Data[IsChangingFromSourceKey]!)
                     .Except(new[] { source })
-                    .ToArray();
+                    .ToArray());
             }
         }
     }

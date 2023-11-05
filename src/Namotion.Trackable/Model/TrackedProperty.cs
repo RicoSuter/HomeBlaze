@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -56,7 +57,7 @@ public abstract class TrackedProperty
         .ToDictionary(v => v.AttributeName!, v => v);
 
     [JsonIgnore]
-    public IDictionary<string, object?> Data { get; } = new Dictionary<string, object?>();
+    public IImmutableDictionary<string, object?> Data { get; set; } = ImmutableDictionary<string, object?>.Empty;
 
     /// <summary>
     /// Gets the last known value of this property.
