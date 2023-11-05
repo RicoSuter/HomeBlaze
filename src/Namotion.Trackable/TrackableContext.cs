@@ -241,7 +241,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                     var property = CreateTrackableProperty(propertyInfo, attributes, tracker, parentCollectionKey);
                     tracker.AddProperty(property);
 
-                    if (property.GetMethod != null)
+                    if (property.IsReadable)
                     {
                         var value = property.GetValue();
                         if (value != null)

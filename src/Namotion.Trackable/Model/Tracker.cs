@@ -42,7 +42,7 @@ public class Tracker
 
     internal void AddProperty(TrackedProperty property)
     {
-        _properties[property.PropertyName] = property;
+        _properties[property.Name] = property;
     }
 
     internal void FreezeProperties()

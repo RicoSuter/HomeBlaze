@@ -9,6 +9,9 @@ namespace Namotion.Trackable.Model;
 
 public class TrackedProperty
 {
+    private MethodInfo? _getMethod;
+    private MethodInfo? _setMethod;
+
     private readonly PropertyInfo _property;
 
     public TrackedProperty(
@@ -21,11 +24,21 @@ public class TrackedProperty
         Path = path;
         Parent = parent;
 
-        GetMethod = property.GetMethod;
-        SetMethod = property.SetMethod;
+        _getMethod = property.GetMethod;
+        _setMethod = property.SetMethod;
     }
 
+    [JsonIgnore]
+    public string Name => _property.Name;
+
+    /// <summary>
+    /// Gets the full property path with the trackable context object as root.
+    /// </summary>
     public string Path { get; }
+
+    public bool IsReadable => _getMethod != null;
+
+    public bool IsWriteable => _setMethod != null;
 
     [MemberNotNullWhen(true, nameof(AttributedProperty))]
     [MemberNotNullWhen(true, nameof(AttributeName))]
@@ -34,16 +47,7 @@ public class TrackedProperty
     [JsonIgnore]
     public Tracker Parent { get; }
 
-    [JsonIgnore]
-    public MethodInfo? GetMethod { get; }
-
-    [JsonIgnore]
-    public MethodInfo? SetMethod { get; }
-
-    public bool IsDerived => SetMethod == null;
-
-    [JsonIgnore]
-    public string PropertyName => _property.Name;
+    public bool IsDerived => _setMethod == null;
 
     [JsonIgnore]
     public Type PropertyType => _property.PropertyType;
@@ -71,11 +75,6 @@ public class TrackedProperty
     /// Gets the last known value of this property.
     /// </summary>
     public object? LastValue { get; internal set; }
-
-    public IEnumerable<T> GetCustomAttributes<T>(bool inherit)
-    {
-        return _property.GetCustomAttributes(inherit).OfType<T>();
-    }
 
     public object? GetValue()
     {

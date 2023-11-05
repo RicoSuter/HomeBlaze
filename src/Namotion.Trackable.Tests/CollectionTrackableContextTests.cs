@@ -65,7 +65,7 @@ public class CollectionTrackableContextTests
         // Act
         var firstTirePressure = trackableContext
             .AllProperties
-            .First(v => v.PropertyName == nameof(Tire.Pressure));
+            .First(v => v.Name == nameof(Tire.Pressure));
 
         // Assert
         Assert.Equal("Tires[0].Pressure", firstTirePressure.Path);
@@ -90,7 +90,7 @@ public class CollectionTrackableContextTests
         // Act
         var firstTirePressure = trackableContext
             .AllProperties
-            .First(v => v.PropertyName == nameof(Tire.Pressure));
+            .First(v => v.Name == nameof(Tire.Pressure));
 
         // Assert
         Assert.Equal("Car.Tires[0].Pressure", firstTirePressure.Path);

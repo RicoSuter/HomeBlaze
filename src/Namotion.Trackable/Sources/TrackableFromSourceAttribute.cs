@@ -39,6 +39,6 @@ public class TrackableSourceAttribute : Attribute, ITrackablePropertyInitializer
             return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + Path;
         }
 
-        return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + property.PropertyName;
+        return (!string.IsNullOrEmpty(basePath) ? basePath + "." : "") + property.Name;
     }
 }

@@ -71,7 +71,7 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
 
     [HttpPost]
     public ActionResult UpdateVariables(
-        [FromBody] Dictionary<string, JsonElement> updates, 
+        [FromBody] Dictionary<string, JsonElement> updates,
         [FromServices] IEnumerable<ITrackablePropertyValidator> propertyValidators)
     {
         try
@@ -104,7 +104,7 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
             }
 
             // check not read-only
-            if (resolvedUpdates.Any(u => u.Variable!.SetMethod == null))
+            if (resolvedUpdates.Any(u => !u.Variable!.IsWriteable))
             {
                 return BadRequest(new ProblemDetails
                 {

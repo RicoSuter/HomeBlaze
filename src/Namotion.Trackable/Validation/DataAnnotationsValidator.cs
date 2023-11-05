@@ -15,7 +15,7 @@ namespace Namotion.Trackable.Validation
             {
                 var validationContext = new ValidationContext(property.Parent.Object)
                 {
-                    MemberName = property.PropertyName
+                    MemberName = property.Name
                 };
 
                 Validator.TryValidateProperty(value, validationContext, results);

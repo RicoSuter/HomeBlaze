@@ -42,8 +42,8 @@ public class TrackableContextTests
 
         // Assert
         Assert.Equal(2, changes.Count);
-        Assert.Equal(nameof(Person.LastName), changes[0].Property.PropertyName);
-        Assert.Equal(nameof(Person.FullName), changes[1].Property.PropertyName);
+        Assert.Equal(nameof(Person.LastName), changes[0].Property.Name);
+        Assert.Equal(nameof(Person.FullName), changes[1].Property.Name);
     }
 
     [Fact]
