@@ -5,9 +5,6 @@ namespace Namotion.Trackable.Model;
 
 public class ReflectionTrackedProperty : TrackedProperty
 {
-    private MethodInfo? _getMethod;
-    private MethodInfo? _setMethod;
-
     private readonly PropertyInfo _property;
 
     public ReflectionTrackedProperty(PropertyInfo property, Tracker parent)
@@ -20,17 +17,19 @@ public class ReflectionTrackedProperty : TrackedProperty
     {
         _property = property;
 
-        _getMethod = property.GetMethod;
-        _setMethod = property.SetMethod;
+        IsReadable = property.GetMethod != null;
+        IsWriteable = property.SetMethod != null;
+        IsDerived = property.SetMethod == null;
+        PropertyType = property.PropertyType;
     }
 
-    public override bool IsReadable => _getMethod != null;
+    public override bool IsReadable { get; }
 
-    public override bool IsWriteable => _setMethod != null;
+    public override bool IsWriteable { get; }
 
-    public override bool IsDerived => _setMethod == null;
+    public override bool IsDerived { get; }
 
-    public override Type PropertyType => _property.PropertyType;
+    public override Type PropertyType { get; }
 
     public override object? GetValue()
     {
