@@ -148,16 +148,12 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         var tracker = TryGetTracker(proxy);
         if (tracker == null)
         {
-            var parentPath = parentProperty != null ?
-                (parentProperty.Path + (parentCollectionKey != null ? $"[{parentCollectionKey}]" : string.Empty)) :
-                string.Empty;
-
             if (parentProperty != null && proxy is ITrackableWithParent group)
             {
                 group.Parent = parentProperty.Parent.Object;
             }
 
-            tracker = new Tracker(proxy, parentPath, parentProperty, parentCollectionKey);
+            tracker = new Tracker(proxy, parentProperty, parentCollectionKey);
             lock (_trackers)
             {
                 _trackers[proxy] = tracker;

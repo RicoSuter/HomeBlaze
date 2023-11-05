@@ -9,18 +9,20 @@ public class Tracker
 {
     private IDictionary<string, TrackedProperty> _properties = new ConcurrentDictionary<string, TrackedProperty>();
 
-    public Tracker(ITrackable proxy, string path, TrackedProperty? parentProperty, object? parentCollectionKey)
+    private string? _path;
+
+    public Tracker(ITrackable proxy, TrackedProperty? parentProperty, object? parentCollectionKey)
     {
         Object = proxy;
-        Path = path;
-
         ParentProperty = parentProperty;
         ParentCollectionKey = parentCollectionKey;
     }
 
     public ITrackable Object { get; }
 
-    public string Path { get; }
+    public string Path => _path ??= (ParentProperty != null ?
+        (ParentProperty.Path + (ParentCollectionKey != null ? $"[{ParentCollectionKey}]" : string.Empty)) :
+        string.Empty);
 
     public TrackedProperty? ParentProperty { get; }
 

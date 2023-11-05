@@ -9,11 +9,12 @@ namespace Namotion.Trackable.Model;
 
 public abstract class TrackedProperty
 {
+    private string? _path;
+
     public TrackedProperty(string name, Tracker parent)
     {
         Name = name;
         Parent = parent;
-        Path = !string.IsNullOrEmpty(parent.Path) ? $"{parent.Path}.{name}" : name;
     }
 
     [JsonIgnore]
@@ -22,7 +23,7 @@ public abstract class TrackedProperty
     /// <summary>
     /// Gets the full property path with the trackable context object as root.
     /// </summary>
-    public string Path { get; }
+    public string Path => _path ??= !string.IsNullOrEmpty(Parent.Path) ? $"{Parent.Path}.{Name}" : Name;
 
     public abstract bool IsReadable { get; }
 
