@@ -7,7 +7,7 @@ public class StaticTrackedProperty : TrackedProperty
     public StaticTrackedProperty(string name, Tracker parent, object? value)
         : base(name, parent)
     {
-        LastValue = value;
+        Value = value;
     }
 
     public override bool IsReadable => true;
@@ -16,7 +16,7 @@ public class StaticTrackedProperty : TrackedProperty
 
     public override bool IsDerived => false;
 
-    public override Type PropertyType => LastValue?.GetType() ?? typeof(object);
+    public override Type PropertyType => Value?.GetType() ?? typeof(object);
 
     public static TrackedProperty CreateAttribute(string propertyName, string attributeName, Tracker parent, object? value)
     {
@@ -27,7 +27,7 @@ public class StaticTrackedProperty : TrackedProperty
 
     public override object? GetValue()
     {
-        return LastValue;
+        return Value;
     }
 
     public override void SetValue(object? value)

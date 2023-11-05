@@ -97,7 +97,7 @@ public partial class TrackableInterceptor : IInterceptor
             var property = trackableContext.TryGetTracker(invocation.InvocationTarget)?.TryGetProperty(propertyName);
             if (property != null)
             {
-                property.LastValue = invocation.ReturnValue;
+                property.Value = invocation.ReturnValue;
                 OnAfterReadProperty(property, invocation.ReturnValue, trackableContext);
             }
         }
@@ -158,7 +158,7 @@ public partial class TrackableInterceptor : IInterceptor
             var property = trackableContext.TryGetTracker(invocation.InvocationTarget)?.TryGetProperty(propertyName);
             if (property != null)
             {
-                OnBeforeWriteProperty(property, newValue, property.LastValue, trackableContext);
+                OnBeforeWriteProperty(property, newValue, property.Value, trackableContext);
             }
         }
 
@@ -169,8 +169,8 @@ public partial class TrackableInterceptor : IInterceptor
             var property = trackableContext.TryGetTracker(invocation.InvocationTarget)?.TryGetProperty(propertyName);
             if (property != null)
             {
-                var previousValue = property.LastValue;
-                property.LastValue = newValue;
+                var previousValue = property.Value;
+                property.Value = newValue;
                 OnAfterWriteProperty(property, newValue, previousValue, trackableContext);
             }
         }
