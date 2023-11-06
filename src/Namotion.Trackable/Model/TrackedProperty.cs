@@ -77,7 +77,7 @@ public abstract class TrackedProperty
     /// <summary>
     /// Gets the last known value of this property.
     /// </summary>
-    public object? Value { get; internal set; }
+    public object? LastValue { get; internal set; }
 
     public void ConvertToAttribute(string attributeName, string propertyName)
     {

@@ -233,7 +233,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
     private void MarkVariableAsChanged(TrackedProperty property, HashSet<TrackedProperty> markedVariables)
     {
-        _changesSubject.OnNext(new TrackedPropertyChange(property, property.Data, property.Value));
+        _changesSubject.OnNext(new TrackedPropertyChange(property, property.Data, property.LastValue));
 
         markedVariables.Add(property);
 
