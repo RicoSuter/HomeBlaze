@@ -27,15 +27,15 @@ namespace Namotion.Trackable.Benchmark
         {
             var watch = Stopwatch.StartNew();
 
-            var outer = 100;
-            var inner = 100;
+            var outer = 10000;
+            var inner = 1;
 
             var total = outer * inner;
             for (int i = 0; i < outer; ++i)
             {
                 for (int j = 0; j < inner; ++j)
                 {
-                    benchmark.ChangeAllTires();
+                    benchmark.AddLotsOfPreviousCars();
                 }
                 Console.WriteLine($"{i * inner}/{total} ({watch.ElapsedMilliseconds / (i + 1m) / inner} ms)");
             }

@@ -50,9 +50,7 @@ namespace Namotion.Trackable.Benchmark
                     new ServiceCollection().BuildServiceProvider());
 
                 _object = new Car(factory);
-                _object.PreviousCars = Enumerable.Range(0, 10000)
-                   .Select(i => factory.CreateProxy<Car>())
-                   .ToArray();
+                AddLotsOfPreviousCars();
             }
             else
             {
@@ -62,24 +60,30 @@ namespace Namotion.Trackable.Benchmark
 
                 var context = new TrackableContext<Car>(_factory);
                 _object = context.Object;
-                _object.PreviousCars = Enumerable.Range(0, 10000)
-                    .Select(i => _factory.CreateProxy<Car>())
-                    .ToArray();
+                AddLotsOfPreviousCars();
             }
         }
 
         [Benchmark]
-        public void IncrementDerivedAverage()
+        public void AddLotsOfPreviousCars()
         {
-            _object.Tires[0].Pressure += 5;
-            _object.Tires[1].Pressure += 6;
-            _object.Tires[2].Pressure += 7;
-            _object.Tires[3].Pressure += 8;
-
-            var average = _object.AveragePressure;
-
-            _object.PreviousCars = null;
+            _object.PreviousCars = Enumerable.Range(0, 10000)
+                .Select(i => _factory.CreateProxy<Car>())
+                .ToArray();
         }
+
+        //[Benchmark]
+        //public void IncrementDerivedAverage()
+        //{
+        //    _object.Tires[0].Pressure += 5;
+        //    _object.Tires[1].Pressure += 6;
+        //    _object.Tires[2].Pressure += 7;
+        //    _object.Tires[3].Pressure += 8;
+
+        //    var average = _object.AveragePressure;
+
+        //    _object.PreviousCars = null;
+        //}
 
         //[Benchmark]
         //public void Write()
@@ -106,18 +110,18 @@ namespace Namotion.Trackable.Benchmark
         //    var average = _object.AveragePressure;
         //}
 
-        [Benchmark]
-        public void ChangeAllTires()
-        {
-            var newTires = new Tire[]
-            {
-                _factory?.CreateProxy<Tire>() ?? new Tire(),
-                _factory?.CreateProxy<Tire>() ?? new Tire(),
-                _factory?.CreateProxy<Tire>() ?? new Tire(),
-                _factory?.CreateProxy<Tire>() ?? new Tire()
-            };
+        //[Benchmark]
+        //public void ChangeAllTires()
+        //{
+        //    var newTires = new Tire[]
+        //    {
+        //        _factory?.CreateProxy<Tire>() ?? new Tire(),
+        //        _factory?.CreateProxy<Tire>() ?? new Tire(),
+        //        _factory?.CreateProxy<Tire>() ?? new Tire(),
+        //        _factory?.CreateProxy<Tire>() ?? new Tire()
+        //    };
 
-            _object.Tires = newTires;
-        }
+        //    _object.Tires = newTires;
+        //}
     }
 }
