@@ -18,6 +18,7 @@ namespace Namotion.Trackable.Benchmark
         private static void Run()
         {
             var benchmark = new TrackableBenchmark();
+            //benchmark.Type = "regular_huge";
             benchmark.Setup();
             RunCode(benchmark);
         }
@@ -33,11 +34,12 @@ namespace Namotion.Trackable.Benchmark
             var total = outer * inner;
             for (int i = 0; i < outer; ++i)
             {
+                watch.Restart();
                 for (int j = 0; j < inner; ++j)
                 {
                     benchmark.AddLotsOfPreviousCars();
                 }
-                Console.WriteLine($"{i * inner}/{total} ({watch.ElapsedMilliseconds / (i + 1m) / inner} ms)");
+                Console.WriteLine($"{i * inner}/{total} ({watch.ElapsedMilliseconds / inner} ms)");
             }
         }
     }

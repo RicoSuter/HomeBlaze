@@ -11,14 +11,14 @@ namespace Namotion.Trackable.Benchmark
 #pragma warning disable CS8618
 
         private Car _object;
-        private TrackableFactory _factory;
+        private ITrackableFactory _factory;
 
 #pragma warning restore CS8618
 
         [Params(
-            "regular_small",
-            "trackable_small", 
-            "regular_huge", 
+            //"regular_small",
+            "regular_huge",
+            //"trackable_small", 
             "trackable_huge"
         )]
         public string? Type;
@@ -28,11 +28,18 @@ namespace Namotion.Trackable.Benchmark
         {
             if (Type == "regular_small")
             {
-                var factory = new TrackableFactory(
-                    Array.Empty<ITrackableInterceptor>(),
+                _factory = new NotTrackableFactory(
                     new ServiceCollection().BuildServiceProvider());
 
-                _object = new Car(factory);
+                _object = new Car(_factory);
+            }
+            else if (Type == "regular_huge")
+            {
+                _factory = new NotTrackableFactory(
+                    new ServiceCollection().BuildServiceProvider());
+
+                _object = new Car(_factory);
+                AddLotsOfPreviousCars();
             }
             else if (Type == "trackable_small")
             {
@@ -42,15 +49,6 @@ namespace Namotion.Trackable.Benchmark
 
                 var context = new TrackableContext<Car>(_factory);
                 _object = context.Object;
-            }
-            else if (Type == "regular_huge")
-            {
-                var factory = new TrackableFactory(
-                    Array.Empty<ITrackableInterceptor>(),
-                    new ServiceCollection().BuildServiceProvider());
-
-                _object = new Car(factory);
-                AddLotsOfPreviousCars();
             }
             else
             {
@@ -73,17 +71,17 @@ namespace Namotion.Trackable.Benchmark
         }
 
         //[Benchmark]
-        //public void IncrementDerivedAverage()
-        //{
-        //    _object.Tires[0].Pressure += 5;
-        //    _object.Tires[1].Pressure += 6;
-        //    _object.Tires[2].Pressure += 7;
-        //    _object.Tires[3].Pressure += 8;
+        public void IncrementDerivedAverage()
+        {
+            _object.Tires[0].Pressure += 5;
+            _object.Tires[1].Pressure += 6;
+            _object.Tires[2].Pressure += 7;
+            _object.Tires[3].Pressure += 8;
 
-        //    var average = _object.AveragePressure;
+            var average = _object.AveragePressure;
 
-        //    _object.PreviousCars = null;
-        //}
+            _object.PreviousCars = null;
+        }
 
         //[Benchmark]
         //public void Write()
@@ -111,17 +109,17 @@ namespace Namotion.Trackable.Benchmark
         //}
 
         //[Benchmark]
-        //public void ChangeAllTires()
-        //{
-        //    var newTires = new Tire[]
-        //    {
-        //        _factory?.CreateProxy<Tire>() ?? new Tire(),
-        //        _factory?.CreateProxy<Tire>() ?? new Tire(),
-        //        _factory?.CreateProxy<Tire>() ?? new Tire(),
-        //        _factory?.CreateProxy<Tire>() ?? new Tire()
-        //    };
+        public void ChangeAllTires()
+        {
+            var newTires = new Tire[]
+            {
+                _factory?.CreateProxy<Tire>() ?? new Tire(),
+                _factory?.CreateProxy<Tire>() ?? new Tire(),
+                _factory?.CreateProxy<Tire>() ?? new Tire(),
+                _factory?.CreateProxy<Tire>() ?? new Tire()
+            };
 
-        //    _object.Tires = newTires;
-        //}
+            _object.Tires = newTires;
+        }
     }
 }

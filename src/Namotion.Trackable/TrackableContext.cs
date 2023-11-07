@@ -2,13 +2,11 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
-using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
 using Namotion.Trackable.Utilities;
 
@@ -18,7 +16,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     where TObject : class
 {
     private readonly Subject<TrackedPropertyChange> _changesSubject = new();
-    private readonly ConcurrentDictionary<PropertyInfo, object[]> _propertyInfoAttributesCache = new();
+    private readonly ConcurrentDictionary<PropertyInfo, PropertyReflectionMetadata> _propertyReflectionMetadataCache = new();
 
     // TODO: Switch to concurrent dict
     private readonly Dictionary<ITrackable, Tracker> _trackers = new();
@@ -130,11 +128,10 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
                 .BaseType! // get properties from actual type
                 .GetProperties())
             {
-                var attributes = _propertyInfoAttributesCache.GetOrAdd(propertyInfo, pi => pi.GetCustomAttributes(true));
-                var attribute = attributes.OfType<TrackableAttribute>().FirstOrDefault();
-                if (attribute != null)
+                var propertyReflectionMetadata = _propertyReflectionMetadataCache.GetOrAdd(propertyInfo, pi => new PropertyReflectionMetadata(pi));
+                if (propertyReflectionMetadata.IsTrackable)
                 {
-                    var property = CreateAndAddTrackableProperty(propertyInfo, attribute, attributes, tracker, parentCollectionKey);
+                    var property = CreateAndAddTrackableProperty(propertyReflectionMetadata, tracker, parentCollectionKey);
                     if (property.IsReadable)
                     {
                         var value = property.GetValue();
@@ -199,25 +196,6 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    //private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    //{
-    //    if (e.NewItems is not null)
-    //    {
-    //        foreach (var trackable in e.NewItems.OfType<ITrackable>())
-    //        {
-    //            Attach(trackable, null, null); // TODO: get parent somehow
-    //        }
-    //    }
-
-    //    if (e.OldItems is not null)
-    //    {
-    //        foreach (var trackable in e.OldItems.OfType<ITrackable>())
-    //        {
-    //            Detach(trackable);
-    //        }
-    //    }
-    //}
-
     public Tracker? TryGetTracker(object proxy)
     {
         lock (_trackers)
@@ -246,34 +224,28 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    private TrackedProperty CreateAndAddTrackableProperty(PropertyInfo propertyInfo, TrackableAttribute trackableAttribute, object[] attributes, Tracker parent, object? parentCollectionKey)
+    private TrackedProperty CreateAndAddTrackableProperty(PropertyReflectionMetadata propertyReflectionMetadata, Tracker parent, object? parentCollectionKey)
     {
-        if (propertyInfo.GetMethod?.IsVirtual == false ||
-            propertyInfo.SetMethod?.IsVirtual == false)
-        {
-            throw new InvalidOperationException($"Trackable property {propertyInfo.DeclaringType?.Name}.{propertyInfo.Name} must be virtual.");
-        }
+        propertyReflectionMetadata.EnsureIsVirtual();
 
-        var property = trackableAttribute.CreateProperty(propertyInfo, parent);
+        var property = propertyReflectionMetadata.CreateProperty(parent);
         parent.AddProperty(property);
 
-        foreach (var attribute in attributes.OfType<ITrackablePropertyInitializer>())
+        foreach (var attribute in propertyReflectionMetadata.PropertyInitializers)
         {
             attribute.InitializeProperty(property, parent, parentCollectionKey, this);
         }
 
-        TryInitializeRequiredProperty(propertyInfo, attributes, parent);
+        TryInitializeRequiredProperty(propertyReflectionMetadata, parent);
         return property;
     }
 
-    private void TryInitializeRequiredProperty(PropertyInfo propertyInfo, object[] attributes, Tracker parent)
+    private void TryInitializeRequiredProperty(PropertyReflectionMetadata propertyReflectionMetadata, Tracker parent)
     {
-        if (attributes.Any(a => a is RequiredAttribute || a.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute") &&
-            propertyInfo.PropertyType.IsClass &&
-            propertyInfo.PropertyType.FullName?.StartsWith("System.") == false)
+        if (propertyReflectionMetadata.IsRequired)
         {
-            var child = CreateProxy(propertyInfo.PropertyType);
-            propertyInfo.SetValue(parent.Object, child);
+            var child = CreateProxy(propertyReflectionMetadata.PropertyType);
+            propertyReflectionMetadata.SetValue(parent.Object, child);
         }
     }
 

@@ -1,6 +1,5 @@
 ﻿using Namotion.Trackable.Model;
 using System;
-using System.Reflection;
 
 namespace Namotion.Trackable.Attributes;
 
@@ -17,9 +16,9 @@ public class AttributeOfTrackableAttribute : TrackableAttribute
 
     public string AttributeName { get; }
 
-    public override TrackedProperty CreateProperty(PropertyInfo propertyInfo, Tracker parent)
+    public override TrackedProperty CreateProperty(PropertyReflectionMetadata propertyReflectionMetadata, Tracker parent)
     {
-        var property = new ReflectionTrackedProperty($"{PropertyName}.{AttributeName}", propertyInfo, parent);
+        var property = new ReflectionTrackedProperty($"{PropertyName}.{AttributeName}", propertyReflectionMetadata, parent);
         property.ConvertToAttribute(AttributeName, PropertyName);
         return property;
     }

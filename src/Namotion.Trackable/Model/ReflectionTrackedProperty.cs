@@ -1,26 +1,25 @@
 ﻿using System;
-using System.Reflection;
 
 namespace Namotion.Trackable.Model;
 
 public class ReflectionTrackedProperty : TrackedProperty
 {
-    private readonly PropertyInfo _property;
+    private readonly PropertyReflectionMetadata _propertyReflectionMetadata;
 
-    public ReflectionTrackedProperty(PropertyInfo property, Tracker parent)
+    public ReflectionTrackedProperty(PropertyReflectionMetadata property, Tracker parent)
         : this(property.Name, property, parent)
     {
     }
 
-    public ReflectionTrackedProperty(string name, PropertyInfo property, Tracker parent) 
+    public ReflectionTrackedProperty(string name, PropertyReflectionMetadata propertyReflectionMetadata, Tracker parent) 
         : base(name, parent)
     {
-        _property = property;
+        _propertyReflectionMetadata = propertyReflectionMetadata;
 
-        IsReadable = property.GetMethod != null;
-        IsWriteable = property.SetMethod != null;
-        IsDerived = property.SetMethod == null;
-        PropertyType = property.PropertyType;
+        IsReadable = propertyReflectionMetadata.IsReadable;
+        IsWriteable = propertyReflectionMetadata.IsWriteable;
+        IsDerived = propertyReflectionMetadata.IsDerived;
+        PropertyType = propertyReflectionMetadata.PropertyType;
     }
 
     public override bool IsReadable { get; }
@@ -33,11 +32,11 @@ public class ReflectionTrackedProperty : TrackedProperty
 
     public override object? GetValue()
     {
-        return _property.GetValue(Parent.Object);
+        return _propertyReflectionMetadata.GetValue(Parent.Object);
     }
 
     public override void SetValue(object? value)
     {
-        _property.SetValue(Parent.Object, value);
+        _propertyReflectionMetadata.SetValue(Parent.Object, value);
     }
 }
