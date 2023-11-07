@@ -151,10 +151,10 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     {
         lock (_trackers)
         {
-            var newTrackables = new HashSet<ITrackable>(
-                FindNewTrackables(newValue).Select(t => t.trackable));
+            var newTrackables = newValue != null ? new HashSet<ITrackable>(
+                FindNewTrackables(newValue).Select(t => t.trackable)) : null;
 
-            foreach (var tracker in property.Children.Where(c => !newTrackables.Contains(c.Object)))
+            foreach (var tracker in property.Children.Where(c => newTrackables?.Contains(c.Object) != true))
             {
                 _trackers.Remove(tracker.Object);
                 ((HashSet<Tracker>)property.Children).Remove(tracker);

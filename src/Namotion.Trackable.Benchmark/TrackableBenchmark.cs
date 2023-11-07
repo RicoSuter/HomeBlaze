@@ -17,7 +17,7 @@ namespace Namotion.Trackable.Benchmark
 
         [Params(
             //"regular_small",
-            "regular_huge",
+            //"regular_huge",
             //"trackable_small", 
             "trackable_huge"
         )]
@@ -70,7 +70,7 @@ namespace Namotion.Trackable.Benchmark
                 .ToArray();
         }
 
-        //[Benchmark]
+        [Benchmark]
         public void IncrementDerivedAverage()
         {
             _object.Tires[0].Pressure += 5;
@@ -108,7 +108,7 @@ namespace Namotion.Trackable.Benchmark
         //    var average = _object.AveragePressure;
         //}
 
-        //[Benchmark]
+        [Benchmark]
         public void ChangeAllTires()
         {
             var newTires = new Tire[]

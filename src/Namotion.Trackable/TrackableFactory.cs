@@ -13,11 +13,13 @@ public class TrackableFactory : ITrackableFactory
     private readonly ProxyGenerationOptions _proxyGenerationOptions = new();
 
     private readonly IEnumerable<ITrackableInterceptor> _interceptors;
+    private readonly IInterceptor[] _castleInterceptors;
     private readonly IServiceProvider _serviceProvider;
 
     public TrackableFactory(IEnumerable<ITrackableInterceptor> interceptors, IServiceProvider serviceProvider)
     {
         _interceptors = interceptors;
+        _castleInterceptors = _interceptors.OfType<IInterceptor>().ToArray();
         _serviceProvider = serviceProvider;
     }
 
@@ -41,9 +43,9 @@ public class TrackableFactory : ITrackableFactory
                 proxyType,
                 _additionalInterfacesToProxy,
                 _proxyGenerationOptions,
-                constructorArguments, 
+                constructorArguments,
                 // TODO: use own array with castle interceptors
-                _interceptors.OfType<IInterceptor>().Concat(new[] { new TrackableInterceptor(_interceptors) }).ToArray());
+                _castleInterceptors.Concat(new[] { new TrackableInterceptor(_interceptors) }).ToArray());
 
         return proxy;
     }

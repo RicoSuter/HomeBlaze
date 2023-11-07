@@ -151,7 +151,7 @@ public partial class TrackableInterceptor : IInterceptor
                     ((HashSet<TrackedProperty>)newlyRequiredProperty.UsedByProperties).Add(property);
             }
 
-            property.RequiredProperties = newProperties.ToImmutableHashSet();
+            property.RequiredProperties = newProperties;
         }
 
         if (_touchedProperties?.TryPeek(out var touchedProperties) == true)
