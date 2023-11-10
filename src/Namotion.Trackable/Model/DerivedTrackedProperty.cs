@@ -12,8 +12,8 @@ public class DerivedTrackedProperty<TProperty> : TrackedProperty
     {
         _getValue = getValue;
         _setValue = setValue;
-        
-        base.LastValue = getValue != null ? getValue() : null;
+
+        base.LastKnownValue = getValue != null ? getValue() : null;
     }
 
     public override bool IsReadable => _getValue != null;
@@ -22,18 +22,26 @@ public class DerivedTrackedProperty<TProperty> : TrackedProperty
 
     public override bool IsDerived => true;
 
-    public new TProperty? LastValue => (TProperty?)base.LastValue;
+    public override Type PropertyType => LastKnownValue?.GetType() ?? typeof(object);
 
-    public override Type PropertyType => LastValue?.GetType() ?? typeof(object);
-
-    public override object? GetValue()
+    public override object? Value
     {
-        return _getValue != null ? _getValue() : null;
-    }
+        get
+        {
+            OnBeforeRead();
+            try
+            {
+                object? value = _getValue != null ? _getValue() : null;
+                LastKnownValue = value;
+                return value;
+            }
+            finally
+            {
+                OnAfterRead();
+            }
+        }
 
-    public override void SetValue(object? value)
-    {
-        _setValue?.Invoke((TProperty?)value);
+        set => _setValue?.Invoke((TProperty?)value);
     }
 
     public static TrackedProperty CreateAttribute(TrackedProperty attributedProperty, string attributeName, TProperty? value, IObserver<TrackedPropertyChange> observer)

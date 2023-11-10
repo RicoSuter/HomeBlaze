@@ -7,14 +7,14 @@ public class ProxyTrackedProperty : TrackedProperty
     private readonly PropertyReflectionMetadata _propertyReflectionMetadata;
     private readonly ProxyTracker _parent;
 
-    public ProxyTrackedProperty(PropertyReflectionMetadata property, 
+    public ProxyTrackedProperty(PropertyReflectionMetadata property,
         ProxyTracker parent, IObserver<TrackedPropertyChange> observer)
         : this(property.Name, property, parent, observer)
     {
     }
 
-    public ProxyTrackedProperty(string name, PropertyReflectionMetadata propertyReflectionMetadata, 
-        ProxyTracker parent, IObserver<TrackedPropertyChange> observer) 
+    public ProxyTrackedProperty(string name, PropertyReflectionMetadata propertyReflectionMetadata,
+        ProxyTracker parent, IObserver<TrackedPropertyChange> observer)
         : base(name, parent, observer)
     {
         _parent = parent;
@@ -34,13 +34,9 @@ public class ProxyTrackedProperty : TrackedProperty
 
     public override Type PropertyType { get; }
 
-    public override object? GetValue()
+    public override object? Value
     {
-        return _propertyReflectionMetadata.GetValue(_parent.Object);
-    }
-
-    public override void SetValue(object? value)
-    {
-        _propertyReflectionMetadata.SetValue(_parent.Object, value);
+        get => _propertyReflectionMetadata.GetValue(_parent.Object);
+        set => _propertyReflectionMetadata.SetValue(_parent.Object, value);
     }
 }

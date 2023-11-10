@@ -18,9 +18,6 @@ public partial class TrackableInterceptor : IInterceptor
 
     public IEnumerable<ITrackableContext> Contexts => _trackableContexts;
 
-    [ThreadStatic]
-    private static Stack<HashSet<TrackedProperty>>? _touchedProperties;
-
     public TrackableInterceptor(IEnumerable<ITrackableInterceptor> interceptors)
     {
         _interceptors = interceptors;
@@ -90,15 +87,20 @@ public partial class TrackableInterceptor : IInterceptor
             }
         }
 
-        invocation.Proceed();
-
-        foreach (var trackableContext in trackableContexts)
+        try
         {
-            var property = trackableContext.TryGetTracker(invocation.InvocationTarget)?.TryGetProperty(propertyName);
-            if (property != null)
+            invocation.Proceed();
+        }
+        finally
+        {
+            foreach (var trackableContext in trackableContexts)
             {
-                property.LastValue = invocation.ReturnValue;
-                OnAfterReadProperty(property, invocation.ReturnValue, trackableContext);
+                var property = trackableContext.TryGetTracker(invocation.InvocationTarget)?.TryGetProperty(propertyName);
+                if (property != null)
+                {
+                    property.LastKnownValue = invocation.ReturnValue;
+                    OnAfterReadProperty(property, invocation.ReturnValue, trackableContext);
+                }
             }
         }
     }
@@ -107,12 +109,7 @@ public partial class TrackableInterceptor : IInterceptor
     {
         if (property.IsDerived)
         {
-            if (_touchedProperties == null)
-            {
-                _touchedProperties = new Stack<HashSet<TrackedProperty>>();
-            }
-
-            _touchedProperties.Push(new HashSet<TrackedProperty>());
+            property.OnBeforeRead();
         }
 
         foreach (var interceptor in _interceptors)
@@ -128,35 +125,7 @@ public partial class TrackableInterceptor : IInterceptor
             interceptor.OnAfterReadProperty(property, newValue, trackableContext);
         }
 
-        if (property.IsDerived)
-        {
-            var newProperties = _touchedProperties!.Pop();
-            var previouslyRequiredProperties = property.RequiredProperties;
-            if (previouslyRequiredProperties != null)
-            {
-                foreach (var previouslyRequiredProperty in previouslyRequiredProperties)
-                {
-                    if (!newProperties.Contains(previouslyRequiredProperty))
-                    {
-                        lock (previouslyRequiredProperty.UsedByProperties)
-                            ((HashSet<TrackedProperty>)previouslyRequiredProperty.UsedByProperties).Remove(property);
-                    }
-                }
-            }
-
-            foreach (var newlyRequiredProperty in newProperties)
-            {
-                lock (newlyRequiredProperty.UsedByProperties)
-                    ((HashSet<TrackedProperty>)newlyRequiredProperty.UsedByProperties).Add(property);
-            }
-
-            property.RequiredProperties = newProperties;
-        }
-
-        if (_touchedProperties?.TryPeek(out var touchedProperties) == true)
-        {
-            touchedProperties.Add(property);
-        }
+        property.OnAfterRead();
     }
 
     private void OnWriteProperty(IInvocation invocation)
@@ -178,7 +147,7 @@ public partial class TrackableInterceptor : IInterceptor
             var property = trackableContext.TryGetTracker(invocation.InvocationTarget)?.TryGetProperty(propertyName);
             if (property != null)
             {
-                OnBeforeWriteProperty(property, newValue, property.LastValue, trackableContext);
+                OnBeforeWriteProperty(property, newValue, property.LastKnownValue, trackableContext);
             }
         }
 
@@ -189,9 +158,9 @@ public partial class TrackableInterceptor : IInterceptor
             var property = trackableContext.TryGetTracker(invocation.InvocationTarget)?.TryGetProperty(propertyName);
             if (property != null)
             {
-                var previousValue = property.LastValue;
+                var previousValue = property.LastKnownValue;
 
-                property.LastValue = newValue;
+                property.LastKnownValue = newValue;
                 OnAfterWriteProperty(property, newValue, previousValue, trackableContext);
                 property.RaisePropertyChanged();
             }

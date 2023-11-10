@@ -13,6 +13,9 @@ public abstract class TrackedProperty
 
     private string? _path;
 
+    [ThreadStatic]
+    private static Stack<HashSet<TrackedProperty>>? _currentTouchedProperties;
+
     public TrackedProperty(string name, Tracker parent, IObserver<TrackedPropertyChange> observer)
     {
         _observer = observer;
@@ -85,9 +88,9 @@ public abstract class TrackedProperty
     public IImmutableDictionary<string, object?> Data { get; set; } = ImmutableDictionary<string, object?>.Empty;
 
     /// <summary>
-    /// Gets the last known value of this property.
+    /// Gets the last known value without evauluating the property.
     /// </summary>
-    public object? LastValue { get; internal protected set; }
+    public object? LastKnownValue { get; protected internal set; }
 
     public void ConvertToAttribute(string attributeName, string propertyName)
     {
@@ -96,15 +99,25 @@ public abstract class TrackedProperty
             throw new InvalidOperationException($"Cannot find property {propertyName}.");
     }
 
-    public virtual object? GetValue()
+    public virtual object? Value
     {
-        return LastValue;
-    }
-
-    public virtual void SetValue(object? value)
-    {
-        LastValue = value;
-        RaisePropertyChanged();
+        get
+        {
+            OnBeforeRead();
+            try
+            {
+                return LastKnownValue;
+            }
+            finally
+            {
+                OnAfterRead();
+            }
+        }
+        set
+        {
+            LastKnownValue = value;
+            RaisePropertyChanged();
+        }
     }
 
     internal void RaisePropertyChanged()
@@ -114,7 +127,7 @@ public abstract class TrackedProperty
 
     private void RaisePropertyChanged(HashSet<TrackedProperty> markedProperties)
     {
-        _observer.OnNext(new TrackedPropertyChange(this, Data, LastValue));
+        _observer.OnNext(new TrackedPropertyChange(this, Data, LastKnownValue));
 
         markedProperties.Add(this);
         foreach (var dependentProperty in UsedByProperties)
@@ -123,6 +136,61 @@ public abstract class TrackedProperty
             {
                 dependentProperty.RaisePropertyChanged(markedProperties);
             }
+        }
+    }
+
+    protected internal void OnBeforeRead()
+    {
+        ResetTouchedProperties();
+    }
+
+    protected internal void OnAfterRead()
+    {
+        StoreTouchedProperties();
+        TouchProperty();
+    }
+
+    private static void ResetTouchedProperties()
+    {
+        if (_currentTouchedProperties == null)
+        {
+            _currentTouchedProperties = new Stack<HashSet<TrackedProperty>>();
+        }
+
+        _currentTouchedProperties.Push(new HashSet<TrackedProperty>());
+    }
+
+    private void StoreTouchedProperties()
+    {
+        if (IsDerived)
+        {
+            var newProperties = _currentTouchedProperties!.Pop();
+            var previouslyRequiredProperties = RequiredProperties;
+            if (previouslyRequiredProperties != null)
+            {
+                foreach (var previouslyRequiredProperty in previouslyRequiredProperties)
+                {
+                    if (!newProperties.Contains(previouslyRequiredProperty))
+                    {
+                        lock (previouslyRequiredProperty.UsedByProperties)
+                            ((HashSet<TrackedProperty>)previouslyRequiredProperty.UsedByProperties).Remove(this);
+                    }
+                }
+            }
+
+            foreach (var newlyRequiredProperty in newProperties)
+            {
+                lock (newlyRequiredProperty.UsedByProperties)
+                    ((HashSet<TrackedProperty>)newlyRequiredProperty.UsedByProperties).Add(this);
+            }
+        }
+    }
+
+    private void TouchProperty()
+    {
+        if (_currentTouchedProperties?.TryPeek(out var touchedProperties) == true)
+        {
+            touchedProperties.Add(this);
         }
     }
 }

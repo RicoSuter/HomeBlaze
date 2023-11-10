@@ -124,7 +124,7 @@ public class TrackableContext<TObject> : ITrackableContext
                     var property = CreateAndAddTrackableProperty(propertyReflectionMetadata, tracker, parentCollectionKey);
                     if (property.IsReadable)
                     {
-                        var value = property.GetValue();
+                        var value = property.Value;
                         if (value != null)
                         {
                             AttachPropertyValue(property, value);

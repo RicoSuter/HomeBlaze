@@ -141,7 +141,7 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
             // write updates
             foreach (var update in resolvedUpdates)
             {
-                update.Variable!.SetValue(update.Value);
+                update.Variable!.                Value=update.Value;
             }
 
             return Ok();

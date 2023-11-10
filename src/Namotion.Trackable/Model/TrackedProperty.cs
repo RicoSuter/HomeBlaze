@@ -4,11 +4,10 @@ namespace Namotion.Trackable.Model;
 
 public class TrackedProperty<TProperty> : TrackedProperty
 {
-    public TrackedProperty(
-        string name, TProperty? value, Tracker parent, IObserver<TrackedPropertyChange> observer)
+    public TrackedProperty(string name, TProperty? value, Tracker parent, IObserver<TrackedPropertyChange> observer)
         : base(name, parent, observer)
     {
-        base.LastValue = value;
+        base.LastKnownValue = value;
     }
 
     public override bool IsReadable => true;
@@ -17,9 +16,12 @@ public class TrackedProperty<TProperty> : TrackedProperty
 
     public override bool IsDerived => false;
 
-    public new TProperty? LastValue => (TProperty?)base.LastValue;
+    /// <summary>
+    /// <inheritdoc cref="TrackedProperty.LastKnownValue"/>/>
+    /// </summary>
+    public new TProperty? LastKnownValue => (TProperty?)base.LastKnownValue;
 
-    public override Type PropertyType => LastValue?.GetType() ?? typeof(object);
+    public override Type PropertyType => typeof(TProperty);
 
     public static TrackedProperty CreateAttribute(TrackedProperty attributedProperty, string attributeName, TProperty? value, IObserver<TrackedPropertyChange> observer)
     {
