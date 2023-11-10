@@ -19,6 +19,4 @@ public interface ITrackableContext : IObservable<TrackedPropertyChange>, IObserv
     internal void AttachPropertyValue(TrackedProperty property, object newValue);
 
     internal void DetachPropertyValue(TrackedProperty property, object? newValue);
-
-    internal void RaisePropertyChanged(TrackedProperty setVariable);
 }

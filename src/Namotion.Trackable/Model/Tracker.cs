@@ -21,7 +21,7 @@ namespace Namotion.Trackable.Model
             (ParentProperty.Path + (ParentCollectionKey != null ? $"[{ParentCollectionKey}]" : string.Empty)) :
             string.Empty);
 
-        public IEnumerable<TrackedProperty> Properties => _properties.Values;
+        public IReadOnlyDictionary<string, TrackedProperty> Properties => _properties.AsReadOnly();
 
         public Tracker(TrackedProperty? parentProperty, object? parentCollectionKey)
         {

@@ -45,7 +45,7 @@ public class TrackableContext<TObject> : ITrackableContext
             {
                 return _trackers
                     .Values
-                    .SelectMany(t => t.Properties)
+                    .SelectMany(t => t.Properties.Values)
                     .ToArray();
             }
         }
@@ -150,7 +150,7 @@ public class TrackableContext<TObject> : ITrackableContext
                 ((HashSet<ProxyTracker>)property.Children).Remove(tracker);
                 tracker.Object.RemoveTrackableContext(this);
 
-                foreach (var childProperty in tracker.Properties)
+                foreach (var childProperty in tracker.Properties.Values)
                 {
                     DetachPropertyValue(childProperty, null);
                 }
@@ -218,9 +218,6 @@ public class TrackableContext<TObject> : ITrackableContext
             propertyReflectionMetadata.SetValue(parent.Object, child);
         }
     }
-
-    void ITrackableContext.RaisePropertyChanged(TrackedProperty property)
-        => _propertyChangesSubject.OnNext(new TrackedPropertyChange(property, property.Data, property.LastValue));
 
     void ITrackableContext.InitializeProxy(ITrackable proxy) => InitializeProxy(proxy);
 
