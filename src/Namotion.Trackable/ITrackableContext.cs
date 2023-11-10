@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Namotion.Trackable;
 
-public interface ITrackableContext : ITrackableFactory
+public interface ITrackableContext
 {
     ProxyTracker? TryGetTracker(object proxy);
 

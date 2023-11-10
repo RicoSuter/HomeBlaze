@@ -8,6 +8,8 @@ namespace Namotion.Trackable.Tests;
 
 public class TrackableContextTests
 {
+    private static TrackableFactory? _factory;
+
     public class Person
     {
         [Trackable]
@@ -51,7 +53,7 @@ public class TrackableContextTests
         var trackableContext = CreateContext<Person>();
         var trackable = trackableContext.Object;
 
-        var father = trackableContext.CreateProxy<Person>();
+        var father = _factory!.CreateProxy<Person>();
         trackable.Father = father;
 
         var changes = new List<TrackedPropertyChange>();
@@ -72,7 +74,7 @@ public class TrackableContextTests
         var trackableContext = CreateContext<Person>();
         var trackable = trackableContext.Object;
 
-        var father = trackableContext.CreateProxy<Person>();
+        var father = _factory!.CreateProxy<Person>();
         trackable.Father = father;
         trackable.Father = null;
 
@@ -175,8 +177,9 @@ public class TrackableContextTests
         where T : class
     {
         var serviceCollection = new ServiceCollection();
-        return new TrackableContext<T>(new TrackableFactory(
+        _factory = new TrackableFactory(
            Array.Empty<ITrackableInterceptor>(),
-           serviceCollection.BuildServiceProvider()));
+           serviceCollection.BuildServiceProvider());
+        return new TrackableContext<T>(_factory);
     }
 }

@@ -55,22 +55,12 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     {
         _trackableFactory = trackableFactory;
 
-        var proxy = CreateProxy<TObject>();
+        var proxy = trackableFactory.CreateProxy<TObject>();
         if (Object == null)
         {
             Object = proxy;
             InitializeProxy((ITrackable)proxy);
         }
-    }
-
-    public TProxy CreateProxy<TProxy>()
-    {
-        return _trackableFactory.CreateProxy<TProxy>();
-    }
-
-    public object CreateProxy(Type proxyType)
-    {
-        return _trackableFactory.CreateProxy(proxyType);
     }
 
     internal void InitializeProxy(ITrackable proxy)
@@ -244,7 +234,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     {
         if (propertyReflectionMetadata.IsRequired)
         {
-            var child = CreateProxy(propertyReflectionMetadata.PropertyType);
+            var child = _trackableFactory.CreateProxy(propertyReflectionMetadata.PropertyType);
             propertyReflectionMetadata.SetValue(parent.Object, child);
         }
     }

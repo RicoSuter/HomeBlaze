@@ -5,6 +5,8 @@ namespace Namotion.Trackable.Tests;
 
 public class TrackableInterceptorTests
 {
+    private static TrackableFactory? _factory;
+
     public class Person
     {
         [Trackable]
@@ -27,7 +29,7 @@ public class TrackableInterceptorTests
         var trackableContext = CreateContext<Person>();
         var trackable = trackableContext.Object;
 
-        var father = trackableContext.CreateProxy<Person>();
+        var father = _factory!.CreateProxy<Person>();
         var fatherInterceptor = ((ITrackable)father).Interceptor;
 
         // Act & Assert
@@ -44,8 +46,11 @@ public class TrackableInterceptorTests
         where T : class
     {
         var serviceCollection = new ServiceCollection();
-        return new TrackableContext<T>(new TrackableFactory(
+
+        _factory = new TrackableFactory(
             Array.Empty<ITrackableInterceptor>(),
-            serviceCollection.BuildServiceProvider()));
+            serviceCollection.BuildServiceProvider());
+
+        return new TrackableContext<T>(_factory);
     }
 }
