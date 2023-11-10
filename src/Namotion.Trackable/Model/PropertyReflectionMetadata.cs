@@ -59,7 +59,7 @@ public class PropertyReflectionMetadata
 
     public bool IsDerived { get; }
 
-    internal TrackedProperty CreateProperty(Tracker parent)
+    internal TrackedProperty CreateProperty(ProxyTracker parent)
     {
         return TrackableAttribute?.CreateProperty(this, parent) ?? 
             throw new InvalidOperationException($"{nameof(TrackableAttribute)} is null.");

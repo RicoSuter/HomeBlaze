@@ -62,7 +62,7 @@ public abstract class TrackedProperty
     public IReadOnlyCollection<TrackedProperty> UsedByProperties { get; private set; } = new HashSet<TrackedProperty>();
 
     [JsonIgnore]
-    public IReadOnlyCollection<Tracker> Children { get; internal set; } = new HashSet<Tracker>();
+    public IReadOnlyCollection<ProxyTracker> Children { get; internal set; } = new HashSet<ProxyTracker>();
 
     public IEnumerable<string> DependentPropertyPaths => RequiredProperties?.Select(v => v.Path) ?? Array.Empty<string>();
 

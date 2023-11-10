@@ -19,14 +19,14 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     private readonly ConcurrentDictionary<PropertyInfo, PropertyReflectionMetadata> _propertyReflectionMetadataCache = new();
 
     // TODO: Switch to concurrent dict
-    private readonly Dictionary<ITrackable, Tracker> _trackers = new();
+    private readonly Dictionary<ITrackable, ProxyTracker> _trackers = new();
     private readonly ITrackableFactory _trackableFactory;
 
     public TObject Object { get; private set; }
 
     object ITrackableContext.Object => Object;
 
-    public IReadOnlyCollection<Tracker> AllTrackers
+    public IReadOnlyCollection<ProxyTracker> AllTrackers
     {
         get
         {
@@ -106,17 +106,17 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         {
             if (parentProperty != null && proxy is ITrackableWithParent group)
             {
-                group.Parent = parentProperty.Parent.Object;
+                group.Parent = (parentProperty.Parent as ProxyTracker)?.Object;
             }
 
-            tracker = new Tracker(proxy, parentProperty, parentCollectionKey);
+            tracker = new ProxyTracker(proxy, parentProperty, parentCollectionKey);
         
             lock (_trackers)
             {
                 _trackers[proxy] = tracker;
                 if (parentProperty != null)
                 {
-                    ((HashSet<Tracker>)parentProperty.Children).Add(tracker);
+                    ((HashSet<ProxyTracker>)parentProperty.Children).Add(tracker);
                 }
             }
 
@@ -157,7 +157,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
             foreach (var tracker in property.Children.Where(c => newTrackables?.Contains(c.Object) != true))
             {
                 _trackers.Remove(tracker.Object);
-                ((HashSet<Tracker>)property.Children).Remove(tracker);
+                ((HashSet<ProxyTracker>)property.Children).Remove(tracker);
                 tracker.Object.RemoveTrackableContext(this);
 
                 foreach (var childProperty in tracker.Properties)
@@ -196,7 +196,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    public Tracker? TryGetTracker(object proxy)
+    public ProxyTracker? TryGetTracker(object proxy)
     {
         lock (_trackers)
         {
@@ -224,7 +224,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    private TrackedProperty CreateAndAddTrackableProperty(PropertyReflectionMetadata propertyReflectionMetadata, Tracker parent, object? parentCollectionKey)
+    private TrackedProperty CreateAndAddTrackableProperty(PropertyReflectionMetadata propertyReflectionMetadata, ProxyTracker parent, object? parentCollectionKey)
     {
         propertyReflectionMetadata.EnsureIsVirtual();
 
@@ -233,14 +233,14 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
 
         foreach (var attribute in propertyReflectionMetadata.PropertyInitializers)
         {
-            attribute.InitializeProperty(property, parent, parentCollectionKey, this);
+            attribute.InitializeProperty(property, parentCollectionKey, this);
         }
 
         TryInitializeRequiredProperty(propertyReflectionMetadata, parent);
         return property;
     }
 
-    private void TryInitializeRequiredProperty(PropertyReflectionMetadata propertyReflectionMetadata, Tracker parent)
+    private void TryInitializeRequiredProperty(PropertyReflectionMetadata propertyReflectionMetadata, ProxyTracker parent)
     {
         if (propertyReflectionMetadata.IsRequired)
         {

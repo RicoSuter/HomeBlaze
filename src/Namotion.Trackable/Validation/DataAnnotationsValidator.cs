@@ -13,7 +13,7 @@ namespace Namotion.Trackable.Validation
 
             if (value is not null)
             {
-                var validationContext = new ValidationContext(property.Parent.Object)
+                var validationContext = new ValidationContext(((ProxyTracker)property.Parent).Object)
                 {
                     MemberName = property.Name
                 };

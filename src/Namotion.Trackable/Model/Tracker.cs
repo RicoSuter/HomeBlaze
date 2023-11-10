@@ -3,48 +3,45 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
-namespace Namotion.Trackable.Model;
-
-public class Tracker
+namespace Namotion.Trackable.Model
 {
-    private IDictionary<string, TrackedProperty> _properties = new ConcurrentDictionary<string, TrackedProperty>();
-
-    private string? _path;
-
-    public Tracker(ITrackable proxy, TrackedProperty? parentProperty, object? parentCollectionKey)
+    public class Tracker
     {
-        Object = proxy;
-        ParentProperty = parentProperty;
-        ParentCollectionKey = parentCollectionKey;
-    }
+        private string? _path;
+        private IDictionary<string, TrackedProperty> _properties = new ConcurrentDictionary<string, TrackedProperty>();
 
-    public ITrackable Object { get; }
+        [JsonIgnore]
+        public IDictionary<string, object?> Data { get; } = new Dictionary<string, object?>();
 
-    public string Path => _path ??= (ParentProperty != null ?
-        (ParentProperty.Path + (ParentCollectionKey != null ? $"[{ParentCollectionKey}]" : string.Empty)) :
-        string.Empty);
+        public object? ParentCollectionKey { get; }
 
-    public TrackedProperty? ParentProperty { get; }
+        public TrackedProperty? ParentProperty { get; }
 
-    public object? ParentCollectionKey { get; }
+        public string Path => _path ??= (ParentProperty != null ?
+            (ParentProperty.Path + (ParentCollectionKey != null ? $"[{ParentCollectionKey}]" : string.Empty)) :
+            string.Empty);
 
-    public IEnumerable<TrackedProperty> Properties => _properties.Values;
+        public IEnumerable<TrackedProperty> Properties => _properties.Values;
 
-    [JsonIgnore]
-    public IDictionary<string, object?> Data { get; } = new Dictionary<string, object?>();
+        public Tracker(TrackedProperty? parentProperty, object? parentCollectionKey)
+        {
+            ParentProperty = parentProperty;
+            ParentCollectionKey = parentCollectionKey;
+        }
 
-    public TrackedProperty? TryGetProperty(string propertyName)
-    {
-        return _properties.TryGetValue(propertyName, out var property) ? property : null;
-    }
+        public void AddProperty(TrackedProperty property)
+        {
+            _properties[property.Name] = property;
+        }
 
-    public void AddProperty(TrackedProperty property)
-    {
-        _properties[property.Name] = property;
-    }
+        public TrackedProperty? TryGetProperty(string propertyName)
+        {
+            return _properties.TryGetValue(propertyName, out var property) ? property : null;
+        }
 
-    internal void FreezeProperties()
-    {
-        _properties = new ReadOnlyDictionary<string, TrackedProperty>(_properties);
+        internal void FreezeProperties()
+        {
+            _properties = new ReadOnlyDictionary<string, TrackedProperty>(_properties);
+        }
     }
 }

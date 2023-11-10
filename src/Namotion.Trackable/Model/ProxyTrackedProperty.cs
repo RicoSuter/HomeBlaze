@@ -2,18 +2,20 @@
 
 namespace Namotion.Trackable.Model;
 
-public class ReflectionTrackedProperty : TrackedProperty
+public class ProxyTrackedProperty : TrackedProperty
 {
     private readonly PropertyReflectionMetadata _propertyReflectionMetadata;
+    private readonly ProxyTracker _parent;
 
-    public ReflectionTrackedProperty(PropertyReflectionMetadata property, Tracker parent)
+    public ProxyTrackedProperty(PropertyReflectionMetadata property, ProxyTracker parent)
         : this(property.Name, property, parent)
     {
     }
 
-    public ReflectionTrackedProperty(string name, PropertyReflectionMetadata propertyReflectionMetadata, Tracker parent) 
+    public ProxyTrackedProperty(string name, PropertyReflectionMetadata propertyReflectionMetadata, ProxyTracker parent) 
         : base(name, parent)
     {
+        _parent = parent;
         _propertyReflectionMetadata = propertyReflectionMetadata;
 
         IsReadable = propertyReflectionMetadata.IsReadable;
@@ -32,11 +34,11 @@ public class ReflectionTrackedProperty : TrackedProperty
 
     public override object? GetValue()
     {
-        return _propertyReflectionMetadata.GetValue(Parent.Object);
+        return _propertyReflectionMetadata.GetValue(_parent.Object);
     }
 
     public override void SetValue(object? value)
     {
-        _propertyReflectionMetadata.SetValue(Parent.Object, value);
+        _propertyReflectionMetadata.SetValue(_parent.Object, value);
     }
 }

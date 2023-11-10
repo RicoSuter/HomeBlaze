@@ -4,5 +4,5 @@ namespace Namotion.Trackable.Attributes;
 
 public interface ITrackablePropertyInitializer
 {
-    void InitializeProperty(TrackedProperty property, Tracker parent, object? parentCollectionKey, ITrackableContext context);
+    void InitializeProperty(TrackedProperty property, object? parentCollectionKey, ITrackableContext context);
 }

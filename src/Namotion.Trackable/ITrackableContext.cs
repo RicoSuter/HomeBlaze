@@ -5,9 +5,9 @@ namespace Namotion.Trackable;
 
 public interface ITrackableContext : ITrackableFactory
 {
-    Tracker? TryGetTracker(object proxy);
+    ProxyTracker? TryGetTracker(object proxy);
 
-    IReadOnlyCollection<Tracker> AllTrackers { get; }
+    IReadOnlyCollection<ProxyTracker> AllTrackers { get; }
 
     IReadOnlyCollection<TrackedProperty> AllProperties { get; }
 

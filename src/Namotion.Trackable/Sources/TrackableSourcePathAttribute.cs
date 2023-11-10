@@ -19,9 +19,9 @@ public class TrackableSourcePathAttribute : Attribute, ITrackablePropertyInitial
         Path = path;
     }
 
-    public void InitializeProperty(TrackedProperty property, Tracker parent, object? parentCollectionKey, ITrackableContext context)
+    public void InitializeProperty(TrackedProperty property, object? parentCollectionKey, ITrackableContext context)
     {
-        var parentPath = parent.ParentProperty?.TryGetAttributeBasedSourcePathPrefix(SourceName) +
+        var parentPath = property.Parent.ParentProperty?.TryGetAttributeBasedSourcePathPrefix(SourceName) +
             (parentCollectionKey != null ? $"[{parentCollectionKey}]" : string.Empty);
 
         var sourcePath = GetSourcePath(parentPath, property);
