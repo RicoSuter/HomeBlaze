@@ -190,8 +190,10 @@ public partial class TrackableInterceptor : IInterceptor
             if (property != null)
             {
                 var previousValue = property.LastValue;
+
                 property.LastValue = newValue;
                 OnAfterWriteProperty(property, newValue, previousValue, trackableContext);
+                property.RaisePropertyChanged();
             }
         }
     }
@@ -223,7 +225,5 @@ public partial class TrackableInterceptor : IInterceptor
                 trackableContext.AttachPropertyValue(property, newValue);
             }
         }
-
-        trackableContext.MarkPropertyAsChanged(property);
     }
 }

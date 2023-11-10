@@ -12,10 +12,10 @@ using Namotion.Trackable.Utilities;
 
 namespace Namotion.Trackable;
 
-public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedPropertyChange>
+public class TrackableContext<TObject> : ITrackableContext
     where TObject : class
 {
-    private readonly Subject<TrackedPropertyChange> _changesSubject = new();
+    private readonly Subject<TrackedPropertyChange> _propertyChangesSubject = new();
     private readonly ConcurrentDictionary<PropertyInfo, PropertyReflectionMetadata> _propertyReflectionMetadataCache = new();
 
     // TODO: Switch to concurrent dict
@@ -70,7 +70,7 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
     }
 
     public IDisposable Subscribe(IObserver<TrackedPropertyChange> observer)
-        => _changesSubject.Subscribe(observer);
+        => _propertyChangesSubject.Subscribe(observer);
 
     public IObservable<TField?> Observe<TField>(Expression<Func<TObject, TField>> selector)
     {
@@ -194,31 +194,11 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
-    internal void MarkPropertyAsChanged(TrackedProperty variable)
-    {
-        MarkVariableAsChanged(variable, new HashSet<TrackedProperty>());
-    }
-
-    private void MarkVariableAsChanged(TrackedProperty property, HashSet<TrackedProperty> markedVariables)
-    {
-        _changesSubject.OnNext(new TrackedPropertyChange(property, property.Data, property.LastValue));
-
-        markedVariables.Add(property);
-
-        foreach (var dependentProperty in property.UsedByProperties)
-        {
-            if (!markedVariables.Contains(dependentProperty))
-            {
-                MarkVariableAsChanged(dependentProperty, markedVariables);
-            }
-        }
-    }
-
     private TrackedProperty CreateAndAddTrackableProperty(PropertyReflectionMetadata propertyReflectionMetadata, ProxyTracker parent, object? parentCollectionKey)
     {
         propertyReflectionMetadata.EnsureIsVirtual();
 
-        var property = propertyReflectionMetadata.CreateProperty(parent);
+        var property = propertyReflectionMetadata.CreateProperty(parent, _propertyChangesSubject);       
         parent.AddProperty(property);
 
         foreach (var attribute in propertyReflectionMetadata.PropertyInitializers)
@@ -239,11 +219,18 @@ public class TrackableContext<TObject> : ITrackableContext, IObservable<TrackedP
         }
     }
 
+    void ITrackableContext.RaisePropertyChanged(TrackedProperty property)
+        => _propertyChangesSubject.OnNext(new TrackedPropertyChange(property, property.Data, property.LastValue));
+
     void ITrackableContext.InitializeProxy(ITrackable proxy) => InitializeProxy(proxy);
 
     void ITrackableContext.AttachPropertyValue(TrackedProperty property, object newValue) => AttachPropertyValue(property, newValue);
 
     void ITrackableContext.DetachPropertyValue(TrackedProperty property, object? newValue) => DetachPropertyValue(property, newValue);
 
-    void ITrackableContext.MarkPropertyAsChanged(TrackedProperty property) => MarkPropertyAsChanged(property);
+    public void OnCompleted() => _propertyChangesSubject.OnCompleted();
+
+    public void OnError(Exception error) => _propertyChangesSubject.OnError(error);
+
+    public void OnNext(TrackedPropertyChange value) => _propertyChangesSubject.OnNext(value);
 }

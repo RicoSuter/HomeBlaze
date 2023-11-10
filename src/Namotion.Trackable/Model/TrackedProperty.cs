@@ -9,10 +9,14 @@ namespace Namotion.Trackable.Model;
 
 public abstract class TrackedProperty
 {
+    private readonly IObserver<TrackedPropertyChange> _observer;
+
     private string? _path;
 
-    public TrackedProperty(string name, Tracker parent)
+    public TrackedProperty(string name, Tracker parent, IObserver<TrackedPropertyChange> observer)
     {
+        _observer = observer;
+
         Name = name;
         Parent = parent;
     }
@@ -64,13 +68,19 @@ public abstract class TrackedProperty
     [JsonIgnore]
     public IReadOnlyCollection<ProxyTracker> Children { get; internal set; } = new HashSet<ProxyTracker>();
 
-    public IEnumerable<string> DependentPropertyPaths => RequiredProperties?.Select(v => v.Path) ?? Array.Empty<string>();
+    internal IEnumerable<string> DependentPropertyPaths => RequiredProperties?.Select(v => v.Path) ?? Array.Empty<string>();
 
+    /// <summary>
+    /// Gets the attributes of this property which are internally properties on the same parent tracker.
+    /// </summary>
     public Dictionary<string, TrackedProperty> Attributes => Parent
         .Properties
         .Where(p => p.AttributedProperty == this)
         .ToDictionary(v => v.AttributeName!, v => v);
 
+    /// <summary>
+    /// Gets the current additional data of this property (can be used by consumer).
+    /// </summary>
     [JsonIgnore]
     public IImmutableDictionary<string, object?> Data { get; set; } = ImmutableDictionary<string, object?>.Empty;
 
@@ -88,11 +98,31 @@ public abstract class TrackedProperty
 
     public virtual object? GetValue()
     {
-        throw new NotImplementedException();
+        return LastValue;
     }
 
     public virtual void SetValue(object? value)
     {
-        throw new NotImplementedException();
+        LastValue = value;
+        RaisePropertyChanged();
+    }
+
+    internal void RaisePropertyChanged()
+    {
+        RaisePropertyChanged(new HashSet<TrackedProperty>());
+    }
+
+    private void RaisePropertyChanged(HashSet<TrackedProperty> markedProperties)
+    {
+        _observer.OnNext(new TrackedPropertyChange(this, Data, LastValue));
+
+        markedProperties.Add(this);
+        foreach (var dependentProperty in UsedByProperties)
+        {
+            if (!markedProperties.Contains(dependentProperty))
+            {
+                dependentProperty.RaisePropertyChanged(markedProperties);
+            }
+        }
     }
 }

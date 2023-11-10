@@ -4,8 +4,8 @@ namespace Namotion.Trackable.Model;
 
 public class StaticTrackedProperty : TrackedProperty
 {
-    public StaticTrackedProperty(string name, Tracker parent, object? value)
-        : base(name, parent)
+    public StaticTrackedProperty(string name, Tracker parent, object? value, IObserver<TrackedPropertyChange> observer)
+        : base(name, parent, observer)
     {
         LastValue = value;
     }
@@ -18,9 +18,9 @@ public class StaticTrackedProperty : TrackedProperty
 
     public override Type PropertyType => LastValue?.GetType() ?? typeof(object);
 
-    public static TrackedProperty CreateAttribute(string propertyName, string attributeName, Tracker parent, object? value)
+    public static TrackedProperty CreateAttribute(string propertyName, string attributeName, Tracker parent, object? value, IObserver<TrackedPropertyChange> observer)
     {
-        var property = new StaticTrackedProperty($"{propertyName}.{attributeName}", parent, value);
+        var property = new StaticTrackedProperty($"{propertyName}.{attributeName}", parent, value, observer);
         property.ConvertToAttribute(attributeName, propertyName);
         return property;
     }

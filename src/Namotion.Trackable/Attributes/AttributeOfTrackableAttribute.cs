@@ -16,9 +16,9 @@ public class AttributeOfTrackableAttribute : TrackableAttribute
 
     public string AttributeName { get; }
 
-    public override TrackedProperty CreateProperty(PropertyReflectionMetadata propertyReflectionMetadata, ProxyTracker parent)
+    public override TrackedProperty CreateProperty(PropertyReflectionMetadata propertyReflectionMetadata, ProxyTracker parent, IObserver<TrackedPropertyChange> observer)
     {
-        var property = new ProxyTrackedProperty($"{PropertyName}.{AttributeName}", propertyReflectionMetadata, parent);
+        var property = new ProxyTrackedProperty($"{PropertyName}.{AttributeName}", propertyReflectionMetadata, parent, observer);
         property.ConvertToAttribute(AttributeName, PropertyName);
         return property;
     }

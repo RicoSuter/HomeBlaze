@@ -7,13 +7,15 @@ public class ProxyTrackedProperty : TrackedProperty
     private readonly PropertyReflectionMetadata _propertyReflectionMetadata;
     private readonly ProxyTracker _parent;
 
-    public ProxyTrackedProperty(PropertyReflectionMetadata property, ProxyTracker parent)
-        : this(property.Name, property, parent)
+    public ProxyTrackedProperty(PropertyReflectionMetadata property, 
+        ProxyTracker parent, IObserver<TrackedPropertyChange> observer)
+        : this(property.Name, property, parent, observer)
     {
     }
 
-    public ProxyTrackedProperty(string name, PropertyReflectionMetadata propertyReflectionMetadata, ProxyTracker parent) 
-        : base(name, parent)
+    public ProxyTrackedProperty(string name, PropertyReflectionMetadata propertyReflectionMetadata, 
+        ProxyTracker parent, IObserver<TrackedPropertyChange> observer) 
+        : base(name, parent, observer)
     {
         _parent = parent;
         _propertyReflectionMetadata = propertyReflectionMetadata;

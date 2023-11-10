@@ -100,7 +100,7 @@ namespace Namotion.Trackable.SampleWeb
 
             public void InitializeProperty(TrackedProperty property, object? parentCollectionKey, ITrackableContext context)
             {
-                property.Parent.AddProperty(StaticTrackedProperty.CreateAttribute(property.Name, "Unit", property.Parent, _unit));
+                property.Parent.AddProperty(StaticTrackedProperty.CreateAttribute(property.Name, "Unit", property.Parent, _unit, context));
             }
         }
 

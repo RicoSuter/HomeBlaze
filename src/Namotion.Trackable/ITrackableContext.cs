@@ -1,9 +1,10 @@
 ﻿using Namotion.Trackable.Model;
+using System;
 using System.Collections.Generic;
 
 namespace Namotion.Trackable;
 
-public interface ITrackableContext
+public interface ITrackableContext : IObservable<TrackedPropertyChange>, IObserver<TrackedPropertyChange>
 {
     ProxyTracker? TryGetTracker(object proxy);
 
@@ -19,5 +20,5 @@ public interface ITrackableContext
 
     internal void DetachPropertyValue(TrackedProperty property, object? newValue);
 
-    internal void MarkPropertyAsChanged(TrackedProperty setVariable);
+    internal void RaisePropertyChanged(TrackedProperty setVariable);
 }
