@@ -13,7 +13,6 @@ public partial class TrackableInterceptor : IInterceptor
     private readonly object _lock = new();
 
     private readonly IEnumerable<ITrackableInterceptor> _interceptors;
-    private readonly IInterceptor[] _castleInterceptors;
 
     private ITrackableContext[] _trackableContexts = Array.Empty<ITrackableContext>();
 
@@ -22,7 +21,6 @@ public partial class TrackableInterceptor : IInterceptor
     public TrackableInterceptor(IEnumerable<ITrackableInterceptor> interceptors)
     {
         _interceptors = interceptors;
-        _castleInterceptors = _interceptors.OfType<IInterceptor>().Reverse().ToArray();
     }
 
     public void Intercept(IInvocation invocation)

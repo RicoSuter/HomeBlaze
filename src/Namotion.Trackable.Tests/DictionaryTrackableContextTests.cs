@@ -99,8 +99,6 @@ public class DictionaryTrackableContextTests
         where T : class
     {
         var serviceCollection = new ServiceCollection();
-        return new TrackableContext<T>(new TrackableFactory(
-            Array.Empty<ITrackableInterceptor>(),
-            serviceCollection.BuildServiceProvider()));
+        return new TrackableContext<T>(new TrackableFactory(serviceCollection.BuildServiceProvider()));
     }
 }

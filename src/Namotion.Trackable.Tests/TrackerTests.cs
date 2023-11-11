@@ -14,13 +14,13 @@ namespace Namotion.Trackable.Tests
             var tracker = new Tracker();
             var firstName = new TrackedProperty<string>("FirstName", "Rico", tracker, subject);
             var lastName = new TrackedProperty<string>("LastName", "Suter", tracker, subject);
+            var fullName = new DerivedTrackedProperty<string>("FullName",
+                () => $"{firstName.Value} {lastName.Value}",
+                null, tracker, subject);
 
             tracker.AddProperty(firstName);
             tracker.AddProperty(lastName);
-            tracker.AddProperty(new DerivedTrackedProperty<string>("FullName", 
-                () => $"{firstName.Value} {lastName.Value}", 
-                null, 
-                tracker, subject));
+            tracker.AddProperty(fullName);
 
             var propertyChanges = new List<TrackedPropertyChange>();
             subject.Subscribe(propertyChanges.Add);
@@ -29,8 +29,8 @@ namespace Namotion.Trackable.Tests
             firstName.Value = "Foo";
             lastName.Value = "Bar";
 
-            var getValueFullName = tracker.Properties["FullName"].GetValue();
-            var lastKnownValueFullName = tracker.Properties["FullName"].LastKnownValue;
+            var getValueFullName = fullName.GetValue();
+            var lastKnownValueFullName = fullName.LastKnownValue;
 
             // Assert
             Assert.Equal(4, propertyChanges.Count);

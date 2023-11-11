@@ -43,19 +43,13 @@ namespace Namotion.Trackable.Benchmark
             }
             else if (Type == "trackable_small")
             {
-                _factory = new TrackableFactory(
-                    Array.Empty<ITrackableInterceptor>(),
-                    new ServiceCollection().BuildServiceProvider());
-
+                _factory = new TrackableFactory(new ServiceCollection().BuildServiceProvider());
                 var context = new TrackableContext<Car>(_factory);
                 _object = context.Object;
             }
             else
             {
-                _factory = new TrackableFactory(
-                    Array.Empty<ITrackableInterceptor>(),
-                    new ServiceCollection().BuildServiceProvider());
-
+                _factory = new TrackableFactory(new ServiceCollection().BuildServiceProvider());
                 var context = new TrackableContext<Car>(_factory);
                 _object = context.Object;
                 AddLotsOfPreviousCars();

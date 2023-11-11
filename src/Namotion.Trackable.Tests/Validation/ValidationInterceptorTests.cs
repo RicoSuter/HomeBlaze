@@ -45,7 +45,7 @@ public class ValidationInterceptorTests
     {
         var serviceCollection = new ServiceCollection();
         return new TrackableContext<T>(new TrackableFactory(
-            new ITrackableInterceptor[] { new ValidationTrackableInterceptor(propertyValidators) },
-            serviceCollection.BuildServiceProvider()));
+            serviceCollection.BuildServiceProvider(),
+            new ITrackableInterceptor[] { new ValidationTrackableInterceptor(propertyValidators) }));
     }
 }

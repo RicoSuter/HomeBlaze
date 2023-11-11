@@ -43,7 +43,7 @@ public class TransactionInterceptorTests
     {
         var serviceCollection = new ServiceCollection();
         return new TrackableContext<T>(new TrackableFactory(
-            new ITrackableInterceptor[] { new TransactionTrackableInterceptor() },
-            serviceCollection.BuildServiceProvider()));
+            serviceCollection.BuildServiceProvider(),
+            new ITrackableInterceptor[] { new TransactionTrackableInterceptor() }));
     }
 }

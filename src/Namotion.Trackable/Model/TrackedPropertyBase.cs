@@ -88,7 +88,7 @@ public abstract class TrackedProperty
     public IImmutableDictionary<string, object?> Data { get; set; } = ImmutableDictionary<string, object?>.Empty;
 
     /// <summary>
-    /// Gets the last known value without evauluating the property.
+    /// Gets the last known value without evaluating the property.
     /// </summary>
     public object? LastKnownValue { get; protected internal set; }
 

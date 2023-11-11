@@ -115,11 +115,7 @@ public class CollectionTrackableContextTests
         where T : class
     {
         var serviceCollection = new ServiceCollection();
-
-        _factory = new TrackableFactory(
-            Array.Empty<ITrackableInterceptor>(),
-            serviceCollection.BuildServiceProvider());
-
+        _factory = new TrackableFactory(serviceCollection.BuildServiceProvider());
         return new TrackableContext<T>(_factory);
     }
 }
