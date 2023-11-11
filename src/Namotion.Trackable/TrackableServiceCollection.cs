@@ -26,4 +26,3 @@ public static class TrackableServiceCollection
         return services;
     }
 }
-

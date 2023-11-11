@@ -11,6 +11,7 @@ namespace Namotion.Trackable;
 public partial class TrackableInterceptor : IInterceptor
 {
     private readonly object _lock = new();
+
     private readonly IEnumerable<ITrackableInterceptor> _interceptors;
     private readonly IInterceptor[] _castleInterceptors;
 
