@@ -23,7 +23,12 @@ namespace Namotion.Trackable.Model
 
         public IReadOnlyDictionary<string, TrackedProperty> Properties => _properties.AsReadOnly();
 
+        public Tracker()
+        {
+        }
+
         public Tracker(TrackedProperty? parentProperty, object? parentCollectionKey)
+            : this()
         {
             ParentProperty = parentProperty;
             ParentCollectionKey = parentCollectionKey;

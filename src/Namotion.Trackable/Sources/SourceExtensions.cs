@@ -55,10 +55,10 @@ public static class SourceExtensions
 
         try
         {
-            var currentValue = property.Value;
+            var currentValue = property.GetValue();
             if (!Equals(currentValue, value))
             {
-                property.                Value=value;
+                property.SetValue(value);
             }
         }
         finally

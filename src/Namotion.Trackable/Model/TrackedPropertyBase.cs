@@ -99,25 +99,23 @@ public abstract class TrackedProperty
             throw new InvalidOperationException($"Cannot find property {propertyName}.");
     }
 
-    public virtual object? Value
+    public virtual object? GetValue()
     {
-        get
+        OnBeforeRead();
+        try
         {
-            OnBeforeRead();
-            try
-            {
-                return LastKnownValue;
-            }
-            finally
-            {
-                OnAfterRead();
-            }
+            return LastKnownValue;
         }
-        set
+        finally
         {
-            LastKnownValue = value;
-            RaisePropertyChanged();
+            OnAfterRead();
         }
+    }
+
+    public virtual void SetValue(object? value)
+    {
+        LastKnownValue = value;
+        RaisePropertyChanged();
     }
 
     internal void RaisePropertyChanged()
@@ -141,7 +139,7 @@ public abstract class TrackedProperty
 
     protected internal void OnBeforeRead()
     {
-        ResetTouchedProperties();
+        TryStartRecordingTouchedProperties();
     }
 
     protected internal void OnAfterRead()
@@ -150,14 +148,17 @@ public abstract class TrackedProperty
         TouchProperty();
     }
 
-    private static void ResetTouchedProperties()
+    private void TryStartRecordingTouchedProperties()
     {
-        if (_currentTouchedProperties == null)
+        if (IsDerived)
         {
-            _currentTouchedProperties = new Stack<HashSet<TrackedProperty>>();
-        }
+            if (_currentTouchedProperties == null)
+            {
+                _currentTouchedProperties = new Stack<HashSet<TrackedProperty>>();
+            }
 
-        _currentTouchedProperties.Push(new HashSet<TrackedProperty>());
+            _currentTouchedProperties.Push(new HashSet<TrackedProperty>());
+        }
     }
 
     private void StoreTouchedProperties()
@@ -191,6 +192,10 @@ public abstract class TrackedProperty
         if (_currentTouchedProperties?.TryPeek(out var touchedProperties) == true)
         {
             touchedProperties.Add(this);
+        }
+        else
+        {
+            _currentTouchedProperties = null;
         }
     }
 }

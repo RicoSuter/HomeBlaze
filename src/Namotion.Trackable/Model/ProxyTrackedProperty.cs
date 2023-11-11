@@ -34,9 +34,13 @@ public class ProxyTrackedProperty : TrackedProperty
 
     public override Type PropertyType { get; }
 
-    public override object? Value
+    public override object? GetValue()
     {
-        get => _propertyReflectionMetadata.GetValue(_parent.Object);
-        set => _propertyReflectionMetadata.SetValue(_parent.Object, value);
+        return _propertyReflectionMetadata.GetValue(_parent.Object);
+    }
+
+    public override void SetValue(object? value)
+    {
+        _propertyReflectionMetadata.SetValue(_parent.Object, value);
     }
 }
