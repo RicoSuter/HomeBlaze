@@ -89,7 +89,7 @@ namespace SmartGlass.Messaging.Session
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError("Error sending heartbeat", ex);
+                        logger.LogError(ex, "Error sending heartbeat");
                     }
                     await Task.Delay(_heartbeatInterval);
                     if (DateTime.Now - _lastReceived > _heartbeatTimeout)
