@@ -88,4 +88,28 @@ else
 
         return null;
     }
+
+    public override async Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (EditedThing != null &&
+                _selectedBridge is LocatedBridge selectedBridge)
+            {
+                var client = new LocalHueClient(selectedBridge.IpAddress);
+                var appKey = await client.RegisterAsync("HomeBlaze", "Local");
+
+                EditedThing.AppKey = appKey;
+                EditedThing.BridgeId = selectedBridge.BridgeId;
+
+                return true;
+            }
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Failed to add Philips Hue Bridge", e.Message);
+        }
+
+        return false;
+    }
 }
