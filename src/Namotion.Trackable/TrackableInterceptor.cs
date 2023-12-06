@@ -106,10 +106,7 @@ public partial class TrackableInterceptor : IInterceptor
 
     private void OnBeforeReadProperty(TrackedProperty property, ITrackableContext trackableContext)
     {
-        if (property.IsDerived)
-        {
-            property.OnBeforeRead();
-        }
+        property.OnBeforeRead();
 
         foreach (var interceptor in _interceptors)
         {

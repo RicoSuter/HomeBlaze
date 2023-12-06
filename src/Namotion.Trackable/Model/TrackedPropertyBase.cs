@@ -36,6 +36,7 @@ public abstract class TrackedProperty
 
     public abstract bool IsWriteable { get; }
 
+    [JsonIgnore]
     [MemberNotNullWhen(true, nameof(AttributedProperty))]
     [MemberNotNullWhen(true, nameof(AttributeName))]
     public bool IsAttribute => AttributedProperty != null;
@@ -60,6 +61,8 @@ public abstract class TrackedProperty
     [JsonIgnore]
     public IReadOnlyCollection<TrackedProperty> RequiredProperties { get; internal set; } = ImmutableHashSet<TrackedProperty>.Empty;
 
+    public IEnumerable<string> RequiredPropertyPaths => RequiredProperties?.Select(v => v.Path) ?? Array.Empty<string>();
+
     // TODO: Make all these immutable below
 
     /// <summary>
@@ -68,10 +71,10 @@ public abstract class TrackedProperty
     [JsonIgnore]
     public IReadOnlyCollection<TrackedProperty> UsedByProperties { get; private set; } = new HashSet<TrackedProperty>();
 
+    public IEnumerable<string> UsedByPropertyPaths => UsedByProperties?.Select(v => v.Path) ?? Array.Empty<string>();
+
     [JsonIgnore]
     public IReadOnlyCollection<ProxyTracker> Children { get; internal set; } = new HashSet<ProxyTracker>();
-
-    internal IEnumerable<string> DependentPropertyPaths => RequiredProperties?.Select(v => v.Path) ?? Array.Empty<string>();
 
     /// <summary>
     /// Gets the attributes of this property which are internally properties on the same parent tracker.
@@ -125,7 +128,7 @@ public abstract class TrackedProperty
 
     private void RaisePropertyChanged(HashSet<TrackedProperty> markedProperties)
     {
-        _observer.OnNext(new TrackedPropertyChange(this, Data, LastKnownValue));
+        _observer.OnNext(new TrackedPropertyChange(this, Data, GetValue()));
 
         markedProperties.Add(this);
         foreach (var dependentProperty in UsedByProperties)
@@ -178,6 +181,8 @@ public abstract class TrackedProperty
                     }
                 }
             }
+
+            RequiredProperties = newProperties;
 
             foreach (var newlyRequiredProperty in newProperties)
             {

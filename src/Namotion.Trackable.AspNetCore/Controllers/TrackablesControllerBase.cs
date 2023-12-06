@@ -155,9 +155,16 @@ public abstract class TrackablesControllerBase<TTrackable> : ControllerBase
         }
     }
 
-    [HttpGet("definitions")]
-    public ActionResult GetVariableDefinitions()
+    /// <summary>
+    /// Gets all leaf properties.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("properties")]
+    public ActionResult GetProperties()
     {
-        return Ok(_trackableContext.AllProperties.Where(p => !p.IsAttribute));
+        var allTrackers = _trackableContext.AllTrackers;
+        return Ok(_trackableContext
+            .AllProperties
+            .Where(p => !p.IsAttribute && allTrackers.Any(t => t.ParentProperty == p) == false));
     }
 }
