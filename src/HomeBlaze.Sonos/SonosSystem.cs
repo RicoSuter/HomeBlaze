@@ -25,7 +25,7 @@ namespace HomeBlaze.Sonos
     public class SonosSystem : PollingThing, IIconProvider, ILastUpdatedProvider, IVirtualThing
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        
+
         private SonosEventReceiver? _sonosEventBus;
 
         public bool IsRefreshing { get; private set; }
@@ -42,7 +42,7 @@ namespace HomeBlaze.Sonos
         [State]
         public SonosDevice[] Devices { get; private set; } = Array.Empty<SonosDevice>();
 
-        protected override TimeSpan PollingInterval => TimeSpan.FromSeconds(60);
+        protected override TimeSpan PollingInterval => TimeSpan.FromMinutes(3);
 
         public SonosSystem(
             IThingManager thingManager,
@@ -72,6 +72,12 @@ namespace HomeBlaze.Sonos
         {
             await base.StopAsync(cancellationToken);
             await _sonosEventBus!.StopAsync(cancellationToken);
+        }
+
+        [Operation]
+        public async Task RefreshAsync(CancellationToken cancellationToken)
+        {
+            await PollAsync(cancellationToken);
         }
 
         public override async Task PollAsync(CancellationToken cancellationToken)
