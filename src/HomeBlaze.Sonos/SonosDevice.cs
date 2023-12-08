@@ -2,7 +2,11 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Presentation;
 using Rssdp;
+using Sonos.Base.Metadata;
+using Sonos.Base.Services;
+using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
@@ -10,13 +14,12 @@ using static Sonos.Base.Services.AVTransportService;
 
 namespace HomeBlaze.Sonos
 {
-    public class SonosDevice : IThing, IIconProvider
+    public class SonosDevice : IThing, IIconProvider, IAsyncDisposable
     {
         private readonly SonosSystem _parent;
 
         private SsdpRootDevice _rootDevice;
         private global::Sonos.Base.SonosDevice _sonosDevice;
-
         private GetPositionInfoResponse? _positionInfo;
 
         public string Id => $"sonos/{Uuid}";
@@ -47,19 +50,19 @@ namespace HomeBlaze.Sonos
         public int Volume { get; private set; }
 
         [State]
-        public string? TrackUri => _positionInfo?.TrackURI;
+        public string? TrackUri { get; private set; }
 
         [State]
         public string? TrackTitle { get; private set; }
 
         [State]
-        public string? TrackCreator => _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.Creator;
+        public string? TrackCreator { get; private set; }
 
         [State]
-        public string? TrackAlbum => _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.Album;
+        public string? TrackAlbum { get; private set; }
 
         [State]
-        public string? TrackImageUri => _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.AlbumArtUri;
+        public string? TrackImageUri { get; private set; }
 
         public SonosDevice(SonosSystem parent, SsdpRootDevice rootDevice, global::Sonos.Base.SonosDevice sonosDevice)
         {
@@ -68,16 +71,26 @@ namespace HomeBlaze.Sonos
             _sonosDevice = sonosDevice;
         }
 
-        public void Update(SsdpRootDevice rootDevice, global::Sonos.Base.SonosDevice sonosDevice)
+        internal async Task InitializeAsync()
         {
-            _rootDevice = rootDevice;
-            _sonosDevice = sonosDevice;
+            try
+            {
+                _sonosDevice.AVTransportService.OnEvent += OnAvTransportEvent;
+                _sonosDevice.RenderingControlService.OnEvent += OnRenderingControlEvent;
+
+                await _sonosDevice.AVTransportService.SubscribeForEventsAsync(CancellationToken.None);
+                await _sonosDevice.RenderingControlService.SubscribeForEventsAsync(CancellationToken.None);
+            }
+            catch
+            {
+
+            }
         }
 
         internal async Task RefreshAsync()
         {
             IsPlayer = _rootDevice.Devices.Any(d => d.Services.Any(s => s.ServiceId == "urn:upnp-org:serviceId:AVTransport"));
-           
+
             if (IsPlayer)
             {
                 var response = await _sonosDevice.AVTransportService.GetTransportInfoAsync();
@@ -86,30 +99,12 @@ namespace HomeBlaze.Sonos
                 if (IsPlaying == true)
                 {
                     _positionInfo = await _sonosDevice.AVTransportService.GetPositionInfoAsync();
-                    TrackTitle = null;
 
-                    if (!string.IsNullOrEmpty(_positionInfo?.TrackMetaData) && 
-                        _positionInfo.TrackMetaData != "NOT_IMPLEMENTED")
-                    {
-                        try
-                        {
-                            var xml = XDocument.Parse(_positionInfo.TrackMetaData);
-                            TrackTitle = xml?.Root?
-                                .Elements()
-                                .FirstOrDefault()?
-                                .Element(XName.Get("streamContent", "urn:schemas-rinconnetworks-com:metadata-1-0/"))?
-                                .Value;
-                        }
-                        catch
-                        {
-                            TrackTitle = null;
-                        }
-                    }
-
-                    if (TrackTitle == null)
-                    {
-                        TrackTitle = _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.Title;
-                    }
+                    TrackUri = _positionInfo?.TrackURI;
+                    TrackTitle = GetTrackTitle(_positionInfo?.TrackMetaData, _positionInfo?.TrackMetaDataObject);
+                    TrackCreator = _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.Creator;
+                    TrackAlbum = _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.Album;
+                    TrackImageUri = _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.AlbumArtUri;
                 }
                 else
                 {
@@ -121,6 +116,56 @@ namespace HomeBlaze.Sonos
             }
 
             _parent.ThingManager.DetectChanges(_parent);
+        }
+
+        private static string? GetTrackTitle(string? trackMetaData, Didl? trackMetaDataObject)
+        {
+            string? trackTitle = null;
+
+            if (!string.IsNullOrEmpty(trackMetaData) && trackMetaData != "NOT_IMPLEMENTED")
+            {
+                try
+                {
+                    var xml = XDocument.Parse(trackMetaData);
+                    trackTitle = xml?.Root?
+                        .Elements()
+                        .FirstOrDefault()?
+                        .Element(XName.Get("streamContent", "urn:schemas-rinconnetworks-com:metadata-1-0/"))?
+                        .Value;
+                }
+                catch
+                {
+                    trackTitle = null;
+                }
+            }
+
+            if (trackTitle == null)
+            {
+                trackTitle = trackMetaDataObject?.Items.FirstOrDefault()?.Title;
+            }
+
+            return trackTitle;
+        }
+
+        private void OnRenderingControlEvent(object? sender, RenderingControlService.IRenderingControlEvent e)
+        {
+            if (e.Volume?.TryGetValue("Master", out var volume) == true)
+            {
+                Volume = volume;
+
+                _parent.ThingManager.DetectChanges(this);
+            }
+        }
+
+        private void OnAvTransportEvent(object? sender, IAVTransportEvent e)
+        {
+            TrackUri = e.CurrentTrackURI;
+            TrackTitle = GetTrackTitle(e.CurrentTrackMetaData, e.CurrentTrackMetaDataObject);
+            TrackCreator = e.CurrentTrackMetaDataObject?.Items.FirstOrDefault()?.Creator;
+            TrackAlbum = e.CurrentTrackMetaDataObject?.Items.FirstOrDefault()?.Album;
+            TrackImageUri = e.CurrentTrackMetaDataObject?.Items.FirstOrDefault()?.AlbumArtUri;
+
+            _parent.ThingManager.DetectChanges(this);
         }
 
         [Operation]
@@ -187,9 +232,9 @@ namespace HomeBlaze.Sonos
         public async Task PlayTrackAsync(string trackUri, string? title)
         {
             //var trackUri = "aac://https://chmedia.streamabc.net/79-fm1-aacplus-64-6623023?sABC=6571p103%230%235o62sspn3q052pp705s20n0ss6qn6p2r%23gharva\u0026aw_0_1st.playerid=tunein\u0026amsparams=playerid:tunein;skey:1701953795";
-           
+
             await PlayUriAsync(trackUri, string.Empty, title ?? string.Empty, false);
-           
+
             await PlayAsync();
             await RefreshAsync();
         }
@@ -256,6 +301,15 @@ namespace HomeBlaze.Sonos
                 CurrentURI = uri,
                 CurrentURIMetaData = meta
             });
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            _sonosDevice.AVTransportService.OnEvent -= OnAvTransportEvent;
+            _sonosDevice.RenderingControlService.OnEvent -= OnRenderingControlEvent;
+
+            await _sonosDevice.AVTransportService.CancelEventSubscriptionAsync(CancellationToken.None);
+            await _sonosDevice.RenderingControlService.CancelEventSubscriptionAsync(CancellationToken.None);
         }
     }
 }

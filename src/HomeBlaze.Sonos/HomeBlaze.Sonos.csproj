@@ -11,6 +11,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.10" />
 		<PackageReference Include="Rssdp" Version="4.0.4" />
 		<PackageReference Include="Sonos.Base" Version="0.2.0-beta0038" />
+		<PackageReference Include="Sonos.Base.Events.Http" Version="0.2.0-beta0038" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />

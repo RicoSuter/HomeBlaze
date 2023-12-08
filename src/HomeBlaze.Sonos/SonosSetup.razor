@@ -5,8 +5,12 @@
 
 @inherits ThingSetupComponent<SonosSystem>
 
-<div>Sonos devices will automatically be discovered...</div>
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Host" Label="Host (e.g. HomeBlaze IP address)" />
+</MudForm>
 
 @code {
-   public override bool IsValid => true;
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
 }

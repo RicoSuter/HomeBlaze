@@ -15,14 +15,18 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Sonos.Base;
+using Sonos.Base.Events.Http;
+using Microsoft.Extensions.Options;
 
 namespace HomeBlaze.Sonos
 {
     [DisplayName("Sonos System")]
-    [ThingSetup(typeof(SonosSetup))]
+    [ThingSetup(typeof(SonosSetup), CanEdit = true)]
     public class SonosSystem : PollingThing, IIconProvider, ILastUpdatedProvider, IVirtualThing
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        
+        private SonosEventReceiver? _sonosEventBus;
 
         public bool IsRefreshing { get; private set; }
 
@@ -32,8 +36,13 @@ namespace HomeBlaze.Sonos
 
         public DateTimeOffset? LastUpdated { get; private set; }
 
+        [Configuration]
+        public string? Host { get; set; }
+
         [State]
         public SonosDevice[] Devices { get; private set; } = Array.Empty<SonosDevice>();
+
+        protected override TimeSpan PollingInterval => TimeSpan.FromSeconds(60);
 
         public SonosSystem(
             IThingManager thingManager,
@@ -42,6 +51,27 @@ namespace HomeBlaze.Sonos
             : base(thingManager, logger)
         {
             _httpClientFactory = httpClientFactory;
+        }
+
+        public override async Task StartAsync(CancellationToken cancellationToken)
+        {
+            _sonosEventBus = new SonosEventReceiver(
+                _httpClientFactory.CreateClient(),
+                null,
+                null,
+                Options.Create(new SonosEventReceiverOptions
+                {
+                    Host = Host
+                }));
+
+            await _sonosEventBus.StartAsync(cancellationToken);
+            await base.StartAsync(cancellationToken);
+        }
+
+        public override async Task StopAsync(CancellationToken cancellationToken)
+        {
+            await base.StopAsync(cancellationToken);
+            await _sonosEventBus!.StopAsync(cancellationToken);
         }
 
         public override async Task PollAsync(CancellationToken cancellationToken)
@@ -54,23 +84,22 @@ namespace HomeBlaze.Sonos
                     using var httpClient = _httpClientFactory.CreateClient();
 
                     var foundDevices = await FindSonosDevicesAsync(httpClient);
+                    var currentDevices = Devices;
 
-                    Devices =
-                        (await Task.WhenAll(foundDevices.Values.Select(rootDevice => Task.Run(async () =>
+                    var devices = await Task.WhenAll(foundDevices.Values
+                        .Select(rootDevice => Task.Run(async () =>
                         {
                             try
                             {
-                                var sonosDevice = new global::Sonos.Base.SonosDevice(
-                                    new SonosDeviceOptions(rootDevice.UrlBase, new SonosServiceProvider()));
+                                var device = currentDevices.FirstOrDefault(d => d.Uuid == rootDevice.Uuid);
+                                if (device == null)
+                                {
+                                    var sonosDevice = new global::Sonos.Base.SonosDevice(
+                                        new SonosDeviceOptions(rootDevice.UrlBase,
+                                        new SonosServiceProvider(_httpClientFactory, null, _sonosEventBus)));
 
-                                var device = Devices.FirstOrDefault(d => d.Uuid == rootDevice.Uuid);
-                                if (device != null)
-                                {
-                                    device.Update(rootDevice, sonosDevice);
-                                }
-                                else
-                                {
                                     device = new SonosDevice(this, rootDevice, sonosDevice);
+                                    await device.InitializeAsync();
                                 }
 
                                 await device.RefreshAsync();
@@ -80,10 +109,17 @@ namespace HomeBlaze.Sonos
                             {
                                 return null;
                             }
-                        }))))
+                        })));
+
+                    Devices = devices
                         .Where(d => d is not null)
                         .OrderBy(d => d!.ModelName)
                         .ToArray()!;
+
+                    foreach (var removedDevice in currentDevices.Except(Devices))
+                    {
+                        await removedDevice.DisposeAsync();
+                    }
 
                     LastUpdated = DateTime.Now;
                 }
