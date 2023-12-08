@@ -39,6 +39,7 @@
 		<ProjectReference Include="..\HomeBlaze.OpenWeatherMap\HomeBlaze.OpenWeatherMap.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Philips.Hue\HomeBlaze.Philips.Hue.csproj" />
 		<ProjectReference Include="..\HomeBlaze.PushOver\HomeBlaze.PushOver.csproj" />
+		<ProjectReference Include="..\HomeBlaze.Sonos\HomeBlaze.Sonos.csproj" />
 		<ProjectReference Include="..\HomeBlaze.SpeedtestNet\HomeBlaze.SpeedtestNet.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Tesla\HomeBlaze.Tesla.csproj" />
 		<ProjectReference Include="..\HomeBlaze.ThanksMister\HomeBlaze.ThanksMister.csproj" />

@@ -1,0 +1,12 @@
+﻿@using System.Threading;
+@using HomeBlaze.Sonos;
+@using HomeBlaze.Components;
+@using MudBlazor;
+
+@inherits ThingSetupComponent<SonosSystem>
+
+<div>Sonos devices will automatically be discovered...</div>
+
+@code {
+   public override bool IsValid => true;
+}
