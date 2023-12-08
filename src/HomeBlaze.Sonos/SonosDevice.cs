@@ -10,7 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
+
 using static Sonos.Base.Services.AVTransportService;
+using static Sonos.Base.Services.RenderingControlService;
 
 namespace HomeBlaze.Sonos
 {
@@ -26,7 +28,7 @@ namespace HomeBlaze.Sonos
 
         public string? Title => $"{ModelName} ({RoomName})";
 
-        public string IconName => IsPlayer ? "fa-solid fa-play" : "fa-solid fa-volume-low";
+        public string IconName => IsAudioPlayer ? "fa-solid fa-play" : "fa-solid fa-volume-low";
 
         [State]
         public string Uuid => _rootDevice.Uuid;
@@ -41,28 +43,31 @@ namespace HomeBlaze.Sonos
         public string? Host => _rootDevice.UrlBase.Host;
 
         [State]
-        public bool IsPlayer { get; private set; }
+        public bool IsAudioPlayer { get; private set; }
 
         [State]
-        public bool? IsPlaying { get; internal set; }
+        public bool? IsAudioPlaying { get; internal set; }
 
         [State]
-        public int Volume { get; private set; }
+        public int AudioVolume { get; private set; }
 
         [State]
-        public string? TrackUri { get; private set; }
+        public bool IsAudioMuted { get; private set; }
 
         [State]
-        public string? TrackTitle { get; private set; }
+        public string? CurrentAudioTrackUri { get; private set; }
 
         [State]
-        public string? TrackCreator { get; private set; }
+        public string? CurrentAudioTrackTitle { get; private set; }
 
         [State]
-        public string? TrackAlbum { get; private set; }
+        public string? CurrentAudioTrackCreator { get; private set; }
 
         [State]
-        public string? TrackImageUri { get; private set; }
+        public string? CurrentAudioTrackAlbum { get; private set; }
+
+        [State]
+        public string? CurrentAudioTrackImageUri { get; private set; }
 
         public SonosDevice(SonosSystem parent, SsdpRootDevice rootDevice, global::Sonos.Base.SonosDevice sonosDevice)
         {
@@ -83,18 +88,17 @@ namespace HomeBlaze.Sonos
             }
             catch
             {
-
             }
         }
 
         internal async Task RefreshAsync()
         {
-            IsPlayer = _rootDevice.Devices.Any(d => d.Services.Any(s => s.ServiceId == "urn:upnp-org:serviceId:AVTransport"));
+            IsAudioPlayer = _rootDevice.Devices.Any(d => d.Services.Any(s => s.ServiceId == "urn:upnp-org:serviceId:AVTransport"));
 
-            if (IsPlayer)
+            if (IsAudioPlayer)
             {
                 var response = await _sonosDevice.AVTransportService.GetTransportInfoAsync();
-                IsPlaying = response.CurrentTransportState == "PLAYING";
+                IsAudioPlaying = response.CurrentTransportState == "PLAYING";
 
                 try
                 {
@@ -105,23 +109,29 @@ namespace HomeBlaze.Sonos
                 {
                 }
 
-                if (IsPlaying == true)
+                if (IsAudioPlaying == true)
                 {
                     _positionInfo = await _sonosDevice.AVTransportService.GetPositionInfoAsync();
 
-                    TrackUri = _positionInfo?.TrackURI;
-                    TrackTitle = GetTrackTitle(_positionInfo?.TrackMetaData, _positionInfo?.TrackMetaDataObject);
-                    TrackCreator = _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.Creator;
-                    TrackAlbum = _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.Album;
-                    TrackImageUri = _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.AlbumArtUri;
+                    CurrentAudioTrackUri = _positionInfo?.TrackURI;
+                    CurrentAudioTrackTitle = GetTrackTitle(_positionInfo?.TrackMetaData, _positionInfo?.TrackMetaDataObject);
+                    CurrentAudioTrackCreator = _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.Creator;
+                    CurrentAudioTrackAlbum = _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.Album;
+                    CurrentAudioTrackImageUri = _positionInfo?.TrackMetaDataObject?.Items.FirstOrDefault()?.AlbumArtUri;
                 }
                 else
                 {
                     _positionInfo = null;
-                    TrackTitle = null;
+                    CurrentAudioTrackTitle = null;
                 }
 
-                Volume = await _sonosDevice.RenderingControlService.GetVolumeAsync();
+                AudioVolume = await _sonosDevice.RenderingControlService.GetVolumeAsync();
+                var mute = await _sonosDevice.RenderingControlService.GetMuteAsync(new GetMuteRequest
+                {
+                    InstanceID = 0,
+                    Channel = "Master"
+                });
+                IsAudioMuted = mute.CurrentMute;
             }
 
             _parent.ThingManager.DetectChanges(_parent);
@@ -160,19 +170,24 @@ namespace HomeBlaze.Sonos
         {
             if (e.Volume?.TryGetValue("Master", out var volume) == true)
             {
-                Volume = volume;
+                AudioVolume = volume;
+                _parent.ThingManager.DetectChanges(this);
+            }
 
+            if (e.Mute?.TryGetValue("Master", out var mute) == true)
+            {
+                IsAudioMuted = mute;
                 _parent.ThingManager.DetectChanges(this);
             }
         }
 
         private void OnAvTransportEvent(object? sender, IAVTransportEvent e)
         {
-            TrackUri = e.CurrentTrackURI;
-            TrackTitle = GetTrackTitle(e.CurrentTrackMetaData, e.CurrentTrackMetaDataObject);
-            TrackCreator = e.CurrentTrackMetaDataObject?.Items.FirstOrDefault()?.Creator;
-            TrackAlbum = e.CurrentTrackMetaDataObject?.Items.FirstOrDefault()?.Album;
-            TrackImageUri = e.CurrentTrackMetaDataObject?.Items.FirstOrDefault()?.AlbumArtUri;
+            CurrentAudioTrackUri = e.CurrentTrackURI;
+            CurrentAudioTrackTitle = GetTrackTitle(e.CurrentTrackMetaData, e.CurrentTrackMetaDataObject);
+            CurrentAudioTrackCreator = e.CurrentTrackMetaDataObject?.Items.FirstOrDefault()?.Creator;
+            CurrentAudioTrackAlbum = e.CurrentTrackMetaDataObject?.Items.FirstOrDefault()?.Album;
+            CurrentAudioTrackImageUri = e.CurrentTrackMetaDataObject?.Items.FirstOrDefault()?.AlbumArtUri;
 
             _parent.ThingManager.DetectChanges(this);
         }
@@ -221,6 +236,32 @@ namespace HomeBlaze.Sonos
         public async Task PreviousAsync()
         {
             await _sonosDevice.PreviousAsync();
+            await RefreshAsync();
+        }
+
+        [Operation]
+        public async Task MuteAsync()
+        {
+            await _sonosDevice.RenderingControlService.SetMuteAsync(new SetMuteRequest
+            {
+                InstanceID = 0,
+                Channel = "Master",
+                DesiredMute = true
+            });
+
+            await RefreshAsync();
+        }
+
+        [Operation]
+        public async Task UnmuteAsync()
+        {
+            await _sonosDevice.RenderingControlService.SetMuteAsync(new SetMuteRequest
+            {
+                InstanceID = 0,
+                Channel = "Master",
+                DesiredMute = false
+            });
+
             await RefreshAsync();
         }
 
