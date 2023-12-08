@@ -61,16 +61,13 @@ public class PropertyReflectionMetadata
 
     internal TrackedProperty CreateProperty(ProxyTracker parent, IObserver<TrackedPropertyChange> observer)
     {
-        return TrackableAttribute?.CreateProperty(this, parent, observer) ?? 
-            throw new InvalidOperationException($"{nameof(TrackableAttribute)} is null.");
-    }
-
-    internal void EnsureIsVirtual()
-    {
         if (!IsVirtual)
         {
             throw new InvalidOperationException($"Trackable property {_propertyInfo.DeclaringType?.Name}.{_propertyInfo.Name} must be virtual.");
         }
+
+        return TrackableAttribute?.CreateProperty(this, parent, observer) ?? 
+            throw new InvalidOperationException($"{nameof(TrackableAttribute)} is null.");
     }
 
     public void SetValue(ITrackable trackable, object? child)

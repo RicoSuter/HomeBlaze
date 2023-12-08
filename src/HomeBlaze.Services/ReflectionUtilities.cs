@@ -35,7 +35,7 @@ namespace HomeBlaze.Services
                 }
                 catch (Exception e)
                 {
-                    logger.LogWarning(e, $"Getter of property threw an exception.");
+                    logger.LogWarning(e, "Getter of property threw an exception.");
                     return null;
                 }
             }

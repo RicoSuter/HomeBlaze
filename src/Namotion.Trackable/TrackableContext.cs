@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
+using Namotion.Trackable.Attributes;
 using Namotion.Trackable.Model;
 using Namotion.Trackable.Utilities;
 
@@ -133,6 +134,11 @@ public class TrackableContext<TObject> : ITrackableContext
                 }
             }
 
+            if (proxy is ITrackableInitializer trackableInitializer)
+            {
+                trackableInitializer.Initialize(tracker, this);
+            }
+
             tracker.FreezeProperties();
         }
     }
@@ -196,8 +202,6 @@ public class TrackableContext<TObject> : ITrackableContext
 
     private TrackedProperty CreateAndAddTrackableProperty(PropertyReflectionMetadata propertyReflectionMetadata, ProxyTracker parent, object? parentCollectionKey)
     {
-        propertyReflectionMetadata.EnsureIsVirtual();
-
         var property = propertyReflectionMetadata.CreateProperty(parent, _propertyChangesSubject);       
         parent.AddProperty(property);
 

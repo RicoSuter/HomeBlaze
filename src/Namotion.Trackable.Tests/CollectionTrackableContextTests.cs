@@ -10,7 +10,13 @@ namespace Namotion.Trackable.Tests;
 
 public class CollectionTrackableContextTests
 {
-    private static TrackableFactory? _factory;
+    private TrackableFactory _factory;
+
+    public CollectionTrackableContextTests()
+    {
+        var serviceCollection = new ServiceCollection();
+        _factory = new TrackableFactory(serviceCollection.BuildServiceProvider());
+    }
 
     public class Car
     {
@@ -107,15 +113,13 @@ public class CollectionTrackableContextTests
 
         // Act & Assert
         Assert.Equal(6, trackableContext.AllTrackers.Count);
-        trackable.Car = _factory!.CreateProxy<Car>();
+        trackable.Car = _factory.CreateProxy<Car>();
         Assert.Equal(6, trackableContext.AllTrackers.Count);
     }
 
-    private static TrackableContext<T> CreateContext<T>()
+    private TrackableContext<T> CreateContext<T>()
         where T : class
     {
-        var serviceCollection = new ServiceCollection();
-        _factory = new TrackableFactory(serviceCollection.BuildServiceProvider());
         return new TrackableContext<T>(_factory);
     }
 }
