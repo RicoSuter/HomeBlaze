@@ -96,6 +96,15 @@ namespace HomeBlaze.Sonos
                 var response = await _sonosDevice.AVTransportService.GetTransportInfoAsync();
                 IsPlaying = response.CurrentTransportState == "PLAYING";
 
+                try
+                {
+                    await _sonosDevice.AVTransportService.RenewEventSubscriptionAsync(CancellationToken.None);
+                    await _sonosDevice.RenderingControlService.RenewEventSubscriptionAsync(CancellationToken.None);
+                }
+                catch
+                {
+                }
+
                 if (IsPlaying == true)
                 {
                     _positionInfo = await _sonosDevice.AVTransportService.GetPositionInfoAsync();
