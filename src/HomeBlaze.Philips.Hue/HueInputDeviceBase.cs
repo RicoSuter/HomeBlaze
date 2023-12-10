@@ -3,7 +3,6 @@ using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Inputs;
 using HomeBlaze.Abstractions.Presentation;
 using MudBlazor;
-using Q42.HueApi.Models;
 using System;
 using System.Linq;
 
@@ -16,7 +15,7 @@ namespace HomeBlaze.Philips.Hue
 
         private ButtonState? _currentButtonState;
         private DateTimeOffset? _currentButtonChangeDate;
-        private SensorInput _sensorInput;
+        //private SensorInput _sensorInput;
 
         public string Id => SwitchDevice.Bridge.Id + $"/inputs/{SwitchDevice.ReferenceId}.{ReferenceId}";
 
@@ -33,7 +32,7 @@ namespace HomeBlaze.Philips.Hue
 
         public DateTimeOffset? LastUpdated { get; private set; }
 
-        public DateTimeOffset? ButtonChangeDate => SwitchDevice?.Sensor?.State?.Lastupdated;
+        public DateTimeOffset? ButtonChangeDate => null; // SwitchDevice?.Sensor?.State?.Lastupdated;
 
         [State]
         public ButtonState? ButtonState { get; private set; } = Abstractions.Inputs.ButtonState.None;
@@ -42,51 +41,51 @@ namespace HomeBlaze.Philips.Hue
         {
             get
             {
-                var sensorEvent = _sensorInput?.Events
-                    .FirstOrDefault(e => e.ButtonEvent == SwitchDevice?.Sensor?.State?.ButtonEvent);
+                //var sensorEvent = _sensorInput?.Events
+                //    .FirstOrDefault(e => e.ButtonEvent == SwitchDevice?.Sensor?.State?.ButtonEvent);
 
-                if (sensorEvent != null)
-                {
-                    if (sensorEvent.EventType == "initial_press")
-                    {
-                        return Abstractions.Inputs.ButtonState.Down;
-                    }
-                    else if (sensorEvent.EventType == "repeat")
-                    {
-                        return Abstractions.Inputs.ButtonState.Repeat;
-                    }
-                    else if (sensorEvent.EventType == "short_release")
-                    {
-                        return Abstractions.Inputs.ButtonState.Press;
-                    }
-                    else if (sensorEvent.EventType == "long_release")
-                    {
-                        return Abstractions.Inputs.ButtonState.LongPress;
-                    }
-                }
+                //if (sensorEvent != null)
+                //{
+                //    if (sensorEvent.EventType == "initial_press")
+                //    {
+                //        return Abstractions.Inputs.ButtonState.Down;
+                //    }
+                //    else if (sensorEvent.EventType == "repeat")
+                //    {
+                //        return Abstractions.Inputs.ButtonState.Repeat;
+                //    }
+                //    else if (sensorEvent.EventType == "short_release")
+                //    {
+                //        return Abstractions.Inputs.ButtonState.Press;
+                //    }
+                //    else if (sensorEvent.EventType == "long_release")
+                //    {
+                //        return Abstractions.Inputs.ButtonState.LongPress;
+                //    }
+                //}
 
                 return Abstractions.Inputs.ButtonState.None;
             }
         }
 
-        public HueInputDeviceBase(int index, string name, SensorInput sensorInput, HueSwitchDevice switchDevice)
+        public HueInputDeviceBase(int index, string name, /*SensorInput sensorInput,*/ HueSwitchDevice switchDevice)
         {
             _name = name;
-            _sensorInput = sensorInput;
+            //_sensorInput = sensorInput;
 
             ReferenceId = index;
             SwitchDevice = switchDevice;
 
-            Update(sensorInput);
+            //Update(sensorInput);
 
             _currentButtonChangeDate = ButtonChangeDate;
             _currentButtonState = InternalButtonState;
         }
 
-        internal HueInputDeviceBase Update(SensorInput sensorInput)
+        internal HueInputDeviceBase Update(/*SensorInput sensorInput*/)
         {
-            _sensorInput = sensorInput;
-            LastUpdated = sensorInput != null ? DateTimeOffset.Now : null;
+            //_sensorInput = sensorInput;
+            //LastUpdated = sensorInput != null ? DateTimeOffset.Now : null;
             RefreshButtonState();
             return this;
         }

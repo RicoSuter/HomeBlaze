@@ -1,11 +1,11 @@
 ﻿@using HomeBlaze.Abstractions;
 @using HomeBlaze.Components;
+@using HueApi
+@using HueApi.BridgeLocator
 @using Microsoft.Extensions.Logging;
 @using MudBlazor
 @using System.Threading
 @using HomeBlaze.Abstractions.Services
-@using Q42.HueApi;
-@using Q42.HueApi.Models.Bridge
 
 @inject IThingManager ThingManager
 @inject IDialogService DialogService
@@ -70,11 +70,10 @@ else
         {
             if (_selectedBridge is LocatedBridge selectedBridge)
             {
-                var client = new LocalHueClient(selectedBridge.IpAddress);
-                var appKey = await client.RegisterAsync("HomeBlaze", "Local");
+                var result = await LocalHueApi.RegisterAsync(selectedBridge.IpAddress, "HomeBlaze", "Local", true, cancellationToken);
                 var bridge = new HueBridge(ThingManager, Logger)
                 {
-                    AppKey = appKey,
+                    AppKey = result?.StreamingClientKey,
                     BridgeId = selectedBridge.BridgeId
                 };
 
@@ -96,10 +95,8 @@ else
             if (EditedThing != null &&
                 _selectedBridge is LocatedBridge selectedBridge)
             {
-                var client = new LocalHueClient(selectedBridge.IpAddress);
-                var appKey = await client.RegisterAsync("HomeBlaze", "Local");
-
-                EditedThing.AppKey = appKey;
+                var result = await LocalHueApi.RegisterAsync(selectedBridge.IpAddress, "HomeBlaze", "Local", true, cancellationToken);
+                EditedThing.AppKey = result?.StreamingClientKey;
                 EditedThing.BridgeId = selectedBridge.BridgeId;
 
                 return true;

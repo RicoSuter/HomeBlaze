@@ -1,40 +1,42 @@
 ﻿using HomeBlaze.Abstractions;
-using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Presentation;
-using HomeBlaze.Abstractions.Sensors;
-using Q42.HueApi.Models;
+using HueApi.Models;
 using System;
 
 namespace HomeBlaze.Philips.Hue
 {
-    public class HueDaylightSensor : IThing, IIconProvider, IDaylightSensor
+    public class HueDaylightSensor :
+        IThing,
+        IIconProvider
+        //ILastUpdatedProvider,
+        //IDaylightSensor
     {
-        private Sensor _sensor;
+        private Device _sensor;
 
-        public string Id => Bridge.Id + "/sensors/" + _sensor.UniqueId;
+        public string Id => Bridge.Id + "/sensors/" + _sensor.Id;
 
-        public string Title => _sensor.Name;
+        public string Title => _sensor?.Metadata?.Name ?? "n/a";
 
         public string IconName => "fas fa-sun";
 
         public HueBridge Bridge { get; private set; }
 
-        public string ReferenceId => _sensor.Id;
+        public Guid ReferenceId => _sensor.Id;
 
-        [State]
-        public bool? IsDaylight => _sensor?.State.Daylight;
+        //[State]
+        //public bool? IsDaylight => _sensor?.State.Daylight;
 
-        [State]
-        public DateTimeOffset? LastUpdated => _sensor?.State.Lastupdated;
+        //[State]
+        //public DateTimeOffset? LastUpdated => _sensor?.State.Lastupdated;
 
-        public HueDaylightSensor(Sensor sensor, HueBridge bridge)
+        public HueDaylightSensor(Device sensor, HueBridge bridge)
         {
             Bridge = bridge;
             _sensor = sensor;
             Update(sensor);
         }
 
-        internal HueDaylightSensor Update(Sensor sensor)
+        internal HueDaylightSensor Update(Device sensor)
         {
             _sensor = sensor;
             return this;

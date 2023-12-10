@@ -2,8 +2,7 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices.Light;
 using HomeBlaze.Abstractions.Presentation;
-using Q42.HueApi.Models;
-using Q42.HueApi.Models.Groups;
+using HueApi.Models;
 using System;
 using System.Linq;
 using System.Threading;
@@ -12,15 +11,16 @@ using System.Threading.Tasks;
 namespace HomeBlaze.Philips.Hue
 {
     public class HueGroupDevice : IThing, IIconProvider, ILastUpdatedProvider,
-        ILightbulb, IDimmerLightbulb, IColorLightbulb, IColorTemperatureLightbulb, IVirtualThing
+        //ILightbulb, IDimmerLightbulb, IColorLightbulb, IColorTemperatureLightbulb, 
+        IVirtualThing
     {
-        private Group _group;
+        private HueResource _group;
 
         public string Id => Bridge.Id + "/groups/" + _group.Id;
 
-        public string Title => _group.Name;
+        public string Title => _group?.Metadata?.Name ?? "n/a";
 
-        public string ReferenceId => _group.Id;
+        public Guid ReferenceId => _group.Id;
 
         public HueBridge Bridge { get; }
 
@@ -49,14 +49,14 @@ namespace HomeBlaze.Philips.Hue
             .Where(l => l.ColorTemperature != null)
             .Average(l => l.ColorTemperature);
 
-        public HueGroupDevice(Group group, HueLightDevice[] lights, HueBridge bridge)
+        public HueGroupDevice(HueResource group, HueLightDevice[] lights, HueBridge bridge)
         {
             Bridge = bridge;
             _group = group;
             Update(group, lights);
         }
 
-        internal HueGroupDevice Update(Group group, HueLightDevice[] lights)
+        internal HueGroupDevice Update(HueResource group, HueLightDevice[] lights)
         {
             _group = group;
             Lights = lights;
@@ -64,29 +64,29 @@ namespace HomeBlaze.Philips.Hue
             return this;
         }
 
-        public async Task TurnOnAsync(CancellationToken cancellationToken = default)
-        {
-            await Task.WhenAll(Lights.Select(l => l.TurnOnAsync(cancellationToken)));
-        }
+        //public async Task TurnOnAsync(CancellationToken cancellationToken = default)
+        //{
+        //    await Task.WhenAll(Lights.Select(l => l.TurnOnAsync(cancellationToken)));
+        //}
 
-        public async Task TurnOffAsync(CancellationToken cancellationToken = default)
-        {
-            await Task.WhenAll(Lights.Select(l => l.TurnOffAsync(cancellationToken)));
-        }
+        //public async Task TurnOffAsync(CancellationToken cancellationToken = default)
+        //{
+        //    await Task.WhenAll(Lights.Select(l => l.TurnOffAsync(cancellationToken)));
+        //}
 
-        public async Task DimmAsync(decimal brightness, CancellationToken cancellationToken = default)
-        {
-            await Task.WhenAll(Lights.Select(l => l.DimmAsync(brightness, cancellationToken)));
-        }
+        //public async Task DimmAsync(decimal brightness, CancellationToken cancellationToken = default)
+        //{
+        //    await Task.WhenAll(Lights.Select(l => l.DimmAsync(brightness, cancellationToken)));
+        //}
 
-        public async Task ChangeColorAsync(string color, CancellationToken cancellationToken = default)
-        {
-            await Task.WhenAll(Lights.Select(l => l.ChangeColorAsync(color, cancellationToken)));
-        }
+        //public async Task ChangeColorAsync(string color, CancellationToken cancellationToken = default)
+        //{
+        //    await Task.WhenAll(Lights.Select(l => l.ChangeColorAsync(color, cancellationToken)));
+        //}
 
-        public async Task ChangeTemperatureAsync(decimal colorTemperature, CancellationToken cancellationToken = default)
-        {
-            await Task.WhenAll(Lights.Select(l => l.ChangeTemperatureAsync(colorTemperature, cancellationToken)));
-        }
+        //public async Task ChangeTemperatureAsync(decimal colorTemperature, CancellationToken cancellationToken = default)
+        //{
+        //    await Task.WhenAll(Lights.Select(l => l.ChangeTemperatureAsync(colorTemperature, cancellationToken)));
+        //}
     }
 }
