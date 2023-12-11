@@ -351,12 +351,12 @@ namespace HomeBlaze.Philips.Hue
                             button.Update(Merge(button.ButtonResource, data));
                             button.LastUpdated = DateTimeOffset.Now;
 
-                            if (button.ButtonResource.Button!.LastEvent.HasValue)
+                            if (button.ButtonResource.Button?.LastEvent.HasValue == true)
                             {
                                 _eventManager.Publish(new HueButtonEvent
                                 {
                                     ButtonId = buttonDevice.Id,
-                                    EventType = button.ButtonResource.Button!.LastEvent.Value
+                                    ButtonState = HueButton.GetButtonState(button.ButtonResource.Button.LastEvent.Value)
                                 });
                             }
 

@@ -1,4 +1,5 @@
-﻿using HomeBlaze.Abstractions.Messages;
+﻿using HomeBlaze.Abstractions.Inputs;
+using HomeBlaze.Abstractions.Messages;
 using HueApi.Models;
 
 namespace HomeBlaze.Philips.Hue
@@ -7,6 +8,6 @@ namespace HomeBlaze.Philips.Hue
     {
         public required string ButtonId { get; init; }
 
-        public required ButtonLastEvent EventType { get; init; }
+        public required ButtonState ButtonState { get; init; }
     }
 }

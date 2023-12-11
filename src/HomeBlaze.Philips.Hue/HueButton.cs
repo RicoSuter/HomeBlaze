@@ -53,30 +53,37 @@ namespace HomeBlaze.Philips.Hue
         {
             get
             {
-                var sensorEvent = ButtonResource?.Button?.LastEvent;
-                if (sensorEvent != null && sensorEvent.HasValue)
+                var lastEvent = ButtonResource?.Button?.LastEvent;
+                if (lastEvent != null && lastEvent.HasValue)
                 {
-                    var eventType = sensorEvent.Value;
-                    if (eventType == ButtonLastEvent.initial_press)
-                    {
-                        return Abstractions.Inputs.ButtonState.Down;
-                    }
-                    else if (eventType == ButtonLastEvent.repeat)
-                    {
-                        return Abstractions.Inputs.ButtonState.Repeat;
-                    }
-                    else if (eventType == ButtonLastEvent.short_release)
-                    {
-                        return Abstractions.Inputs.ButtonState.Press;
-                    }
-                    else if (eventType == ButtonLastEvent.long_release)
-                    {
-                        return Abstractions.Inputs.ButtonState.LongPress;
-                    }
+                    var eventType = lastEvent.Value;
+                    return GetButtonState(eventType);
                 }
 
                 return Abstractions.Inputs.ButtonState.None;
             }
+        }
+
+        public static ButtonState GetButtonState(ButtonLastEvent eventType)
+        {
+            if (eventType == ButtonLastEvent.initial_press)
+            {
+                return Abstractions.Inputs.ButtonState.Down;
+            }
+            else if (eventType == ButtonLastEvent.repeat)
+            {
+                return Abstractions.Inputs.ButtonState.Repeat;
+            }
+            else if (eventType == ButtonLastEvent.short_release)
+            {
+                return Abstractions.Inputs.ButtonState.Press;
+            }
+            else if (eventType == ButtonLastEvent.long_release)
+            {
+                return Abstractions.Inputs.ButtonState.LongPress;
+            }
+
+            return Abstractions.Inputs.ButtonState.None;
         }
 
         public HueButton(string name, ButtonResource buttonResource, HueButtonDevice buttonDevice)
