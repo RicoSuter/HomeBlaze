@@ -8,6 +8,7 @@
 @using HomeBlaze.Abstractions.Services
 
 @inject IThingManager ThingManager
+@inject IEventManager EventManager
 @inject IDialogService DialogService
 @inject ILogger<HueBridge> Logger
 
@@ -71,7 +72,7 @@ else
             if (_selectedBridge is LocatedBridge selectedBridge)
             {
                 var result = await LocalHueApi.RegisterAsync(selectedBridge.IpAddress, "HomeBlaze", "Local", true, cancellationToken);
-                var bridge = new HueBridge(ThingManager, Logger)
+                var bridge = new HueBridge(ThingManager, EventManager, Logger)
                 {
                     AppKey = result?.StreamingClientKey,
                     BridgeId = selectedBridge.BridgeId

@@ -1,5 +1,4 @@
-﻿using HomeBlaze.Abstractions.Messages;
-using HomeBlaze.Abstractions.Services;
+﻿using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Messages;
 using Microsoft.Extensions.Hosting;
 

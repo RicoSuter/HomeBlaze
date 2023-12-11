@@ -15,7 +15,8 @@ using System.Threading.Tasks;
 
 namespace HomeBlaze.Philips.Hue
 {
-    public class HueLightDevice : HueDevice, IIconProvider,
+    public class HueLightbulb : HueDevice, 
+        IIconProvider,
         ILastUpdatedProvider,
         IConnectedThing,
         IDimmerLightbulb,
@@ -23,7 +24,7 @@ namespace HomeBlaze.Philips.Hue
         IColorTemperatureLightbulb,
         IPowerConsumptionSensor
     {
-        internal Light LightResource { get; private set; }
+        internal Light LightResource { get; set; }
 
         public override string Title => $"{base.Title} " +
             $"({string.Join(", ", new string?[]
@@ -186,14 +187,14 @@ namespace HomeBlaze.Philips.Hue
             IsOn == false && IsConnected ? 0m :
             null;
 
-        public HueLightDevice(Device device, ZigbeeConnectivity? zigbeeConnectivity, Light light, HueBridge bridge)
+        public HueLightbulb(Device device, ZigbeeConnectivity? zigbeeConnectivity, Light light, HueBridge bridge)
             : base(device, zigbeeConnectivity, bridge)
         {
             LightResource = light;
             Update(device, zigbeeConnectivity, light);
         }
 
-        internal HueLightDevice Update(Device device, ZigbeeConnectivity? zigbeeConnectivity, Light light)
+        internal HueLightbulb Update(Device device, ZigbeeConnectivity? zigbeeConnectivity, Light light)
         {
             LightResource = light;
             Update(device, zigbeeConnectivity);

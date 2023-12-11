@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HomeBlaze.Philips.Hue
 {
-    public class HueGroupDevice : 
+    public class HueGroup : 
         IThing, 
         IIconProvider, 
         ILastUpdatedProvider,
@@ -19,15 +19,15 @@ namespace HomeBlaze.Philips.Hue
         IDimmerLightbulb,
         IVirtualThing
     {
-        private HueResource _group;
+        internal HueResource Group { get; set; }
 
-        internal GroupedLight? GroupedLight { get; private set; }
+        internal GroupedLight? GroupedLight { get; set; }
 
-        public string Id => Bridge.Id + "/groups/" + _group.Id;
+        public string Id => Bridge.Id + "/groups/" + Group.Id;
 
-        public string Title => _group?.Metadata?.Name ?? "n/a";
+        public string Title => Group?.Metadata?.Name ?? "n/a";
 
-        public Guid ResourceId => _group.Id;
+        public Guid ResourceId => Group.Id;
 
         public HueBridge Bridge { get; }
 
@@ -35,10 +35,10 @@ namespace HomeBlaze.Philips.Hue
 
         public MudBlazor.Color IconColor => IsOn == true ? MudBlazor.Color.Warning : MudBlazor.Color.Default;
 
-        public DateTimeOffset? LastUpdated { get; private set; }
+        public DateTimeOffset? LastUpdated { get; internal set; }
 
         [State]
-        public HueLightDevice[] Lights { get; private set; } = new HueLightDevice[0];
+        public HueLightbulb[] Lights { get; private set; } = new HueLightbulb[0];
 
         [State]
         public bool? IsOn => GroupedLight?.On.IsOn;
@@ -49,19 +49,19 @@ namespace HomeBlaze.Philips.Hue
         [State]
         public decimal? Lumen => Lights.Sum(d => d.Lumen);
 
-        public HueGroupDevice(HueResource group, GroupedLight? groupedLight, HueLightDevice[] lights, HueBridge bridge)
+        public HueGroup(HueResource group, GroupedLight? groupedLight, HueLightbulb[] lights, HueBridge bridge)
         {
             Bridge = bridge;
 
-            _group = group;
+            Group = group;
             GroupedLight = groupedLight;
 
             Update(group, groupedLight, lights);
         }
 
-        internal HueGroupDevice Update(HueResource group, GroupedLight? groupedLight, HueLightDevice[] lights)
+        internal HueGroup Update(HueResource group, GroupedLight? groupedLight, HueLightbulb[] lights)
         {
-            _group = group; 
+            Group = group; 
             GroupedLight = groupedLight;
 
             Lights = lights;

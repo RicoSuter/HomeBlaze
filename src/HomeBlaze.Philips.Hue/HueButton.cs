@@ -8,9 +8,9 @@ using System;
 
 namespace HomeBlaze.Philips.Hue
 {
-    public class HueButton : 
-        IThing, 
-        IIconProvider, 
+    public class HueButton :
+        IThing,
+        IIconProvider,
         ILastUpdatedProvider,
         IButtonDevice
     {
@@ -19,7 +19,7 @@ namespace HomeBlaze.Philips.Hue
         private ButtonState? _currentButtonState;
         private DateTimeOffset? _currentButtonChangeDate;
 
-        internal ButtonResource ButtonResource { get; private set; }
+        internal ButtonResource ButtonResource { get; set; }
 
         public string Id => SwitchDevice.Bridge.Id + $"/inputs/{SwitchDevice.DeviceId}/buttons/{ReferenceId}";
 
@@ -34,9 +34,9 @@ namespace HomeBlaze.Philips.Hue
 
         public Guid ReferenceId => ButtonResource.Id;
 
-        public DateTimeOffset? LastUpdated { get; private set; }
+        public DateTimeOffset? LastUpdated { get; internal set; }
 
-        public DateTimeOffset? ButtonChangeDate => null; // SwitchDevice?.Sensor?.State?.Lastupdated;
+        public DateTimeOffset? ButtonChangeDate => ButtonResource.CreationTime;
 
         [State]
         public ButtonState? ButtonState { get; private set; } = Abstractions.Inputs.ButtonState.None;

@@ -2,7 +2,6 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Networking;
-using HueApi;
 using HueApi.Models;
 using System;
 
@@ -14,56 +13,56 @@ namespace HomeBlaze.Philips.Hue
         IConnectedThing,
         IUnknownDevice
     {
-        private Device _device;
-        private ZigbeeConnectivity? _zigbeeConnectivity;
+        internal Device Device { get; private set; }
 
-        public string Id => Bridge.Id + "/resources/" + _device.Id;
+        internal ZigbeeConnectivity? ZigbeeConnectivity { get; private set; }
 
-        public virtual string Title => _device?.Metadata?.Name ?? "n/a";
+        public string Id => Bridge.Id + "/resources/" + Device.Id;
+
+        public virtual string Title => Device?.Metadata?.Name ?? "n/a";
 
         public DateTimeOffset? LastUpdated { get; internal set; }
 
         public HueBridge Bridge { get; }
 
-        public Guid DeviceId => _device.Id;
+        public Guid DeviceId => Device.Id;
 
         [State]
-        public bool? IsCertified => _device.ProductData.Certified;
+        public bool? IsCertified => Device.ProductData.Certified;
 
         [State]
-        public string? ProductName => _device.ProductData.ProductName;
+        public string? ProductName => Device.ProductData.ProductName;
 
         [State]
-        public string? HardwarePlatformType => _device.ProductData.HardwarePlatformType;
+        public string? HardwarePlatformType => Device.ProductData.HardwarePlatformType;
 
         [State]
-        public string? SoftwareVersion => _device.ProductData.SoftwareVersion;
+        public string? SoftwareVersion => Device.ProductData.SoftwareVersion;
 
         [State]
-        public string? ManufacturerName => _device.ProductData.ManufacturerName;
+        public string? ManufacturerName => Device.ProductData.ManufacturerName;
 
         [State]
-        public string? ModelId => _device.ProductData.ModelId;
+        public string? ModelId => Device.ProductData.ModelId;
 
-        public bool IsConnected => _zigbeeConnectivity == null || _zigbeeConnectivity.Status == ConnectivityStatus.connected;
+        public bool IsConnected => ZigbeeConnectivity == null || ZigbeeConnectivity.Status == ConnectivityStatus.connected;
 
         public HueDevice(Device device, ZigbeeConnectivity? zigbeeConnectivity, HueBridge bridge)
         {
             Bridge = bridge;
 
-            _device = device;
-            _zigbeeConnectivity = zigbeeConnectivity;
+            Device = device;
+            ZigbeeConnectivity = zigbeeConnectivity;
 
             Update(device, zigbeeConnectivity);
         }
 
         internal HueDevice Update(Device device, ZigbeeConnectivity? zigbeeConnectivity)
         {
-            _device = device;
-            _zigbeeConnectivity = zigbeeConnectivity;
-          
-            LastUpdated = device != null ? DateTimeOffset.Now : null;
-         
+            Device = device;
+            ZigbeeConnectivity = zigbeeConnectivity;
+
+            LastUpdated = DateTimeOffset.Now;
             return this;
         }
     }

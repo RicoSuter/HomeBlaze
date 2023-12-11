@@ -1,39 +1,41 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
+using HomeBlaze.Services.Extensions;
 using HueApi;
 using HueApi.BridgeLocator;
+using HueApi.Models.Responses;
 using Microsoft.Extensions.Logging;
+using MudBlazor;
+using Newtonsoft.Json.Linq;
 using System;
-using HomeBlaze.Services.Extensions;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using HueApi.Models.Responses;
-using System.Text.Json;
-using HomeBlaze.Services.Json;
-using HomeBlaze.Abstractions.Devices;
 
 namespace HomeBlaze.Philips.Hue
 {
     [DisplayName("Philips Hue Bridge")]
     [Description("The brains of the Philips Hue smart lighting system, the Hue Bridge allows you to connect and control up to 50 lights and accessories.")]
     [ThingSetup(typeof(HueBridgeSetup), CanEdit = true)]
-    public class HueBridge : PollingThing, 
-        IIconProvider, 
+    public class HueBridge : PollingThing,
+        IIconProvider,
         ILastUpdatedProvider,
         IConnectedThing,
-        IHubDevice, 
+        IHubDevice,
         IPowerConsumptionSensor
     {
         private bool _isRefreshing = false;
         private LocalHueApi? _client;
+        private readonly IEventManager _eventManager;
         private readonly ILogger<HueBridge> _logger;
 
         public override string Title => "Hue Bridge (" + (Bridge?.IpAddress ?? "?") + ")";
@@ -77,9 +79,10 @@ namespace HomeBlaze.Philips.Hue
 
         protected override TimeSpan FailureInterval => TimeSpan.FromSeconds(5);
 
-        public HueBridge(IThingManager thingManager, ILogger<HueBridge> logger)
+        public HueBridge(IThingManager thingManager, IEventManager eventManager, ILogger<HueBridge> logger)
             : base(thingManager, logger)
         {
+            _eventManager = eventManager;
             _logger = logger;
         }
 
@@ -134,14 +137,20 @@ namespace HomeBlaze.Philips.Hue
 
                     LastUpdated = DateTimeOffset.Now;
 
-                    var devices = await _client.GetDevicesAsync();
-                    var buttons = await _client.GetButtonsAsync();
                     var zigbeeConnectivities = await _client.GetZigbeeConnectivityAsync();
-                    var lights = await _client.GetLightsAsync();
-                    var groupedLights = await _client.GetGroupedLightsAsync();
+                    var devicePowers = await _client.GetDevicePowersAsync();
+
+                    var devices = await _client.GetDevicesAsync();
+
                     var rooms = await _client.GetRoomsAsync();
-                    var motions = await _client.GetMotionsAsync();
                     var zones = await _client.GetZonesAsync();
+
+                    var lights = await _client.GetLightsAsync();
+                    var buttons = await _client.GetButtonsAsync();
+                    var motions = await _client.GetMotionsAsync();
+                    var groupedLights = await _client.GetGroupedLightsAsync();
+                    var temperatures = await _client.GetTemperaturesAsync();
+                    var lightLevels = await _client.GetLightLevelsAsync();
 
                     var allDevices = devices
                         .Data
@@ -151,6 +160,7 @@ namespace HomeBlaze.Philips.Hue
                             {
                                 var services = device.Services?.Select(s => s.Rid).ToArray() ?? Array.Empty<Guid>();
                                 var zigbeeConnectivity = zigbeeConnectivities.Data.SingleOrDefault(s => services.Contains(s.Id));
+                                var devicePower = devicePowers.Data.SingleOrDefault(s => services.Contains(s.Id));
 
                                 var lightService = device.Services?.SingleOrDefault(s => s.Rtype == "light");
                                 if (lightService is not null)
@@ -158,7 +168,7 @@ namespace HomeBlaze.Philips.Hue
                                     var light = lights.Data.SingleOrDefault(l => l.Id == lightService.Rid);
                                     if (light is not null)
                                     {
-                                        ((HueLightDevice)a).Update(device, zigbeeConnectivity, light);
+                                        ((HueLightbulb)a).Update(device, zigbeeConnectivity, light);
                                         return;
                                     }
                                 }
@@ -167,9 +177,11 @@ namespace HomeBlaze.Philips.Hue
                                 if (motionService is not null)
                                 {
                                     var motion = motions.Data.SingleOrDefault(l => l.Id == motionService.Rid);
-                                    if (motion is not null)
+                                    if (motion is not null && a is HueMotionDevice motionDevice)
                                     {
-                                        ((HuePresenceDevice)a).Update(device, zigbeeConnectivity, motion);
+                                        var temperature = temperatures.Data.SingleOrDefault(s => services.Contains(s.Id));
+                                        var lightLevel = lightLevels.Data.SingleOrDefault(s => services.Contains(s.Id));
+                                        ((HueMotionDevice)a).Update(device, zigbeeConnectivity, devicePower, temperature, lightLevel, motion);
                                         return;
                                     }
                                 }
@@ -192,6 +204,7 @@ namespace HomeBlaze.Philips.Hue
                             {
                                 var services = device.Services?.Select(s => s.Rid).ToArray() ?? Array.Empty<Guid>();
                                 var zigbeeConnectivity = zigbeeConnectivities.Data.SingleOrDefault(s => services.Contains(s.Id));
+                                var devicePower = devicePowers.Data.SingleOrDefault(s => services.Contains(s.Id));
 
                                 var lightService = device.Services?.SingleOrDefault(s => s.Rtype == "light");
                                 if (lightService is not null)
@@ -199,7 +212,7 @@ namespace HomeBlaze.Philips.Hue
                                     var light = lights.Data.SingleOrDefault(l => l.Id == lightService.Rid);
                                     if (light is not null)
                                     {
-                                        return new HueLightDevice(device, zigbeeConnectivity, light, this);
+                                        return new HueLightbulb(device, zigbeeConnectivity, light, this);
                                     }
                                 }
 
@@ -209,7 +222,10 @@ namespace HomeBlaze.Philips.Hue
                                     var motion = motions.Data.SingleOrDefault(l => l.Id == motionService.Rid);
                                     if (motion is not null)
                                     {
-                                        return new HuePresenceDevice(device, zigbeeConnectivity, motion, this);
+                                        var temperature = temperatures.Data.SingleOrDefault(s => services.Contains(s.Id));
+                                        var lightLevel = lightLevels.Data.SingleOrDefault(s => services.Contains(s.Id));
+
+                                        return new HueMotionDevice(device, zigbeeConnectivity, devicePower, temperature, lightLevel, motion, this);
                                     }
                                 }
 
@@ -229,11 +245,11 @@ namespace HomeBlaze.Philips.Hue
                         .OrderBy(c => c.Title)
                         .ToArray();
 
-                    Lights = Devices
-                        .OfType<HueLightDevice>()
+                    Lights = allDevices
+                        .OfType<HueLightbulb>()
                         .ToArray();
 
-                    Sensors = Devices
+                    Sensors = allDevices
                         .Except(Lights)
                         .ToArray();
 
@@ -245,8 +261,8 @@ namespace HomeBlaze.Philips.Hue
                             {
                                 var services = room.Services?.Select(s => s.Rid).ToArray() ?? Array.Empty<Guid>();
                                 var groupedLight = groupedLights.Data.SingleOrDefault(g => services.Contains(g.Id));
-                                a.Update(room, groupedLight, Devices
-                                    .OfType<HueLightDevice>()
+                                a.Update(room, groupedLight, allDevices
+                                    .OfType<HueLightbulb>()
                                     .Where(l => room.Children.Any(c => c.Rid == l.DeviceId || c.Rid == l.LightResource.Id))
                                     .ToArray());
                             },
@@ -254,8 +270,8 @@ namespace HomeBlaze.Philips.Hue
                             {
                                 var services = room.Services?.Select(s => s.Rid).ToArray() ?? Array.Empty<Guid>();
                                 var groupedLight = groupedLights.Data.SingleOrDefault(g => services.Contains(g.Id));
-                                return new HueGroupDevice(room, groupedLight, Devices
-                                    .OfType<HueLightDevice>()
+                                return new HueGroup(room, groupedLight, allDevices
+                                    .OfType<HueLightbulb>()
                                     .Where(l => room.Children.Any(c => c.Rid == l.DeviceId || c.Rid == l.LightResource.Id))
                                     .ToArray(), this);
                             })
@@ -263,29 +279,29 @@ namespace HomeBlaze.Philips.Hue
                         .ToArray();
 
                     Zones = zones
-                       .Data
-                       .CreateOrUpdate(Zones,
-                           (a, b) => a.Id == b.ResourceId,
-                           (a, zone) =>
-                           {
-                               var services = zone.Services?.Select(s => s.Rid).ToArray() ?? Array.Empty<Guid>();
-                               var groupedLight = groupedLights.Data.SingleOrDefault(g => services.Contains(g.Id));
-                               a.Update(zone, groupedLight, Devices
-                                   .OfType<HueLightDevice>()
-                                   .Where(l => zone.Children.Any(c => c.Rid == l.DeviceId || c.Rid == l.LightResource.Id))
-                                   .ToArray());
-                           },
-                           zone =>
-                           {
-                               var services = zone.Services?.Select(s => s.Rid).ToArray() ?? Array.Empty<Guid>();
-                               var groupedLight = groupedLights.Data.SingleOrDefault(g => services.Contains(g.Id));
-                               return new HueGroupDevice(zone, groupedLight, Devices
-                                   .OfType<HueLightDevice>()
-                                   .Where(l => zone.Children.Any(c => c.Rid == l.DeviceId || c.Rid == l.LightResource.Id))
-                                   .ToArray(), this);
-                           })
-                       .OrderBy(c => c.Title)
-                       .ToArray();
+                        .Data
+                        .CreateOrUpdate(Zones,
+                            (a, b) => a.Id == b.ResourceId,
+                            (a, zone) =>
+                            {
+                                var services = zone.Services?.Select(s => s.Rid).ToArray() ?? Array.Empty<Guid>();
+                                var groupedLight = groupedLights.Data.SingleOrDefault(g => services.Contains(g.Id));
+                                a.Update(zone, groupedLight, allDevices
+                                    .OfType<HueLightbulb>()
+                                    .Where(l => zone.Children.Any(c => c.Rid == l.DeviceId || c.Rid == l.LightResource.Id))
+                                    .ToArray());
+                            },
+                            zone =>
+                            {
+                                var services = zone.Services?.Select(s => s.Rid).ToArray() ?? Array.Empty<Guid>();
+                                var groupedLight = groupedLights.Data.SingleOrDefault(g => services.Contains(g.Id));
+                                return new HueGroup(zone, groupedLight, allDevices
+                                    .OfType<HueLightbulb>()
+                                    .Where(l => zone.Children.Any(c => c.Rid == l.DeviceId || c.Rid == l.LightResource.Id))
+                                    .ToArray(), this);
+                            })
+                        .OrderBy(c => c.Title)
+                        .ToArray();
 
                     Devices = allDevices
                         .OfType<IThing>()
@@ -314,28 +330,46 @@ namespace HomeBlaze.Philips.Hue
                 {
                     if (data.Type == "button")
                     {
-                        var buttonDevice = Devices.OfType<HueDevice>().SingleOrDefault(d => d.DeviceId == data.Owner?.Rid) as HueButtonDevice;
+                        var buttonDevice = Devices
+                            .OfType<HueButtonDevice>()
+                            .SingleOrDefault(d => d.DeviceId == data.Owner?.Rid);
+
                         var button = buttonDevice?.Buttons.SingleOrDefault(b => b.ReferenceId == data.Id);
                         if (button is not null && buttonDevice is not null)
                         {
-                            JsonUtilities.PopulateObject(button.ButtonResource, JsonSerializer.Serialize(data));
+                            button.ButtonResource = Merge(button.ButtonResource, data);
+                            button.LastUpdated = DateTimeOffset.Now;
+
+                            if (button.ButtonResource.Button!.LastEvent.HasValue)
+                            {
+                                _eventManager.Publish(new HueButtonEvent
+                                {
+                                    ButtonId = buttonDevice.Id,
+                                    EventType = button.ButtonResource.Button!.LastEvent.Value
+                                });
+                            }
+
                             ThingManager.DetectChanges(buttonDevice);
                         }
                     }
                     else if (data.Type == "light")
                     {
-                        var lightDevice = Devices.OfType<HueDevice>().SingleOrDefault(d => d.DeviceId == data.Owner?.Rid) as HueLightDevice;
+                        var lightDevice = Devices
+                            .OfType<HueLightbulb>()
+                            .SingleOrDefault(d => d.DeviceId == data.Owner?.Rid);
+
                         if (lightDevice is not null)
                         {
-                            JsonUtilities.PopulateObject(lightDevice.LightResource, JsonSerializer.Serialize(data));
+                            lightDevice.LightResource = Merge(lightDevice.LightResource, data);
+                            lightDevice.LastUpdated = DateTimeOffset.Now;
                             ThingManager.DetectChanges(lightDevice);
 
-                            foreach (var room in Rooms.OfType<HueGroupDevice>().Where(r => r.Lights.Contains(lightDevice)))
+                            foreach (var room in Rooms.OfType<HueGroup>().Where(r => r.Lights.Contains(lightDevice)))
                             {
                                 ThingManager.DetectChanges(room);
                             }
 
-                            foreach (var zone in Zones.OfType<HueGroupDevice>().Where(r => r.Lights.Contains(lightDevice)))
+                            foreach (var zone in Zones.OfType<HueGroup>().Where(r => r.Lights.Contains(lightDevice)))
                             {
                                 ThingManager.DetectChanges(zone);
                             }
@@ -345,27 +379,70 @@ namespace HomeBlaze.Philips.Hue
                     {
                         var group = Rooms
                             .Union(Zones)
-                            .OfType<HueGroupDevice>()
+                            .OfType<HueGroup>()
                             .SingleOrDefault(d => d.GroupedLight?.Id == data.Id);
 
-                        if (group is not null)
+                        if (group is not null && group.GroupedLight is not null)
                         {
-                            JsonUtilities.PopulateObject(group.GroupedLight!, JsonSerializer.Serialize(data));
+                            group.GroupedLight = Merge(group.GroupedLight, data);
+                            group.LastUpdated = DateTimeOffset.Now;
                             ThingManager.DetectChanges(group);
                         }
                     }
                     else if (data.Type == "motion")
                     {
+                        var motion = Devices
+                            .OfType<HueMotionDevice>()
+                            .SingleOrDefault(d => d.MotionResource.Id == data.Id);
 
-
+                        if (motion is not null && motion.MotionResource is not null)
+                        {
+                            motion.MotionResource = Merge(motion.MotionResource, data);
+                            motion.LastUpdated = DateTimeOffset.Now;
+                            ThingManager.DetectChanges(motion);
+                        }
                     }
                     else if (data.Type == "temperature")
                     {
+                        var motion = Devices
+                            .OfType<HueMotionDevice>()
+                            .SingleOrDefault(d => d.TemperatureResource?.Id == data.Id);
 
+                        if (motion is not null && motion.MotionResource is not null)
+                        {
+                            motion.TemperatureResource = Merge(motion.TemperatureResource, data);
+                            motion.LastUpdated = DateTimeOffset.Now;
+                            ThingManager.DetectChanges(motion);
+                        }
                     }
                     else if (data.Type == "light_level")
                     {
+                        var motion = Devices
+                           .OfType<HueMotionDevice>()
+                           .SingleOrDefault(d => d.LightLevelResource?.Id == data.Id);
 
+                        if (motion is not null && motion.MotionResource is not null)
+                        {
+                            motion.LightLevelResource = Merge(motion.LightLevelResource, data);
+                            motion.LastUpdated = DateTimeOffset.Now;
+                            ThingManager.DetectChanges(motion);
+                        }
+                    }
+                    else if (data.Type == "device_power")
+                    {
+                        var motion = Devices
+                            .OfType<HueMotionDevice>()
+                            .SingleOrDefault(d => d.DevicePowerResource?.Id == data.Id);
+
+                        if (motion is not null && motion.MotionResource is not null)
+                        {
+                            motion.DevicePowerResource = Merge(motion.DevicePowerResource, data);
+                            motion.LastUpdated = DateTimeOffset.Now;
+                            ThingManager.DetectChanges(motion);
+                        }
+                    }
+                    else if (data.Type == "scene")
+                    {
 
                     }
                     else
@@ -374,6 +451,19 @@ namespace HomeBlaze.Philips.Hue
                     }
                 }
             }
+        }
+
+        private static T Merge<T>(T currentResource, EventStreamData newPartialResource)
+        {
+            var o1 = JObject.Parse(JsonSerializer.Serialize(currentResource));
+            var o2 = JObject.Parse(JsonSerializer.Serialize(newPartialResource));
+
+            o1.Merge(o2, new JsonMergeSettings
+            {
+                MergeArrayHandling = MergeArrayHandling.Union
+            });
+
+            return JsonSerializer.Deserialize<T>(o1.ToString())!;
         }
     }
 }

@@ -32,10 +32,10 @@ namespace HomeBlaze.Philips.Hue
             Update(device, zigbeeConnectivity);
 
             Buttons = buttons
-                .Select((s, i) => Buttons
+                .Select((button, i) => Buttons
                     .OfType<HueButton>()
-                    .SingleOrDefault(d => d.ReferenceId == s.Id)?.Update(s)
-                        ?? new HueButton("Button " + (i + 1), s, this))
+                    .SingleOrDefault(d => d.ReferenceId == button.Id)?.Update(button)
+                        ?? new HueButton("Button " + (i + 1), button, this))
                 .ToArray() ?? Array.Empty<HueButton>();
 
             return this;
