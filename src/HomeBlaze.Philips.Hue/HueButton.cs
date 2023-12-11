@@ -18,10 +18,11 @@ namespace HomeBlaze.Philips.Hue
 
         private ButtonState? _currentButtonState;
         private DateTimeOffset? _currentButtonChangeDate;
+        private ButtonState? buttonState = Abstractions.Inputs.ButtonState.None;
 
         internal ButtonResource ButtonResource { get; set; }
 
-        public string Id => SwitchDevice.Bridge.Id + $"/inputs/{SwitchDevice.DeviceId}/buttons/{ReferenceId}";
+        public string Id => ParentDevice.Bridge.Id + $"/devices/{ParentDevice.ResourceId}/buttons/{ResourceId}";
 
         public string Title => _name;
 
@@ -30,16 +31,23 @@ namespace HomeBlaze.Philips.Hue
             Icons.Material.Filled.RadioButtonChecked :
             Icons.Material.Filled.RadioButtonUnchecked;
 
-        public HueButtonDevice SwitchDevice { get; private set; }
+        public HueButtonDevice ParentDevice { get; private set; }
 
-        public Guid ReferenceId => ButtonResource.Id;
+        public Guid ResourceId => ButtonResource.Id;
 
         public DateTimeOffset? LastUpdated { get; internal set; }
 
-        public DateTimeOffset? ButtonChangeDate => ButtonResource.CreationTime;
+        public DateTimeOffset? ButtonChangeDate { get; internal set; }
 
         [State]
-        public ButtonState? ButtonState { get; private set; } = Abstractions.Inputs.ButtonState.None;
+        public ButtonState? ButtonState
+        {
+            get => buttonState; private set
+            {
+                Console.WriteLine($"Button {ResourceId}: " + value);
+                buttonState=value;
+            }
+        }
 
         internal ButtonState? InternalButtonState
         {
@@ -71,23 +79,23 @@ namespace HomeBlaze.Philips.Hue
             }
         }
 
-        public HueButton(string name, ButtonResource sensorInput, HueButtonDevice switchDevice)
+        public HueButton(string name, ButtonResource buttonResource, HueButtonDevice buttonDevice)
         {
             _name = name;
-            ButtonResource = sensorInput;
 
-            SwitchDevice = switchDevice;
+            ButtonResource = buttonResource;
+            ParentDevice = buttonDevice;
 
-            Update(sensorInput);
+            Update(buttonResource);
 
             _currentButtonChangeDate = ButtonChangeDate;
             _currentButtonState = InternalButtonState;
         }
 
-        internal HueButton Update(ButtonResource sensorInput)
+        internal HueButton Update(ButtonResource buttonResource)
         {
-            ButtonResource = sensorInput;
-            LastUpdated = sensorInput != null ? DateTimeOffset.Now : null;
+            ButtonResource = buttonResource;
+            LastUpdated = DateTimeOffset.Now;
             RefreshButtonState();
             return this;
         }
@@ -98,7 +106,8 @@ namespace HomeBlaze.Philips.Hue
             var newButtonState = InternalButtonState;
 
             if ((newButtonChangeDate != _currentButtonChangeDate || newButtonState != _currentButtonState) &&
-                newButtonState != Abstractions.Inputs.ButtonState.None)
+                newButtonState != Abstractions.Inputs.ButtonState.None &&
+                newButtonChangeDate != null)
             {
                 _currentButtonChangeDate = newButtonChangeDate;
                 _currentButtonState = newButtonState;

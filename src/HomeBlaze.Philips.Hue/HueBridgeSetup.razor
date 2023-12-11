@@ -99,7 +99,6 @@ else
                 var result = await LocalHueApi.RegisterAsync(selectedBridge.IpAddress, "HomeBlaze", "Local", true, cancellationToken);
                 EditedThing.AppKey = result?.StreamingClientKey;
                 EditedThing.BridgeId = selectedBridge.BridgeId;
-
                 return true;
             }
         }

@@ -17,7 +17,7 @@ namespace HomeBlaze.Philips.Hue
 
         internal ZigbeeConnectivity? ZigbeeConnectivity { get; private set; }
 
-        public string Id => Bridge.Id + "/resources/" + Device.Id;
+        public string Id => Bridge.Id + "/devices/" + ResourceId;
 
         public virtual string Title => Device?.Metadata?.Name ?? "n/a";
 
@@ -25,7 +25,7 @@ namespace HomeBlaze.Philips.Hue
 
         public HueBridge Bridge { get; }
 
-        public Guid DeviceId => Device.Id;
+        public Guid ResourceId => Device.Id;
 
         [State]
         public bool? IsCertified => Device.ProductData.Certified;

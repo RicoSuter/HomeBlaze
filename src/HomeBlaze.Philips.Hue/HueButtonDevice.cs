@@ -34,7 +34,7 @@ namespace HomeBlaze.Philips.Hue
             Buttons = buttons
                 .Select((button, i) => Buttons
                     .OfType<HueButton>()
-                    .SingleOrDefault(d => d.ReferenceId == button.Id)?.Update(button)
+                    .SingleOrDefault(d => d.ResourceId == button.Id)?.Update(button)
                         ?? new HueButton("Button " + (i + 1), button, this))
                 .ToArray() ?? Array.Empty<HueButton>();
 

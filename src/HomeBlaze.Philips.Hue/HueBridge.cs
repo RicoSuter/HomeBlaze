@@ -38,11 +38,11 @@ namespace HomeBlaze.Philips.Hue
         private readonly IEventManager _eventManager;
         private readonly ILogger<HueBridge> _logger;
 
+        internal LocatedBridge? Bridge { get; set; }
+
         public override string Title => "Hue Bridge (" + (Bridge?.IpAddress ?? "?") + ")";
 
         public string IconName => "fab fa-hubspot";
-
-        internal LocatedBridge? Bridge { get; set; }
 
         public DateTimeOffset? LastUpdated { get; private set; }
 
@@ -155,7 +155,7 @@ namespace HomeBlaze.Philips.Hue
                     var allDevices = devices
                         .Data
                         .CreateOrUpdate(Devices,
-                            (a, b) => a.Id == b.DeviceId,
+                            (a, b) => a.Id == b.ResourceId,
                             (a, device) =>
                             {
                                 var services = device.Services?.Select(s => s.Rid).ToArray() ?? Array.Empty<Guid>();
@@ -263,7 +263,7 @@ namespace HomeBlaze.Philips.Hue
                                 var groupedLight = groupedLights.Data.SingleOrDefault(g => services.Contains(g.Id));
                                 a.Update(room, groupedLight, allDevices
                                     .OfType<HueLightbulb>()
-                                    .Where(l => room.Children.Any(c => c.Rid == l.DeviceId || c.Rid == l.LightResource.Id))
+                                    .Where(l => room.Children.Any(c => c.Rid == l.ResourceId || c.Rid == l.LightResource.Id))
                                     .ToArray());
                             },
                             room =>
@@ -272,7 +272,7 @@ namespace HomeBlaze.Philips.Hue
                                 var groupedLight = groupedLights.Data.SingleOrDefault(g => services.Contains(g.Id));
                                 return new HueGroup(room, groupedLight, allDevices
                                     .OfType<HueLightbulb>()
-                                    .Where(l => room.Children.Any(c => c.Rid == l.DeviceId || c.Rid == l.LightResource.Id))
+                                    .Where(l => room.Children.Any(c => c.Rid == l.ResourceId || c.Rid == l.LightResource.Id))
                                     .ToArray(), this);
                             })
                         .OrderBy(c => c.Title)
@@ -288,7 +288,7 @@ namespace HomeBlaze.Philips.Hue
                                 var groupedLight = groupedLights.Data.SingleOrDefault(g => services.Contains(g.Id));
                                 a.Update(zone, groupedLight, allDevices
                                     .OfType<HueLightbulb>()
-                                    .Where(l => zone.Children.Any(c => c.Rid == l.DeviceId || c.Rid == l.LightResource.Id))
+                                    .Where(l => zone.Children.Any(c => c.Rid == l.ResourceId || c.Rid == l.LightResource.Id))
                                     .ToArray());
                             },
                             zone =>
@@ -297,7 +297,7 @@ namespace HomeBlaze.Philips.Hue
                                 var groupedLight = groupedLights.Data.SingleOrDefault(g => services.Contains(g.Id));
                                 return new HueGroup(zone, groupedLight, allDevices
                                     .OfType<HueLightbulb>()
-                                    .Where(l => zone.Children.Any(c => c.Rid == l.DeviceId || c.Rid == l.LightResource.Id))
+                                    .Where(l => zone.Children.Any(c => c.Rid == l.ResourceId || c.Rid == l.LightResource.Id))
                                     .ToArray(), this);
                             })
                         .OrderBy(c => c.Title)
@@ -332,12 +332,23 @@ namespace HomeBlaze.Philips.Hue
                     {
                         var buttonDevice = Devices
                             .OfType<HueButtonDevice>()
-                            .SingleOrDefault(d => d.DeviceId == data.Owner?.Rid);
+                            .SingleOrDefault(d => d.ResourceId == data.Owner?.Rid);
 
-                        var button = buttonDevice?.Buttons.SingleOrDefault(b => b.ReferenceId == data.Id);
+                        var button = buttonDevice?.Buttons.SingleOrDefault(b => b.ResourceId == data.Id);
                         if (button is not null && buttonDevice is not null)
                         {
-                            button.ButtonResource = Merge(button.ButtonResource, data);
+                            DateTimeOffset? buttonChangeDate = data.ExtensionData.TryGetValue("button", out var buttonValue) ?
+                                buttonValue
+                                    .GetProperty("button_report")
+                                    .GetProperty("updated")
+                                    .GetDateTimeOffset() : null;
+
+                            if (buttonChangeDate.HasValue)
+                            {
+                                button.ButtonChangeDate = buttonChangeDate.Value;
+                            }
+
+                            button.Update(Merge(button.ButtonResource, data));
                             button.LastUpdated = DateTimeOffset.Now;
 
                             if (button.ButtonResource.Button!.LastEvent.HasValue)
@@ -356,12 +367,13 @@ namespace HomeBlaze.Philips.Hue
                     {
                         var lightDevice = Devices
                             .OfType<HueLightbulb>()
-                            .SingleOrDefault(d => d.DeviceId == data.Owner?.Rid);
+                            .SingleOrDefault(d => d.ResourceId == data.Owner?.Rid);
 
                         if (lightDevice is not null)
                         {
                             lightDevice.LightResource = Merge(lightDevice.LightResource, data);
                             lightDevice.LastUpdated = DateTimeOffset.Now;
+                          
                             ThingManager.DetectChanges(lightDevice);
 
                             foreach (var room in Rooms.OfType<HueGroup>().Where(r => r.Lights.Contains(lightDevice)))

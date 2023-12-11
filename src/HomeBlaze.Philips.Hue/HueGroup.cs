@@ -23,7 +23,7 @@ namespace HomeBlaze.Philips.Hue
 
         internal GroupedLight? GroupedLight { get; set; }
 
-        public string Id => Bridge.Id + "/groups/" + Group.Id;
+        public string Id => Bridge.Id + "/groups/" + ResourceId;
 
         public string Title => Group?.Metadata?.Name ?? "n/a";
 
