@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace HomeBlaze.Philips.Hue
 {
-    public class HueGroup : 
-        IThing, 
-        IIconProvider, 
+    public class HueGroup :
+        IThing,
+        IIconProvider,
         ILastUpdatedProvider,
         ILightbulb,
         IDimmerLightbulb,
@@ -61,7 +61,7 @@ namespace HomeBlaze.Philips.Hue
 
         internal HueGroup Update(HueResource group, GroupedLight? groupedLight, HueLightbulb[] lights)
         {
-            Group = group; 
+            Group = group;
             GroupedLight = groupedLight;
 
             Lights = lights;
@@ -79,7 +79,12 @@ namespace HomeBlaze.Philips.Hue
                     .TurnOn();
 
                 var client = Bridge.CreateClient();
-                await client.UpdateGroupedLightAsync(GroupedLight.Id, command);
+                var response = await client.UpdateGroupedLightAsync(GroupedLight.Id, command);
+                if (response.Errors.Any() == false)
+                {
+                    GroupedLight.On.IsOn = true;
+                    Bridge.ThingManager.DetectChanges(this);
+                }
             }
         }
 
@@ -92,7 +97,12 @@ namespace HomeBlaze.Philips.Hue
                     .TurnOff();
 
                 var client = Bridge.CreateClient();
-                await client.UpdateGroupedLightAsync(GroupedLight.Id, command);
+                var response = await client.UpdateGroupedLightAsync(GroupedLight.Id, command);
+                if (response.Errors.Any() == false)
+                {
+                    GroupedLight.On.IsOn = false;
+                    Bridge.ThingManager.DetectChanges(this);
+                }
             }
         }
 
@@ -107,7 +117,12 @@ namespace HomeBlaze.Philips.Hue
                     .SetBrightness((double)(brightness * 100m));
 
                 var client = Bridge.CreateClient();
-                await client.UpdateGroupedLightAsync(GroupedLight.Id, command);
+                var response = await client.UpdateGroupedLightAsync(GroupedLight.Id, command);
+                if (response.Errors.Any() == false && GroupedLight.Dimming is not null)
+                {
+                    GroupedLight.Dimming.Brightness = (double)(brightness * 100m);
+                    Bridge.ThingManager.DetectChanges(this);
+                }
 
                 if (turnOffAfterChange)
                 {

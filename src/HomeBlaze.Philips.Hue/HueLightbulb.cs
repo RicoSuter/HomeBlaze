@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace HomeBlaze.Philips.Hue
 {
-    public class HueLightbulb : HueDevice, 
+    public class HueLightbulb : HueDevice,
         IIconProvider,
         ILastUpdatedProvider,
         IConnectedThing,
@@ -204,17 +204,31 @@ namespace HomeBlaze.Philips.Hue
         [Operation]
         public async Task TurnOnAsync(CancellationToken cancellationToken = default)
         {
-            var command = new UpdateLight().TurnOn();
+            var command = new UpdateLight()
+                .TurnOn();
+
             var client = Bridge.CreateClient();
-            await client.UpdateLightAsync(LightResource.Id, command);
+            var response = await client.UpdateLightAsync(LightResource.Id, command);
+            if (response.Errors.Any() == false)
+            {
+                LightResource.On.IsOn = true;
+                Bridge.ThingManager.DetectChanges(this);
+            }
         }
 
         [Operation]
         public async Task TurnOffAsync(CancellationToken cancellationToken = default)
         {
-            var command = new UpdateLight().TurnOff();
+            var command = new UpdateLight()
+                .TurnOff();
+
             var client = Bridge.CreateClient();
-            await client.UpdateLightAsync(LightResource.Id, command);
+            var response = await client.UpdateLightAsync(LightResource.Id, command);
+            if (response.Errors.Any() == false)
+            {
+                LightResource.On.IsOn = false;
+                Bridge.ThingManager.DetectChanges(this);
+            }
         }
 
         public async Task DimmAsync(decimal brightness, CancellationToken cancellationToken = default)
@@ -226,7 +240,12 @@ namespace HomeBlaze.Philips.Hue
                 .SetBrightness((double)(brightness * 100m));
 
             var client = Bridge.CreateClient();
-            await client.UpdateLightAsync(LightResource.Id, command);
+            var response = await client.UpdateLightAsync(LightResource.Id, command);
+            if (response.Errors.Any() == false && LightResource.Dimming is not null)
+            {
+                LightResource.Dimming.Brightness = (double)(brightness * 100m);
+                Bridge.ThingManager.DetectChanges(this);
+            }
 
             if (turnOffAfterChange)
             {
@@ -237,11 +256,17 @@ namespace HomeBlaze.Philips.Hue
 
         public async Task ChangeColorAsync(string color, CancellationToken cancellationToken = default)
         {
+            var rgbColor = new RGBColor(color);
             var command = new UpdateLight()
-                .SetColor(new RGBColor(color), ModelId ?? "LCT001");
+                .SetColor(rgbColor, ModelId ?? "LCT001");
 
             var client = Bridge.CreateClient();
-            await client.UpdateLightAsync(LightResource.Id, command);
+            var response = await client.UpdateLightAsync(LightResource.Id, command);
+            if (response.Errors.Any() == false)
+            {
+                LightResource.Color = rgbColor.ToColor();
+                Bridge.ThingManager.DetectChanges(this);
+            }
         }
 
         public async Task ChangeTemperatureAsync(decimal colorTemperature, CancellationToken cancellationToken = default)
@@ -262,7 +287,12 @@ namespace HomeBlaze.Philips.Hue
                 };
 
                 var client = Bridge.CreateClient();
-                await client.UpdateLightAsync(LightResource.Id, command);
+                var response = await client.UpdateLightAsync(LightResource.Id, command);
+                if (response.Errors.Any() == false && LightResource.ColorTemperature is not null)
+                {
+                    LightResource.ColorTemperature.Mirek = newColorTemperature;
+                    Bridge.ThingManager.DetectChanges(this);
+                }
             }
         }
     }
