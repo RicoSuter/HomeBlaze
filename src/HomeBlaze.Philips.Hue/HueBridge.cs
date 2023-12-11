@@ -1,6 +1,7 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices;
+using HomeBlaze.Abstractions.Inputs;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
@@ -353,9 +354,9 @@ namespace HomeBlaze.Philips.Hue
 
                             if (button.ButtonResource.Button?.LastEvent.HasValue == true)
                             {
-                                _eventManager.Publish(new HueButtonEvent
+                                _eventManager.Publish(new ButtonEvent
                                 {
-                                    ButtonId = buttonDevice.Id,
+                                    ThingId = buttonDevice.Id,
                                     ButtonState = HueButton.GetButtonState(button.ButtonResource.Button.LastEvent.Value)
                                 });
                             }
