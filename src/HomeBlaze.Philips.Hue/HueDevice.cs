@@ -2,6 +2,7 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Networking;
+using HueApi;
 using HueApi.Models;
 using System;
 
@@ -60,7 +61,9 @@ namespace HomeBlaze.Philips.Hue
         {
             _device = device;
             _zigbeeConnectivity = zigbeeConnectivity;
+          
             LastUpdated = device != null ? DateTimeOffset.Now : null;
+         
             return this;
         }
     }

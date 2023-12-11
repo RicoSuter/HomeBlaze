@@ -4,11 +4,10 @@ using HomeBlaze.Abstractions.Devices.Light;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
-using HueApi;
+using HueApi.ColorConverters;
 using HueApi.ColorConverters.Original.Extensions;
 using HueApi.Models;
 using HueApi.Models.Requests;
-using MudBlazor;
 using System;
 using System.Linq;
 using System.Threading;
@@ -19,12 +18,12 @@ namespace HomeBlaze.Philips.Hue
     public class HueLightDevice : HueDevice, IIconProvider,
         ILastUpdatedProvider,
         IConnectedThing,
-        //IDimmerLightbulb, 
-        //IColorLightbulb, 
-        //IColorTemperatureLightbulb, 
+        IDimmerLightbulb,
+        IColorLightbulb,
+        IColorTemperatureLightbulb,
         IPowerConsumptionSensor
     {
-        private Light _light;
+        internal Light LightResource { get; private set; }
 
         public override string Title => $"{base.Title} " +
             $"({string.Join(", ", new string?[]
@@ -39,25 +38,25 @@ namespace HomeBlaze.Philips.Hue
 
         public MudBlazor.Color IconColor => IsOn == true ? MudBlazor.Color.Warning : MudBlazor.Color.Default;
 
-        public Guid ReferenceId => _light.Id;
+        public Guid ReferenceId => LightResource.Id;
 
-        public bool IsOnOffLight => _light?.Type == "On/Off light";
-
-        [State]
-        public bool? IsOn => _light?.On.IsOn;
+        public bool IsOnOffLight => LightResource?.Type == "On/Off light";
 
         [State]
-        public decimal? Brightness => !IsOnOffLight ? (decimal?)_light?.Dimming?.Brightness / 100m : null;
+        public bool? IsOn => LightResource?.On.IsOn;
+
+        [State]
+        public decimal? Brightness => !IsOnOffLight ? (decimal?)LightResource?.Dimming?.Brightness / 100m : null;
 
         [State]
         public decimal? ColorTemperature =>
-            _light?.ColorTemperature != null ?
-            (_light?.ColorTemperature?.Mirek - _light?.ColorTemperature?.MirekSchema.MirekMinimum) /
-            (decimal?)(_light?.ColorTemperature?.MirekSchema.MirekMaximum - _light?.ColorTemperature?.MirekSchema.MirekMinimum) :
+            LightResource?.ColorTemperature != null ?
+            (LightResource?.ColorTemperature?.Mirek - LightResource?.ColorTemperature?.MirekSchema.MirekMinimum) /
+            (decimal?)(LightResource?.ColorTemperature?.MirekSchema.MirekMaximum - LightResource?.ColorTemperature?.MirekSchema.MirekMinimum) :
             null;
 
         [State]
-        public string? Color => _light.Color != null ? _light.ToHex(ModelId ?? "LCT001") : null;
+        public string? Color => LightResource.Color != null ? LightResource.ToHex(ModelId ?? "LCT001") : null;
 
         // From https://homeautotechs.com/philips-hue-light-models-full-list/
         [State]
@@ -190,13 +189,13 @@ namespace HomeBlaze.Philips.Hue
         public HueLightDevice(Device device, ZigbeeConnectivity? zigbeeConnectivity, Light light, HueBridge bridge)
             : base(device, zigbeeConnectivity, bridge)
         {
-            _light = light;
+            LightResource = light;
             Update(device, zigbeeConnectivity, light);
         }
 
         internal HueLightDevice Update(Device device, ZigbeeConnectivity? zigbeeConnectivity, Light light)
         {
-            _light = light;
+            LightResource = light;
             Update(device, zigbeeConnectivity);
             return this;
         }
@@ -204,101 +203,66 @@ namespace HomeBlaze.Philips.Hue
         [Operation]
         public async Task TurnOnAsync(CancellationToken cancellationToken = default)
         {
-            var command = new UpdateLight
-            {
-                On = new On { IsOn = true }
-            };
-
-            var client = CreateClient();
-            var response = await client.UpdateLightAsync(_light.Id, command);
-            if (response.Errors.Any() == false)
-            {
-                _light.On = command.On;
-            }
+            var command = new UpdateLight().TurnOn();
+            var client = Bridge.CreateClient();
+            await client.UpdateLightAsync(LightResource.Id, command);
         }
 
         [Operation]
         public async Task TurnOffAsync(CancellationToken cancellationToken = default)
         {
-            var command = new UpdateLight
-            {
-                On = new On { IsOn = false }
-            };
+            var command = new UpdateLight().TurnOff();
+            var client = Bridge.CreateClient();
+            await client.UpdateLightAsync(LightResource.Id, command);
+        }
 
-            var client = CreateClient();
-            var response = await client.UpdateLightAsync(_light.Id, command);
-            if (response.Errors.Any() == false)
+        public async Task DimmAsync(decimal brightness, CancellationToken cancellationToken = default)
+        {
+            var turnOffAfterChange = IsOn != true; // hack: needed to change brightness without turning on the lights
+
+            var command = new UpdateLight()
+                .TurnOn()
+                .SetBrightness((double)(brightness * 100m));
+
+            var client = Bridge.CreateClient();
+            await client.UpdateLightAsync(LightResource.Id, command);
+
+            if (turnOffAfterChange)
             {
-                _light.On = command.On;
+                await Task.Delay(3000);
+                await TurnOffAsync(cancellationToken);
             }
         }
 
-        //public async Task DimmAsync(decimal brightness, CancellationToken cancellationToken = default)
-        //{
-        //    var client = CreateClient();
-
-        //    var brightnessByte = (byte)(brightness * 254);
-        //    var turnOffAfterChange = IsOn != true; // hack: needed to change brightness without turning on the lights
-
-        //    var command = new LightCommand();
-        //    command.On = true;
-        //    command.Brightness = brightnessByte;
-
-        //    var results = await client.SendCommandAsync(command, new[] { _light.Id });
-        //    if (results.HasErrors() == false)
-        //    {
-        //        _light.State.Brightness = brightnessByte;
-        //    }
-
-        //    if (turnOffAfterChange)
-        //    {
-        //        await Task.Delay(3000);
-        //        await TurnOffAsync(cancellationToken);
-        //    }
-        //}
-
-        //public async Task ChangeColorAsync(string color, CancellationToken cancellationToken = default)
-        //{
-        //    var client = CreateClient();
-
-        //    var command = new LightCommand();
-        //    command.SetColor(new RGBColor(color), _light.ModelId);
-
-        //    await client.SendCommandAsync(command, new[] { _light.Id });
-        //}
-
-        //public async Task ChangeTemperatureAsync(decimal colorTemperature, CancellationToken cancellationToken = default)
-        //{
-        //    var newColorTemperature = (int?)(
-        //        _light.Capabilities?.Control?.ColorTemperature?.Min +
-        //        colorTemperature * (_light.Capabilities?.Control?.ColorTemperature?.Max -
-        //                            _light.Capabilities?.Control?.ColorTemperature?.Min));
-
-        //    if (newColorTemperature != null && Bridge?.Bridge != null && Bridge.AppKey != null)
-        //    {
-        //        var client = new LocalHueClient(Bridge.Bridge.IpAddress);
-        //        client.Initialize(Bridge.AppKey);
-
-        //        var command = new LightCommand();
-        //        command.ColorTemperature = newColorTemperature.Value;
-
-        //        var results = await client.SendCommandAsync(command, new[] { _light.Id });
-        //        if (results.HasErrors() == false)
-        //        {
-        //            _light.State.ColorTemperature = (int)(colorTemperature * 500m);
-        //        }
-        //    }
-        //}
-
-        private LocalHueApi CreateClient()
+        public async Task ChangeColorAsync(string color, CancellationToken cancellationToken = default)
         {
-            if ((Bridge?.AppKey) == null || (Bridge?.Bridge) == null)
-            {
-                throw new InvalidOperationException("Bridge must not be null.");
-            }
+            var command = new UpdateLight()
+                .SetColor(new RGBColor(color), ModelId ?? "LCT001");
 
-            var client = new LocalHueApi(Bridge.Bridge.IpAddress, Bridge.AppKey);
-            return client;
+            var client = Bridge.CreateClient();
+            await client.UpdateLightAsync(LightResource.Id, command);
+        }
+
+        public async Task ChangeTemperatureAsync(decimal colorTemperature, CancellationToken cancellationToken = default)
+        {
+            var newColorTemperature = (int?)(
+                LightResource.ColorTemperature?.MirekSchema.MirekMinimum +
+                colorTemperature * (LightResource.ColorTemperature?.MirekSchema.MirekMaximum -
+                                    LightResource.ColorTemperature?.MirekSchema.MirekMinimum));
+
+            if (newColorTemperature != null && Bridge?.Bridge != null && Bridge.AppKey != null)
+            {
+                var command = new UpdateLight
+                {
+                    ColorTemperature = new ColorTemperature
+                    {
+                        Mirek = newColorTemperature,
+                    }
+                };
+
+                var client = Bridge.CreateClient();
+                await client.UpdateLightAsync(LightResource.Id, command);
+            }
         }
     }
 }

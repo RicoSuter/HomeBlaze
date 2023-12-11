@@ -2,22 +2,26 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Inputs;
 using HomeBlaze.Abstractions.Presentation;
+using HueApi.Models;
 using MudBlazor;
 using System;
-using System.Linq;
 
 namespace HomeBlaze.Philips.Hue
 {
-    public class HueInputDeviceBase : IThing, IIconProvider, ILastUpdatedProvider,
+    public class HueButton : 
+        IThing, 
+        IIconProvider, 
+        ILastUpdatedProvider,
         IButtonDevice
     {
         private readonly string _name;
 
         private ButtonState? _currentButtonState;
         private DateTimeOffset? _currentButtonChangeDate;
-        //private SensorInput _sensorInput;
 
-        public string Id => SwitchDevice.Bridge.Id + $"/inputs/{SwitchDevice.ReferenceId}.{ReferenceId}";
+        internal ButtonResource ButtonResource { get; private set; }
+
+        public string Id => SwitchDevice.Bridge.Id + $"/inputs/{SwitchDevice.DeviceId}/buttons/{ReferenceId}";
 
         public string Title => _name;
 
@@ -26,9 +30,9 @@ namespace HomeBlaze.Philips.Hue
             Icons.Material.Filled.RadioButtonChecked :
             Icons.Material.Filled.RadioButtonUnchecked;
 
-        public HueSwitchDevice SwitchDevice { get; private set; }
+        public HueButtonDevice SwitchDevice { get; private set; }
 
-        public int ReferenceId { get; private set; }
+        public Guid ReferenceId => ButtonResource.Id;
 
         public DateTimeOffset? LastUpdated { get; private set; }
 
@@ -41,51 +45,49 @@ namespace HomeBlaze.Philips.Hue
         {
             get
             {
-                //var sensorEvent = _sensorInput?.Events
-                //    .FirstOrDefault(e => e.ButtonEvent == SwitchDevice?.Sensor?.State?.ButtonEvent);
-
-                //if (sensorEvent != null)
-                //{
-                //    if (sensorEvent.EventType == "initial_press")
-                //    {
-                //        return Abstractions.Inputs.ButtonState.Down;
-                //    }
-                //    else if (sensorEvent.EventType == "repeat")
-                //    {
-                //        return Abstractions.Inputs.ButtonState.Repeat;
-                //    }
-                //    else if (sensorEvent.EventType == "short_release")
-                //    {
-                //        return Abstractions.Inputs.ButtonState.Press;
-                //    }
-                //    else if (sensorEvent.EventType == "long_release")
-                //    {
-                //        return Abstractions.Inputs.ButtonState.LongPress;
-                //    }
-                //}
+                var sensorEvent = ButtonResource?.Button?.LastEvent;
+                if (sensorEvent != null && sensorEvent.HasValue)
+                {
+                    var eventType = sensorEvent.Value;
+                    if (eventType == ButtonLastEvent.initial_press)
+                    {
+                        return Abstractions.Inputs.ButtonState.Down;
+                    }
+                    else if (eventType == ButtonLastEvent.repeat)
+                    {
+                        return Abstractions.Inputs.ButtonState.Repeat;
+                    }
+                    else if (eventType == ButtonLastEvent.short_release)
+                    {
+                        return Abstractions.Inputs.ButtonState.Press;
+                    }
+                    else if (eventType == ButtonLastEvent.long_release)
+                    {
+                        return Abstractions.Inputs.ButtonState.LongPress;
+                    }
+                }
 
                 return Abstractions.Inputs.ButtonState.None;
             }
         }
 
-        public HueInputDeviceBase(int index, string name, /*SensorInput sensorInput,*/ HueSwitchDevice switchDevice)
+        public HueButton(string name, ButtonResource sensorInput, HueButtonDevice switchDevice)
         {
             _name = name;
-            //_sensorInput = sensorInput;
+            ButtonResource = sensorInput;
 
-            ReferenceId = index;
             SwitchDevice = switchDevice;
 
-            //Update(sensorInput);
+            Update(sensorInput);
 
             _currentButtonChangeDate = ButtonChangeDate;
             _currentButtonState = InternalButtonState;
         }
 
-        internal HueInputDeviceBase Update(/*SensorInput sensorInput*/)
+        internal HueButton Update(ButtonResource sensorInput)
         {
-            //_sensorInput = sensorInput;
-            //LastUpdated = sensorInput != null ? DateTimeOffset.Now : null;
+            ButtonResource = sensorInput;
+            LastUpdated = sensorInput != null ? DateTimeOffset.Now : null;
             RefreshButtonState();
             return this;
         }
