@@ -21,9 +21,12 @@ namespace HomeBlaze.AsusRouter
 {
     [DisplayName("ASUS Router")]
     [ThingSetup(typeof(AsusRouterSetup), CanEdit = true)]
-    public class AsusRouter : PollingThing,
-        ILastUpdatedProvider, IIconProvider,
-        IConnectedThing, INetworkAdapter
+    public class AsusRouter : 
+        PollingThing,
+        ILastUpdatedProvider, 
+        IIconProvider,
+        IConnectedThing, 
+        INetworkAdapter
     {
         private readonly IHttpClientFactory _httpClientFactory;
 

@@ -18,7 +18,11 @@ namespace HomeBlaze.Dynamic
 {
     [DisplayName("Alarm")]
     [ThingSetup(typeof(AlarmThingSetup), CanEdit = true, CanClone = true)]
-    public class AlarmThing : AsyncEventListener, IThing, IIconProvider, IPresenceSensor
+    public class AlarmThing : 
+        AsyncEventListener, 
+        IThing,
+        IIconProvider, 
+        IPresenceSensor
     {
         private readonly IThingManager _thingManager;
         private readonly TimeSpan _alarmTriggerDuration = TimeSpan.FromSeconds(30);
