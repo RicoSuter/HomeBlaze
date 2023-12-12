@@ -1,5 +1,6 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using Rssdp;
 using Sonos.Base.Metadata;
@@ -16,7 +17,11 @@ using static Sonos.Base.Services.RenderingControlService;
 
 namespace HomeBlaze.Sonos
 {
-    public class SonosDevice : IThing, IIconProvider, IAsyncDisposable
+    public class SonosDevice : 
+        IThing,
+        IIconProvider,
+        INetworkAdapter,
+        IAsyncDisposable
     {
         private readonly SonosSystem _parent;
 
@@ -41,6 +46,12 @@ namespace HomeBlaze.Sonos
 
         [State]
         public string? Host => _rootDevice.UrlBase.Host;
+
+        [State]
+        public string? IpAddress => IpHelper.TryGetIpAddress(Host);
+
+        [State]
+        public bool IsConnected => true;
 
         [State]
         public bool IsAudioPlayer { get; private set; }

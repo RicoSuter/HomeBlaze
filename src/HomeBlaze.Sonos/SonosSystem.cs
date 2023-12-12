@@ -22,7 +22,11 @@ namespace HomeBlaze.Sonos
 {
     [DisplayName("Sonos System")]
     [ThingSetup(typeof(SonosSetup), CanEdit = true)]
-    public class SonosSystem : PollingThing, IIconProvider, ILastUpdatedProvider, IVirtualThing
+    public class SonosSystem :
+        PollingThing,
+        IIconProvider,
+        ILastUpdatedProvider,
+        IVirtualThing
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
