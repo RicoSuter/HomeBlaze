@@ -5,7 +5,13 @@ namespace Namotion.Trackable.Tests;
 
 public class TrackableInterceptorTests
 {
-    private static TrackableFactory? _factory;
+    private TrackableFactory _factory;
+
+    public TrackableInterceptorTests()
+    {
+        var serviceCollection = new ServiceCollection();
+        _factory = new TrackableFactory(serviceCollection.BuildServiceProvider());
+    }
 
     public class Person
     {
@@ -42,11 +48,9 @@ public class TrackableInterceptorTests
         Assert.DoesNotContain(trackableContext, fatherInterceptor.Contexts);
     }
 
-    private static TrackableContext<T> CreateContext<T>()
+    private TrackableContext<T> CreateContext<T>()
         where T : class
     {
-        var serviceCollection = new ServiceCollection();
-        _factory = new TrackableFactory(serviceCollection.BuildServiceProvider());
         return new TrackableContext<T>(_factory);
     }
 }
