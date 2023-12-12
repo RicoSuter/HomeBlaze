@@ -109,7 +109,7 @@ namespace HomeBlaze.Sonos
                                         new SonosServiceProvider(_httpClientFactory, null, _sonosEventBus)));
 
                                     device = new SonosDevice(this, rootDevice, sonosDevice);
-                                    await device.InitializeAsync();
+                                    await device.InitializeAsync(cancellationToken);
                                 }
 
                                 await device.RefreshAsync();
