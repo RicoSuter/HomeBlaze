@@ -22,6 +22,7 @@ Currently the software supports the following devices:
 - Luxtronik Heaters
 - myStrom Switches
 - Nuki Bridges (door lock)
+- Sonos
 - ThanksMister WallPanel (Android app for wall panels)
 
 We hope to find more people from the .NET community to provide support for more devices, new widgets, bug fixes and new features. 

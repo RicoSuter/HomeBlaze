@@ -1,0 +1,16 @@
+﻿@using System.Threading;
+@using HomeBlaze.Sonos;
+@using HomeBlaze.Components;
+@using MudBlazor;
+
+@inherits ThingSetupComponent<SonosSystem>
+
+<MudForm @bind-IsValid="_isFormValid">
+    <MudTextField @bind-Value="@Thing.Host" Label="Host (e.g. HomeBlaze IP address)" />
+</MudForm>
+
+@code {
+    private bool _isFormValid;
+
+    public override bool IsValid => _isFormValid;
+}

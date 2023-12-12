@@ -21,6 +21,10 @@
         {
             <img src="data:@image.MimeType;base64,@Convert.ToBase64String(image.Data)" style="@imageStyle" />
         }
+        else if (Value?.Value is string imageUrl)
+        {
+            <img src="@imageUrl" style="@imageStyle" />
+        }
         else if (!string.IsNullOrEmpty(Thing.ImageUrl))
         {
             <img src="@Thing.ImageUrl" style="@imageStyle" />

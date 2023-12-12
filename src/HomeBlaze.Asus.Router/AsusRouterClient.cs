@@ -7,8 +7,11 @@ using PixelByProxy.Asus.Router.Models;
 
 namespace HomeBlaze.AsusRouter
 {
-    public class AsusRouterClient : IThing,
-        IIconProvider, IConnectedThing, INetworkAdapter
+    public class AsusRouterClient :
+        IThing,
+        IIconProvider,
+        IConnectedThing,
+        INetworkAdapter
     {
         internal Client Client { get; private set; }
 
@@ -40,7 +43,7 @@ namespace HomeBlaze.AsusRouter
         public string? MacAddress => Client.Mac;
 
         public bool IsConnected => Client.IsOnline;
-    
+
         public AsusRouterClient(Client client)
         {
             Client = client;

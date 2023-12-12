@@ -28,7 +28,14 @@ namespace HomeBlaze.Services.Abstractions
                 var @event = await _queue.ReceiveAsync(TimeSpan.FromMilliseconds(-1), stoppingToken);
                 if (@event is not null)
                 {
-                    await HandleMessageAsync(@event, stoppingToken);
+                    try
+                    {
+                        await HandleMessageAsync(@event, stoppingToken);
+                    }
+                    catch
+                    {
+                        // TODO: at least log exception
+                    }
                 }
             }
         }

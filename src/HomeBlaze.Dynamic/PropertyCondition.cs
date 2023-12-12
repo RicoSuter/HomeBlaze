@@ -34,7 +34,7 @@ namespace HomeBlaze.Dynamic
             {
                 lock (this)
                 {
-                    return _state == true && 
+                    return _state == true &&
                         (MinimumHoldDuration == null || DateTimeOffset.Now - _lastStateChange > MinimumHoldDuration);
                 }
             }
@@ -45,9 +45,9 @@ namespace HomeBlaze.Dynamic
             var interpreter = new Interpreter(InterpreterOptions.Default | InterpreterOptions.LateBindObject);
 
             var state = thingManager.TryGetPropertyState(ThingId, PropertyName, true);
-            interpreter.SetVariable("value", state?.Value);
+            interpreter.SetVariable("value", state?.Value is Enum ? state?.Value.ToString() : state?.Value);
 
-            var expression = Expression; 
+            var expression = Expression;
             if (string.IsNullOrEmpty(expression))
             {
                 expression =
