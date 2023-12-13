@@ -2,6 +2,7 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Networking;
+using HomeBlaze.Abstractions.Presentation;
 using HueApi.Models;
 using System;
 
@@ -11,7 +12,8 @@ namespace HomeBlaze.Philips.Hue
         IThing,
         ILastUpdatedProvider,
         IConnectedThing,
-        IUnknownDevice
+        IUnknownDevice,
+        IIconProvider
     {
         internal Device Device { get; private set; }
 
@@ -26,6 +28,10 @@ namespace HomeBlaze.Philips.Hue
         public HueBridge Bridge { get; }
 
         public Guid ResourceId => Device.Id;
+
+        public virtual string IconName => "fas fa-question-circle";
+
+        public virtual MudBlazor.Color IconColor => IsConnected ? MudBlazor.Color.Default : MudBlazor.Color.Error;
 
         [State]
         public bool? IsCertified => Device.ProductData.Certified;

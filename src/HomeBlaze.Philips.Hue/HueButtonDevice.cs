@@ -13,10 +13,12 @@ namespace HomeBlaze.Philips.Hue
         IThing,
         IIconProvider
     {
-        public string IconName =>
+        public override string IconName =>
             Buttons.Any(b => b.ButtonState != Abstractions.Inputs.ButtonState.None) ?
             Icons.Material.Filled.RadioButtonChecked :
             Icons.Material.Filled.RadioButtonUnchecked;
+
+        public override MudBlazor.Color IconColor => IsConnected ? MudBlazor.Color.Default : MudBlazor.Color.Error;
 
         [State]
         public HueButton[] Buttons { get; protected set; } = Array.Empty<HueButton>();

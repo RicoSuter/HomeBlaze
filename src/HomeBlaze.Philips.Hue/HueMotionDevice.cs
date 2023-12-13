@@ -17,7 +17,7 @@ namespace HomeBlaze.Philips.Hue
         ILightSensor,
         ITemperatureSensor
     {
-        public string IconName => "fas fa-running";
+        public override string IconName => "fas fa-running";
 
         [State]
         public bool? IsPresent => MotionResource.Motion.MotionState;
