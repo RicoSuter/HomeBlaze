@@ -72,9 +72,9 @@ namespace HomeBlaze.Services
                     .Select(p => new StatePropertyInfo
                     {
                         Property = p,
-                        StateAttribute = p.ContextAttributes.OfType<StateAttribute>().FirstOrDefault(),
-                        ScanForStateAttribute = p.ContextAttributes.OfType<ScanForStateAttribute>().FirstOrDefault(),
-                        ParentThingAttribute = p.ContextAttributes.OfType<ParentThingAttribute>().FirstOrDefault(),
+                        StateAttribute = p.GetAttribute<StateAttribute>(true),
+                        ScanForStateAttribute = p.GetAttribute<ScanForStateAttribute>(true),
+                        ParentThingAttribute = p.GetAttribute<ParentThingAttribute>(true),
                         IsThingProperty = p.PropertyType.Type.IsAssignableTo(typeof(IThing)),
                         IsThingArrayProperty = p.PropertyType.Type.IsAssignableTo(typeof(IEnumerable<IThing>))
                     })

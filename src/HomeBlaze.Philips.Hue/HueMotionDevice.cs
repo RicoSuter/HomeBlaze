@@ -19,12 +19,6 @@ namespace HomeBlaze.Philips.Hue
     {
         public override string IconName => "fas fa-running";
 
-        [State]
-        public bool? IsPresent => MotionResource.Motion.MotionState;
-
-        [State]
-        public decimal? BatteryLevel => DevicePowerResource?.PowerState?.BatteryLevel / 100m;
-
         internal MotionResource MotionResource { get; set; }
 
         internal DevicePower? DevicePowerResource { get; set; }
@@ -32,6 +26,12 @@ namespace HomeBlaze.Philips.Hue
         internal TemperatureResource? TemperatureResource { get; set; }
 
         internal LightLevel? LightLevelResource { get; set; }
+
+        [State]
+        public bool? IsPresent => MotionResource.Motion.MotionState;
+
+        [State]
+        public decimal? BatteryLevel => DevicePowerResource?.PowerState?.BatteryLevel / 100m;
 
         [State]
         public decimal? Temperature => TemperatureResource?.Temperature.TemperatureValid == true ?
