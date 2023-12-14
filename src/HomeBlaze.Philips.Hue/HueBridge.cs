@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,6 +38,7 @@ namespace HomeBlaze.Philips.Hue
         private bool _isRefreshing = false;
         private LocalHueApi? _client;
         private readonly IEventManager _eventManager;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<HueBridge> _logger;
 
         internal LocatedBridge? Bridge { get; set; }
@@ -82,10 +84,11 @@ namespace HomeBlaze.Philips.Hue
 
         protected override TimeSpan FailureInterval => TimeSpan.FromSeconds(5);
 
-        public HueBridge(IThingManager thingManager, IEventManager eventManager, ILogger<HueBridge> logger)
+        public HueBridge(IThingManager thingManager, IEventManager eventManager, IHttpClientFactory httpClientFactory, ILogger<HueBridge> logger)
             : base(thingManager, logger)
         {
             _eventManager = eventManager;
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
@@ -131,12 +134,15 @@ namespace HomeBlaze.Philips.Hue
 
                 if (Bridge?.IpAddress != null)
                 {
-                    if (_client is null)
+                    if (_client is not null)
                     {
-                        _client = new LocalHueApi(Bridge.IpAddress, AppKey);
-                        _client.OnEventStreamMessage += OnEventStreamMessage;
-                        _client.StartEventStream();
+                        _client.OnEventStreamMessage -= OnEventStreamMessage;
+                        _client.StopEventStream();
                     }
+
+                    _client = new LocalHueApi(Bridge.IpAddress, AppKey, _httpClientFactory.CreateClient());
+                    _client.OnEventStreamMessage += OnEventStreamMessage;
+                    _client.StartEventStream();
 
                     LastUpdated = DateTimeOffset.Now;
 
@@ -479,6 +485,16 @@ namespace HomeBlaze.Philips.Hue
             });
 
             return JsonSerializer.Deserialize<T>(o1.ToString())!;
+        }
+
+        public override void Dispose()
+        {
+            if (_client is not null)
+            {
+                _client.StopEventStream();
+            }
+
+            base.Dispose();
         }
     }
 }
