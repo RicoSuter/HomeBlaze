@@ -34,9 +34,8 @@ namespace HomeBlaze.Philips.Hue
         internal LightLevel? LightLevelResource { get; set; }
 
         [State]
-        public decimal? Temperature =>
-            TemperatureResource?.ExtensionData["temperature"].GetProperty("temperature_valid").GetBoolean() == true ?
-            TemperatureResource?.ExtensionData["temperature"].GetProperty("temperature").GetDecimal() : null;
+        public decimal? Temperature => TemperatureResource?.Temperature.TemperatureValid == true ?
+            TemperatureResource?.Temperature.TemperatureReport?.Temperature : null;
 
         [State]
         public decimal? LightLevel => LightLevelResource?.Light.LightLevelValid == true ? (decimal?)LightLevelResource?.Light.LuxLevel : null;

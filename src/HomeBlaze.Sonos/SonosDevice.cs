@@ -21,7 +21,7 @@ namespace HomeBlaze.Sonos
         IThing,
         IIconProvider,
         INetworkAdapter,
-        IAsyncDisposable, 
+        IAsyncDisposable,
         IAudioPlayer
     {
         private readonly SonosSystem _parent;
@@ -30,7 +30,7 @@ namespace HomeBlaze.Sonos
         private global::Sonos.Base.SonosDevice _sonosDevice;
         private GetPositionInfoResponse? _positionInfo;
 
-        public string Id => $"sonos/{Uuid}";
+        public string Id => $"{_parent.Id}/devices/{Uuid}";
 
         public string? Title => $"{ModelName} ({RoomName})";
 
