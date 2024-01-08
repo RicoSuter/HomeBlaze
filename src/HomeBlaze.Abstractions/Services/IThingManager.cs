@@ -20,6 +20,8 @@
 
         ThingOperation[] GetOperations(string? thingId, bool includeExtensions);
 
+        IThing[] GetExtensionThings(IThing? thing);
+
         Task WriteConfigurationAsync(CancellationToken cancellationToken);
     }
 }

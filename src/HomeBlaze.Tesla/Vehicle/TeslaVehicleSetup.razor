@@ -111,20 +111,19 @@
         return Task.FromResult<TeslaVehicle?>(null);
     }
 
-    public override async Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
+    public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
     {
-        var tokens = await GetAuthenticationTokensAsync();
-        if (tokens != null && _selectedVehicle is TeslaVehicleItem selectedVehicle)
+        if (_tokens != null && _selectedVehicle is TeslaVehicleItem selectedVehicle)
         {
             EditedThing!.VehicleId = selectedVehicle.IdString;
-            EditedThing!.AccessToken = tokens.AccessToken;
-            EditedThing!.RefreshToken = tokens.RefreshToken;
-            EditedThing!.TokenExpirationDate = tokens.CreatedAt + tokens.ExpiresIn;
-            return true;
+            EditedThing.AccessToken = _tokens.AccessToken;
+            EditedThing.RefreshToken = _tokens.RefreshToken;
+            EditedThing.TokenExpirationDate = _tokens.CreatedAt + _tokens.ExpiresIn;
+            return Task.FromResult<bool>(true);
         }
 
-        return false;
-    }   
+        return Task.FromResult<bool>(false);
+    }
 
     private async Task<Tokens?> GetAuthenticationTokensAsync()
     {

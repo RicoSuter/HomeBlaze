@@ -28,7 +28,7 @@ namespace HomeBlaze.Philips.Hue
         internal LightLevel? LightLevelResource { get; set; }
 
         [State]
-        public bool? IsPresent => MotionResource.Motion.MotionState;
+        public bool? IsPresent => MotionResource.Motion.MotionReport?.Motion;
 
         [State]
         public decimal? BatteryLevel => DevicePowerResource?.PowerState?.BatteryLevel / 100m;
@@ -38,7 +38,7 @@ namespace HomeBlaze.Philips.Hue
             TemperatureResource?.Temperature.TemperatureReport?.Temperature : null;
 
         [State]
-        public decimal? LightLevel => LightLevelResource?.Light.LightLevelValid == true ? (decimal?)LightLevelResource?.Light.LuxLevel : null;
+        public decimal? LightLevel => LightLevelResource?.Enabled == true ? (decimal?)LightLevelResource?.Light.LightLevelReport.LuxLevel : null;
 
         public HueMotionDevice(Device device, ZigbeeConnectivity? zigbeeConnectivity, DevicePower? devicePower, TemperatureResource? temperature, LightLevel? lightLevel, MotionResource motion, HueBridge bridge)
             : base(device, zigbeeConnectivity, bridge)

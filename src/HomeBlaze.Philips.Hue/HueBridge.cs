@@ -35,11 +35,13 @@ namespace HomeBlaze.Philips.Hue
         IHubDevice,
         IPowerConsumptionSensor
     {
-        private bool _isRefreshing = false;
-        private LocalHueApi? _client;
-        private readonly IEventManager _eventManager;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<HueBridge> _logger;
+
+        private bool _isRefreshing = false;
+        private LocalHueApi? _client;
+
+        internal IEventManager EventManager { get; }
 
         internal LocatedBridge? Bridge { get; set; }
 
@@ -87,7 +89,8 @@ namespace HomeBlaze.Philips.Hue
         public HueBridge(IThingManager thingManager, IEventManager eventManager, IHttpClientFactory httpClientFactory, ILogger<HueBridge> logger)
             : base(thingManager, logger)
         {
-            _eventManager = eventManager;
+            EventManager = eventManager;
+
             _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
@@ -346,28 +349,8 @@ namespace HomeBlaze.Philips.Hue
                         var button = buttonDevice?.Buttons.SingleOrDefault(b => b.ResourceId == data.Id);
                         if (button is not null && buttonDevice is not null)
                         {
-                            DateTimeOffset? buttonChangeDate = data.ExtensionData.TryGetValue("button", out var buttonValue) ?
-                                buttonValue
-                                    .GetProperty("button_report")
-                                    .GetProperty("updated")
-                                    .GetDateTimeOffset() : null;
-
-                            if (buttonChangeDate.HasValue)
-                            {
-                                button.ButtonChangeDate = buttonChangeDate.Value;
-                            }
-
                             button.Update(Merge(button.ButtonResource, data));
                             button.LastUpdated = DateTimeOffset.Now;
-
-                            if (button.ButtonResource.Button?.LastEvent.HasValue == true)
-                            {
-                                _eventManager.Publish(new ButtonEvent
-                                {
-                                    ThingId = buttonDevice.Id,
-                                    ButtonState = HueButton.GetButtonState(button.ButtonResource.Button.LastEvent.Value)
-                                });
-                            }
 
                             ThingManager.DetectChanges(buttonDevice);
                         }

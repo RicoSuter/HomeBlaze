@@ -129,22 +129,17 @@ namespace HomeBlaze.Services
         private Dictionary<string, PropertyState> GetExtensionState(string? thingId)
         {
             var state = new Dictionary<string, PropertyState>();
-
-            lock (_things)
+         
+            var thing = TryGetById(thingId);
+            foreach (var extensionThing in GetExtensionThings(thing))
             {
-                var thing = TryGetById(thingId);
-                foreach (var extensionThing in _things.Keys
-                    .Where(t => t is IExtensionThing extensionThing && extensionThing.ExtendedThing == thing))
-                {
-                    // TODO: What to do when multiple extensions have the same property?
-                    // (eg two dynamicextensionthings with a thing property each?)
+                // TODO: What to do when multiple extensions have the same property?
+                // (eg two dynamicextensionthings with a thing property each?)
 
-                    state = state
-                        .Concat(GetState(extensionThing.Id, true))
-                        .DistinctBy(p => p.Key) // TODO(docs): Currently extension things cannot overwrite values of the extended thing
-                        .ToDictionary(p => p.Key, p => p.Value);
-                }
-
+                state = state
+                    .Concat(GetState(extensionThing.Id, true))
+                    .DistinctBy(p => p.Key) // TODO(docs): Currently extension things cannot overwrite values of the extended thing
+                    .ToDictionary(p => p.Key, p => p.Value);
             }
 
             return state;
@@ -184,14 +179,7 @@ namespace HomeBlaze.Services
             {
                 if (includeExtensions)
                 {
-                    ICollection<IThing> things;
-                    lock (_things)
-                    {
-                        things = _things.Keys.ToArray();
-                    }
-
-                    foreach (var extensionThing in things
-                        .Where(t => t is IExtensionThing extensionThing && extensionThing.ExtendedThing == thing))
+                    foreach (var extensionThing in GetExtensionThings(thing))
                     {
                         operations = operations.Concat(GetOperations(extensionThing.Id, true));
                     }
@@ -199,6 +187,16 @@ namespace HomeBlaze.Services
             }
 
             return operations.ToArray();
+        }
+
+        public IThing[] GetExtensionThings(IThing? thing)
+        {
+            lock (_things)
+            {
+                return _things.Keys
+                    .Where(t => t is IExtensionThing extensionThing && extensionThing.ExtendedThing == thing)
+                    .ToArray();
+            }
         }
 
         public async Task WriteConfigurationAsync(CancellationToken cancellationToken)
