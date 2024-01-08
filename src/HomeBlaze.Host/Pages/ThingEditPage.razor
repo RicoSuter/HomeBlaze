@@ -203,6 +203,12 @@
 
     public IThing? Thing { get; set; }
 
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Update();
+    }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -213,7 +219,11 @@
             .Add(ModCode.Ctrl, Code.S, async () => await UpsertAsync(CancellationToken.None));
 
         Thing = ThingManager.TryGetById(ThingId);
+        Update();
+    }
 
+    private void Update()
+    {
         _thingTypes = TypeManager
             .ThingTypes
             .Where(t => t.GetCustomAttribute<ThingSetupAttribute>() != null)
@@ -241,7 +251,7 @@
         else if (_thingTypes.Length == 1)
         {
             OnThingTypeChanged(_thingTypes.First());
-        }
+        }        
     }
 
     public void ToggleJson()

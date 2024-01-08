@@ -9,7 +9,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="MudBlazor" Version="6.11.1" />
+		<PackageReference Include="MudBlazor" Version="6.12.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
 		<PackageReference Include="OpenXbox.XboxWebApi" Version="0.3.1" />

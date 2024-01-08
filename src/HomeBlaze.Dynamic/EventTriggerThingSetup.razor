@@ -11,10 +11,10 @@
 
     <MudSwitch @bind-Checked="@Thing.IsEnabled" Label="Enabled" Color="Color.Info" />
     <br />
-    <br />
 
     <MudTabs>
         <MudTabPanel Text="Event">
+            <br />
             <EventTypeSelect @bind-EventTypeName="Thing.EventTypeName" Label="Trigger Event Type" />
         </MudTabPanel>
         <MudTabPanel Text="Operations">
