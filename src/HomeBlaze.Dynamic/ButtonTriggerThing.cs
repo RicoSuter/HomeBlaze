@@ -9,25 +9,34 @@ using HomeBlaze.Services.Abstractions;
 using System.ComponentModel;
 using HomeBlaze.Components.Editors;
 using Microsoft.Extensions.Logging;
+using HomeBlaze.Abstractions;
+using System.Reflection;
+using System.Linq;
+using HomeBlaze.Abstractions.Inputs;
 
 namespace HomeBlaze.Dynamic
 {
-    [DisplayName("Event Trigger")]
-    [ThingSetup(typeof(EventTriggerThingSetup), CanEdit = true, CanClone = true)]
-    public class EventTriggerThing : ExtensionThing
+    [DisplayName("Button Trigger")]
+    [ThingSetup(typeof(ButtonTriggerThingSetup), CanEdit = true, CanClone = true)]
+    public class ButtonTriggerThing : ExtensionThing
     {
         private readonly IThingManager _thingManager;
-        private readonly ILogger<EventTriggerThing> _logger;
+        private readonly ILogger<ButtonTriggerThing> _logger;
 
-        public EventTriggerThing(IThingManager thingManager, IEventManager eventManager, ILogger<EventTriggerThing> logger)
+        public ButtonTriggerThing(IThingManager thingManager, IEventManager eventManager, ILogger<ButtonTriggerThing> logger)
             : base(thingManager, eventManager)
         {
             _thingManager = thingManager;
             _logger = logger;
         }
 
-        [Configuration]
-        public string? EventTypeName { get; set; }
+        public static bool CanExtend(IThing thing)
+        {
+            return thing
+                .GetType()
+                .GetCustomAttributes<ThingEventAttribute>()
+                .Any(a => a.EventType == typeof(ButtonEvent));
+        }
 
         [Configuration]
         public IList<Operation> Operations { get; set; } = new List<Operation>();
@@ -43,10 +52,9 @@ namespace HomeBlaze.Dynamic
 
         protected override async Task HandleMessageAsync(IEvent @event, CancellationToken cancellationToken)
         {
-            if (EventTypeName is not null &&
-                @event is IThingEvent thingEvent &&
-                thingEvent.ThingId == ExtendedThingId &&
-                thingEvent.GetType().FullName == EventTypeName)
+            if (@event is ButtonEvent buttonEvent &&
+                buttonEvent.ThingId == ExtendedThingId &&
+                buttonEvent.ButtonState == ButtonState.Press)
             {
                 Execute();
             }

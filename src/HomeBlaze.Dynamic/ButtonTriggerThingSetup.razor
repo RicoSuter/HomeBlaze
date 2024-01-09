@@ -3,20 +3,16 @@
 @using HomeBlaze.Components.Inputs
 @using MudBlazor
 
-@inherits ThingSetupComponent<EventTriggerThing>
+@inherits ThingSetupComponent<ButtonTriggerThing>
 
 <MudForm @bind-IsValid="_isFormValid">
     <MudTextField @bind-Value="@Thing.Title" Label="Title" Required="true" />
     <br />
 
-    <MudSwitch @bind-Checked="@Thing.IsEnabled" Label="Enabled" Color="Color.Info" />
+    <MudSwitch @bind-Value="@Thing.IsEnabled" Label="Enabled" Color="Color.Info" T="bool" />
     <br />
 
     <MudTabs>
-        <MudTabPanel Text="Event">
-            <br />
-            <EventTypeSelect @bind-EventTypeName="Thing.EventTypeName" Label="Trigger Event Type" />
-        </MudTabPanel>
         <MudTabPanel Text="Operations">
             <br />
             <OperationListEditor Operations="Thing.Operations"></OperationListEditor>

@@ -228,7 +228,9 @@
             .ThingTypes
             .Where(t => t.GetCustomAttribute<ThingSetupAttribute>() != null)
             .Where(t => t.GetCustomAttribute<ThingWidgetAttribute>() == null)
-            .Where(t => string.IsNullOrEmpty(ExtendedThingId) || t.IsAssignableTo(typeof(IExtensionThing)))
+            .Where(t => string.IsNullOrEmpty(ExtendedThingId) || (
+                t.IsAssignableTo(typeof(IExtensionThing)) && 
+                t.GetMethod("CanExtend")?.Invoke(null, new[] { ThingManager.TryGetById(ExtendedThingId) }) as bool? != false))
             .ToArray();
 
         if (Thing != null)
