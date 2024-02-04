@@ -8,6 +8,7 @@ using System;
 
 namespace HomeBlaze.Philips.Hue
 {
+    [ThingEvent(typeof(Abstractions.Inputs.ButtonEvent))]
     public class HueButton :
         IThing,
         IIconProvider,
@@ -18,7 +19,6 @@ namespace HomeBlaze.Philips.Hue
 
         private ButtonState? _currentButtonState;
         private DateTimeOffset? _currentButtonChangeDate;
-        private ButtonState? buttonState = Abstractions.Inputs.ButtonState.None;
 
         internal ButtonResource ButtonResource { get; set; }
 
@@ -37,23 +37,16 @@ namespace HomeBlaze.Philips.Hue
 
         public DateTimeOffset? LastUpdated { get; internal set; }
 
-        public DateTimeOffset? ButtonChangeDate { get; internal set; }
+        public DateTimeOffset? ButtonChangeDate => ButtonResource?.Button?.ButtonReport?.Updated;
 
         [State]
-        public ButtonState? ButtonState
-        {
-            get => buttonState; private set
-            {
-                Console.WriteLine($"Button {ResourceId}: " + value);
-                buttonState=value;
-            }
-        }
+        public ButtonState? ButtonState { get; private set; } = Abstractions.Inputs.ButtonState.None;
 
         internal ButtonState? InternalButtonState
         {
             get
             {
-                var lastEvent = ButtonResource?.Button?.LastEvent;
+                var lastEvent = ButtonResource?.Button?.ButtonReport?.Event;
                 if (lastEvent != null && lastEvent.HasValue)
                 {
                     var eventType = lastEvent.Value;
@@ -64,21 +57,21 @@ namespace HomeBlaze.Philips.Hue
             }
         }
 
-        public static ButtonState GetButtonState(ButtonLastEvent eventType)
+        public static ButtonState GetButtonState(HueApi.Models.ButtonEvent eventType)
         {
-            if (eventType == ButtonLastEvent.initial_press)
+            if (eventType == HueApi.Models.ButtonEvent.initial_press)
             {
                 return Abstractions.Inputs.ButtonState.Down;
             }
-            else if (eventType == ButtonLastEvent.repeat)
+            else if (eventType == HueApi.Models.ButtonEvent.repeat)
             {
                 return Abstractions.Inputs.ButtonState.Repeat;
             }
-            else if (eventType == ButtonLastEvent.short_release)
+            else if (eventType == HueApi.Models.ButtonEvent.short_release)
             {
                 return Abstractions.Inputs.ButtonState.Press;
             }
-            else if (eventType == ButtonLastEvent.long_release)
+            else if (eventType == HueApi.Models.ButtonEvent.long_release)
             {
                 return Abstractions.Inputs.ButtonState.LongPress;
             }
@@ -92,7 +85,6 @@ namespace HomeBlaze.Philips.Hue
 
             ButtonResource = buttonResource;
             ParentDevice = buttonDevice;
-
             Update(buttonResource);
 
             _currentButtonChangeDate = ButtonChangeDate;
@@ -112,9 +104,10 @@ namespace HomeBlaze.Philips.Hue
             var newButtonChangeDate = ButtonChangeDate;
             var newButtonState = InternalButtonState;
 
-            if ((newButtonChangeDate != _currentButtonChangeDate || newButtonState != _currentButtonState) &&
+            if (newButtonChangeDate != null &&
+                newButtonChangeDate != _currentButtonChangeDate &&
                 newButtonState != Abstractions.Inputs.ButtonState.None &&
-                newButtonChangeDate != null)
+                newButtonState != _currentButtonState)
             {
                 _currentButtonChangeDate = newButtonChangeDate;
                 _currentButtonState = newButtonState;
@@ -124,10 +117,20 @@ namespace HomeBlaze.Philips.Hue
                 {
                     ButtonState = newButtonState;
 
+                    if (newButtonState.HasValue)
+                    {
+                        ParentDevice.Bridge.EventManager.Publish(new Abstractions.Inputs.ButtonEvent
+                        {
+                            ThingId = Id,
+                            ButtonState = newButtonState.Value
+                        });
+                    }
+
                     if (newButtonState != Abstractions.Inputs.ButtonState.None &&
                         newButtonState != Abstractions.Inputs.ButtonState.Down &&
                         newButtonState != Abstractions.Inputs.ButtonState.Repeat)
                     {
+                        // change back to none
                         ButtonState = Abstractions.Inputs.ButtonState.None;
                     }
                 }

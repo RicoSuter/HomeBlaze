@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,16 +35,21 @@ namespace HomeBlaze.Philips.Hue
         IHubDevice,
         IPowerConsumptionSensor
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger<HueBridge> _logger;
+
         private bool _isRefreshing = false;
         private LocalHueApi? _client;
-        private readonly IEventManager _eventManager;
-        private readonly ILogger<HueBridge> _logger;
+
+        internal IEventManager EventManager { get; }
 
         internal LocatedBridge? Bridge { get; set; }
 
         public override string Title => "Hue Bridge (" + (Bridge?.IpAddress ?? "?") + ")";
 
         public string IconName => "fab fa-hubspot";
+
+        public Color IconColor => IsConnected ? Color.Default : Color.Error;
 
         public DateTimeOffset? LastUpdated { get; private set; }
 
@@ -80,10 +86,12 @@ namespace HomeBlaze.Philips.Hue
 
         protected override TimeSpan FailureInterval => TimeSpan.FromSeconds(5);
 
-        public HueBridge(IThingManager thingManager, IEventManager eventManager, ILogger<HueBridge> logger)
+        public HueBridge(IThingManager thingManager, IEventManager eventManager, IHttpClientFactory httpClientFactory, ILogger<HueBridge> logger)
             : base(thingManager, logger)
         {
-            _eventManager = eventManager;
+            EventManager = eventManager;
+
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
@@ -129,12 +137,15 @@ namespace HomeBlaze.Philips.Hue
 
                 if (Bridge?.IpAddress != null)
                 {
-                    if (_client is null)
+                    if (_client is not null)
                     {
-                        _client = new LocalHueApi(Bridge.IpAddress, AppKey);
-                        _client.OnEventStreamMessage += OnEventStreamMessage;
-                        _client.StartEventStream();
+                        _client.OnEventStreamMessage -= OnEventStreamMessage;
+                        _client.StopEventStream();
                     }
+
+                    _client = new LocalHueApi(Bridge.IpAddress, AppKey, _httpClientFactory.CreateClient());
+                    _client.OnEventStreamMessage += OnEventStreamMessage;
+                    _client.StartEventStream();
 
                     LastUpdated = DateTimeOffset.Now;
 
@@ -338,28 +349,8 @@ namespace HomeBlaze.Philips.Hue
                         var button = buttonDevice?.Buttons.SingleOrDefault(b => b.ResourceId == data.Id);
                         if (button is not null && buttonDevice is not null)
                         {
-                            DateTimeOffset? buttonChangeDate = data.ExtensionData.TryGetValue("button", out var buttonValue) ?
-                                buttonValue
-                                    .GetProperty("button_report")
-                                    .GetProperty("updated")
-                                    .GetDateTimeOffset() : null;
-
-                            if (buttonChangeDate.HasValue)
-                            {
-                                button.ButtonChangeDate = buttonChangeDate.Value;
-                            }
-
                             button.Update(Merge(button.ButtonResource, data));
                             button.LastUpdated = DateTimeOffset.Now;
-
-                            if (button.ButtonResource.Button?.LastEvent.HasValue == true)
-                            {
-                                _eventManager.Publish(new ButtonEvent
-                                {
-                                    ThingId = buttonDevice.Id,
-                                    ButtonState = HueButton.GetButtonState(button.ButtonResource.Button.LastEvent.Value)
-                                });
-                            }
 
                             ThingManager.DetectChanges(buttonDevice);
                         }
@@ -477,6 +468,16 @@ namespace HomeBlaze.Philips.Hue
             });
 
             return JsonSerializer.Deserialize<T>(o1.ToString())!;
+        }
+
+        public override void Dispose()
+        {
+            if (_client is not null)
+            {
+                _client.StopEventStream();
+            }
+
+            base.Dispose();
         }
     }
 }

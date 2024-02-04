@@ -93,7 +93,7 @@ namespace HomeBlaze.Tesla.Vehicle.Models
         public long ChargerActualCurrent { get; set; }
 
         [JsonPropertyName("charger_phases"), State]
-        public long ChargerPhases { get; set; }
+        public long? ChargerPhases { get; set; }
 
         [JsonPropertyName("charger_pilot_current"), State]
         public long ChargerPilotCurrent { get; set; }

@@ -22,7 +22,11 @@ namespace HomeBlaze.Sonos
 {
     [DisplayName("Sonos System")]
     [ThingSetup(typeof(SonosSetup), CanEdit = true)]
-    public class SonosSystem : PollingThing, IIconProvider, ILastUpdatedProvider, IVirtualThing
+    public class SonosSystem :
+        PollingThing,
+        IIconProvider,
+        ILastUpdatedProvider,
+        IVirtualThing
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
@@ -92,39 +96,44 @@ namespace HomeBlaze.Sonos
                     var foundDevices = await FindSonosDevicesAsync(httpClient);
                     var currentDevices = Devices;
 
-                    var devices = await Task.WhenAll(foundDevices.Values
-                        .Select(rootDevice => Task.Run(async () =>
-                        {
-                            try
-                            {
-                                var device = currentDevices.FirstOrDefault(d => d.Uuid == rootDevice.Uuid);
-                                if (device == null)
-                                {
-                                    var sonosDevice = new global::Sonos.Base.SonosDevice(
-                                        new SonosDeviceOptions(rootDevice.UrlBase,
-                                        new SonosServiceProvider(_httpClientFactory, null, _sonosEventBus)));
-
-                                    device = new SonosDevice(this, rootDevice, sonosDevice);
-                                    await device.InitializeAsync();
-                                }
-
-                                await device.RefreshAsync();
-                                return device;
-                            }
-                            catch
-                            {
-                                return null;
-                            }
-                        })));
-
-                    Devices = devices
-                        .Where(d => d is not null)
-                        .OrderBy(d => d!.ModelName)
-                        .ToArray()!;
-
-                    foreach (var removedDevice in currentDevices.Except(Devices))
+                    try
                     {
-                        await removedDevice.DisposeAsync();
+                        var devices = await Task.WhenAll(foundDevices.Values
+                            .Select(rootDevice => Task.Run(async () =>
+                            {
+                                try
+                                {
+                                    var device = currentDevices.FirstOrDefault(d => d.Uuid == rootDevice.Uuid);
+                                    if (device == null)
+                                    {
+                                        var sonosDevice = new global::Sonos.Base.SonosDevice(
+                                            new SonosDeviceOptions(rootDevice.UrlBase,
+                                            new SonosServiceProvider(_httpClientFactory, null, _sonosEventBus)));
+
+                                        device = new SonosDevice(this, rootDevice, sonosDevice);
+                                        await device.InitializeAsync(cancellationToken);
+                                    }
+
+                                    await device.RefreshAsync();
+                                    return device;
+                                }
+                                catch
+                                {
+                                    return null;
+                                }
+                            })));
+
+                        Devices = devices
+                            .Where(d => d is not null)
+                            .OrderBy(d => d!.ModelName)
+                            .ToArray()!;
+                    }
+                    finally
+                    {
+                        foreach (var removedDevice in currentDevices.Except(Devices))
+                        {
+                            await removedDevice.DisposeAsync();
+                        }
                     }
 
                     LastUpdated = DateTime.Now;

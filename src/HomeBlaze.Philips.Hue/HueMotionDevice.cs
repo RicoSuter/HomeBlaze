@@ -17,13 +17,7 @@ namespace HomeBlaze.Philips.Hue
         ILightSensor,
         ITemperatureSensor
     {
-        public string IconName => "fas fa-running";
-
-        [State]
-        public bool? IsPresent => MotionResource.Motion.MotionState;
-
-        [State]
-        public decimal? BatteryLevel => DevicePowerResource?.PowerState?.BatteryLevel / 100m;
+        public override string IconName => "fas fa-running";
 
         internal MotionResource MotionResource { get; set; }
 
@@ -34,12 +28,17 @@ namespace HomeBlaze.Philips.Hue
         internal LightLevel? LightLevelResource { get; set; }
 
         [State]
-        public decimal? Temperature =>
-            TemperatureResource?.ExtensionData["temperature"].GetProperty("temperature_valid").GetBoolean() == true ?
-            TemperatureResource?.ExtensionData["temperature"].GetProperty("temperature").GetDecimal() : null;
+        public bool? IsPresent => MotionResource.Motion.MotionReport?.Motion;
 
         [State]
-        public decimal? LightLevel => LightLevelResource?.Light.LightLevelValid == true ? (decimal?)LightLevelResource?.Light.LuxLevel : null;
+        public decimal? BatteryLevel => DevicePowerResource?.PowerState?.BatteryLevel / 100m;
+
+        [State]
+        public decimal? Temperature => TemperatureResource?.Temperature.TemperatureValid == true ?
+            TemperatureResource?.Temperature.TemperatureReport?.Temperature : null;
+
+        [State]
+        public decimal? LightLevel => LightLevelResource?.Enabled == true ? (decimal?)LightLevelResource?.Light.LightLevelReport.LuxLevel : null;
 
         public HueMotionDevice(Device device, ZigbeeConnectivity? zigbeeConnectivity, DevicePower? devicePower, TemperatureResource? temperature, LightLevel? lightLevel, MotionResource motion, HueBridge bridge)
             : base(device, zigbeeConnectivity, bridge)

@@ -35,9 +35,12 @@ namespace HomeBlaze.Philips.Hue
                 IsOnOffLight ? "On/Off" : null, ModelId
             }.Where(e => e != null))})";
 
-        public string IconName => "fas fa-lightbulb";
+        public override string IconName => "fas fa-lightbulb";
 
-        public MudBlazor.Color IconColor => IsOn == true ? MudBlazor.Color.Warning : MudBlazor.Color.Default;
+        public override MudBlazor.Color IconColor =>
+            IsConnected == false ? MudBlazor.Color.Error : 
+            IsOn == true ? MudBlazor.Color.Warning :
+                MudBlazor.Color.Default;
 
         public Guid ReferenceId => LightResource.Id;
 

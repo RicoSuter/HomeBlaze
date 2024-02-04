@@ -2,7 +2,7 @@
 
 namespace HomeBlaze.Abstractions.Inputs
 {
-    public class ButtonEvent : IEvent
+    public class ButtonEvent : IThingEvent
     {
         public required string ThingId { get; init; }
 

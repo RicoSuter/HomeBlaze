@@ -24,6 +24,7 @@ namespace HomeBlaze.Logitech
         INetworkAdapter
     {
         private DateTimeOffset _lastCheck = DateTimeOffset.MinValue;
+
         private readonly IThingManager _thingManager;
         private readonly ILogger<LogitechHarmonyHub> _logger;
 

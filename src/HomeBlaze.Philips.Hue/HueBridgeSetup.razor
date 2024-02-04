@@ -6,10 +6,12 @@
 @using MudBlazor
 @using System.Threading
 @using HomeBlaze.Abstractions.Services
+@using System.Net.Http
 
 @inject IThingManager ThingManager
 @inject IEventManager EventManager
 @inject IDialogService DialogService
+@inject IHttpClientFactory HttpClientFactory
 @inject ILogger<HueBridge> Logger
 
 @inherits ThingSetupComponentBase<HueBridge>
@@ -72,7 +74,7 @@ else
             if (_selectedBridge is LocatedBridge selectedBridge)
             {
                 var result = await LocalHueApi.RegisterAsync(selectedBridge.IpAddress, "HomeBlaze", "Local", true, cancellationToken);
-                var bridge = new HueBridge(ThingManager, EventManager, Logger)
+                var bridge = new HueBridge(ThingManager, EventManager, HttpClientFactory, Logger)
                 {
                     AppKey = result?.StreamingClientKey,
                     BridgeId = selectedBridge.BridgeId

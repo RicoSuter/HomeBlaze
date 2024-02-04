@@ -1,9 +1,10 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Media;
+using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using Rssdp;
 using Sonos.Base.Metadata;
-using Sonos.Base.Services;
 using System;
 using System.Linq;
 using System.Threading;
@@ -16,7 +17,12 @@ using static Sonos.Base.Services.RenderingControlService;
 
 namespace HomeBlaze.Sonos
 {
-    public class SonosDevice : IThing, IIconProvider, IAsyncDisposable
+    public class SonosDevice :
+        IThing,
+        IIconProvider,
+        INetworkAdapter,
+        IAsyncDisposable,
+        IAudioPlayer
     {
         private readonly SonosSystem _parent;
 
@@ -24,7 +30,7 @@ namespace HomeBlaze.Sonos
         private global::Sonos.Base.SonosDevice _sonosDevice;
         private GetPositionInfoResponse? _positionInfo;
 
-        public string Id => $"sonos/{Uuid}";
+        public string Id => $"{_parent.Id}/devices/{Uuid}";
 
         public string? Title => $"{ModelName} ({RoomName})";
 
@@ -41,6 +47,12 @@ namespace HomeBlaze.Sonos
 
         [State]
         public string? Host => _rootDevice.UrlBase.Host;
+
+        [State]
+        public string? IpAddress => IpHelper.TryGetIpAddress(Host);
+
+        [State]
+        public bool IsConnected => true;
 
         [State]
         public bool IsAudioPlayer { get; private set; }
@@ -76,7 +88,7 @@ namespace HomeBlaze.Sonos
             _sonosDevice = sonosDevice;
         }
 
-        internal async Task InitializeAsync()
+        internal async Task InitializeAsync(CancellationToken cancellationToken = default)
         {
             try
             {
@@ -91,19 +103,19 @@ namespace HomeBlaze.Sonos
             }
         }
 
-        internal async Task RefreshAsync()
+        internal async Task RefreshAsync(CancellationToken cancellationToken = default)
         {
             IsAudioPlayer = _rootDevice.Devices.Any(d => d.Services.Any(s => s.ServiceId == "urn:upnp-org:serviceId:AVTransport"));
 
             if (IsAudioPlayer)
             {
-                var response = await _sonosDevice.AVTransportService.GetTransportInfoAsync();
+                var response = await _sonosDevice.AVTransportService.GetTransportInfoAsync(cancellationToken);
                 IsAudioPlaying = response.CurrentTransportState == "PLAYING";
 
                 try
                 {
-                    await _sonosDevice.AVTransportService.RenewEventSubscriptionAsync(CancellationToken.None);
-                    await _sonosDevice.RenderingControlService.RenewEventSubscriptionAsync(CancellationToken.None);
+                    await _sonosDevice.AVTransportService.RenewEventSubscriptionAsync(cancellationToken);
+                    await _sonosDevice.RenderingControlService.RenewEventSubscriptionAsync(cancellationToken);
                 }
                 catch
                 {
@@ -111,7 +123,7 @@ namespace HomeBlaze.Sonos
 
                 if (IsAudioPlaying == true)
                 {
-                    _positionInfo = await _sonosDevice.AVTransportService.GetPositionInfoAsync();
+                    _positionInfo = await _sonosDevice.AVTransportService.GetPositionInfoAsync(cancellationToken);
 
                     CurrentAudioTrackUri = _positionInfo?.TrackURI;
                     CurrentAudioTrackTitle = GetTrackTitle(_positionInfo?.TrackMetaData, _positionInfo?.TrackMetaDataObject);
@@ -125,12 +137,12 @@ namespace HomeBlaze.Sonos
                     CurrentAudioTrackTitle = null;
                 }
 
-                AudioVolume = await _sonosDevice.RenderingControlService.GetVolumeAsync();
+                AudioVolume = await _sonosDevice.RenderingControlService.GetVolumeAsync("Master", cancellationToken);
                 var mute = await _sonosDevice.RenderingControlService.GetMuteAsync(new GetMuteRequest
                 {
                     InstanceID = 0,
                     Channel = "Master"
-                });
+                }, cancellationToken);
                 IsAudioMuted = mute.CurrentMute;
             }
 
@@ -166,7 +178,7 @@ namespace HomeBlaze.Sonos
             return trackTitle;
         }
 
-        private void OnRenderingControlEvent(object? sender, RenderingControlService.IRenderingControlEvent e)
+        private void OnRenderingControlEvent(object? sender, IRenderingControlEvent e)
         {
             if (e.Volume?.TryGetValue("Master", out var volume) == true)
             {
@@ -193,115 +205,115 @@ namespace HomeBlaze.Sonos
         }
 
         [Operation]
-        public async Task SetVolumeAsync(int volume)
+        public async Task SetVolumeAsync(int volume, CancellationToken cancellationToken = default)
         {
-            await _sonosDevice.RenderingControlService.SetVolumeAsync(new global::Sonos.Base.Services.RenderingControlService.SetVolumeRequest
+            await _sonosDevice.RenderingControlService.SetVolumeAsync(new SetVolumeRequest
             {
                 InstanceID = 0,
                 Channel = "Master",
                 DesiredVolume = volume
-            });
-            await RefreshAsync();
+            }, cancellationToken);
+            await RefreshAsync(cancellationToken);
         }
 
         [Operation]
-        public async Task PlayAsync()
+        public async Task PlayAsync(CancellationToken cancellationToken = default)
         {
-            await _sonosDevice.PlayAsync();
-            await RefreshAsync();
+            await _sonosDevice.PlayAsync(cancellationToken);
+            await RefreshAsync(cancellationToken);
         }
 
         [Operation]
-        public async Task PauseAsync()
+        public async Task PauseAsync(CancellationToken cancellationToken = default)
         {
-            await _sonosDevice.PauseAsync();
-            await RefreshAsync();
+            await _sonosDevice.PauseAsync(cancellationToken);
+            await RefreshAsync(cancellationToken);
         }
 
         [Operation]
-        public async Task StopAsync()
+        public async Task StopAsync(CancellationToken cancellationToken = default)
         {
-            await _sonosDevice.StopAsync();
-            await RefreshAsync();
+            await _sonosDevice.StopAsync(cancellationToken);
+            await RefreshAsync(cancellationToken);
         }
 
         [Operation]
-        public async Task NextAsync()
+        public async Task NextAsync(CancellationToken cancellationToken = default)
         {
-            await _sonosDevice.NextAsync();
-            await RefreshAsync();
+            await _sonosDevice.NextAsync(cancellationToken);
+            await RefreshAsync(cancellationToken);
         }
 
         [Operation]
-        public async Task PreviousAsync()
+        public async Task PreviousAsync(CancellationToken cancellationToken = default)
         {
-            await _sonosDevice.PreviousAsync();
-            await RefreshAsync();
+            await _sonosDevice.PreviousAsync(cancellationToken);
+            await RefreshAsync(cancellationToken);
         }
 
         [Operation]
-        public async Task MuteAsync()
+        public async Task MuteAsync(CancellationToken cancellationToken = default)
         {
             await _sonosDevice.RenderingControlService.SetMuteAsync(new SetMuteRequest
             {
                 InstanceID = 0,
                 Channel = "Master",
                 DesiredMute = true
-            });
+            }, cancellationToken);
 
-            await RefreshAsync();
+            await RefreshAsync(cancellationToken);
         }
 
         [Operation]
-        public async Task UnmuteAsync()
+        public async Task UnmuteAsync(CancellationToken cancellationToken = default)
         {
             await _sonosDevice.RenderingControlService.SetMuteAsync(new SetMuteRequest
             {
                 InstanceID = 0,
                 Channel = "Master",
                 DesiredMute = false
-            });
+            }, cancellationToken);
 
-            await RefreshAsync();
+            await RefreshAsync(cancellationToken);
         }
 
         [Operation]
-        public async Task SwitchToTv()
+        public async Task SwitchToTv(CancellationToken cancellationToken = default)
         {
             await _sonosDevice.AVTransportService.SetAVTransportURIAsync(new SetAVTransportURIRequest
             {
                 InstanceID = 0,
                 CurrentURI = $"x-sonos-htastream:{_rootDevice.Uuid}:spdif",
                 CurrentURIMetaData = string.Empty
-            });
+            }, cancellationToken);
 
-            await RefreshAsync();
+            await RefreshAsync(cancellationToken);
         }
 
         [Operation]
-        public async Task PlayTrackAsync(string trackUri, string? title)
+        public async Task PlayTrackAsync(string trackUri, string? title, CancellationToken cancellationToken = default)
         {
             //var trackUri = "aac://https://chmedia.streamabc.net/79-fm1-aacplus-64-6623023?sABC=6571p103%230%235o62sspn3q052pp705s20n0ss6qn6p2r%23gharva\u0026aw_0_1st.playerid=tunein\u0026amsparams=playerid:tunein;skey:1701953795";
 
-            await PlayUriAsync(trackUri, string.Empty, title ?? string.Empty, false);
+            await PlayUriAsync(trackUri, string.Empty, title ?? string.Empty, false, cancellationToken);
 
-            await PlayAsync();
-            await RefreshAsync();
+            await PlayAsync(cancellationToken);
+            await RefreshAsync(cancellationToken);
         }
 
         [Operation]
-        public async Task PlayRadioAsync(string radioUri, string? title)
+        public async Task PlayRadioAsync(string radioUri, string? title, CancellationToken cancellationToken = default)
         {
             //var trackUri = "aac://https://chmedia.streamabc.net/79-fm1-aacplus-64-6623023?sABC=6571p103%230%235o62sspn3q052pp705s20n0ss6qn6p2r%23gharva\u0026aw_0_1st.playerid=tunein\u0026amsparams=playerid:tunein;skey:1701953795";
 
-            await PlayUriAsync(radioUri, string.Empty, title ?? string.Empty, true);
+            await PlayUriAsync(radioUri, string.Empty, title ?? string.Empty, true, cancellationToken);
 
-            await PlayAsync();
-            await RefreshAsync();
+            await PlayAsync(cancellationToken);
+            await RefreshAsync(cancellationToken);
         }
 
         [Operation]
-        public async Task PlaySpotifyTrackAsync(string spotifyId)
+        public async Task PlaySpotifyTrackAsync(string spotifyId, CancellationToken cancellationToken = default)
         {
             //var rand = new Random();
             //var randNumber = rand.Next(10000000, 99999999);
@@ -319,13 +331,13 @@ namespace HomeBlaze.Sonos
 
             //metadata = HttpUtility.HtmlEncode(metadata);
 
-            await PlayUriAsync(uri, string.Empty, string.Empty, false);
+            await PlayUriAsync(uri, string.Empty, string.Empty, false, cancellationToken);
 
-            await PlayAsync();
-            await RefreshAsync();
+            await PlayAsync(cancellationToken);
+            await RefreshAsync(cancellationToken);
         }
 
-        public async Task PlayUriAsync(string uri = "", string meta = "", string title = "", bool forceRadio = false)
+        public async Task PlayUriAsync(string uri = "", string meta = "", string title = "", bool forceRadio = false, CancellationToken cancellationToken = default)
         {
             // If no metadata is provided but a title is, generate minimal metadata
             if (string.IsNullOrEmpty(meta) && !string.IsNullOrEmpty(title))
@@ -350,7 +362,7 @@ namespace HomeBlaze.Sonos
                 InstanceID = 0,
                 CurrentURI = uri,
                 CurrentURIMetaData = meta
-            });
+            }, cancellationToken);
         }
 
         public async ValueTask DisposeAsync()
