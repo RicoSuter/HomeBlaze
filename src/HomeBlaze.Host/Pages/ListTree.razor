@@ -14,14 +14,14 @@
         var childMetadata = ThingManager.TryGetMetadata(child);
         if (!_isExpanded.ContainsKey(child))
         {
-            _isExpanded[child] = false;
+            _isExpanded[child] = Depth <= 3;
         }
 
         <MudTreeViewItem Value="@child" @bind-Expanded="_isExpanded[child]">
             <ChildContent>
                 @if (_isExpanded[child])
                 {
-                    <ListTree Thing="@child" Left="@(Left + 16)" />
+                    <ListTree Thing="@child" Left="@(Left + 16)" Depth="@(Depth + 1)" />
                 }
             </ChildContent>
             <Content>
@@ -45,4 +45,7 @@
 
     [Parameter]
     public int Left { get; set; } = 0;
+
+    [Parameter]
+    public int Depth { get; set; } = 1;
 }
