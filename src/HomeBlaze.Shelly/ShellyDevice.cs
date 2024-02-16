@@ -24,6 +24,7 @@ namespace HomeBlaze.Shelly
         ILastUpdatedProvider, IIconProvider, IConnectedThing, INetworkAdapter
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger<ShellyDevice> _logger;
 
         public override string Title => $"Shelly: {Information?.Name}";
 
@@ -57,6 +58,7 @@ namespace HomeBlaze.Shelly
             : base(thingManager, logger)
         {
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
         public override async Task PollAsync(CancellationToken cancellationToken)
@@ -89,13 +91,20 @@ namespace HomeBlaze.Shelly
 
         internal async Task CallHttpGetAsync(string route, CancellationToken cancellationToken)
         {
-            using var httpClient = _httpClientFactory.CreateClient();
+            try
+            {
+                using var httpClient = _httpClientFactory.CreateClient();
 
-            await httpClient.GetAsync($"http://{IpAddress}/" + route, cancellationToken);
-            await Task.Delay(250);
-            await RefreshAsync(cancellationToken);
-          
-            ThingManager.DetectChanges(this);
+                await httpClient.GetAsync($"http://{IpAddress}/" + route, cancellationToken);
+                await Task.Delay(250);
+                await RefreshAsync(cancellationToken);
+
+                ThingManager.DetectChanges(this);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to call HTTP GET on Shelly device.");
+            }
         }
 
         internal async Task RefreshAsync(CancellationToken cancellationToken)
