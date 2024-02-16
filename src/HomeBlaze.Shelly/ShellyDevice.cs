@@ -6,6 +6,7 @@ using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
 using HomeBlaze.Shelly.Model;
 using Microsoft.Extensions.Logging;
+using MudBlazor;
 using System;
 using System.ComponentModel;
 using System.Net.Http;
@@ -29,6 +30,8 @@ namespace HomeBlaze.Shelly
         public DateTimeOffset? LastUpdated { get; private set; }
 
         public string IconName => "fas fa-box";
+
+        public Color IconColor => IsConnected ? Color.Default : Color.Error;
 
         [Configuration]
         public string? IpAddress { get; set; }

@@ -40,7 +40,7 @@ namespace HomeBlaze.Shelly.Model
         public bool? IsValid { get; set; }
 
         [JsonPropertyName("safety_switch"), State]
-        public bool? IsSafetySwitchTrigger { get; set; }
+        public bool? IsSafetySwitchTriggered { get; set; }
 
         [JsonPropertyName("overtemperature"), State]
         public bool? OvertemperatureOccurred { get; set; }
