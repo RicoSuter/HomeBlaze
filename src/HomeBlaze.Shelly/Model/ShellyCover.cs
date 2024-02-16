@@ -21,7 +21,7 @@ namespace HomeBlaze.Shelly.Model
         public ShellyDevice? Parent { get; private set; }
 
         [State(Unit = StateUnit.Percent)]
-        public decimal? Position => CurrentPosition / 100m;
+        public decimal? Position => (100 - CurrentPosition) / 100m;
 
         [State]
         public bool? IsMoving => PowerConsumption > 1;
@@ -40,10 +40,10 @@ namespace HomeBlaze.Shelly.Model
         public bool? IsValid { get; set; }
 
         [JsonPropertyName("safety_switch"), State]
-        public bool? HasSafetySwitch { get; set; }
+        public bool? IsSafetySwitchTrigger { get; set; }
 
         [JsonPropertyName("overtemperature"), State]
-        public bool? HasOvertemperature { get; set; }
+        public bool? OvertemperatureOccurred { get; set; }
 
         [JsonPropertyName("stop_reason"), State]
         public string? StopReason { get; set; }
@@ -58,25 +58,29 @@ namespace HomeBlaze.Shelly.Model
         public bool? IsCalibrating { get; set; }
 
         [JsonPropertyName("positioning"), State]
-        public bool? Positioning { get; set; }
+        public bool? IsPositioning { get; set; }
 
         [Operation]
         public async Task OpenAsync(CancellationToken cancellationToken)
         {
+            // https://shelly-api-docs.shelly.cloud/gen2/ComponentsAndServices/Cover#http-endpoint-rollerid
+
             await Parent!.CallHttpGetAsync("roller/0?go=open", cancellationToken);
+            Parent!.ThingManager.DetectChanges(this);
         }
 
         [Operation]
         public async Task CloseAsync(CancellationToken cancellationToken)
         {
-            // https://shelly-api-docs.shelly.cloud/gen2/ComponentsAndServices/Cover#http-endpoint-rollerid
             await Parent!.CallHttpGetAsync("roller/0?go=close", cancellationToken);
+            Parent!.ThingManager.DetectChanges(this);
         }
 
         [Operation]
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             await Parent!.CallHttpGetAsync("roller/0?go=stop", cancellationToken);
+            Parent!.ThingManager.DetectChanges(this);
         }
     }
 }

@@ -69,7 +69,7 @@ namespace HomeBlaze.Shelly
                     Information = JsonSerializer.Deserialize<ShellyInformation>(json);
                 }
 
-                await RefreshReportAsync(cancellationToken);
+                await RefreshAsync(cancellationToken);
             }
             catch
             {
@@ -87,12 +87,15 @@ namespace HomeBlaze.Shelly
         internal async Task CallHttpGetAsync(string route, CancellationToken cancellationToken)
         {
             using var httpClient = _httpClientFactory.CreateClient();
+
             await httpClient.GetAsync($"http://{IpAddress}/" + route, cancellationToken);
-            await RefreshReportAsync(cancellationToken);
+            await Task.Delay(250);
+            await RefreshAsync(cancellationToken);
+          
             ThingManager.DetectChanges(this);
         }
 
-        internal async Task RefreshReportAsync(CancellationToken cancellationToken)
+        internal async Task RefreshAsync(CancellationToken cancellationToken)
         {
             using var httpClient = _httpClientFactory.CreateClient();
 

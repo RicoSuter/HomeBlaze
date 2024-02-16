@@ -3,9 +3,9 @@
 @using MudBlazor
 @using System.Threading;
 
-<div style="width: @(Width)px; height: @(Height)px">
+<div style="width: @(Width)px; height: @(Height)px; opacity: @(Disabled ? 0.3 : 1)">
     <div style="position: relative; left: @(PaddingLeft)px; top: @(PaddingTop)px;
-                transform-origin: center; @(_mouseDown ? "transform: scale(0.9);" : "")
+                transform-origin: center; @(_mouseDown && !Disabled ? "transform: scale(0.9);" : "")
                 width: @(Width - PaddingLeft - PaddingRight)px;
                 height: @(Height - PaddingTop - PaddingBottom)px;
                 text-align: center;
@@ -38,6 +38,9 @@
     public int Height { get; set; }
 
     [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
     public int PaddingLeft { get; set; } = 10;
 
     [Parameter]
@@ -65,7 +68,7 @@
 
     public async void OnClick()
     {
-        if (_mouseDown && !_executing)
+        if (_mouseDown && !_executing && !Disabled)
         {
             _executing = true;
             try

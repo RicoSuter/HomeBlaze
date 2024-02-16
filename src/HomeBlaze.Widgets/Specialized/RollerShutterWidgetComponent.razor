@@ -10,17 +10,19 @@
 <WidgetButton Width="@(Thing?.Width ?? 0)" 
               Height="@(Thing?.Height / 2 ?? 0)" 
               PaddingBottom="5"
+              Disabled="@(RollerShutter?.IsFullyOpen == true)"
               Clicked="@(() => OpenRollerAsync())"
               TextColor="@(RollerShutter?.IsMoving == true ? "black" : "white")"
-              BackgroundColor="@(RollerShutter?.IsFullyOpen == true ? "gray" : RollerShutter?.IsMoving == true ? "#E5BB00" : "black")">
+              BackgroundColor="@(RollerShutter?.IsMoving == true ? "#E5BB00" : "black")">
     <i class="fas fa-arrow-up"></i>
 </WidgetButton>
 <WidgetButton Width="@(Thing?.Width ?? 0)" 
               Height="@(Thing?.Height / 2 ?? 0)" 
               PaddingTop="5"
+              Disabled="@(RollerShutter?.IsFullyClosed == true)"
               Clicked="@(() => CloseRollerAsync())"
               TextColor="@(RollerShutter?.IsMoving == true ? "black" : "white")"
-              BackgroundColor="@(RollerShutter?.IsFullyClosed == true ? "gray" : RollerShutter?.IsMoving == true ? "#E5BB00" : "black")">
+              BackgroundColor="@(RollerShutter?.IsMoving == true ? "#E5BB00" : "black")">
     <i class="fas fa-arrow-down"></i>
 </WidgetButton>
 
