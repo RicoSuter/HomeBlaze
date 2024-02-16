@@ -20,15 +20,21 @@ namespace HomeBlaze.Shelly.Model
         [ParentThing]
         public ShellyDevice? Parent { get; private set; }
 
+        [State(Unit = StateUnit.Percent)]
+        public decimal? Position => CurrentPosition / 100m;
+
+        [State]
+        public bool? IsMoving => PowerConsumption > 1;
+
+        [State(Unit = StateUnit.Watt)]
+        [JsonPropertyName("power")]
+        public decimal? PowerConsumption { get; set; }
+
         [JsonPropertyName("state"), State]
         public string? State { get; set; }
 
         [JsonPropertyName("source"), State]
         public string? Source { get; set; }
-
-        [State(Unit = StateUnit.Watt)]
-        [JsonPropertyName("power")]
-        public decimal? PowerConsumption { get; set; }
 
         [JsonPropertyName("is_valid"), State]
         public bool? IsValid { get; set; }
@@ -48,17 +54,11 @@ namespace HomeBlaze.Shelly.Model
         [JsonPropertyName("current_pos")]
         public int? CurrentPosition { get; set; }
 
-        [State(Unit = StateUnit.Percent)]
-        public decimal? Position => CurrentPosition / 100m;
-
         [JsonPropertyName("calibrating"), State]
         public bool? IsCalibrating { get; set; }
 
         [JsonPropertyName("positioning"), State]
         public bool? Positioning { get; set; }
-
-        //[State]
-        //public bool? IsOn => PowerConsumption > 1;
 
         [Operation]
         public async Task OpenAsync(CancellationToken cancellationToken)

@@ -8,13 +8,16 @@ namespace HomeBlaze.Abstractions.Devices
         decimal? Position { get; }
 
         [State]
-        public bool? IsFullyOpen => Position == 100;
-
-        [State]
-        public bool? IsFullyClosed => Position == 0;
+        bool? IsMoving { get; }
 
         [State]
         bool? IsCalibrating { get; }
+
+        [State]
+        public bool? IsFullyOpen => Position == 1m;
+
+        [State]
+        public bool? IsFullyClosed => Position == 0m;
 
         Task CloseAsync(CancellationToken cancellationToken);
 

@@ -1,0 +1,78 @@
+﻿@using HomeBlaze.Abstractions.Devices
+@using HomeBlaze.Abstractions.Services;
+@using Microsoft.Extensions.Logging;
+@using MudBlazor
+@using System.Threading;
+
+@inject IThingManager ThingManager
+@inject ILogger<ButtonWidget> Logger
+
+<WidgetButton Width="@(Thing?.Width ?? 0)" 
+              Height="@(Thing?.Height / 2 ?? 0)" 
+              PaddingBottom="5"
+              Clicked="@(() => OpenRollerAsync())"
+              TextColor="@(RollerShutter?.IsMoving == true ? "black" : "white")"
+              BackgroundColor="@(RollerShutter?.IsFullyOpen == true ? "gray" : RollerShutter?.IsMoving == true ? "#E5BB00" : "black")">
+    <i class="fas fa-arrow-up"></i>
+</WidgetButton>
+<WidgetButton Width="@(Thing?.Width ?? 0)" 
+              Height="@(Thing?.Height / 2 ?? 0)" 
+              PaddingTop="5"
+              Clicked="@(() => CloseRollerAsync())"
+              TextColor="@(RollerShutter?.IsMoving == true ? "black" : "white")"
+              BackgroundColor="@(RollerShutter?.IsFullyClosed == true ? "gray" : RollerShutter?.IsMoving == true ? "#E5BB00" : "black")">
+    <i class="fas fa-arrow-down"></i>
+</WidgetButton>
+
+@code {
+    [Parameter]
+    public RollerShutterWidget? Thing { get; set; }
+
+    public IRollerShutter? RollerShutter => ThingManager.TryGetById(Thing?.ThingId) as IRollerShutter;
+
+    public async Task OpenRollerAsync()
+    {
+        try
+        {
+            var rollerShutter = RollerShutter;
+            if (rollerShutter != null && rollerShutter.IsFullyOpen == false)
+            {
+                if (rollerShutter.IsMoving == false)
+                {
+                    await rollerShutter.OpenAsync(CancellationToken.None);
+                }
+                else
+                {
+                    await rollerShutter.StopAsync(CancellationToken.None);
+                }
+            }
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    public async Task CloseRollerAsync()
+    {
+        try
+        {
+            var rollerShutter = RollerShutter;
+            if (rollerShutter != null && rollerShutter.IsFullyClosed == false)
+            {
+                if (rollerShutter.IsMoving == false)
+                {
+                    await rollerShutter.CloseAsync(CancellationToken.None);
+                }
+                else
+                {
+                    await rollerShutter.StopAsync(CancellationToken.None);
+                }
+            }
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+}
