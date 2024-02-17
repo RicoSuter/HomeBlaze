@@ -23,7 +23,7 @@ namespace HomeBlaze.Shelly.Model
         [State(Unit = StateUnit.Percent)]
         public decimal? Position => (100 - CurrentPosition) / 100m;
 
-        RollerShutterState IRollerShutter.State => StateRaw switch
+        RollerShutterState IRollerShutter.State => LastState switch
         {
             "open" => RollerShutterState.Opening,
             "close" => RollerShutterState.Closing,
@@ -43,8 +43,8 @@ namespace HomeBlaze.Shelly.Model
         [JsonPropertyName("power")]
         public decimal? PowerConsumption { get; set; }
 
-        [JsonPropertyName("state")]
-        public string? StateRaw { get; set; }
+        [JsonPropertyName("state"), State]
+        public string? LastState { get; set; }
 
         [JsonPropertyName("source"), State]
         public string? Source { get; set; }
