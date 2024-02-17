@@ -34,13 +34,13 @@ namespace HomeBlaze.Services
 
         public void PopulateThing<T>(T target, string sourceJson) where T : IThing
         {
-            JsonUtilities.PopulateObject(target, sourceJson, _serializerOptions);
+            JsonUtilities.Populate(target, sourceJson, _serializerOptions);
         }
 
         public void PopulateThing<T>(T source, T target) where T : IThing
         {
             var json = JsonSerializer.Serialize(source, _serializerOptions);
-            JsonUtilities.PopulateObject(target, json, _serializerOptions);
+            JsonUtilities.Populate(target, json, _serializerOptions);
         }
     }
 }

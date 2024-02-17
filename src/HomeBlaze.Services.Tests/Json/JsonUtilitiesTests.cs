@@ -27,17 +27,17 @@ namespace HomeBlaze.Services.Tests.Json
             };
 
             var json = @"{ ""lastName"": ""Def"", ""child"": { ""lastName"": ""Bar"" }, ""children"": [ { ""lastName"": ""mno"" } ] }";
-            JsonUtilities.PopulateObject(person, json, options);
+            JsonUtilities.Populate(person, json, options);
 
             Assert.Equal("Abc", person.FirstName);
             Assert.Equal("Def", person.LastName);
 
-            Assert.Null(person.Child.FirstName);
+            Assert.Equal("Foo", person.Child.FirstName);
             Assert.Equal("Bar", person.Child.LastName);
 
-            Assert.Single(person.Children);
-            Assert.Null(person.Children.First().FirstName);
-            Assert.Equal("mno", person.Children.First().LastName);
+            Assert.Equal(2, person.Children.Count);
+            Assert.Null(person.Children.Last().FirstName);
+            Assert.Equal("mno", person.Children.Last().LastName);
         }
     }
 

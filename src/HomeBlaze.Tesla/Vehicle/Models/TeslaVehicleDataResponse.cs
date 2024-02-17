@@ -5,6 +5,6 @@ namespace HomeBlaze.Tesla.Vehicle.Models
     public class TeslaVehicleDataResponse
     {
         [JsonPropertyName("response")]
-        public TeslaVehicleData? Response { get; set; }
+        public TeslaVehicleData? Data { get; set; }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
 namespace HomeBlaze.Services.Json
@@ -13,23 +13,58 @@ namespace HomeBlaze.Services.Json
             return JsonSerializer.Deserialize<T>(json, options)!;
         }
 
-        // Dynamically attach a JsonSerializerOptions copy that is configured using PopulateTypeInfoResolver
-        private readonly static ConditionalWeakTable<JsonSerializerOptions, JsonSerializerOptions> _populateMap = new();
-
-        public static void PopulateObject(object destination, string json, JsonSerializerOptions? options = null)
+        public static void Populate(object root, string json, JsonSerializerOptions? options = null)
         {
-            options = GetOptionsWithPopulateResolver(options);
-            PopulateTypeInfoResolver._populateObject = destination;
-            try
+            PopulateTypeInfoResolver._root = root;
+            JsonSerializer.Deserialize(json, root.GetType(), GetOptionsWithPopulateResolver(options));
+        }
+
+        public static T? PopulateOrDeserialize<T>(T? root, string json, JsonSerializerOptions? options = null)
+            where T : class, new()
+        {
+            root = root ?? new T();
+            PopulateTypeInfoResolver._root = root;
+            return JsonSerializer.Deserialize<T>(json, GetOptionsWithPopulateResolver(options));
+        }
+
+        private class PopulateTypeInfoResolver : IJsonTypeInfoResolver
+        {
+            [ThreadStatic]
+            internal static object? _root;
+
+            private readonly IJsonTypeInfoResolver _jsonTypeInfoResolver;
+
+            public PopulateTypeInfoResolver(IJsonTypeInfoResolver jsonTypeInfoResolver)
             {
-                object? result = JsonSerializer.Deserialize(json, destination.GetType(), options);
-                Debug.Assert(ReferenceEquals(result, destination));
+                _jsonTypeInfoResolver = jsonTypeInfoResolver;
             }
-            finally
+
+            public JsonTypeInfo? GetTypeInfo(Type type, JsonSerializerOptions options)
             {
-                PopulateTypeInfoResolver._populateObject = null;
+                var typeInfo = _jsonTypeInfoResolver.GetTypeInfo(type, options);
+                if (typeInfo is not null &&
+                    type == _root?.GetType())
+                {
+                    var originalCreateObject = typeInfo.CreateObject;
+                    typeInfo.CreateObject = () =>
+                    {
+                        if (_root is not null)
+                        {
+                            var root = _root;
+                            _root = null;
+                            return root;
+                        }
+
+                        return originalCreateObject!.Invoke();
+                    };
+                }
+
+                return typeInfo;
             }
         }
+
+        // Dynamically attach a JsonSerializerOptions copy that is configured using PopulateTypeInfoResolver
+        private readonly static ConditionalWeakTable<JsonSerializerOptions, JsonSerializerOptions> _populateMap = new();
 
         private static JsonSerializerOptions GetOptionsWithPopulateResolver(JsonSerializerOptions? options)
         {
@@ -42,6 +77,7 @@ namespace HomeBlaze.Services.Json
 
                 populateResolverOptions = new JsonSerializerOptions(options)
                 {
+                    PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
                     TypeInfoResolver = new PopulateTypeInfoResolver(options.TypeInfoResolver!)
                 };
 
@@ -49,47 +85,6 @@ namespace HomeBlaze.Services.Json
             }
 
             return populateResolverOptions;
-        }
-
-        private class PopulateTypeInfoResolver : IJsonTypeInfoResolver
-        {
-            private readonly IJsonTypeInfoResolver _jsonTypeInfoResolver;
-            [ThreadStatic]
-            internal static object? _populateObject;
-
-            public PopulateTypeInfoResolver(IJsonTypeInfoResolver jsonTypeInfoResolver)
-            {
-                _jsonTypeInfoResolver = jsonTypeInfoResolver;
-            }
-
-            public JsonTypeInfo? GetTypeInfo(Type type, JsonSerializerOptions options)
-            {
-                var typeInfo = _jsonTypeInfoResolver.GetTypeInfo(type, options);
-                if (typeInfo != null && 
-                    typeInfo.Kind != JsonTypeInfoKind.None &&
-                    !type.Name.Contains("IEnumerable`1"))
-                {
-                    Func<object>? defaultCreateObjectDelegate = typeInfo.CreateObject;
-                    typeInfo.CreateObject = () =>
-                    {
-                        object? result = _populateObject;
-                        if (result != null)
-                        {
-                            // clean up to prevent reuse in recursive scenaria
-                            _populateObject = null;
-                        }
-                        else
-                        {
-                            // fall back to the default delegate
-                            result = defaultCreateObjectDelegate?.Invoke();
-                        }
-
-                        return result!;
-                    };
-                }
-
-                return typeInfo;
-            }
         }
     }
 }

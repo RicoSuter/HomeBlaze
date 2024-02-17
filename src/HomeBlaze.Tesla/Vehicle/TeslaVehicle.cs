@@ -5,6 +5,7 @@ using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Security;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
+using HomeBlaze.Services.Json;
 using HomeBlaze.Tesla.Vehicle;
 using HomeBlaze.Tesla.Vehicle.Models;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,6 @@ using System.ComponentModel;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,19 +33,19 @@ namespace HomeBlaze.Tesla
         public bool IsAuthenticated => TokenExpirationDate >= DateTimeOffset.Now;
 
         [State]
-        public string? Vin => Data?.Vin;
+        public string? Vin => Response?.Data?.Vin;
 
         [State]
-        public VehicleState? Vehicle => Data?.VehicleState;
+        public VehicleState? Vehicle => Response?.Data?.VehicleState;
 
         [State]
-        public DriveState? Drive => Data?.Drive_state;
+        public DriveState? Drive => Response?.Data?.DriveState;
 
         [State]
-        public ClimateState? Climate => Data?.Climate_state;
+        public ClimateState? Climate => Response?.Data?.ClimateState;
 
         [State]
-        public ChargeState? Charge => Data?.Charge_state;
+        public ChargeState? Charge => Response?.Data?.ChargeState;
 
         [State(Unit = StateUnit.WattHour, IsEstimated = true)]
         public long? EstimatedBatteryCapacity
@@ -80,7 +80,7 @@ namespace HomeBlaze.Tesla
         [Configuration]
         public int RefreshInterval { get; set; } = 60 * 1000;
 
-        public TeslaVehicleData? Data { get; private set; }
+        public TeslaVehicleDataResponse? Response { get; private set; }
 
         protected override TimeSpan PollingInterval => TimeSpan.FromMilliseconds(RefreshInterval);
 
@@ -114,12 +114,16 @@ namespace HomeBlaze.Tesla
                 var json = await versionResponse.Content.ReadAsStringAsync(cancellationToken);
                 if (json.Contains("vehicle unavailable") == false)
                 {
-                    var data = JsonSerializer.Deserialize<TeslaVehicleDataResponse>(json);
-                    if (data?.Response?.VehicleState != null)
+                    Response = JsonUtilities.PopulateOrDeserialize(Response, json);
+
+                    if (Response?.Data is not null)
                     {
-                        Data = data.Response;
                         LastUpdated = DateTimeOffset.Now;
-                        IsConnected = Data.State == "online";
+                        IsConnected = Response?.Data?.State == "online";
+                    }
+                    else
+                    {
+                        IsConnected = false;
                     }
                 }
                 else

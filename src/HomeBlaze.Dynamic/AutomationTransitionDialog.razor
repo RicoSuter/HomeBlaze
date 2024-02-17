@@ -128,7 +128,7 @@
 
         if (result?.Canceled == false && result.Data != null)
         {
-            JsonUtilities.PopulateObject(transition!, JsonSerializer.Serialize<AutomationTransition>((AutomationTransition)result.Data));
+            JsonUtilities.Populate(transition!, JsonSerializer.Serialize<AutomationTransition>((AutomationTransition)result.Data));
             return true;
         }
 

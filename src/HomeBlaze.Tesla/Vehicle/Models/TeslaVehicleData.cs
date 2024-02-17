@@ -43,28 +43,28 @@ namespace HomeBlaze.Tesla.Vehicle.Models
         public string? Id_s { get; set; }
 
         [JsonPropertyName("calendar_enabled"), State]
-        public bool Calendar_enabled { get; set; }
+        public bool IsCalendarEnabled { get; set; }
 
         [JsonPropertyName("api_version"), State]
-        public long Api_version { get; set; }
+        public long ApiVersion { get; set; }
 
         [JsonPropertyName("backseat_token"), State]
-        public object? Backseat_token { get; set; }
+        public object? BackseatToken { get; set; }
 
         [JsonPropertyName("backseat_token_updated_at"), State]
         public object? Backseat_token_updated_at { get; set; }
 
         [JsonPropertyName("charge_state"), State]
-        public ChargeState? Charge_state { get; set; }
+        public ChargeState? ChargeState { get; set; }
 
         [JsonPropertyName("climate_state"), State]
-        public ClimateState? Climate_state { get; set; }
+        public ClimateState? ClimateState { get; set; }
 
         [JsonPropertyName("drive_state"), State]
-        public DriveState? Drive_state { get; set; }
+        public DriveState? DriveState { get; set; }
 
         [JsonPropertyName("gui_settings"), State]
-        public GuiSettings? Gui_settings { get; set; }
+        public GuiSettings? GuiSettings { get; set; }
 
         [JsonPropertyName("vehicle_config"), State]
         public VehicleConfiguration? Vehicle_config { get; set; }

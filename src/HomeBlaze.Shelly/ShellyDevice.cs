@@ -4,6 +4,7 @@ using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
+using HomeBlaze.Services.Json;
 using HomeBlaze.Shelly.Model;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
@@ -11,8 +12,6 @@ using System;
 using System.ComponentModel;
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -115,52 +114,11 @@ namespace HomeBlaze.Shelly
             {
                 var coverResponse = await httpClient.GetAsync($"http://{IpAddress}/roller/0", cancellationToken);
                 var json = await coverResponse.Content.ReadAsStringAsync(cancellationToken);
-                Cover = PopulateOrDeserialize(Cover, json);
+                Cover = JsonUtilities.PopulateOrDeserialize(Cover, json);
             }
 
             LastUpdated = DateTimeOffset.Now;
             IsConnected = true;
-        }
-
-        private void Populate<T>(T root, string json)
-           where T : class, new()
-        {
-            JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
-            {
-                PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
-                TypeInfoResolver = new PopulateTypeInfoResolver<T>(root)
-            });
-        }
-
-        private T? PopulateOrDeserialize<T>(T? root, string json)
-            where T : class, new()
-        {
-            return JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
-            {
-                PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
-                TypeInfoResolver = new PopulateTypeInfoResolver<T>(root ?? new T())
-            });
-        }
-
-        private class PopulateTypeInfoResolver<T> : DefaultJsonTypeInfoResolver
-            where T : class
-        {
-            private readonly T _root;
-
-            public PopulateTypeInfoResolver(T root)
-            {
-                _root = root;
-            }
-
-            public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
-            {
-                var typeInfo = base.GetTypeInfo(type, options);
-                if (type == typeof(T))
-                {
-                    typeInfo.CreateObject = () => _root;
-                }
-                return typeInfo;
-            }
         }
     }
 }
