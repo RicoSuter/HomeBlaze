@@ -22,34 +22,33 @@ namespace HomeBlaze.Abstractions.Sensors
     public enum DoorState
     {
         /// <summary>
-        /// Indicates that the door is fully open.
+        /// The door is fully open.
         /// </summary>
         Open,
 
         /// <summary>
-        /// Indicates that the door is in the process of opening.
+        /// The door is in the process of opening.
         /// </summary>
         Opening,
 
         /// <summary>
-        /// Indicates that the door is fully closed.
-        /// </summary>
-        Closed,
-
-        /// <summary>
-        /// Indicates that the door is in the process of closing.
-        /// </summary>
-        Closing,
-
-        /// <summary>
-        /// Indicates that the door is in an intermediate position, neither fully open nor fully closed.
+        /// The door is partially open but not fully closed.
         /// </summary>
         PartiallyOpen,
 
         /// <summary>
-        /// Indicates an unknown or undetermined state of the door.
+        /// The door is in the process of closing.
+        /// </summary>
+        Closing,
+
+        /// <summary>
+        /// The door is fully closed.
+        /// </summary>
+        Closed,
+
+        /// <summary>
+        /// The state of the door is unknown.
         /// </summary>
         Unknown
     }
-
 }
