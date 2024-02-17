@@ -77,7 +77,6 @@ namespace HomeBlaze.Services.Json
 
                 populateResolverOptions = new JsonSerializerOptions(options)
                 {
-                    PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
                     TypeInfoResolver = new PopulateTypeInfoResolver(options.TypeInfoResolver!)
                 };
 

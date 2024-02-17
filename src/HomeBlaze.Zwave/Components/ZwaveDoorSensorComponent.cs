@@ -12,7 +12,7 @@ namespace HomeBlaze.Zwave.Components
 
         public DoorState? DoorState =>
             ParentNotification.Event == NotificationState.WindowDoorOpen ? Abstractions.Sensors.DoorState.Open :
-            ParentNotification.Event == NotificationState.WindowDoorClosed ? Abstractions.Sensors.DoorState.Close :
+            ParentNotification.Event == NotificationState.WindowDoorClosed ? Abstractions.Sensors.DoorState.Closed :
             null;
 
         public ZwaveNotificationComponent ParentNotification { get; }

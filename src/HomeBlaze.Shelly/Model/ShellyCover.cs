@@ -23,6 +23,19 @@ namespace HomeBlaze.Shelly.Model
         [State(Unit = StateUnit.Percent)]
         public decimal? Position => (100 - CurrentPosition) / 100m;
 
+        RollerShutterState IRollerShutter.State => StateRaw switch
+        {
+            "open" => RollerShutterState.Opening,
+            "close" => RollerShutterState.Closing,
+            "stop" =>
+                ((IRollerShutter)this).IsFullyOpen == true ? RollerShutterState.Open : 
+                ((IRollerShutter)this).IsFullyClosed == true ? RollerShutterState.Closed :
+                RollerShutterState.PartiallyOpen,
+         
+            _ => IsCalibrating == true ? RollerShutterState.Calibrating : 
+                RollerShutterState.Unknown
+        };
+
         [State]
         public bool? IsMoving => PowerConsumption > 1;
 
@@ -30,8 +43,8 @@ namespace HomeBlaze.Shelly.Model
         [JsonPropertyName("power")]
         public decimal? PowerConsumption { get; set; }
 
-        [JsonPropertyName("state"), State]
-        public string? State { get; set; }
+        [JsonPropertyName("state")]
+        public string? StateRaw { get; set; }
 
         [JsonPropertyName("source"), State]
         public string? Source { get; set; }

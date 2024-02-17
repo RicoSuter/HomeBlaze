@@ -64,7 +64,7 @@ namespace HomeBlaze.Shelly
         {
             try
             {
-                var httpClient = _httpClientFactory.CreateClient();
+                using var httpClient = _httpClientFactory.CreateClient();
 
                 if (Information == null)
                 {

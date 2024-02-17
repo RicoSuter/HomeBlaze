@@ -47,7 +47,7 @@ namespace HomeBlaze.Nuki
         [State]
         public DoorState? DoorState =>
             _device.LastKnownState?.DoorsensorState == 3 ? Abstractions.Sensors.DoorState.Open :
-            _device.LastKnownState?.DoorsensorState == 2 ? Abstractions.Sensors.DoorState.Close :
+            _device.LastKnownState?.DoorsensorState == 2 ? Abstractions.Sensors.DoorState.Closed :
             null;
 
         [State]

@@ -1,5 +1,6 @@
 ﻿using HomeBlaze.Services.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace HomeBlaze.Services.Tests.Json
 {
@@ -11,6 +12,7 @@ namespace HomeBlaze.Services.Tests.Json
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
             };
 
             var person = new Person

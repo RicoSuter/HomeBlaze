@@ -16,6 +16,9 @@ namespace HomeBlaze.Abstractions.Devices
         [State]
         bool? IsCalibrating { get; }
 
+        [State]
+        public RollerShutterState State => RollerShutterState.Unknown;
+
         /// <summary>
         /// Specifies whether the roller shutter is fully open (window is not covered at all).
         /// </summary>
@@ -33,5 +36,46 @@ namespace HomeBlaze.Abstractions.Devices
         Task OpenAsync(CancellationToken cancellationToken);
 
         Task StopAsync(CancellationToken cancellationToken);
+    }
+
+    /// <summary>
+    /// Represents the various states of a roller shutter.
+    /// </summary>
+    public enum RollerShutterState
+    {
+        /// <summary>
+        /// The state of the roller shutter is unknown.
+        /// </summary>
+        Unknown,
+
+        /// <summary>
+        /// The roller shutter is fully open.
+        /// </summary>
+        Open,
+
+        /// <summary>
+        /// The roller shutter is in the process of opening.
+        /// </summary>
+        Opening,
+
+        /// <summary>
+        /// The roller shutter is partially open but not fully closed.
+        /// </summary>
+        PartiallyOpen,
+
+        /// <summary>
+        /// The roller shutter is in the process of closing.
+        /// </summary>
+        Closing,
+
+        /// <summary>
+        /// The roller shutter is fully closed.
+        /// </summary>
+        Closed,
+
+        /// <summary>
+        /// The roller shutter is calibrating its position.
+        /// </summary>
+        Calibrating
     }
 }
