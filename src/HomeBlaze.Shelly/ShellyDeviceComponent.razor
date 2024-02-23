@@ -1,0 +1,14 @@
+﻿@using MudBlazor
+
+<MudButton Variant="Variant.Filled"
+           Color="Color.Secondary"
+           StartIcon="@Icons.Material.Filled.OpenInNew"
+           href="@($"http://{Thing?.IpAddress}")"
+           target="_blank">
+    Open Web UI
+</MudButton>
+
+@code {
+    [Parameter]
+    public ShellyDevice? Thing { get; set; }
+}

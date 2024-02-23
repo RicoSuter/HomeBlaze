@@ -20,7 +20,8 @@ namespace HomeBlaze.Shelly
     [DisplayName("Shelly Device")]
     [ThingSetup(typeof(ShellyDeviceSetup), CanEdit = true)]
     public class ShellyDevice : PollingThing,
-        ILastUpdatedProvider, IIconProvider, IConnectedThing, INetworkAdapter
+        ILastUpdatedProvider, IIconProvider, IControlComponentProvider,
+        IConnectedThing, INetworkAdapter
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ShellyDevice> _logger;
@@ -32,6 +33,8 @@ namespace HomeBlaze.Shelly
         public string IconName => "fas fa-box";
 
         public Color IconColor => IsConnected ? Color.Default : Color.Error;
+
+        public Type? ControlComponentType => typeof(ShellyDeviceComponent);
 
         [Configuration]
         public string? IpAddress { get; set; }
@@ -48,7 +51,8 @@ namespace HomeBlaze.Shelly
         [State]
         public ShellyCover? Cover { get; private set; }
 
-        protected override TimeSpan PollingInterval => TimeSpan.FromMilliseconds(RefreshInterval);
+        protected override TimeSpan PollingInterval => 
+            TimeSpan.FromMilliseconds(Cover?.IsMoving == true ? 1000 : RefreshInterval);
 
         public ShellyDevice(
             IThingManager thingManager,

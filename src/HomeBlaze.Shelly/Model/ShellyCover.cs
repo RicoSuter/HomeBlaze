@@ -6,16 +6,21 @@ using System.Threading;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Presentation;
+using System;
 
 namespace HomeBlaze.Shelly.Model
 {
-    public class ShellyCover : IThing, IIconProvider, IPowerConsumptionSensor, IRollerShutter
+    public class ShellyCover : IThing, 
+        IIconProvider, IControlComponentProvider,
+        IPowerConsumptionSensor, IRollerShutter
     {
         public string Id => Parent!.Id + "/cover";
 
         public string? Title => "Cover";
 
         public string IconName => "fas fa-bars";
+
+        public Type? ControlComponentType => typeof(ShellyCoverComponent);
 
         [ParentThing]
         public ShellyDevice? Parent { get; private set; }

@@ -94,7 +94,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Namotion.Trackable.Benchmar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Sonos", "HomeBlaze.Sonos\HomeBlaze.Sonos.csproj", "{75C88448-A1C1-4968-8F54-C98E5A1D078E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeBlaze.Shelly", "HomeBlaze.Shelly\HomeBlaze.Shelly.csproj", "{1DB6BA01-7DA7-47DA-922C-82210C96C3CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Shelly", "HomeBlaze.Shelly\HomeBlaze.Shelly.csproj", "{1DB6BA01-7DA7-47DA-922C-82210C96C3CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

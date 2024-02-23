@@ -26,32 +26,32 @@
             var metadata = ThingManager.TryGetMetadata(Thing);
 
             var stateGroups = ThingManager
-                .GetState(Thing.Id, true)
-                .OrderBy(s => s.Value.Attribute?.Order ?? 0)
-                .GroupBy(p => p.Value.SourceThing);
+            .GetState(Thing.Id, true)
+            .OrderBy(s => s.Value.Attribute?.Order ?? 0)
+            .GroupBy(p => p.Value.SourceThing);
 
             var operations = ThingManager.GetOperations(Thing.Id, true);
         }
 
-        @* Thing Header *@
+        @* Header *@
         <MudListSubheader>
             @if (CanClose)
             {
-                <MudFab OnClick="@(() => Navigation.NavigateToThing(ParentThing))" Color="Color.Primary" 
-                    StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Style="float: right; margin-right: 5px" />
+                <MudFab OnClick="@(() => Navigation.NavigateToThing(ParentThing))" Color="Color.Primary"
+                        StartIcon="@Icons.Material.Filled.Close" Size="Size.Small" Style="float: right; margin-right: 5px" />
             }
 
             <h1 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 <MudIcon Size="Size.Small"
-                     Color="@(Thing is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)"
-                     Icon="@(Thing is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"></MudIcon>
+                         Color="@(Thing is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)"
+                         Icon="@(Thing is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"></MudIcon>
                 @Thing.GetActualTitle(ThingManager)
             </h1>
         </MudListSubheader>
 
         <div style="height: calc(100% - 70px); overflow-x: scroll;">
             <MudListSubheader>
-                @* Edit, Move, Delete & Exend Buttons *@
+                @* Buttons: Edit, Move, Delete & Exend *@
                 @if (metadata?.CanEdit == true ||
                metadata?.CanDelete == true ||
                ParentThing is GroupBase ||
@@ -60,19 +60,19 @@
                     @if (metadata?.CanEdit == true)
                     {
                         <MudIconButton OnClick="@(() => EditThing(Thing))"
-                           Icon="@Icons.Material.Filled.Edit"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Class="ma-2">Edit</MudIconButton>
+                                       Icon="@Icons.Material.Filled.Edit"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Class="ma-2">Edit</MudIconButton>
                     }
 
                     @if (canExtend)
                     {
                         <MudIconButton OnClick="@(() => AddThingExtension(Thing))"
-                           Icon="@Icons.Material.Filled.BackupTable"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Class="ma-2">Extend</MudIconButton>
+                                       Icon="@Icons.Material.Filled.BackupTable"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Class="ma-2">Extend</MudIconButton>
                     }
 
                     @if (ParentThing is GroupBase parentGroup)
@@ -80,27 +80,35 @@
                         @if (metadata?.CanClone == true)
                         {
                             <MudIconButton OnClick="@(() => CloneThing(Thing, parentGroup))"
-                           Icon="@Icons.Material.Filled.ContentCopy"
-                           Variant="Variant.Filled" Color="Color.Primary"
-                           Class="ma-2">Clone</MudIconButton>
+                                           Icon="@Icons.Material.Filled.ContentCopy"
+                                           Variant="Variant.Filled" Color="Color.Primary"
+                                           Class="ma-2">Clone</MudIconButton>
                         }
 
                         <MudIconButton OnClick="@(() => MoveThing(Thing, parentGroup))"
-                           Icon="@Icons.Material.Filled.MoveUp"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Class="ma-2">Move</MudIconButton>
+                                       Icon="@Icons.Material.Filled.MoveUp"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Class="ma-2">Move</MudIconButton>
 
                         @if (metadata?.CanDelete == true)
                         {
                             <MudIconButton OnClick="@(() => DeleteThing(Thing, parentGroup))"
-                           Icon="@Icons.Material.Filled.Delete"
-                           Variant="Variant.Filled"
-                           Color="Color.Error"
-                           Class="ma-2">Delete</MudIconButton>
+                                           Icon="@Icons.Material.Filled.Delete"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Error"
+                                           Class="ma-2">Delete</MudIconButton>
                         }
                     }
 
+                    <br />
+                    <br />
+                }
+
+                @* Custom Control Component *@
+                @if (Thing is IControlComponentProvider controlComponentProvider)
+                {
+                    @controlComponentProvider.ControlComponentRenderFragment
                     <br />
                     <br />
                 }
@@ -152,10 +160,10 @@
                 {
                     foreach (var operation in operations)
                     {
-                        <MudButton OnClick="() => ExecuteOperation(operation)" 
-                            Disabled="@_isExecutingOperation.Contains(operation.Id)"
-                            Variant="Variant.Filled" 
-                            Color="Color.Primary" Class="ma-2">
+                        <MudButton OnClick="() => ExecuteOperation(operation)"
+                                   Disabled="@_isExecutingOperation.Contains(operation.Id)"
+                                   Variant="Variant.Filled"
+                                   Color="Color.Primary" Class="ma-2">
                             @(operation.Title ?? operation.Name)
                         </MudButton>
                     }
@@ -175,14 +183,14 @@
                             <MudList Clickable="true" SelectedValue="SelectedThing" Style="padding-top: 0; padding-bottom: 0">
                                 <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing"
                                                       Subtitle="@(group.Key != Thing ? group.Key.Title : null)"
-                                      Children="pair.Value.Children">
+                                                      Children="pair.Value.Children">
                                 </ThingChildListIItems>
                             </MudList>
                         }
                         else if (count > 1)
                         {
                             <MudExpansionPanel DisableGutters="true" Dense="true"
-                               IsInitiallyExpanded="Thing == ThingManager.RootThing ||
+                                               IsInitiallyExpanded="Thing == ThingManager.RootThing ||
                                                  stateGroups.Count() == 1 ||
                                                  pair.Value.Property?.PropertyType.Type.IsAssignableTo(typeof(IThing)) == true">
                                 <TitleContent>

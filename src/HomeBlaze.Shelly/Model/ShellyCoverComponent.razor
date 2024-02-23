@@ -1,0 +1,73 @@
+﻿@using MudBlazor
+@using System.Threading
+@using HomeBlaze.Abstractions.Devices
+
+@if (Thing != null)
+{
+    <MudGrid Style="text-align: left;">
+        <MudItem xs="4" sm="2" Class="text-center">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp"
+                               Color="Color.Primary"
+                               Variant="Variant.Filled"
+                               Size="Size.Large"
+                               OnClick="() => Thing.OpenAsync(CancellationToken.None)"
+                               Disabled="@(Thing.IsMoving == true || ((IRollerShutter)Thing).IsFullyOpen == true)" />
+                <MudText>Open</MudText>
+            </div>
+        </MudItem>
+
+        @if (Thing.Position != null)
+        {
+            <MudItem xs="4" sm="2" Class="text-center">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <MudText Typo="Typo.h5" Style="margin-bottom: 8px;">
+                        @(Math.Round(Thing.Position * 100 ?? 0, 0))%
+                    </MudText>
+                    @if (Thing.IsMoving == true)
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Autorenew" />
+                    }
+                </div>
+            </MudItem>
+        }
+
+        <MudItem xs="4" sm="2" Class="text-center">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowDown"
+                               Color="Color.Primary"
+                               Variant="Variant.Filled"
+                               Size="Size.Large"
+                               OnClick="() => Thing.CloseAsync(CancellationToken.None)"
+                               Disabled="@(Thing.IsMoving == true || ((IRollerShutter)Thing).IsFullyClosed == true)" />
+                <MudText>Close</MudText>
+            </div>
+        </MudItem>
+
+        <MudItem xs="4" sm="2" Class="text-center">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <MudIconButton Icon="@Icons.Material.Filled.Stop"
+                               Color="Color.Secondary"
+                               Variant="Variant.Filled"
+                               Size="Size.Large"
+                               OnClick="() => Thing.StopAsync(CancellationToken.None)"
+                               Disabled="@(Thing.IsMoving != true)" />
+                <MudText>Stop</MudText>
+            </div>
+        </MudItem>
+
+        @if (Thing.PowerConsumption > 0)
+        {
+            <MudItem xs="8" sm="4">
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <MudText>Power: @Thing.PowerConsumption W</MudText>
+                </div>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public ShellyCover? Thing { get; set; }
+}
