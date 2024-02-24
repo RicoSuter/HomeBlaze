@@ -23,8 +23,8 @@ namespace HomeBlaze.Things
         [State]
         public SystemDiagnostics SystemDiagnostics { get; }
 
-        [State]
-        public ThingsPage ThingsPage { get; } = new ThingsPage();
+        //[State]
+        //public ThingsPage ThingsPage { get; } = new ThingsPage();
 
         public SystemThing(IThingManager thingManager, ITypeManager typeManager,
             IEventManager eventManager, ILogger<PollingThing> logger)
