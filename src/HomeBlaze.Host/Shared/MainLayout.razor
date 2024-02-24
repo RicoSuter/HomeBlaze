@@ -1,4 +1,8 @@
 ﻿@using HomeBlaze.Host.Components
+@using HomeBlaze.Abstractions.Services
+@using HomeBlaze.Abstractions.Presentation
+
+@inject IThingManager ThingManager
 
 @inherits LayoutComponentBase
 
@@ -17,6 +21,12 @@
         </MudDrawerHeader>
         <MudNavMenu>
             <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Dashboard</MudNavLink>
+
+            @foreach (var pageThing in ThingManager.AllThings.OfType<IPageProvider>())
+            {
+                <MudNavLink Href="@("/page?thing=" + pageThing.Id)" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">@pageThing.PageTitle</MudNavLink>
+            }
+
             <MudNavLink Href="/things" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Things</MudNavLink>
             <MudNavLink Href="/network" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Network</MudNavLink>
             <MudNavLink Href="/list" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Debug</MudNavLink>

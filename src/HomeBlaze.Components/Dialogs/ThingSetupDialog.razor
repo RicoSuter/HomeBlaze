@@ -167,7 +167,7 @@
         {
             var thingType = _thingTypes.SingleOrDefault(f => f.FullName == Thing.GetType().FullName);
             var attribute = thingType?.GetCustomAttribute<ThingSetupAttribute>();
-            if (attribute != null && attribute.ComponentType.GetProperty(nameof(ThingSetupComponentBase<IThing>.EditedThing)) != null)
+            if (attribute != null && attribute.ComponentType?.GetProperty(nameof(ThingSetupComponentBase<IThing>.EditedThing)) != null)
             {
                 _thingSetupFragment = builder =>
                 {
@@ -176,6 +176,10 @@
                     builder.AddAttribute(2, nameof(ThingSetupComponentBase<IThing>.EditedThing), Thing);
                     builder.CloseComponent();
                 };
+            }
+            else
+            {
+                _thingSetupFragment = null;
             }
         }
         else if (_thingTypes.Length == 1)
@@ -228,7 +232,7 @@
         if (_selectedThingType != null)
         {
             var attribute = _selectedThingType.GetCustomAttribute<ThingSetupAttribute>();
-            if (attribute != null)
+            if (attribute != null && attribute.ComponentType != null)
             {
                 _thingSetupFragment = builder =>
                 {
@@ -237,6 +241,10 @@
                     builder.AddAttribute(2, nameof(ThingSetupComponentBase<IThing>.ExtendedThing), ExtendedThing);
                     builder.CloseComponent();
                 };
+            }
+            else
+            {
+                _thingSetupFragment = null;
             }
         }
         else

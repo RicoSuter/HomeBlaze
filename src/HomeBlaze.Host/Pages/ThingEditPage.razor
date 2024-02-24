@@ -1,5 +1,6 @@
 ﻿@using System.Reflection
 @using System.ComponentModel
+@using Microsoft.Extensions.DependencyInjection
 @using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Abstractions.Presentation
 @using HomeBlaze.Abstractions.Services
@@ -11,6 +12,7 @@
 @using MudBlazor;
 @using System.Threading;
 @using Toolbelt.Blazor.HotKeys2;
+@using Namotion.Reflection
 
 @page "/things/{*thingId}"
 @implements IThingEditPage
@@ -229,7 +231,7 @@
             .Where(t => t.GetCustomAttribute<ThingSetupAttribute>() != null)
             .Where(t => t.GetCustomAttribute<ThingWidgetAttribute>() == null)
             .Where(t => string.IsNullOrEmpty(ExtendedThingId) || (
-                t.IsAssignableTo(typeof(IExtensionThing)) && 
+                t.IsAssignableTo(typeof(IExtensionThing)) &&
                 t.GetMethod("CanExtend")?.Invoke(null, new[] { ThingManager.TryGetById(ExtendedThingId) }) as bool? != false))
             .ToArray();
 
@@ -239,7 +241,8 @@
 
             var thingType = _thingTypes.SingleOrDefault(f => f.FullName == Thing.GetType().FullName);
             var attribute = thingType?.GetCustomAttribute<ThingSetupAttribute>();
-            if (attribute != null && attribute.ComponentType.GetProperty(nameof(ThingSetupComponentBase<IThing>.EditedThing)) != null)
+            if (attribute != null && attribute.ComponentType?
+                .GetProperty(nameof(ThingSetupComponentBase<IThing>.EditedThing)) != null)
             {
                 _thingSetupFragment = builder =>
                 {
@@ -249,11 +252,15 @@
                     builder.CloseComponent();
                 };
             }
+            else
+            {
+                _thingSetupFragment = null;
+            }
         }
         else if (_thingTypes.Length == 1)
         {
             OnThingTypeChanged(_thingTypes.First());
-        }        
+        }
     }
 
     public void ToggleJson()
@@ -281,15 +288,18 @@
         }
     }
 
+    [Inject]
+    public IServiceProvider? ServiceProvider { get; set; }
+
     private void OnThingTypeChanged(Type thingType)
     {
         _component = null;
 
         _selectedThingType = thingType;
-        if (_selectedThingType != null)
+        if (_selectedThingType != null && ServiceProvider is not null)
         {
             var attribute = ((Type)_selectedThingType).GetCustomAttribute<ThingSetupAttribute>();
-            if (attribute != null)
+            if (attribute != null && attribute.ComponentType != null)
             {
                 _thingSetupFragment = builder =>
                 {
@@ -299,10 +309,43 @@
                     builder.CloseComponent();
                 };
             }
+            else
+            {
+                _component = new CreateTypeSetupComponent((Type)_selectedThingType, ExtendedThingId, ServiceProvider);
+                _thingSetupFragment = null;
+            }
         }
         else
         {
             _thingSetupFragment = null;
+        }
+    }
+
+    public class CreateTypeSetupComponent : ThingSetupComponent<IThing>
+    {
+        private readonly Type _thingType;
+        private readonly string? _extendedThingId;
+
+        public CreateTypeSetupComponent(Type thingType, string? extendedThingId, IServiceProvider serviceProvider)
+        {
+            _thingType = thingType;
+            _extendedThingId = extendedThingId;
+            ServiceProvider = serviceProvider;
+        }
+
+        public override Task<IThing?> CreateThingAsync(CancellationToken cancellationToken)
+        {
+            var thing = (IThing?)ActivatorUtilities.CreateInstance(ServiceProvider!, _thingType);
+
+            if (!string.IsNullOrEmpty(_extendedThingId) &&
+                thing is IExtensionThing extensionThing &&
+                extensionThing.HasProperty("ExtendedThingId"))
+            {
+                // TODO: Add an interface for that
+                ((dynamic)extensionThing).ExtendedThingId = _extendedThingId;
+            }
+
+            return Task.FromResult(thing);
         }
     }
 
@@ -334,6 +377,14 @@
                         if (parentThing != null)
                         {
                             parentThing.AddThing(thing);
+
+                            if (!string.IsNullOrEmpty(ExtendedThingId) &&
+                                Thing is IExtensionThing extensionThing &&
+                                extensionThing.HasProperty("ExtendedThingId"))
+                            {
+                                // TODO: Add an interface for that
+                                ((dynamic)extensionThing).ExtendedThingId = ExtendedThingId;
+                            }
 
                             await ThingManager.WriteConfigurationAsync(cancellationToken);
                             ThingManager.DetectChanges((IThing)parentThing);

@@ -1,0 +1,21 @@
+﻿@page "/page"
+
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Abstractions;
+@using HomeBlaze.Host.Components
+@using Microsoft.Extensions.Logging;
+
+@inject IThingManager ThingManager
+@inject NavigationManager Navigation
+
+@if (ThingManager.TryGetById(ThingId) is IPageProvider pageProvider)
+{
+    @pageProvider.PageRenderFragment
+}
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "thing")]
+    public string? ThingId { get; set; }
+}

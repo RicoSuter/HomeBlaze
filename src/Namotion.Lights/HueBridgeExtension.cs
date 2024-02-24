@@ -1,16 +1,26 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Philips.Hue;
 using HomeBlaze.Services.Abstractions;
+using Namotion.Lights;
 using System;
 using System.Linq;
 
 namespace Namotion
 {
-    public class HueBridgeExtension : ExtensionThing<HueBridge>, ILastUpdatedProvider
+    [ThingSetup(null)]
+    public class HueBridgeExtension :
+        ExtensionThing<HueBridge>,
+        ILastUpdatedProvider,
+        IPageProvider
     {
         public DateTimeOffset? LastUpdated => ExtendedThing?.LastUpdated;
+
+        public string? PageTitle => "Lights";
+
+        public Type? PageComponentType => typeof(LightsPage);
 
         [State]
         public long? NumberOfLightbulbs => ExtendedThing?
@@ -27,7 +37,7 @@ namespace Namotion
         {
         }
 
-        public HueBridgeExtension(IThingManager thingManager, IEventManager eventManager) 
+        public HueBridgeExtension(IThingManager thingManager, IEventManager eventManager)
             : base(thingManager, eventManager)
         {
             Title = "Namotion Philips Hue Extensions";

@@ -3,7 +3,7 @@
     [AttributeUsage(AttributeTargets.Class)]
     public class ThingSetupAttribute : Attribute
     {
-        public ThingSetupAttribute(Type componentType)
+        public ThingSetupAttribute(Type? componentType)
         {
             ComponentType = componentType;
         }
@@ -11,7 +11,7 @@
         /// <summary>
         /// Gets or sets the type of the setup component.
         /// </summary>
-        public Type ComponentType { get; }
+        public Type? ComponentType { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the setup can be used to edit the thing.

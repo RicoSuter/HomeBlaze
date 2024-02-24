@@ -1,0 +1,13 @@
+﻿@using MudBlazor
+
+<div>
+    Hue Hub Name: @Thing?.ExtendedThing?.Title
+</div>
+<div>
+    Number of Lights: @Thing?.NumberOfLightbulbs
+</div>
+
+@code {
+    [Parameter]
+    public HueBridgeExtension? Thing { get; set; }
+}
