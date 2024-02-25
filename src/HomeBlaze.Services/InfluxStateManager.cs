@@ -96,19 +96,17 @@ namespace HomeBlaze.Services
                     var thingId = stateChangedEvent.Thing.Id;
                     if (thingId != null && newValue != null)
                     {
-                        var point = PointData
-                            .Measurement(thingId)
-                            .Tag("Type", stateChangedEvent.Thing.GetType().FullName)
-                            .Tag("Title", stateChangedEvent.Thing.Title)
-                            .Field(stateChangedEvent.PropertyName, 
-                                newValue is Enum ? newValue.ToString() : 
-                                newValue is TimeSpan timeSpan ? timeSpan.TotalSeconds : 
-                                newValue)
-                            .Timestamp(
-                                stateChangedEvent.ChangeDate.ToUniversalTime(),
-                                WritePrecision.Ns);
-
-                        _writeApi.WritePoint(point, _bucket, _organization);
+                        PublishState(
+                            thingId,
+                            stateChangedEvent.PropertyName,
+                            newValue,
+                            stateChangedEvent.ChangeDate,
+                            new Dictionary<string, string?>
+                            {
+                                { "Type", stateChangedEvent.Thing.GetType().FullName },
+                                { "Title", stateChangedEvent.Thing.Title }
+                            }
+                        );
                     }
                 }
             }
@@ -116,6 +114,34 @@ namespace HomeBlaze.Services
             {
                 _logger.LogError(e, "Failed to store state.");
             }
+        }
+
+        public void PublishState(
+            string thingId,
+            string? propertyName,
+            object value,
+            DateTimeOffset changeDate,
+            IReadOnlyDictionary<string, string?>? tags)
+        {
+            var point = PointData
+                .Measurement(thingId)
+                .Field(propertyName,
+                    value is Enum ? value.ToString() :
+                    value is TimeSpan timeSpan ? timeSpan.TotalSeconds :
+                    value)
+                .Timestamp(
+                    changeDate.ToUniversalTime(),
+                    WritePrecision.Ns);
+
+            if (tags is not null)
+            {
+                foreach (var tag in tags.Where(p => p.Value is not null))
+                {
+                    point = point.Tag(tag.Key, tag.Value);
+                }
+            }
+
+            _writeApi.WritePoint(point, _bucket, _organization);
         }
 
         public override void Dispose()
