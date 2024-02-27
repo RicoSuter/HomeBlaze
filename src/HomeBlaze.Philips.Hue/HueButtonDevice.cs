@@ -1,5 +1,6 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Devices.Energy;
 using HomeBlaze.Abstractions.Presentation;
 using HueApi.Models;
 using MudBlazor;
@@ -11,6 +12,7 @@ namespace HomeBlaze.Philips.Hue
     public class HueButtonDevice :
         HueDevice,
         IThing,
+        IBatteryDevice,
         IIconProvider
     {
         public override string IconName =>
@@ -20,19 +22,25 @@ namespace HomeBlaze.Philips.Hue
 
         public override MudBlazor.Color IconColor => IsConnected ? MudBlazor.Color.Default : MudBlazor.Color.Error;
 
+        internal DevicePower? DevicePowerResource { get; set; }
+
+        [State]
+        public decimal? BatteryLevel => DevicePowerResource?.PowerState?.BatteryLevel / 100m;
+
         [State]
         public HueButton[] Buttons { get; protected set; } = Array.Empty<HueButton>();
 
-        public HueButtonDevice(Device device, ZigbeeConnectivity? zigbeeConnectivity, ButtonResource[] buttons, HueBridge bridge)
+        public HueButtonDevice(Device device, ZigbeeConnectivity? zigbeeConnectivity, DevicePower? devicePower, ButtonResource[] buttons, HueBridge bridge)
             : base(device, zigbeeConnectivity, bridge)
         {
-            Update(device, zigbeeConnectivity, buttons);
+            Update(device, zigbeeConnectivity, devicePower, buttons);
         }
 
-        internal HueButtonDevice Update(Device device, ZigbeeConnectivity? zigbeeConnectivity, ButtonResource[] buttons)
+        internal HueButtonDevice Update(Device device, ZigbeeConnectivity? zigbeeConnectivity, DevicePower? devicePower, ButtonResource[] buttons)
         {
             Update(device, zigbeeConnectivity);
 
+            DevicePowerResource = devicePower;
             Buttons = buttons
                 .Select((button, i) => Buttons
                     .OfType<HueButton>()

@@ -43,7 +43,7 @@ namespace Namotion.Trackable.SampleWeb
             app.MapGraphQL();
 
             app.UseOpenApi();
-            app.UseSwaggerUi3();
+            app.UseSwaggerUi();
 
             app.MapControllers();
             app.Run();

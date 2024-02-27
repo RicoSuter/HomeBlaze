@@ -206,7 +206,7 @@ namespace HomeBlaze.Philips.Hue
 
                                 if (buttonsService is not null && buttonsService.Any())
                                 {
-                                    ((HueButtonDevice)a).Update(device, zigbeeConnectivity, buttonsService!);
+                                    ((HueButtonDevice)a).Update(device, zigbeeConnectivity, devicePower, buttonsService!);
                                     return;
                                 }
 
@@ -249,7 +249,7 @@ namespace HomeBlaze.Philips.Hue
 
                                 if (buttonsService is not null && buttonsService.Any())
                                 {
-                                    return new HueButtonDevice(device, zigbeeConnectivity, buttonsService!, this);
+                                    return new HueButtonDevice(device, zigbeeConnectivity, devicePower, buttonsService!, this);
                                 }
 
                                 return new HueDevice(device, zigbeeConnectivity, this);
