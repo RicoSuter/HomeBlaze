@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
 namespace HomeBlaze.Services.Json
@@ -15,16 +14,30 @@ namespace HomeBlaze.Services.Json
 
         public static void Populate(object root, string json, JsonSerializerOptions? options = null)
         {
-            PopulateTypeInfoResolver._root = root;
-            JsonSerializer.Deserialize(json, root.GetType(), GetOptionsWithPopulateResolver(options));
+            try
+            {
+                PopulateTypeInfoResolver._root = root;
+                JsonSerializer.Deserialize(json, root.GetType(), GetOptionsWithPopulateResolver(options));
+            }
+            finally
+            {
+                PopulateTypeInfoResolver._root = null;
+            }
         }
 
         public static T? PopulateOrDeserialize<T>(T? root, string json, JsonSerializerOptions? options = null)
             where T : class, new()
         {
             root = root ?? new T();
-            PopulateTypeInfoResolver._root = root;
-            return JsonSerializer.Deserialize<T>(json, GetOptionsWithPopulateResolver(options));
+            try
+            {
+                PopulateTypeInfoResolver._root = root;
+                return JsonSerializer.Deserialize<T>(json, GetOptionsWithPopulateResolver(options));
+            }
+            finally
+            {
+                PopulateTypeInfoResolver._root = null;
+            }
         }
 
         private class PopulateTypeInfoResolver : IJsonTypeInfoResolver
@@ -42,8 +55,7 @@ namespace HomeBlaze.Services.Json
             public JsonTypeInfo? GetTypeInfo(Type type, JsonSerializerOptions options)
             {
                 var typeInfo = _jsonTypeInfoResolver.GetTypeInfo(type, options);
-                if (typeInfo is not null &&
-                    type == _root?.GetType())
+                if (typeInfo?.CreateObject is not null)
                 {
                     var originalCreateObject = typeInfo.CreateObject;
                     typeInfo.CreateObject = () =>

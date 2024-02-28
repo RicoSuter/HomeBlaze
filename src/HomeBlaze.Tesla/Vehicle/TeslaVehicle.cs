@@ -14,6 +14,8 @@ using System.ComponentModel;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,6 +26,11 @@ namespace HomeBlaze.Tesla
     public class TeslaVehicle : PollingThing, ILastUpdatedProvider,
         IConnectedThing, IAuthenticatedThing, IIconProvider
     {
+        private static JsonSerializerOptions _serializerOptions = new JsonSerializerOptions
+        {
+            PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
+        };
+
         private readonly IHttpClientFactory _httpClientFactory;
 
         public override string Title => "Tesla Vehicle (" + (Vin?.ToString() ?? "?") + ")";
@@ -114,7 +121,7 @@ namespace HomeBlaze.Tesla
                 var json = await versionResponse.Content.ReadAsStringAsync(cancellationToken);
                 if (json.Contains("vehicle unavailable") == false)
                 {
-                    Response = JsonUtilities.PopulateOrDeserialize(Response, json);
+                    Response = JsonUtilities.PopulateOrDeserialize(Response, json, _serializerOptions);
 
                     if (Response?.Data is not null)
                     {
