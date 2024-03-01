@@ -20,7 +20,7 @@ namespace Namotion.Trackable.GraphQL
         {
             await _trackableContext.ForEachAsync(async (change) =>
             {
-                await _sender.SendAsync(nameof(Subscription<TTrackable>.Root), _trackableContext.Object);
+                await _sender.SendAsync(nameof(Subscription<TTrackable>.Root), _trackableContext.Object, stoppingToken);
             }, stoppingToken);
         }
     }

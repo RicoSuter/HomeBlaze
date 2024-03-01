@@ -19,10 +19,14 @@ public class TrackableFactory : ITrackableFactory
     public TrackableFactory(
         IServiceProvider serviceProvider,
         IEnumerable<ITrackableInterceptor>? trackableInterceptors = null,
-        IEnumerable<IInterceptor>? interceptors = null)
+        IEnumerable<IInterceptor>? interceptors = null,
+        IEnumerable<Type>? interfacesToProxy = null)
     {
         _trackableInterceptors = trackableInterceptors?.ToArray() ?? Array.Empty<ITrackableInterceptor>();
         _castleInterceptors = interceptors?.ToArray() ?? Array.Empty<IInterceptor>();
+        _additionalInterfacesToProxy = interfacesToProxy?.Concat(
+               new[] { typeof(ITrackable) }).ToArray()
+            ?? new[] { typeof(ITrackable) };
 
         _serviceProvider = serviceProvider;
     }
@@ -48,7 +52,9 @@ public class TrackableFactory : ITrackableFactory
                 _additionalInterfacesToProxy,
                 _proxyGenerationOptions,
                 constructorArguments,
-                _castleInterceptors.Concat(new[] { new TrackableInterceptor(_trackableInterceptors) }).ToArray());
+                _castleInterceptors
+                    .Concat(new[] { new TrackableInterceptor(_trackableInterceptors) })
+                    .ToArray());
 
         return proxy;
     }

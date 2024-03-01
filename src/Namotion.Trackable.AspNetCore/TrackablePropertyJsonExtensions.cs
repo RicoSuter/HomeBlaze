@@ -11,13 +11,17 @@ public static class TrackablePropertyJsonExtensions
     {
         if (property.IsAttribute)
         {
-            return string.Join('.', property.AttributedProperty.Path.Split('.')
-                .Select(s => JsonNamingPolicy.CamelCase.ConvertName(s)))
+            return
+                string
+                    .Join('.', property.AttributedProperty.Path.Split('.')
+                    .Select(s => JsonNamingPolicy.CamelCase.ConvertName(s)))
                 + "@" + JsonNamingPolicy.CamelCase.ConvertName(property.AttributeName);
         }
         else
         {
-            return string.Join('.', property.Path.Split('.').Select(s => JsonNamingPolicy.CamelCase.ConvertName(s)));
+            return string
+                .Join('.', property.Path.Split('.')
+                .Select(s => JsonNamingPolicy.CamelCase.ConvertName(s)));
         }
     }
 }

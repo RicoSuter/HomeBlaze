@@ -35,7 +35,7 @@ public class TrackableContextTests
     public void ShouldRaiseChangedForPropertyAndDerivedProperty()
     {
         // Arrange
-        var trackableContext = CreateContext<Person>();
+        var trackableContext = new TrackableContext<Person>(_factory);
         var trackable = trackableContext.Object;
         trackable.FirstName = "Rico";
         trackable.LastName = "Suter";
@@ -56,7 +56,7 @@ public class TrackableContextTests
     public void ShouldTrackChangesOfCreatedThing()
     {
         // Arrange
-        var trackableContext = CreateContext<Person>();
+        var trackableContext = new TrackableContext<Person>(_factory);
         var trackable = trackableContext.Object;
 
         var father = _factory!.CreateProxy<Person>();
@@ -77,7 +77,7 @@ public class TrackableContextTests
     public void ShouldNotTrackChangesOfRemovedThing()
     {
         // Arrange
-        var trackableContext = CreateContext<Person>();
+        var trackableContext = new TrackableContext<Person>(_factory);
         var trackable = trackableContext.Object;
 
         var father = _factory!.CreateProxy<Person>();
@@ -115,7 +115,7 @@ public class TrackableContextTests
     public void ShouldTrackChangesOfInternallyCreatedThing()
     {
         // Arrange
-        var thingContext = CreateContext<Car>();
+        var thingContext = new TrackableContext<Car>(_factory);
         var thing = thingContext.Object;
 
         var changes = new List<TrackedPropertyChange>();
@@ -142,7 +142,7 @@ public class TrackableContextTests
     public void ShouldAutoCreateRequiredProperties()
     {
         // Arrange
-        var thingContext = CreateContext<CarWithRequiredTires>();
+        var thingContext = new TrackableContext<CarWithRequiredTires>(_factory);
         var thing = thingContext.Object;
 
         var changes = new List<TrackedPropertyChange>();
@@ -161,7 +161,7 @@ public class TrackableContextTests
     public void ShouldObserveProperty()
     {
         // Arrange
-        var thingContext = CreateContext<CarWithRequiredTires>();
+        var thingContext = new TrackableContext<CarWithRequiredTires>(_factory);
         var thing = thingContext.Object;
 
         var changes = new List<decimal>();
@@ -177,11 +177,5 @@ public class TrackableContextTests
         // Assert
         Assert.Equal(5m, changes[0]);
         Assert.Equal(10m, changes[1]);
-    }
-
-    private TrackableContext<T> CreateContext<T>()
-        where T : class
-    {
-        return new TrackableContext<T>(_factory);
     }
 }
