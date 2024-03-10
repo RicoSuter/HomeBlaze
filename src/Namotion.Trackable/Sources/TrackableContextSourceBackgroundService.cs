@@ -86,7 +86,9 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
                         var values = changes
                            .ToDictionary(
                                c => _source.TryGetSourcePath(c.Property)!,
-                               c => _toSourceConverter is not null ? _toSourceConverter.ConvertToSource(c.Property, c.Value) : c.Value);
+                               c => _toSourceConverter is not null ? 
+                                        _toSourceConverter.ConvertToSource(c.Property, c.Value) : 
+                                        c.Value);
 
                         await _source.WriteAsync(values, stoppingToken);
                     }, stoppingToken);
@@ -94,7 +96,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to listen for changes.");
-                await Task.Delay(_retryTime);
+                await Task.Delay(_retryTime, stoppingToken);
             }
         }
     }
@@ -107,7 +109,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
             .AllProperties
             .FirstOrDefault(v => _source.TryGetSourcePath(v) == sourcePath);
 
-        if (property != null)
+        if (property is not null)
         {
             property.SetValueFromSource(_source, value, _fromSourceConverter);
         }
@@ -115,7 +117,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
 
     private void MarkPropertyAsInitialized(string sourcePath)
     {
-        if (_initializedProperties != null)
+        if (_initializedProperties is not null)
         {
             lock (this)
             {
