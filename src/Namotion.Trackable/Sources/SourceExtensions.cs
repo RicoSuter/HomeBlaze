@@ -1,4 +1,5 @@
 ﻿using Namotion.Trackable.Model;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -43,7 +44,7 @@ public static class SourceExtensions
         }
     }
 
-    public static void SetValueFromSource(this TrackedProperty property, ITrackableSource source, object? value)
+    public static void SetValueFromSource(this TrackedProperty property, ITrackableSource source, object? valueFromSource, IFromSourceConverter? fromSourceConverter)
     {
         lock (property.Data)
         {
@@ -55,10 +56,14 @@ public static class SourceExtensions
 
         try
         {
+            var newValue = fromSourceConverter is not null ?
+                fromSourceConverter.ConvertFromSource(property, valueFromSource) : 
+                valueFromSource;
+
             var currentValue = property.GetValue();
-            if (!Equals(currentValue, value))
+            if (!Equals(currentValue, newValue))
             {
-                property.SetValue(value);
+                property.SetValue(newValue);
             }
         }
         finally

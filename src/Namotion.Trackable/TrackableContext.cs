@@ -22,6 +22,7 @@ public class TrackableContext<TObject> : ITrackableContext
     // TODO: Switch to concurrent dict
     private readonly Dictionary<ITrackable, ProxyTracker> _trackers = new();
     private readonly ITrackableFactory _trackableFactory;
+    private readonly ITrackablePropertyInitializer[] _propertyInitializers;
 
     public TObject Object { get; private set; }
 
@@ -52,9 +53,10 @@ public class TrackableContext<TObject> : ITrackableContext
         }
     }
 
-    public TrackableContext(ITrackableFactory trackableFactory)
+    public TrackableContext(ITrackableFactory trackableFactory, IEnumerable<ITrackablePropertyInitializer>? propertyInitializers = null)
     {
         _trackableFactory = trackableFactory;
+        _propertyInitializers = propertyInitializers?.ToArray() ?? Array.Empty<ITrackablePropertyInitializer>();
 
         var proxy = trackableFactory.CreateProxy<TObject>();
         if (Object == null)
@@ -101,7 +103,7 @@ public class TrackableContext<TObject> : ITrackableContext
             }
 
             tracker = new ProxyTracker(proxy, parentProperty, parentCollectionKey);
-        
+
             lock (_trackers)
             {
                 _trackers[proxy] = tracker;
@@ -117,16 +119,19 @@ public class TrackableContext<TObject> : ITrackableContext
             foreach (var propertyInfo in proxy
                 .GetType()
                 .BaseType! // get properties from actual type
-                .GetProperties())
+                .GetProperties()
+                .OrderBy(p => p.IsDefined(typeof(AttributeOfTrackableAttribute)) ? 1 : 0)) // TODO: Remove and fix this
             {
-                var propertyReflectionMetadata = _propertyReflectionMetadataCache.GetOrAdd(propertyInfo, pi => new PropertyReflectionMetadata(pi));
+                var propertyReflectionMetadata = _propertyReflectionMetadataCache.GetOrAdd(
+                    propertyInfo, pi => new PropertyReflectionMetadata(pi, _propertyInitializers));
+
                 if (propertyReflectionMetadata.IsTrackable)
                 {
                     var property = CreateAndAddTrackableProperty(propertyReflectionMetadata, tracker, parentCollectionKey);
                     if (property.IsReadable)
                     {
                         var value = property.GetValue();
-                        if (value != null)
+                        if (value is not null)
                         {
                             AttachPropertyValue(property, value);
                         }
@@ -202,7 +207,7 @@ public class TrackableContext<TObject> : ITrackableContext
 
     private TrackedProperty CreateAndAddTrackableProperty(PropertyReflectionMetadata propertyReflectionMetadata, ProxyTracker parent, object? parentCollectionKey)
     {
-        var property = propertyReflectionMetadata.CreateProperty(parent, _propertyChangesSubject);       
+        var property = propertyReflectionMetadata.CreateProperty(parent, _propertyChangesSubject);
         parent.AddProperty(property);
 
         foreach (var attribute in propertyReflectionMetadata.PropertyInitializers)

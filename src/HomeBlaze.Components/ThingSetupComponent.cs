@@ -37,16 +37,21 @@ namespace HomeBlaze.Components
             }
             else
             {
-                Thing = (TThing)ActivatorUtilities.CreateInstance(ServiceProvider!, typeof(TThing));
+                Thing = CreateThing();
 
                 if (ExtendedThing != null &&
-                    Thing is IExtensionThing extensionThing && 
+                    Thing is IExtensionThing extensionThing &&
                     extensionThing.HasProperty("ExtendedThingId"))
                 {
                     // TODO: Add an interface for that
                     ((dynamic)extensionThing).ExtendedThingId = ExtendedThing.Id;
                 }
             }
+        }
+
+        protected virtual TThing CreateThing()
+        {
+            return (TThing)ActivatorUtilities.CreateInstance(ServiceProvider!, typeof(TThing));
         }
 
         public override Task<TThing?> CreateThingAsync(CancellationToken cancellationToken)

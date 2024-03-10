@@ -15,7 +15,8 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
     private readonly TrackableContext<TTrackable> _trackableContext;
     private readonly ITrackableSource _source;
     private readonly ILogger _logger;
-
+    private readonly IToSourceConverter? _toSourceConverter;
+    private readonly IFromSourceConverter? _fromSourceConverter;
     private readonly TimeSpan _bufferTime;
     private readonly TimeSpan _retryTime;
 
@@ -25,13 +26,16 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
         ITrackableSource source,
         TrackableContext<TTrackable> trackableContext,
         ILogger logger,
+        IToSourceConverter? toSourceConverter = null,
+        IFromSourceConverter? fromSourceConverter = null,
         TimeSpan? bufferTime = null,
         TimeSpan? retryTime = null)
     {
         _source = source;
         _trackableContext = trackableContext;
         _logger = logger;
-
+        _toSourceConverter = toSourceConverter;
+        _fromSourceConverter = fromSourceConverter;
         _bufferTime = bufferTime ?? TimeSpan.FromMilliseconds(8);
         _retryTime = retryTime ?? TimeSpan.FromSeconds(10);
     }
@@ -46,7 +50,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
 
                 var sourcePaths = _trackableContext
                     .AllProperties
-                    .Select(p => _source.TryGetSourcePath(p))
+                    .Select(_source.TryGetSourcePath)
                     .Where(p => p is not null)
                     .ToList();
 
@@ -82,7 +86,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
                         var values = changes
                            .ToDictionary(
                                c => _source.TryGetSourcePath(c.Property)!,
-                               c => c.Value);
+                               c => _toSourceConverter is not null ? _toSourceConverter.ConvertToSource(c.Property, c.Value) : c.Value);
 
                         await _source.WriteAsync(values, stoppingToken);
                     }, stoppingToken);
@@ -105,7 +109,7 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
 
         if (property != null)
         {
-            property.SetValueFromSource(_source, value);
+            property.SetValueFromSource(_source, value, _fromSourceConverter);
         }
     }
 

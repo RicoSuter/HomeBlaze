@@ -9,16 +9,24 @@ namespace Namotion.Trackable.Model;
 public class PropertyReflectionMetadata
 {
     private readonly PropertyInfo _propertyInfo;
+    private readonly ITrackablePropertyInitializer[] _propertyInitializers;
 
-    public PropertyReflectionMetadata(PropertyInfo propertyInfo)
+    public PropertyReflectionMetadata(PropertyInfo propertyInfo, ITrackablePropertyInitializer[] propertyInitializers)
     {
         _propertyInfo = propertyInfo;
+        _propertyInitializers = propertyInitializers;
 
         PropertyType = propertyInfo.PropertyType;
 
         Attributes = propertyInfo.GetCustomAttributes(true);
         TrackableAttribute = Attributes.OfType<TrackableAttribute>().FirstOrDefault();
-        PropertyInitializers = Attributes.OfType<ITrackablePropertyInitializer>().ToArray();
+
+        var processors = Attributes.Concat(_propertyInitializers)
+            .OfType<IPropertyProcessor>()
+            .Where(p => p.CanProcess(propertyInfo.PropertyType))
+            .ToArray();
+
+        PropertyInitializers = processors.OfType<ITrackablePropertyInitializer>().ToArray();
 
         Name = propertyInfo.Name;
 
@@ -28,7 +36,7 @@ public class PropertyReflectionMetadata
             propertyInfo.PropertyType.IsClass &&
             propertyInfo.PropertyType.FullName?.StartsWith("System.") == false;
 
-        IsVirtual = 
+        IsVirtual =
             propertyInfo.GetMethod?.IsVirtual == true ||
             propertyInfo.SetMethod?.IsVirtual == true;
 
@@ -66,13 +74,13 @@ public class PropertyReflectionMetadata
             throw new InvalidOperationException($"Trackable property {_propertyInfo.DeclaringType?.Name}.{_propertyInfo.Name} must be virtual.");
         }
 
-        return TrackableAttribute?.CreateProperty(this, parent, observer) ?? 
+        return TrackableAttribute?.CreateProperty(this, parent, observer) ??
             throw new InvalidOperationException($"{nameof(TrackableAttribute)} is null.");
     }
 
-    public void SetValue(ITrackable trackable, object? child)
+    public void SetValue(ITrackable trackable, object? value)
     {
-        _propertyInfo.SetValue(trackable, child);
+        _propertyInfo.SetValue(trackable, value);
     }
 
     public object? GetValue(ITrackable trackable)

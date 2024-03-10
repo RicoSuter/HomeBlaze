@@ -9,14 +9,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class MqttServerTrackableContextSourceExtensions
 {
     public static IServiceCollection AddMqttServerTrackableSource<TTrackable>(
-        this IServiceCollection serviceCollection, string sourceName)
+        this IServiceCollection serviceCollection, string sourceName, string? pathPrefix = null)
         where TTrackable : class
     {
         return serviceCollection
             .AddSingleton(sp =>
             {
                 var sourcePathProvider = new AttributeBasedSourcePathProvider(
-                    sourceName, sp.GetRequiredService<TrackableContext<TTrackable>>());
+                    sourceName, sp.GetRequiredService<TrackableContext<TTrackable>>(), pathPrefix);
 
                 return new MqttServerTrackableSource<TTrackable>(
                     sp.GetRequiredService<TrackableContext<TTrackable>>(),

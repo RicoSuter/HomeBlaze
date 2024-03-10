@@ -2,7 +2,7 @@
 
 namespace Namotion.Trackable.Model;
 
-public record TrackedPropertyChange
+public record struct TrackedPropertyChange
 {
     public TrackedProperty Property { get; }
 
