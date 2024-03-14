@@ -1,0 +1,30 @@
+﻿@page "/"
+@inject Player Player
+@inject Game Game
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+@foreach (var player in Game.Players)
+{
+    <p>@player.Id</p>
+}
+
+@code {
+    private IDisposable? _subscription;
+
+    override protected async void OnInitialized()
+    {
+        Game.AddPlayer(Player);
+        _subscription = Game.Subscribe((_) => InvokeAsync(StateHasChanged));
+    }
+
+    public void Dispose()
+    {
+        Game.RemovePlayer(Player);
+        _subscription.Dispose();
+    }
+}
