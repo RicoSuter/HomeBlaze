@@ -27,8 +27,8 @@ namespace HomeBlaze.Mqtt
         private int _numberOfClients = 0;
         private MqttServer? _mqttServer;
 
-        private Action<string, object?>? _propertyUpdateAction;
-        private ConcurrentDictionary<string, object?> _state = new();
+        private Action<PropertyInfo>? _propertyUpdateAction;
+        private ConcurrentDictionary<TrackedProperty, object?> _state = new();
 
         public int Port { get; set; } = 1883;
 
@@ -84,31 +84,36 @@ namespace HomeBlaze.Mqtt
             }
         }
 
-        public Task<IDisposable?> InitializeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
+        public Task<IDisposable?> InitializeAsync(IEnumerable<PropertyInfo> properties, Action<PropertyInfo> propertyUpdateAction, CancellationToken cancellationToken)
         {
             _propertyUpdateAction = propertyUpdateAction;
             return Task.FromResult<IDisposable?>(null);
         }
 
-        public Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
+        public Task<IEnumerable<PropertyInfo>> ReadAsync(IEnumerable<PropertyInfo> properties, CancellationToken cancellationToken)
         {
-            return Task.FromResult<IReadOnlyDictionary<string, object?>>(_state
-                .Where(s => sourcePaths.Contains(s.Key.Replace(".", "/")))
-                .ToDictionary(s => s.Key, s => s.Value));
+            var propertyPaths = properties
+                .Select(p => p.Path)
+                .ToList();
+
+            return Task.FromResult<IEnumerable<PropertyInfo>>(_state
+                .Where(s => propertyPaths.Contains(_sourcePathProvider.TryGetSourcePath(s.Key)!.Replace(".", "/")))
+                .Select(s => new PropertyInfo(s.Key, null!, s.Value))
+                .ToList());
         }
 
-        public async Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)
+        public async Task WriteAsync(IEnumerable<PropertyInfo> propertyChanges, CancellationToken cancellationToken)
         {
-            foreach ((var sourcePath, var value) in propertyChanges)
+            foreach (var property in propertyChanges)
             {
                 await _mqttServer!.InjectApplicationMessage(
                     new InjectedMqttApplicationMessage(
                         new MqttApplicationMessage
                         {
-                            Topic = string.Join('/', sourcePath.Split('.')),
+                            Topic = string.Join('/', property.Path!.Split('.')),
                             ContentType = "application/json",
                             PayloadSegment = new ArraySegment<byte>(
-                               Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value)))
+                               Encoding.UTF8.GetBytes(JsonSerializer.Serialize(property.Value)))
                         }));
             }
         }
@@ -164,8 +169,8 @@ namespace HomeBlaze.Mqtt
                     var document = JsonDocument.Parse(payload);
                     var value = document.Deserialize(property.PropertyType);
 
-                    _state[args.ApplicationMessage.Topic] = value;
-                    _propertyUpdateAction?.Invoke(sourcePath, value);
+                    _state[property] = value;
+                    _propertyUpdateAction?.Invoke(new PropertyInfo(property, sourcePath, value));
                 }
             }
             catch (Exception ex)

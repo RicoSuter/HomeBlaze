@@ -42,10 +42,10 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
             {
                 // TODO: Currently newly added properties/trackable are not automatically tracked/subscribed to
 
-                var sourcePaths = _trackableContext
+                var properties = _trackableContext
                     .AllProperties
-                    .Select(_source.TryGetSourcePath)
-                    .Where(p => p is not null)
+                    .Where(p => _source.TryGetSourcePath(p) is not null)
+                    .Select(p => new PropertyInfo(p, _source.TryGetSourcePath(p)!, p.GetValue()))
                     .ToList();
 
                 lock (this)
@@ -54,17 +54,17 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
                 }
 
                 // subscribe first and mark all properties as initialized which are updated before the read has completed 
-                using var disposable = await _source.InitializeAsync(sourcePaths!, UpdatePropertyValueFromSource, stoppingToken);
+                using var disposable = await _source.InitializeAsync(properties!, UpdatePropertyValueFromSource, stoppingToken);
 
                 // read all properties (subscription during read will later be ignored)
-                var initialValues = await _source.ReadAsync(sourcePaths!, stoppingToken);
+                var initialValues = await _source.ReadAsync(properties!, stoppingToken);
                 lock (this)
                 {
                     // ignore properties which have been updated via subscription
                     foreach (var value in initialValues
-                        .Where(v => !_initializedProperties.Contains(v.Key)))
+                        .Where(v => !_initializedProperties.Contains(v.Path)))
                     {
-                        UpdatePropertyValueFromSource(value.Key, value.Value);
+                        UpdatePropertyValueFromSource(value);
                     }
 
                     _initializedProperties = null;
@@ -78,9 +78,8 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
                     .ForEachAsync(async changes =>
                     {
                         var values = changes
-                           .ToDictionary(
-                               c => _source.TryGetSourcePath(c.Property)!,
-                               c => c.Value);
+                            .Select(c => new PropertyInfo(c.Property, _source.TryGetSourcePath(c.Property)!, c.Value))
+                            .ToList();
 
                         await _source.WriteAsync(values, stoppingToken);
                     }, stoppingToken);
@@ -93,18 +92,10 @@ public class TrackableContextSourceBackgroundService<TTrackable> : BackgroundSer
         }
     }
 
-    protected void UpdatePropertyValueFromSource(string sourcePath, object? value)
+    protected void UpdatePropertyValueFromSource(PropertyInfo property2)
     {
-        MarkPropertyAsInitialized(sourcePath);
-
-        var property = _trackableContext
-            .AllProperties
-            .FirstOrDefault(v => _source.TryGetSourcePath(v) == sourcePath);
-
-        if (property is not null)
-        {
-            property.SetValueFromSource(_source, value);
-        }
+        MarkPropertyAsInitialized(property2.Path);
+        property2.Property.SetValueFromSource(_source, property2.Value);
     }
 
     private void MarkPropertyAsInitialized(string sourcePath)

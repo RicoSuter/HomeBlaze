@@ -22,15 +22,10 @@ namespace Namotion.Trackable.OpcUa
         internal readonly ISourcePathProvider _sourcePathProvider;
         private readonly ILogger _logger;
 
-        private Action<string, object?>? _propertyUpdateAction;
-        private ConcurrentDictionary<string, object?> _state = new();
-
         private readonly OpcProviderBasedNodeManager<TTrackable> _nodeManager;
         private readonly OpcNodeSet[] _nodeSets = Array.Empty<OpcNodeSet>();
 
         private OpcServer? _opcServer;
-
-        internal Dictionary<string, TrackedProperty> _variables = new Dictionary<string, TrackedProperty>();
 
         public OpcUaServerTrackableSource(
             TrackableContext<TTrackable> trackableContext,
@@ -77,31 +72,33 @@ namespace Namotion.Trackable.OpcUa
             base.Dispose();
         }
 
-        public Task<IDisposable?> InitializeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
+        public Task<IDisposable?> InitializeAsync(IEnumerable<PropertyInfo> properties, Action<PropertyInfo> propertyUpdateAction, CancellationToken cancellationToken)
         {
-            _propertyUpdateAction = propertyUpdateAction;
             return Task.FromResult<IDisposable?>(null);
         }
 
-        public Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
+        public Task<IEnumerable<PropertyInfo>> ReadAsync(IEnumerable<PropertyInfo> properties, CancellationToken cancellationToken)
         {
-            return Task.FromResult<IReadOnlyDictionary<string, object?>>(_state
-                .Where(s => sourcePaths.Contains(s.Key.Replace(".", "/")))
-                .ToDictionary(s => s.Key, s => s.Value));
+            return Task.FromResult<IEnumerable<PropertyInfo>>(properties
+                .Where(p => p.Property.Data.ContainsKey(OpcUaServerTrackableSource<TTrackable>.OpcVariableKey))
+                .Select(property => (property, node: property.Property.Data[OpcUaServerTrackableSource<TTrackable>.OpcVariableKey] as OpcDataVariableNode))
+                .Where(p => p.node is not null)
+                .Select(p => new PropertyInfo(p.property.Property, p.property.Path, p.node!.Value))
+                .ToList());
         }
 
-        public async Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)
+        public async Task WriteAsync(IEnumerable<PropertyInfo> propertyChanges, CancellationToken cancellationToken)
         {
-            foreach ((var sourcePath, var value) in propertyChanges)
+            foreach (var property in propertyChanges
+                .Where(p => p.Property.Data.ContainsKey(OpcUaServerTrackableSource<TTrackable>.OpcVariableKey)))
             {
-                var actualValue = value;
+                var actualValue = property.Value;
                 if (actualValue is decimal)
                 {
                     actualValue = Convert.ToDouble(actualValue);
                 }
 
-                var property = _variables[sourcePath];
-                var node = property.Data[OpcUaServerTrackableSource<TTrackable>.OpcVariableKey] as OpcDataVariableNode;
+                var node = property.Property.Data[OpcUaServerTrackableSource<TTrackable>.OpcVariableKey] as OpcDataVariableNode;
                 node!.Value = actualValue;
                 node.UpdateChanges(_opcServer!.SystemContext, OpcNodeChanges.Value);
             }
@@ -194,7 +191,7 @@ namespace Namotion.Trackable.OpcUa
                     {
                         var objectNode = new OpcObjectNode(child.Path);
                         CreateObjectNode(context, child, objectNode);
-                       
+
                         propertyNode.AddChild(context.Context, objectNode);
                     }
                     parentNode.AddChild(context.Context, propertyNode);
@@ -218,10 +215,7 @@ namespace Namotion.Trackable.OpcUa
                         var variable = (OpcDataVariableNode)Activator.CreateInstance(opcType, opcName)!;
 
                         variable.Value = value;
-
                         property.Value.Data = property.Value.Data.SetItem(OpcUaServerTrackableSource<TTrackable>.OpcVariableKey, variable);
-
-                        _source._variables[sourcePath] = property.Value;
 
                         parentNode.AddChild(context.Context, variable);
                     }

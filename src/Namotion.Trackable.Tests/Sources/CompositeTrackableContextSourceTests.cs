@@ -1,5 +1,6 @@
 ﻿using Namotion.Trackable.Model;
 using Namotion.Trackable.Sources;
+using System.Reactive.Subjects;
 
 namespace Namotion.Trackable.Tests.Sources
 {
@@ -9,17 +10,21 @@ namespace Namotion.Trackable.Tests.Sources
         {
             public Dictionary<string, object?> Data { get; } = new Dictionary<string, object?>();
 
-            public Action<string, object?>? PropertyUpdateAction { get; private set; }
+            public Action<PropertyInfo>? PropertyUpdateAction { get; private set; }
 
-            public Task<IDisposable?> InitializeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken)
+            public Task<IDisposable?> InitializeAsync(IEnumerable<PropertyInfo> properties, Action<PropertyInfo> propertyUpdateAction, CancellationToken cancellationToken)
             {
                 PropertyUpdateAction = propertyUpdateAction;
                 return Task.FromResult<IDisposable?>(new DummyDisposable());
             }
 
-            public Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken)
+            public Task<IEnumerable<PropertyInfo>> ReadAsync(
+                IEnumerable<PropertyInfo> properties, CancellationToken cancellationToken)
             {
-                return Task.FromResult<IReadOnlyDictionary<string, object?>>(Data.Where(p => sourcePaths.Contains(p.Key)).ToDictionary(p => p.Key, p => p.Value));
+                return Task.FromResult<IEnumerable<PropertyInfo>>(Data
+                    .Where(p => properties.Any(u => u.Path == p.Key))
+                    .Select(p => new PropertyInfo(properties.Single(u => u.Path == p.Key).Property, p.Key, p.Value))
+                    .ToList());
             }
 
             public string? TryGetSourcePath(TrackedProperty property)
@@ -27,11 +32,11 @@ namespace Namotion.Trackable.Tests.Sources
                 return property.Path;
             }
 
-            public Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken)
+            public Task WriteAsync(IEnumerable<PropertyInfo> propertyChanges, CancellationToken cancellationToken)
             {
                 foreach (var change in propertyChanges)
                 {
-                    Data[change.Key] = change.Value;
+                    Data[change.Path] = change.Value;
                 }
 
                 return Task.CompletedTask;
@@ -56,14 +61,16 @@ namespace Namotion.Trackable.Tests.Sources
             });
 
             // Act
-            var reportedChangedPath = "";
-            await compositeSource.InitializeAsync(new[] { "abc.def" }, (path, value) => reportedChangedPath = path, CancellationToken.None);
-            
+            var property = new TrackedProperty<int>("abc.def", 0, new Tracker(), new Subject<TrackedPropertyChange>());
+         
+            PropertyInfo? reportedChangedProperty = null;
+            await compositeSource.InitializeAsync([new PropertyInfo(property, "abc.def", 0)], (p) => reportedChangedProperty = p, CancellationToken.None);
+
             // simulate change from inner source
-            source.PropertyUpdateAction?.Invoke("def", null);
+            source.PropertyUpdateAction?.Invoke(new PropertyInfo(property, "def", 1));
 
             // Assert
-            Assert.Equal("abc.def", reportedChangedPath);
+            Assert.Equal(1, reportedChangedProperty!.Value.Value);
         }
 
         [Fact]
@@ -77,10 +84,11 @@ namespace Namotion.Trackable.Tests.Sources
             });
 
             // Act
-            await compositeSource.WriteAsync(new Dictionary<string, object?>
-            {
-                { "abc.def", 1 }
-            }, CancellationToken.None);
+            var property = new TrackedProperty<int>("abc.def", 0, new Tracker(), new Subject<TrackedPropertyChange>());
+            await compositeSource.WriteAsync(
+            [
+                new PropertyInfo(property, "abc.def", 1)
+            ], CancellationToken.None);
 
             // Assert
             Assert.True(source.Data.ContainsKey("def"));
@@ -90,6 +98,7 @@ namespace Namotion.Trackable.Tests.Sources
         public async Task WhenReadingPropertyThenInnerPathIsConverted()
         {
             // Arrange
+            var property = new TrackedProperty<int>("abc.def", 0, new Tracker(), new Subject<TrackedPropertyChange>());
             var source = new TestTrackableContextSource
             {
                 Data =
@@ -104,10 +113,10 @@ namespace Namotion.Trackable.Tests.Sources
             });
 
             // Act
-            var result = await compositeSource.ReadAsync(new[] { "abc.def" }, CancellationToken.None);
+            var result = await compositeSource.ReadAsync([new PropertyInfo(property, "abc.def", 5)], CancellationToken.None);
 
             // Assert
-            Assert.Equal(5, result["abc.def"]);
+            Assert.Contains(result, p => p.Value == (object)5);
         }
     }
 }

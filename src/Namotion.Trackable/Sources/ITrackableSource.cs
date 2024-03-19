@@ -10,9 +10,11 @@ public interface ITrackableSource
 {
     string? TryGetSourcePath(TrackedProperty property);
 
-    Task<IDisposable?> InitializeAsync(IEnumerable<string> sourcePaths, Action<string, object?> propertyUpdateAction, CancellationToken cancellationToken);
+    Task<IDisposable?> InitializeAsync(IEnumerable<PropertyInfo> properties, Action<PropertyInfo> propertyUpdateAction, CancellationToken cancellationToken);
 
-    Task<IReadOnlyDictionary<string, object?>> ReadAsync(IEnumerable<string> sourcePaths, CancellationToken cancellationToken);
+    Task<IEnumerable<PropertyInfo>> ReadAsync(IEnumerable<PropertyInfo> properties, CancellationToken cancellationToken);
 
-    Task WriteAsync(IReadOnlyDictionary<string, object?> propertyChanges, CancellationToken cancellationToken);
+    Task WriteAsync(IEnumerable<PropertyInfo> propertyChanges, CancellationToken cancellationToken);
 }
+
+public record struct PropertyInfo(TrackedProperty Property, string Path, object? Value);
