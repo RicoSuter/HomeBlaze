@@ -13,7 +13,7 @@ using Namotion.Trackable.Utilities;
 
 namespace Namotion.Trackable;
 
-public class TrackableContext<TObject> : ITrackableContext
+public class TrackableContext<TObject> : ITrackableContext, IDisposable
     where TObject : class
 {
     private readonly Subject<TrackedPropertyChange> _propertyChangesSubject = new();
@@ -239,4 +239,6 @@ public class TrackableContext<TObject> : ITrackableContext
     public void OnError(Exception error) => _propertyChangesSubject.OnError(error);
 
     public void OnNext(TrackedPropertyChange value) => _propertyChangesSubject.OnNext(value);
+
+    public void Dispose() => _propertyChangesSubject?.Dispose();
 }

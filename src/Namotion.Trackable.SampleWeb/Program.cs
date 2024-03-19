@@ -90,7 +90,7 @@ namespace Namotion.Trackable.SampleWeb
             public virtual decimal Pressure_Minimum { get; set; } = 0.0m;
 
             [AttributeOfTrackable(nameof(Pressure), "Maximum")]
-            public virtual decimal Pressure_Maximum { get; set; } = 4.0m;
+            public virtual decimal Pressure_Maximum => 4 * Pressure;
         }
 
         public class UnitAttribute : Attribute, ITrackablePropertyInitializer
