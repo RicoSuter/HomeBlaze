@@ -26,6 +26,7 @@ public class TrackableSourceAttribute : Attribute, ITrackablePropertyInitializer
 
         var sourcePath = GetSourcePath(parentPath, property);
         property.SetAttributeBasedSourcePath(SourceName, sourcePath);
+        property.SetAttributeBasedSourceProperty(SourceName, Path ?? property.Name);
     }
 
     private string GetSourcePath(string? basePath, TrackedProperty property)

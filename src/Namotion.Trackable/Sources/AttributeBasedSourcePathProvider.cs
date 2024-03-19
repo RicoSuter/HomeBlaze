@@ -15,6 +15,12 @@ public class AttributeBasedSourcePathProvider : ISourcePathProvider
         _pathPrefix = pathPrefix ?? string.Empty;
     }
 
+    public string? TryGetSourceProperty(TrackedProperty property)
+    {
+        var propertyName = property.TryGetAttributeBasedSourceProperty(_sourceName);
+        return propertyName is not null ? propertyName : null;
+    }
+
     public string? TryGetSourcePath(TrackedProperty property)
     {
         var path = property.TryGetAttributeBasedSourcePath(_sourceName, _trackableContext);

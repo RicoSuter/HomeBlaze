@@ -7,10 +7,19 @@ namespace Namotion.Trackable.Sources;
 
 public static class SourceExtensions
 {
+    private const string SourcePropertyKey = "SourceProperty:";
     private const string SourcePathKey = "SourcePath:";
     private const string SourcePathPrefixKey = "SourcePathPrefix:";
 
     private const string IsChangingFromSourceKey = "IsChangingFromSource";
+
+    public static string? TryGetAttributeBasedSourceProperty(this TrackedProperty property, string sourceName)
+    {
+        lock (property.Data)
+        {
+            return property.Data.TryGetValue(SourcePropertyKey + sourceName, out var value) ? value as string : null;
+        }
+    }
 
     public static string? TryGetAttributeBasedSourcePath(this TrackedProperty property, string sourceName, ITrackableContext trackableContext)
     {
@@ -25,6 +34,14 @@ public static class SourceExtensions
         lock (property.Data)
         {
             return property.Data.TryGetValue(SourcePathPrefixKey + sourceName, out var value) ? value as string : null;
+        }
+    }
+
+    public static void SetAttributeBasedSourceProperty(this TrackedProperty property, string sourceName, string sourceProperty)
+    {
+        lock (property.Data)
+        {
+            property.Data = property.Data.SetItem(SourcePropertyKey + sourceName, sourceProperty);
         }
     }
 
@@ -44,7 +61,7 @@ public static class SourceExtensions
         }
     }
 
-    public static void SetValueFromSource(this TrackedProperty property, ITrackableSource source, object? valueFromSource, IFromSourceConverter? fromSourceConverter)
+    public static void SetValueFromSource(this TrackedProperty property, ITrackableSource source, object? valueFromSource)
     {
         lock (property.Data)
         {
@@ -56,9 +73,7 @@ public static class SourceExtensions
 
         try
         {
-            var newValue = fromSourceConverter is not null ?
-                fromSourceConverter.ConvertFromSource(property, valueFromSource) : 
-                valueFromSource;
+            var newValue = valueFromSource;
 
             var currentValue = property.GetValue();
             if (!Equals(currentValue, newValue))

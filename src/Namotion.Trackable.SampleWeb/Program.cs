@@ -21,6 +21,9 @@ namespace Namotion.Trackable.SampleWeb
             // trackable api controllers
             builder.Services.AddTrackableControllers<Car, TrackablesController<Car>>();
 
+            // trackable UPC UA
+            builder.Services.AddOpcUaServerTrackableSource<Car>("mqtt");
+
             // trackable mqtt
             builder.Services.AddMqttServerTrackableSource<Car>("mqtt");
 
@@ -71,6 +74,7 @@ namespace Namotion.Trackable.SampleWeb
             public virtual Tire[] Tires { get; set; }
 
             [Trackable]
+            [TrackableSource("mqtt", "averagePressure")]
             public virtual decimal AveragePressure => Tires.Average(t => t.Pressure);
         }
 
