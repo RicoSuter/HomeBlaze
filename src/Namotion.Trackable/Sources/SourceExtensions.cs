@@ -7,17 +7,17 @@ namespace Namotion.Trackable.Sources;
 
 public static class SourceExtensions
 {
-    private const string SourcePropertyKey = "SourceProperty:";
+    private const string SourcePropertyNameKey = "SourceProperty:";
     private const string SourcePathKey = "SourcePath:";
     private const string SourcePathPrefixKey = "SourcePathPrefix:";
 
     private const string IsChangingFromSourceKey = "IsChangingFromSource";
 
-    public static string? TryGetAttributeBasedSourceProperty(this TrackedProperty property, string sourceName)
+    public static string? TryGetAttributeBasedSourcePropertyName(this TrackedProperty property, string sourceName)
     {
         lock (property.Data)
         {
-            return property.Data.TryGetValue(SourcePropertyKey + sourceName, out var value) ? value as string : null;
+            return property.Data.TryGetValue(SourcePropertyNameKey + sourceName, out var value) ? value as string : null;
         }
     }
 
@@ -37,11 +37,11 @@ public static class SourceExtensions
         }
     }
 
-    public static void SetAttributeBasedSourceProperty(this TrackedProperty property, string sourceName, string sourceProperty)
+    public static void SetAttributeBasedSourcePropertyName(this TrackedProperty property, string sourceName, string sourcePropertyName)
     {
         lock (property.Data)
         {
-            property.Data = property.Data.SetItem(SourcePropertyKey + sourceName, sourceProperty);
+            property.Data = property.Data.SetItem(SourcePropertyNameKey + sourceName, sourcePropertyName);
         }
     }
 
