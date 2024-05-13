@@ -15,29 +15,29 @@
     @foreach (var child in Children)
     {
         <MudListItem Value="@child"
-             OnClick="@(() => Navigation.NavigateToThing(child))"
-             Icon="@(child is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"
-             IconColor="@(child is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)">
+                     OnClick="@(() => Navigation.NavigateToThing(child))"
+                     Icon="@(child is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"
+                     IconColor="@(child is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)">
 
             @if (child == SelectedThing)
             {
                 <div style="float: right; line-height: 0">
                     @if (Thing is GroupBase group)
-                        {
-                            <MudIconButton OnClick="@(() => MoveThingUp(child, group))"
-                                Icon="@Icons.Material.Filled.ArrowUpward"
-                                Disabled="@(group.Things.First() == child)"
-                                Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
-                                Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
+                    {
+                        <MudIconButton OnClick="@(() => MoveThingUp(child, group))"
+                                       Icon="@Icons.Material.Filled.ArrowUpward"
+                                       Disabled="@(group.Things.First() == child)"
+                                       Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
+                                       Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
 
-                            <MudIconButton OnClick="@(() => MoveThingDown(child, group))"
-                                Icon="@Icons.Material.Filled.ArrowDownward"
-                                Disabled="@(group.Things.Last() == child)"
-                                Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
-                                Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
-                        }
+                        <MudIconButton OnClick="@(() => MoveThingDown(child, group))"
+                                       Icon="@Icons.Material.Filled.ArrowDownward"
+                                       Disabled="@(group.Things.Last() == child)"
+                                       Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
+                                       Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
+                    }
 
-                        <MudIcon Icon="@("<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/>")"></MudIcon>
+                    <MudIcon Icon="@("<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/>")"></MudIcon>
                 </div>
             }
 
@@ -50,7 +50,7 @@
             }
 
             @child.GetActualTitle(ThingManager)
-            
+
             @if (Subtitle != null)
             {
                 <span>&nbsp;&nbsp;</span>
@@ -79,7 +79,6 @@
 
     [Parameter]
     public string? Subtitle { get; set; }
-
 
     public async void MoveThingUp(IThing thing, GroupBase parentGroup)
     {
