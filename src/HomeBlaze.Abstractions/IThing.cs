@@ -1,6 +1,4 @@
-﻿using NJsonSchema.Converters;
-
-namespace HomeBlaze.Abstractions
+﻿namespace HomeBlaze.Abstractions
 {
     [JsonInheritanceConverter(typeof(IThing))]
     public interface IThing
