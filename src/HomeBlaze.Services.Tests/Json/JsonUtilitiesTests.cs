@@ -1,4 +1,5 @@
 ﻿using HomeBlaze.Services.Json;
+using Namotion.Devices.Abstractions.Utilities;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

@@ -9,6 +9,7 @@ using HomeBlaze.Services.Json;
 using HomeBlaze.Tesla.Vehicle;
 using HomeBlaze.Tesla.Vehicle.Models;
 using Microsoft.Extensions.Logging;
+using Namotion.Devices.Abstractions.Utilities;
 using System;
 using System.ComponentModel;
 using System.Net;
