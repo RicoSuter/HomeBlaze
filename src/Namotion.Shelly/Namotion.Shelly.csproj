@@ -8,7 +8,7 @@
 	  <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\Namotion.Devices.Abstractions\Namotion.Devices.Abstractions.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />
-		<ProjectReference Include="..\HomeBlaze.Services\HomeBlaze.Services.csproj" />
 	</ItemGroup>
 </Project>
