@@ -12,4 +12,8 @@
 		<PackageReference Include="MudBlazor" Version="6.16.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Namotion.Devices.Abstractions\Namotion.Devices.Abstractions.csproj" />
+	</ItemGroup>
+
 </Project>

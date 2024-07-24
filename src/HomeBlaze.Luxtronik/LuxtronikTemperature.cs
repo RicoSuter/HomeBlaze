@@ -1,9 +1,10 @@
-﻿using HomeBlaze.Abstractions.Attributes;
+﻿using HomeBlaze.Abstractions;
+using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Sensors;
 
 namespace HomeBlaze.Luxtronik
 {
-    public class LuxtronikTemperature : ITemperatureSensor
+    public class LuxtronikTemperature : IThing, ITemperatureSensor
     {
         private LuxtronikDevice _device;
         private string _property;

@@ -439,7 +439,8 @@ namespace HomeBlaze.Services
             {
                 if (property.StateAttribute != null)
                 {
-                    var propertyName = prefix + property.StateAttribute.GetPropertyName(rootThing, property.Property);
+                    var propertyName = prefix + property.StateAttribute.GetPropertyName(
+                        rootThing, property.Property.PropertyInfo);
 
                     var oldState = default(PropertyState);
                     metadata?.CurrentFullState?.TryGetValue(propertyName, out oldState);

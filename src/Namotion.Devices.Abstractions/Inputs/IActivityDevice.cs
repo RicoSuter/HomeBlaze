@@ -1,0 +1,28 @@
+﻿using HomeBlaze.Abstractions.Attributes;
+
+namespace HomeBlaze.Abstractions.Inputs
+{
+    public interface IActivityDevice
+    {
+        [State]
+        DeviceActivity Activity { get; }
+
+        [State]
+        DeviceActivity[] Activities { get; }
+
+        [Operation]
+        Task ChangeActivityAsync(string activityId, CancellationToken cancellationToken = default);
+
+        public struct DeviceActivity
+        {
+            public string Id { get; set; }
+
+            public string Title { get; set; }
+
+            public override string ToString()
+            {
+                return Title + " (" + Id + ")";
+            }
+        }
+    }
+}

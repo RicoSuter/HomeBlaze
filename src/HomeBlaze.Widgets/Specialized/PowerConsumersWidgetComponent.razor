@@ -1,4 +1,5 @@
-﻿@using HomeBlaze.Abstractions.Devices.Energy;
+﻿@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Devices.Energy;
 @using HomeBlaze.Abstractions.Devices.Light;
 @using HomeBlaze.Abstractions.Sensors;
 @using HomeBlaze.Abstractions.Services;
@@ -17,7 +18,7 @@
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Title">@context.Title</MudTd>
+                <MudTd DataLabel="Title">@((IThing)context).Title</MudTd>
                 <MudTd DataLabel="PowerConsumption" Style="text-align: right">
                     @(context.PowerConsumption ?? 0m) W
                 </MudTd>

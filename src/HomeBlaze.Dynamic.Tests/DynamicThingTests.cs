@@ -35,7 +35,7 @@ namespace HomeBlaze.Dynamic.Tests
             var doorSensor = thing.Thing as IDoorSensor;
 
             // Assert
-            Assert.Equal(Color.Default, doorSensor?.IconColor);
+            Assert.Equal("Default", doorSensor?.IconColor);
             Assert.NotNull(doorSensor?.IconName);
         }
     }

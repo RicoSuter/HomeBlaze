@@ -2,6 +2,7 @@
 @using HomeBlaze.Abstractions;
 @using HomeBlaze.Abstractions.Sensors;
 @using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components
 @using HomeBlaze.Things;
 @using HomeBlaze.Services.Extensions;
 @using System.Threading;
@@ -17,7 +18,7 @@
         <MudListItem Value="@child"
                      OnClick="@(() => Navigation.NavigateToThing(child))"
                      Icon="@(child is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"
-                     IconColor="@(child is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)">
+                     IconColor="@(child is IIconProvider iconColorProvider ? iconColorProvider.IconColor.ToMudColor() : Color.Default)">
 
             @if (child == SelectedThing)
             {

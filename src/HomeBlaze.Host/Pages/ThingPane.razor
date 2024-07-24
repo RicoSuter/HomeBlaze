@@ -2,6 +2,7 @@
 @using HomeBlaze.Abstractions.Presentation;
 @using HomeBlaze.Abstractions.Services;
 @using HomeBlaze.Abstractions;
+@using HomeBlaze.Components
 @using HomeBlaze.Components.Dialogs;
 @using HomeBlaze.Components.Inputs;
 @using HomeBlaze.Things;
@@ -43,7 +44,7 @@
 
             <h1 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 <MudIcon Size="Size.Small"
-                         Color="@(Thing is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)"
+                         Color="@(Thing is IIconProvider iconColorProvider ? iconColorProvider.IconColor.ToMudColor() : Color.Default)"
                          Icon="@(Thing is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"></MudIcon>
                 @Thing.GetActualTitle(ThingManager)
             </h1>
