@@ -9,7 +9,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="NJsonSchema" Version="11.0.0" />
-		<PackageReference Include="MudBlazor" Version="6.16.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
 	</ItemGroup>

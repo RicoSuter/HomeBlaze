@@ -1,18 +1,22 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using HomeBlaze.Abstractions;
+using Microsoft.AspNetCore.Components;
+using System;
 
-namespace HomeBlaze.Abstractions.Presentation
+namespace HomeBlaze.Components.Abstractions
 {
-    public interface IControlComponentProvider
+    public interface IPageProvider : IThing
     {
-        Type? ControlComponentType { get; }
+        string? PageTitle { get; }
 
-        public RenderFragment ControlComponentRenderFragment
+        Type? PageComponentType { get; }
+
+        public RenderFragment PageRenderFragment
         {
             get
             {
                 return builder =>
                 {
-                    var controlViewType = ControlComponentType;
+                    var controlViewType = PageComponentType;
                     if (controlViewType != null)
                     {
                         builder.OpenComponent(0, controlViewType);

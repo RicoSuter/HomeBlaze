@@ -1,7 +1,7 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Services;
+using HomeBlaze.Components.Abstractions;
 using HomeBlaze.Philips.Hue;
 using HomeBlaze.Services.Abstractions;
 using Namotion.Lights;

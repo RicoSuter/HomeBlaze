@@ -1,4 +1,4 @@
-﻿using HomeBlaze.Abstractions.Presentation;
+﻿using HomeBlaze.Components.Abstractions;
 using System;
 
 namespace HomeBlaze.Things
