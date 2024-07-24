@@ -15,7 +15,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Namotion.Devices.Abstractions\Namotion.Devices.Abstractions.csproj" />
+		<InternalsVisibleTo Include="HomeBlaze.Services" />
+		<ProjectReference Include="..\Namotion.Devices.Abstractions\Namotion.Devices.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -1,4 +1,6 @@
-﻿namespace HomeBlaze.Abstractions
+﻿using HomeBlaze.Abstractions.Json;
+
+namespace HomeBlaze.Abstractions
 {
     [JsonInheritanceConverter(typeof(IThing))]
     public interface IThing

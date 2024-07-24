@@ -1,11 +1,11 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Json;
 using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.Logging;
 using Namotion.NuGetPlugins;
 using Namotion.Storage;
-using NJsonSchema.Converters;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Encodings.Web;
