@@ -1,4 +1,4 @@
-﻿using HomeBlaze.Abstractions.Json;
+﻿using NJsonSchema.Converters;
 
 namespace HomeBlaze.Abstractions
 {

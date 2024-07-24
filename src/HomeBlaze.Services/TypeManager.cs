@@ -1,10 +1,11 @@
 ﻿using HomeBlaze.Abstractions;
-using HomeBlaze.Abstractions.Json;
+using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.Logging;
 using Namotion.NuGetPlugins;
 using Namotion.Storage;
+using NJsonSchema.Converters;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Encodings.Web;
@@ -79,7 +80,13 @@ namespace HomeBlaze.Services
 
                             foreach (var type in ThingTypes)
                             {
-                                JsonInheritanceConverter<IThing>.AdditionalKnownTypes[type.FullName] = type;
+                                var thingTypeAttribute = type.GetCustomAttribute<ThingTypeAttribute>();
+                                var fullName = 
+                                    thingTypeAttribute?.FullName ??
+                                    type.FullName ?? 
+                                    throw new InvalidOperationException("No FullName.");
+                                
+                                JsonInheritanceConverter<IThing>.AdditionalKnownTypes[fullName] = type;
                             }
                         }
                         catch (Exception e)
