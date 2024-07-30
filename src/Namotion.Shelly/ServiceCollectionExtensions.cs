@@ -1,5 +1,6 @@
 ﻿using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Namotion.Shelly;
 using System;
@@ -28,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     return device;
                 })
-                .AddHostedService(sp => sp.GetRequiredKeyedService<ShellyDevice>(name));
+                .AddSingleton<IHostedService>(sp => sp.GetRequiredKeyedService<ShellyDevice>(name));
         }
     }
 }
