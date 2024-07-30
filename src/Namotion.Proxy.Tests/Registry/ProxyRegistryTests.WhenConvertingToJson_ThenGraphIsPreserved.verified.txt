@@ -1,0 +1,22 @@
+﻿{
+  "firstName": "Child",
+  "lastName": null,
+  "fullName": "Child ",
+  "father": null,
+  "mother": {
+    "firstName": "Susi",
+    "lastName": null,
+    "fullName": "Susi ",
+    "father": null,
+    "mother": {
+      "firstName": "Susi2",
+      "lastName": null,
+      "fullName": "Susi2 ",
+      "father": null,
+      "mother": null,
+      "children": []
+    },
+    "children": []
+  },
+  "children": []
+}
