@@ -36,7 +36,7 @@ namespace HomeBlaze.Services.Abstractions
                 try
                 {
                     await PollAsync(stoppingToken);
-                    ThingManager.DetectChanges(this);
+                    ThingManager?.DetectChanges(this);
 
                     // TODO(perf): Is this a good idea?
 
@@ -51,7 +51,7 @@ namespace HomeBlaze.Services.Abstractions
                 }
                 catch (Exception e)
                 {
-                    ThingManager.DetectChanges(this);
+                    ThingManager?.DetectChanges(this);
 
                     _logger.LogWarning(e, "Polling of thing failed.");
                     await Task.Delay(FailureInterval, stoppingToken);

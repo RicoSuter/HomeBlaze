@@ -8,96 +8,97 @@ using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Presentation;
 
-namespace Namotion.Shelly;
+using Namotion.Proxy;
 
-public class ShellyCover :
-    IThing,
-    IIconProvider,
-    IPowerConsumptionSensor,
-    IRollerShutter
+namespace Namotion.Shelly
 {
-    string IThing.Id => Parent!.Id + "/cover";
-
-    string? IThing.Title => "Cover";
-
-    string IIconProvider.IconName => "fas fa-bars";
-
-    [ParentThing]
-    public ShellyDevice? Parent { get; private set; }
-
-    [State(Unit = StateUnit.Percent)]
-    public decimal? Position => (100 - CurrentPosition) / 100m;
-
-    RollerShutterState IRollerShutter.State => LastState switch
+    [GenerateProxy]
+    public class ShellyCoverBase :
+        IThing,
+        IIconProvider,
+        IPowerConsumptionSensor,
+        IRollerShutter
     {
-        "open" => RollerShutterState.Opening,
-        "close" => RollerShutterState.Closing,
-        "stop" =>
-            ((IRollerShutter)this).IsFullyOpen == true ? RollerShutterState.Open :
-            ((IRollerShutter)this).IsFullyClosed == true ? RollerShutterState.Closed :
-            RollerShutterState.PartiallyOpen,
+        string IThing.Id => Parent!.Id + "/cover";
 
-        _ => IsCalibrating == true ? RollerShutterState.Calibrating :
-            RollerShutterState.Unknown
-    };
+        string? IThing.Title => "Cover";
 
-    [State]
-    public bool? IsMoving => PowerConsumption > 1;
+        string IIconProvider.IconName => "fas fa-bars";
 
-    [State(Unit = StateUnit.Watt)]
-    [JsonPropertyName("power")]
-    public decimal? PowerConsumption { get; set; }
+        [ParentThing]
+        public ShellyDevice? Parent { get; private set; }
 
-    [JsonPropertyName("state"), State]
-    public string? LastState { get; set; }
+        [State(Unit = StateUnit.Percent)]
+        public virtual decimal? Position => (100 - CurrentPosition) / 100m;
 
-    [JsonPropertyName("source"), State]
-    public string? Source { get; set; }
+        public virtual RollerShutterState State => LastState switch
+        {
+            "open" => RollerShutterState.Opening,
+            "close" => RollerShutterState.Closing,
+            "stop" =>
+                ((IRollerShutter)this).IsFullyOpen == true ? RollerShutterState.Open :
+                ((IRollerShutter)this).IsFullyClosed == true ? RollerShutterState.Closed :
+                RollerShutterState.PartiallyOpen,
 
-    [JsonPropertyName("is_valid"), State]
-    public bool? IsValid { get; set; }
+            _ => IsCalibrating == true ? RollerShutterState.Calibrating :
+                RollerShutterState.Unknown
+        };
 
-    [JsonPropertyName("safety_switch"), State]
-    public bool? IsSafetySwitchTriggered { get; set; }
+        [State]
+        public virtual bool? IsMoving => PowerConsumption > 1;
 
-    [JsonPropertyName("overtemperature"), State]
-    public bool? OvertemperatureOccurred { get; set; }
+        [State(Unit = StateUnit.Watt)]
+        [JsonPropertyName("power")]
+        public virtual decimal? PowerConsumption { get; set; }
 
-    [JsonPropertyName("stop_reason"), State]
-    public string? StopReason { get; set; }
+        [JsonPropertyName("state"), State]
+        public virtual string? LastState { get; set; }
 
-    [JsonPropertyName("last_direction"), State]
-    public string? LastDirection { get; set; }
+        [JsonPropertyName("source"), State]
+        public virtual string? Source { get; set; }
 
-    [JsonPropertyName("current_pos")]
-    public int? CurrentPosition { get; set; }
+        [JsonPropertyName("is_valid"), State]
+        public virtual bool? IsValid { get; set; }
 
-    [JsonPropertyName("calibrating"), State]
-    public bool? IsCalibrating { get; set; }
+        [JsonPropertyName("safety_switch"), State]
+        public virtual bool? IsSafetySwitchTriggered { get; set; }
 
-    [JsonPropertyName("positioning"), State]
-    public bool? IsPositioning { get; set; }
+        [JsonPropertyName("overtemperature"), State]
+        public virtual bool? OvertemperatureOccurred { get; set; }
 
-    [Operation]
-    public async Task OpenAsync(CancellationToken cancellationToken)
-    {
-        // https://shelly-api-docs.shelly.cloud/gen2/ComponentsAndServices/Cover#http-endpoint-rollerid
+        [JsonPropertyName("stop_reason"), State]
+        public virtual string? StopReason { get; set; }
 
-        await Parent!.CallHttpGetAsync("roller/0?go=open", cancellationToken);
-        Parent!.ThingManager.DetectChanges(this);
-    }
+        [JsonPropertyName("last_direction"), State]
+        public virtual string? LastDirection { get; set; }
 
-    [Operation]
-    public async Task CloseAsync(CancellationToken cancellationToken)
-    {
-        await Parent!.CallHttpGetAsync("roller/0?go=close", cancellationToken);
-        Parent!.ThingManager.DetectChanges(this);
-    }
+        [JsonPropertyName("current_pos")]
+        public virtual int? CurrentPosition { get; set; }
 
-    [Operation]
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        await Parent!.CallHttpGetAsync("roller/0?go=stop", cancellationToken);
-        Parent!.ThingManager.DetectChanges(this);
+        [JsonPropertyName("calibrating"), State]
+        public virtual bool? IsCalibrating { get; set; }
+
+        [JsonPropertyName("positioning"), State]
+        public virtual bool? IsPositioning { get; set; }
+
+        [Operation]
+        public async Task OpenAsync(CancellationToken cancellationToken)
+        {
+            // https://shelly-api-docs.shelly.cloud/gen2/ComponentsAndServices/Cover#http-endpoint-rollerid
+
+            await Parent!.CallHttpGetAsync("roller/0?go=open", cancellationToken);
+        }
+
+        [Operation]
+        public async Task CloseAsync(CancellationToken cancellationToken)
+        {
+            await Parent!.CallHttpGetAsync("roller/0?go=close", cancellationToken);
+        }
+
+        [Operation]
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            await Parent!.CallHttpGetAsync("roller/0?go=stop", cancellationToken);
+        }
     }
 }

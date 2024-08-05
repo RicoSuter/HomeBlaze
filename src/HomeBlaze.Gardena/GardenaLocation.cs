@@ -264,7 +264,7 @@ namespace HomeBlaze.Gardena
                                                         device.Update(jObj);
                                                     }
 
-                                                    ThingManager.DetectChanges(device);
+                                                    ThingManager?.DetectChanges(device);
                                                 }
                                             }
 
@@ -295,7 +295,7 @@ namespace HomeBlaze.Gardena
                                 await Task.Delay(1000);
                             }
 
-                            ThingManager.DetectChanges(this);
+                            ThingManager!.DetectChanges(this);
                         }
                         else
                         {

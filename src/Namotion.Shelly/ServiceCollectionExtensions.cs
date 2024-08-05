@@ -1,5 +1,4 @@
-﻿using HomeBlaze.Abstractions.Services;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Namotion.Shelly;
@@ -14,22 +13,20 @@ namespace Microsoft.Extensions.DependencyInjection
             string name, Action<ShellyDevice>? configure = null)
         {
             services
-                .AddHttpClient()
-                .TryAddSingleton<IThingManager>(NullThingManager.Instance);
+                .AddHttpClient();
 
             return services
                 .AddKeyedSingleton(name, (sp, key) =>
                 {
                     var device = new ShellyDevice(
-                        sp.GetRequiredService<IThingManager>(), 
                         sp.GetRequiredService<IHttpClientFactory>(),
-                        sp.GetRequiredService<ILogger<ShellyDevice>>());
+                        sp.GetRequiredService<ILogger<ShellyDeviceBase>>());
 
                     configure?.Invoke(device);
 
                     return device;
                 })
-                .AddSingleton<IHostedService>(sp => sp.GetRequiredKeyedService<ShellyDevice>(name));
+                .AddSingleton<IHostedService>(sp => sp.GetRequiredKeyedService<ShellyDeviceBase>(name));
         }
     }
 }

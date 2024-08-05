@@ -8,7 +8,10 @@
 	  <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Namotion.Devices.Abstractions\Namotion.Devices.Abstractions.csproj" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
 		<ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />
+		<ProjectReference Include="..\Namotion.Devices.Abstractions\Namotion.Devices.Abstractions.csproj" />
+		<ProjectReference Include="..\Namotion.Proxy.Generator\Namotion.Proxy.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="..\Namotion.Proxy\Namotion.Proxy.csproj" />
 	</ItemGroup>
 </Project>

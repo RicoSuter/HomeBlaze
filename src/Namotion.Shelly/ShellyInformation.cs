@@ -1,47 +1,50 @@
 ﻿using HomeBlaze.Abstractions.Attributes;
+using Namotion.Proxy;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Namotion.Shelly;
-
-public class ShellyInformation
+namespace Namotion.Shelly
 {
-    [JsonPropertyName("name"), State]
-    public string? Name { get; set; }
+    [GenerateProxy]
+    public class ShellyInformationBase
+    {
+        [JsonPropertyName("name"), State]
+        public virtual string? Name { get; set; }
 
-    [JsonPropertyName("id"), State]
-    public string? Identifier { get; set; }
+        [JsonPropertyName("id"), State]
+        public virtual string? Identifier { get; set; }
 
-    [JsonPropertyName("mac"), State]
-    public string? MacAddress { get; set; }
+        [JsonPropertyName("mac"), State]
+        public virtual string? MacAddress { get; set; }
 
-    [JsonPropertyName("slot"), State]
-    public int? Slot { get; set; }
+        [JsonPropertyName("slot"), State]
+        public virtual int? Slot { get; set; }
 
-    [JsonPropertyName("model"), State]
-    public string? Model { get; set; }
+        [JsonPropertyName("model"), State]
+        public virtual string? Model { get; set; }
 
-    [JsonPropertyName("gen"), State]
-    public int? Generation { get; set; }
+        [JsonPropertyName("gen"), State]
+        public virtual int? Generation { get; set; }
 
-    [JsonPropertyName("fw_id"), State]
-    public string? FirmwareIdentifier { get; set; }
+        [JsonPropertyName("fw_id"), State]
+        public virtual string? FirmwareIdentifier { get; set; }
 
-    [JsonPropertyName("ver"), State]
-    public string? Version { get; set; }
+        [JsonPropertyName("ver"), State]
+        public virtual string? Version { get; set; }
 
-    [JsonPropertyName("app"), State]
-    public string? Application { get; set; }
+        [JsonPropertyName("app"), State]
+        public virtual string? Application { get; set; }
 
-    [JsonPropertyName("auth_en"), State]
-    public bool? IsAuthenticationEnabled { get; set; }
+        [JsonPropertyName("auth_en"), State]
+        public virtual bool? IsAuthenticationEnabled { get; set; }
 
-    [JsonPropertyName("auth_domain"), State]
-    public string? AuthenticationDomain { get; set; }
+        [JsonPropertyName("auth_domain"), State]
+        public virtual string? AuthenticationDomain { get; set; }
 
-    [JsonPropertyName("profile"), State]
-    public string? Profile { get; set; }
+        [JsonPropertyName("profile"), State]
+        public virtual string? Profile { get; set; }
 
-    [JsonExtensionData]
-    public Dictionary<string, object>? ExtensionData { get; set; }
+        [JsonExtensionData]
+        public virtual Dictionary<string, object>? ExtensionData { get; set; }
+    }
 }

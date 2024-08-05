@@ -11,6 +11,10 @@
     "SampleMachine": {
       "commandName": "DebugRoslynComponent",
       "targetProject": "..\\Namotion.Proxy.SampleMachine\\Namotion.Proxy.SampleMachine.csproj"
+    },
+    "Namotion.Shelly": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Namotion.Shelly\\Namotion.Shelly.csproj"
     }
   }
 }
