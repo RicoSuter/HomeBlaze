@@ -3,7 +3,7 @@
     /// <summary>
     /// Provides additional metadata to the parameter of an operation parameter.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter)]
+    [AttributeUsage(AttributeTargets.Parameter, Inherited = true)]
     public class OperationParameterAttribute : Attribute
     {
         /// <summary>

@@ -344,7 +344,7 @@ namespace HomeBlaze.Services
                 _thingIds[thing.Id] = thing;
                 _things[thing] = new ThingMetadata
                 {
-                    ThingSetupAttribute = thing.GetType().GetCustomAttribute<ThingSetupAttribute>(),
+                    ThingSetupAttribute = thing.GetType().GetCustomAttribute<ThingSetupAttribute>(true),
                 };
             }
 
@@ -434,6 +434,7 @@ namespace HomeBlaze.Services
             string prefix,
             DateTimeOffset? lastUpdated)
         {
+            var x = type.Name;
             var metadata = TryGetMetadata(rootThing);
             foreach (var property in type.GetStateProperties())
             {

@@ -1,6 +1,6 @@
 ﻿namespace HomeBlaze.Abstractions.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = true)]
     public class ThingWidgetAttribute : Attribute
     {
         public ThingWidgetAttribute(Type componentType)

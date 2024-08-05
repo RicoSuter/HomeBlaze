@@ -19,7 +19,7 @@ namespace HomeBlaze.Abstractions.Json
         /// <summary>Initializes a new instance of the <see cref="JsonInheritanceConverter{TBase}"/> class.</summary>
         public JsonInheritanceConverter()
         {
-            var attribute = typeof(TBase).GetCustomAttribute<JsonInheritanceConverterAttribute>();
+            var attribute = typeof(TBase).GetCustomAttribute<JsonInheritanceConverterAttribute>(true);
             _discriminatorName = attribute?.DiscriminatorName ?? "discriminator";
         }
 

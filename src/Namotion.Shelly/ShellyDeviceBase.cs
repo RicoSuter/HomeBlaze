@@ -2,6 +2,7 @@
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
+using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,7 +30,7 @@ namespace Namotion.Shelly
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
 
-        public override string Title => $"Shelly: {Information?.Name}";
+        public override string Title => $"Shelly: {Information?.Name ?? Information?.Application}";
 
         public virtual DateTimeOffset? LastUpdated { get; protected set; }
 
@@ -41,11 +42,14 @@ namespace Namotion.Shelly
         [Configuration]
         public virtual int RefreshInterval { get; set; } = 15 * 1000;
 
+        [State]
+        public virtual bool IsConnected { get; protected set; }
+
         [ScanForState]
         public virtual ShellyInformation? Information { get; protected set; }
 
         [State]
-        public virtual bool IsConnected { get; protected set; }
+        public virtual ShellyEnergyMeter? EnergyMeter { get; protected set; }
 
         [State]
         public virtual ShellyCover? Cover { get; protected set; }
@@ -62,8 +66,8 @@ namespace Namotion.Shelly
             return serviceProvider.GetRequiredKeyedService<ShellyDevice>(string.Empty);
         }
 
-        public ShellyDeviceBase(IHttpClientFactory httpClientFactory, ILogger logger)
-            : base(null!, logger)
+        public ShellyDeviceBase(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger, IThingManager? thingManager = null)
+            : base(thingManager!, logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
@@ -123,9 +127,17 @@ namespace Namotion.Shelly
                 var json = await coverResponse.Content.ReadAsStringAsync(cancellationToken);
                 Cover = JsonUtilities.PopulateOrDeserialize(Cover, json);
             }
+            else if (Information?.Profile == "triphase")
+            {
+                var coverResponse = await httpClient.GetAsync($"http://{IpAddress}/rpc/EM.GetStatus?id=0", cancellationToken);
+                var json = await coverResponse.Content.ReadAsStringAsync(cancellationToken);
+                EnergyMeter = JsonUtilities.PopulateOrDeserialize(EnergyMeter, json);
+            }
 
             LastUpdated = DateTimeOffset.Now;
             IsConnected = true;
+
+            ThingManager.DetectChanges(this);
         }
     }
 }

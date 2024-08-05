@@ -228,8 +228,8 @@
     {
         _thingTypes = TypeManager
             .ThingTypes
-            .Where(t => t.GetCustomAttribute<ThingSetupAttribute>() != null)
-            .Where(t => t.GetCustomAttribute<ThingWidgetAttribute>() == null)
+            .Where(t => t.GetCustomAttribute<ThingSetupAttribute>(true) != null)
+            .Where(t => t.GetCustomAttribute<ThingWidgetAttribute>(true) == null)
             .Where(t => string.IsNullOrEmpty(ExtendedThingId) || (
                 t.IsAssignableTo(typeof(IExtensionThing)) &&
                 t.GetMethod("CanExtend")?.Invoke(null, new[] { ThingManager.TryGetById(ExtendedThingId) }) as bool? != false))
@@ -240,7 +240,7 @@
             _originalThingJson = ThingSerializer.SerializeThing(Thing);
 
             var thingType = _thingTypes.SingleOrDefault(f => f.FullName == Thing.GetType().FullName);
-            var attribute = thingType?.GetCustomAttribute<ThingSetupAttribute>();
+            var attribute = thingType?.GetCustomAttribute<ThingSetupAttribute>(true);
             if (attribute != null && attribute.ComponentType?
                 .GetProperty(nameof(ThingSetupComponentBase<IThing>.EditedThing)) != null)
             {
@@ -298,7 +298,7 @@
         _selectedThingType = thingType;
         if (_selectedThingType != null && ServiceProvider is not null)
         {
-            var attribute = ((Type)_selectedThingType).GetCustomAttribute<ThingSetupAttribute>();
+            var attribute = ((Type)_selectedThingType).GetCustomAttribute<ThingSetupAttribute>(true);
             if (attribute != null && attribute.ComponentType != null)
             {
                 _thingSetupFragment = builder =>

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Namotion.Shelly;
 using System;
@@ -20,7 +19,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var device = new ShellyDevice(
                         sp.GetRequiredService<IHttpClientFactory>(),
-                        sp.GetRequiredService<ILogger<ShellyDeviceBase>>());
+                        sp.GetRequiredService<ILogger<ShellyDevice>>(),
+                        null);
 
                     configure?.Invoke(device);
 

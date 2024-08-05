@@ -5,7 +5,7 @@ namespace HomeBlaze.Abstractions.Attributes
     /// <summary>
     /// Defines a property as part of the thing's state.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property, Inherited = true)]
     public class StateAttribute : Attribute
     {
         /// <summary>

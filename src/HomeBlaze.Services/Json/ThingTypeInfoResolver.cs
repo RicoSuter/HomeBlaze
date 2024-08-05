@@ -23,15 +23,24 @@ namespace HomeBlaze.Services.Json
             if (type.IsAssignableTo(typeof(IThing)) &&
                 type != typeof(IThing))
             {
+                var baseProperties = base.GetTypeInfo(type.BaseType!, options).Properties;
                 var properties = typeInfo
                    .Properties
                    .Select(p => new
                    {
-                       Property = p,
-                       Attribute = p.AttributeProvider?
-                           .GetCustomAttributes(true)
-                           .OfType<ConfigurationAttribute>()
-                           .FirstOrDefault()
+                        Property = p,
+                        Attribute = p
+                            .AttributeProvider?
+                            .GetCustomAttributes(true)
+                            .OfType<ConfigurationAttribute>()
+                            .FirstOrDefault() ??
+
+                            baseProperties
+                                .FirstOrDefault(x => x.Name == p.Name)?
+                                .AttributeProvider?
+                                .GetCustomAttributes(true)
+                                .OfType<ConfigurationAttribute>()
+                                .FirstOrDefault()
                    })
                    .ToArray();
 

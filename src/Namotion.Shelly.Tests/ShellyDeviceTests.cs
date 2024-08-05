@@ -2,13 +2,14 @@ namespace Namotion.Shelly.Tests
 {
     public class ShellyDeviceTests
     {
-        private const string TestIpAddress = "192.168.1.125";
+        private const string TestCoverIpAddress = "192.168.1.125";
+        private const string TestEmIpAddress = "192.168.1.133";
 
         [Fact]
-        public async Task ShouldConnect()
+        public async Task ShouldConnectToCover()
         {
             var shellyDevice = ShellyDevice.Create();
-            shellyDevice.IpAddress = TestIpAddress;
+            shellyDevice.IpAddress = TestCoverIpAddress;
 
             await shellyDevice.StartAsync(CancellationToken.None);
             try
@@ -19,6 +20,33 @@ namespace Namotion.Shelly.Tests
                 Assert.True(shellyDevice.IsConnected);
                 Assert.NotNull(shellyDevice.Information);
                 Assert.NotNull(shellyDevice.Information.Version);
+
+                Assert.NotNull(shellyDevice.Cover);
+            }
+            finally
+            {
+
+                await shellyDevice.StopAsync(CancellationToken.None);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldConnectToEm()
+        {
+            var shellyDevice = ShellyDevice.Create();
+            shellyDevice.IpAddress = TestEmIpAddress;
+
+            await shellyDevice.StartAsync(CancellationToken.None);
+            try
+            {
+                await WaitForAsync(() => shellyDevice.IsConnected);
+
+                // Assert
+                Assert.True(shellyDevice.IsConnected);
+                Assert.NotNull(shellyDevice.Information);
+                Assert.NotNull(shellyDevice.Information.Version);
+
+                Assert.NotNull(shellyDevice.EnergyMeter);
             }
             finally
             {

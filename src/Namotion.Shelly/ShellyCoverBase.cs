@@ -26,7 +26,7 @@ namespace Namotion.Shelly
         string IIconProvider.IconName => "fas fa-bars";
 
         [ParentThing]
-        public ShellyDevice? Parent { get; private set; }
+        public ShellyDevice? Parent { get; protected set; }
 
         [State(Unit = StateUnit.Percent)]
         public virtual decimal? Position => (100 - CurrentPosition) / 100m;

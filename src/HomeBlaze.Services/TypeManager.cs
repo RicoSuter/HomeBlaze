@@ -80,7 +80,7 @@ namespace HomeBlaze.Services
 
                             foreach (var type in ThingTypes)
                             {
-                                var thingTypeAttribute = type.GetCustomAttribute<ThingTypeAttribute>();
+                                var thingTypeAttribute = type.GetCustomAttribute<ThingTypeAttribute>(true);
                                 var fullName = 
                                     thingTypeAttribute?.FullName ??
                                     type.FullName ?? 
