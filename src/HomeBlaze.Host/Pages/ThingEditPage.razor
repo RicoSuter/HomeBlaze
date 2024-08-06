@@ -1,5 +1,6 @@
 ﻿@using System.Reflection
 @using System.ComponentModel
+@using HomeBlaze.Services
 @using Microsoft.Extensions.DependencyInjection
 @using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Abstractions.Presentation
@@ -12,7 +13,7 @@
 @using MudBlazor;
 @using System.Threading;
 @using Toolbelt.Blazor.HotKeys2;
-@using Namotion.Reflection
+@using Namotion.Reflection;
 
 @page "/things/{*thingId}"
 @implements IThingEditPage
@@ -228,7 +229,7 @@
     {
         _thingTypes = TypeManager
             .ThingTypes
-            .Where(t => t.GetCustomAttribute<ThingSetupAttribute>(true) != null)
+            .Where(t => TypeManager.TryGetThingSetupAttribute(t) is not null)
             .Where(t => t.GetCustomAttribute<ThingWidgetAttribute>(true) == null)
             .Where(t => string.IsNullOrEmpty(ExtendedThingId) || (
                 t.IsAssignableTo(typeof(IExtensionThing)) &&
@@ -240,7 +241,7 @@
             _originalThingJson = ThingSerializer.SerializeThing(Thing);
 
             var thingType = _thingTypes.SingleOrDefault(f => f.FullName == Thing.GetType().FullName);
-            var attribute = thingType?.GetCustomAttribute<ThingSetupAttribute>(true);
+            var attribute = TypeManager.TryGetThingSetupAttribute(thingType);
             if (attribute != null && attribute.ComponentType?
                 .GetProperty(nameof(ThingSetupComponentBase<IThing>.EditedThing)) != null)
             {
@@ -298,7 +299,7 @@
         _selectedThingType = thingType;
         if (_selectedThingType != null && ServiceProvider is not null)
         {
-            var attribute = ((Type)_selectedThingType).GetCustomAttribute<ThingSetupAttribute>(true);
+            var attribute = TypeManager.TryGetThingSetupAttribute((Type)_selectedThingType);
             if (attribute != null && attribute.ComponentType != null)
             {
                 _thingSetupFragment = builder =>

@@ -28,6 +28,7 @@ namespace HomeBlaze.Services
         private readonly ILogger<TypeManager> _logger;
 
         private Task? _initializationTask;
+        private Dictionary<Type, ThingSetupAttribute> _thingSetupAttributes = [];
 
         public NuGetPlugin[] Plugins { get; private set; } = Array.Empty<NuGetPlugin>();
 
@@ -45,6 +46,11 @@ namespace HomeBlaze.Services
             _blobContainer = blobContainer;
             _nuGetPackageLoader = nuGetPackageLoader;
             _logger = logger;
+        }
+
+        public ThingSetupAttribute? TryGetThingSetupAttribute(Type? thingType)
+        {
+            return thingType is not null ? _thingSetupAttributes.TryGetValue(thingType, out var value) ? value : null : null;
         }
 
         public async Task InitializeAsync(CancellationToken cancellationToken)
@@ -85,8 +91,26 @@ namespace HomeBlaze.Services
                                     thingTypeAttribute?.FullName ??
                                     type.FullName ?? 
                                     throw new InvalidOperationException("No FullName.");
-                                
+
+                                var thingSetupAttribute = type.GetCustomAttribute<ThingSetupAttribute>(true);
+                                if (thingSetupAttribute is not null)
+                                {
+                                    _thingSetupAttributes[type] = thingSetupAttribute;
+                                }
+
                                 JsonInheritanceConverter<IThing>.AdditionalKnownTypes[fullName] = type;
+                            }
+
+                            foreach (var type in assemblies
+                                .SelectMany(a => a?.ExportedTypes ?? Enumerable.Empty<Type>())
+                                .Where(t => t.IsAssignableTo(typeof(IThingSetupComponent))))
+                            {
+                                var thingSetupAttribute = type.GetCustomAttribute<ThingSetupAttribute>(true);
+                                if (thingSetupAttribute is not null)
+                                {
+                                    _thingSetupAttributes[thingSetupAttribute.ComponentType!] = thingSetupAttribute;
+                                    thingSetupAttribute.ComponentType = type;
+                                }
                             }
                         }
                         catch (Exception e)

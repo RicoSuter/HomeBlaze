@@ -7,6 +7,7 @@
 @using HomeBlaze.Components;
 @using MudBlazor;
 @using System.Threading;
+@using HomeBlaze.Services;
 
 @implements IThingEditPage
 
@@ -160,13 +161,13 @@
         _thingTypes = TypeManager
             .ThingTypes
             .Where(t => TypeFilter == null || TypeFilter(t))
-            .Where(t => t.GetCustomAttribute<ThingSetupAttribute>() != null)
+            .Where(t => TypeManager.TryGetThingSetupAttribute(t) is not null)
             .ToArray();
 
         if (Thing != null)
         {
             var thingType = _thingTypes.SingleOrDefault(f => f.FullName == Thing.GetType().FullName);
-            var attribute = thingType?.GetCustomAttribute<ThingSetupAttribute>();
+            var attribute = TypeManager.TryGetThingSetupAttribute(thingType);
             if (attribute != null && attribute.ComponentType?.GetProperty(nameof(ThingSetupComponentBase<IThing>.EditedThing)) != null)
             {
                 _thingSetupFragment = builder =>
@@ -231,7 +232,7 @@
         _selectedThingType = thingType;
         if (_selectedThingType != null)
         {
-            var attribute = _selectedThingType.GetCustomAttribute<ThingSetupAttribute>();
+            var attribute = TypeManager.TryGetThingSetupAttribute(_selectedThingType);
             if (attribute != null && attribute.ComponentType != null)
             {
                 _thingSetupFragment = builder =>

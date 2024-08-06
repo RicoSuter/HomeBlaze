@@ -344,7 +344,7 @@ namespace HomeBlaze.Services
                 _thingIds[thing.Id] = thing;
                 _things[thing] = new ThingMetadata
                 {
-                    ThingSetupAttribute = thing.GetType().GetCustomAttribute<ThingSetupAttribute>(true),
+                    ThingSetupAttribute = _typeManager.TryGetThingSetupAttribute(thing.GetType()),
                 };
             }
 

@@ -23,7 +23,10 @@ namespace HomeBlaze.Services.Json
             if (type.IsAssignableTo(typeof(IThing)) &&
                 type != typeof(IThing))
             {
-                var baseProperties = base.GetTypeInfo(type.BaseType!, options).Properties;
+                var baseProperties = type.BaseType is not null ?
+                    base.GetTypeInfo(type.BaseType!, options).Properties : 
+                    Array.Empty<JsonPropertyInfo>();
+                    
                 var properties = typeInfo
                    .Properties
                    .Select(p => new

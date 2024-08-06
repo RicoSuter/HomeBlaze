@@ -11,7 +11,7 @@
         /// <summary>
         /// Gets or sets the type of the setup component.
         /// </summary>
-        public Type? ComponentType { get; }
+        public Type? ComponentType { get; internal set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the setup can be used to edit the thing.

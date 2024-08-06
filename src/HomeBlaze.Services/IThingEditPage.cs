@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace HomeBlaze.Components
+﻿namespace HomeBlaze.Services
 {
     public interface IThingEditPage
     {

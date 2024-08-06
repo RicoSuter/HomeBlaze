@@ -16,6 +16,7 @@
 
 @inject IThingManager ThingManager
 @inject IThingSerializer ThingSerializer
+@inject ITypeManager TypeManager
 @inject IDialogService DialogService
 @inject ILogger<ThingPane> Logger
 @inject NavigationManager Navigation
@@ -311,7 +312,7 @@
 
     public void EditThing(IThing thing)
     {
-        if (thing.GetType().GetCustomAttribute<ThingSetupAttribute>()?.EditParentThing == true)
+        if (TypeManager.TryGetThingSetupAttribute(thing.GetType())?.EditParentThing == true)
         {
             var parentThing = ThingManager.TryGetParent(thing);
             if (parentThing == null)
