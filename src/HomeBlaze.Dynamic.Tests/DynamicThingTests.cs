@@ -16,10 +16,10 @@ namespace HomeBlaze.Dynamic.Tests
             var typeManagerMock = new Mock<ITypeManager>();
             typeManagerMock
                 .Setup(m => m.ThingInterfaces)
-                .Returns(new Type[]
-                {
+                .Returns(
+                [
                     typeof(IDoorSensor)
-                });
+                ]);
 
             var eventManagerMock = new Mock<IEventManager>();
             eventManagerMock

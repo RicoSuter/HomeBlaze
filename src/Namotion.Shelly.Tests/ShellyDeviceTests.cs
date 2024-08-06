@@ -5,7 +5,7 @@ namespace Namotion.Shelly.Tests
         private const string TestCoverIpAddress = "192.168.1.125";
         private const string TestEmIpAddress = "192.168.1.133";
 
-        [Fact]
+        [Fact(Skip = "No CI")]
         public async Task ShouldConnectToCover()
         {
             var shellyDevice = ShellyDevice.Create();
@@ -30,7 +30,7 @@ namespace Namotion.Shelly.Tests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "No CI")]
         public async Task ShouldConnectToEm()
         {
             var shellyDevice = ShellyDevice.Create();
