@@ -17,7 +17,7 @@ namespace Namotion.Shelly
         /// Gets or sets the total active energy across all phases, measured in watts.
         /// </summary>
         [JsonPropertyName("total_act"), State(Unit = StateUnit.WattHour)]
-        public double TotalActiveEnergy { get; set; }
+        public decimal TotalActiveEnergy { get; set; }
 
         /// <summary>
         /// Gets or sets the total active returned energy across all phases, measured in watts.

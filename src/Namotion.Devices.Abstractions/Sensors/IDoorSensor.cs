@@ -1,6 +1,5 @@
 ﻿using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Presentation;
-//using HomeBlaze.Abstractions.Presentation;
 
 namespace HomeBlaze.Abstractions.Sensors
 {

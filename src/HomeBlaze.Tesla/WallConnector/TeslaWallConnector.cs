@@ -79,7 +79,7 @@ namespace HomeBlaze.Tesla.WallConnector
         public decimal? VoltageC => Vitals?.VoltageC_v;
 
         [State(Unit = StateUnit.WattHour, IsCumulative = true)]
-        public double? TotalConsumedEnergy => Lifetime?.TotalConsumedEnergy;
+        public decimal? TotalConsumedEnergy => Lifetime?.TotalConsumedEnergy;
 
         [State(Unit = StateUnit.Volt)]
         public decimal? GridVoltage => Vitals?.Grid_v;

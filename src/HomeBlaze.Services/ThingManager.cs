@@ -434,7 +434,6 @@ namespace HomeBlaze.Services
             string prefix,
             DateTimeOffset? lastUpdated)
         {
-            var x = type.Name;
             var metadata = TryGetMetadata(rootThing);
             foreach (var property in type.GetStateProperties())
             {

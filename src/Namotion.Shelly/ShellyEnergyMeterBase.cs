@@ -27,7 +27,7 @@ namespace Namotion.Shelly
 
         public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
 
-        public virtual decimal? PowerConsumption => Convert.ToDecimal(TotalActivePower);
+        public virtual decimal? PowerConsumption => TotalActivePower;
 
         [ScanForState]
         public virtual EnergyData? EnergyData { get; internal set; }
@@ -42,7 +42,7 @@ namespace Namotion.Shelly
         public virtual ShellyEnergyMeterPhase PhaseC { get; protected set; } = new ShellyEnergyMeterPhase("c");
 
         [State(Unit = StateUnit.WattHour, IsCumulative = true)]
-        public double? TotalConsumedEnergy => EnergyData?.TotalActiveEnergy;
+        public decimal? TotalConsumedEnergy => EnergyData?.TotalActiveEnergy;
 
         /// <summary>
         /// Gets or sets the ID of the EM1 component.
@@ -61,7 +61,7 @@ namespace Namotion.Shelly
         /// Active power (real power) is the actual power consumed by electrical equipment to perform useful work, such as running a motor or lighting a bulb.
         /// </summary>
         [JsonPropertyName("total_act_power"), State(Unit = StateUnit.Watt)]
-        public double TotalActivePower { get; set; }
+        public decimal TotalActivePower { get; set; }
 
         /// <summary>
         /// Gets or sets the total apparent power in volt-amperes.
