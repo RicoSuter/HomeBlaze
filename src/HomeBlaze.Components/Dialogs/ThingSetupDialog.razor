@@ -194,16 +194,16 @@
         var cancellationTokenSource = new CancellationTokenSource();
         var result = await dialogService.Show<ThingSetupDialog>(string.Empty,
             new DialogParameters
-                    {
+            {
                 { "TypeFilter", typeFilter },
                 { "ExtendedThing", extendedThing },
                 { "DialogClosed", cancellationTokenSource.Token }
-                    },
+            },
             new DialogOptions
-                {
-                    FullWidth = true,
-                    MaxWidth = MaxWidth.Medium,
-                }).Result;
+            {
+                FullWidth = true,
+                MaxWidth = MaxWidth.Medium,
+            }).Result;
 
         cancellationTokenSource.Cancel();
         return result?.Data as IThing;

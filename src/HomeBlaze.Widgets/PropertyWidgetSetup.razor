@@ -11,7 +11,7 @@
 
 @inherits ThingSetupComponent<PropertyWidget>
 
-<MudForm @bind-IsValid="@_isFormValid">
+<MudForm @ref="_form">
     <MudTextField Label="Title" @bind-Value="@Thing!.Title" />
 
     <br />
@@ -36,7 +36,13 @@
 </MudForm>
 
 @code {
-    private bool _isFormValid;
+    private MudForm? _form;
 
-    public override bool IsValid => _isFormValid;
+    public override bool IsValid => _form?.IsValid == true;
+
+    protected override void OnParametersSet()
+    {        
+        // TODO: remove this hack and fix for all
+        _form?.Validate();
+    }
 }
