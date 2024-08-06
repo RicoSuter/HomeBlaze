@@ -7,7 +7,7 @@
     public class OperationAttribute : Attribute
     {
         /// <summary>
-        /// Gets or sets the title of the operation which overrides the method name.
+        /// Gets or sets the title of the operation (default: method name).
         /// </summary>
         public string? Title { get; set; }
     }

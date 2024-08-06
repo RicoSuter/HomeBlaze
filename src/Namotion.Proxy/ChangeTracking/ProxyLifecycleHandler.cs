@@ -29,6 +29,7 @@ internal class ProxyLifecycleHandler : IProxyWriteHandler, IProxyLifecycleHandle
         }
     }
 
+    // TODO: What should we do here?
     public void OnProxyDetached(ProxyLifecycleContext context)
     {
         //foreach (var child in FindProxiesInProperties(context.Proxy, new HashSet<IProxy>()))

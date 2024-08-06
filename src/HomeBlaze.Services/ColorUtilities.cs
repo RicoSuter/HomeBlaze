@@ -2,19 +2,18 @@
 {
     public static class ColorUtilities
     {
+        private static Random _random = new();
+
         public static string GenerateVibrantColor()
         {
-            Random random = new Random();
-
             // Generate a random hue between 0 and 360
-            double hue = random.NextDouble() * 360;
+            double hue = _random.NextDouble() * 360;
 
-            // Set saturation to a value between 50% and 100%
-            double saturation = 0.5 + (random.NextDouble() * 0.5);
+            // Set saturation to a value between 70% and 100% to ensure vibrancy
+            double saturation = 0.7 + (_random.NextDouble() * 0.3);
 
-            // For simplicity, use a random lightness between 20% and 80% 
-            // (avoiding too dark or too light colors)
-            double lightness = 0.2 + (random.NextDouble() * 0.6);
+            // Use a lightness between 40% and 60% for good contrast on both light and dark themes
+            double lightness = 0.4 + (_random.NextDouble() * 0.2);
 
             return ColorFromHSL(hue, saturation, lightness);
         }
