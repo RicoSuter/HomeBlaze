@@ -40,7 +40,7 @@
     @if (_json == null)
     {
         <MudButton OnClick="@(() => UpsertAsync(CancellationToken.None))"
-                   Disabled="@(_processing || _component?.IsValid != true)"
+                   Disabled="@(_processing || IsValid != true)"
                    Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">
             @if (_processing)
             {
@@ -114,9 +114,9 @@
 
                         @if (_json == null)
                         {
-                            <div>
+                            <MudForm @ref="_form" FieldChanged="@(() => Validate())" ValidationDelay="50">
                                 @SetupFragment
-                            </div>
+                            </MudForm>
                         }
                         else
                         {
@@ -145,9 +145,9 @@
 
         @if (_json == null)
         {
-            <div>
+            <MudForm @ref="_form" FieldChanged="@(() => Validate())" ValidationDelay="50">
                 @SetupFragment
-            </div>
+            </MudForm>
         }
         else
         {
@@ -169,6 +169,17 @@
     private Type[] _thingTypes = new Type[0];
     private RenderFragment? _thingSetupFragment;
     private object? _selectedThingType;
+    private MudForm? _form;
+
+    private bool IsValid =>
+        _form?.IsValid == true &&
+        _component?.IsValid == true;
+
+    private void Validate()
+    {
+        _form?.Validate();
+        InvokeAsync(StateHasChanged);
+    }
 
     private RenderFragment? SetupFragment
     {
