@@ -24,7 +24,7 @@ namespace HomeBlaze.Dynamic.Tests
             var eventManagerMock = new Mock<IEventManager>();
             eventManagerMock
                 .Setup(m => m.Subscribe(It.IsAny<IObserver<IEvent>>()))
-                .Returns<IDisposable>(null);
+                .Returns<IDisposable>(null!);
 
             var thing = new DynamicThing(null!, typeManagerMock.Object, eventManagerMock.Object, NullLogger<DynamicThing>.Instance)
             {
