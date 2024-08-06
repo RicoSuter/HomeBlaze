@@ -28,7 +28,7 @@ namespace Namotion.Shelly
         string IIconProvider.IconName => "fas fa-bars";
 
         [ParentThing]
-        public ShellyDevice? Parent { get; protected set; }
+        internal ShellyDevice? Parent { get; set; }
 
         public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
 

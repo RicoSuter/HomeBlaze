@@ -17,14 +17,14 @@ namespace Namotion.Shelly
     {
         private readonly string _phase;
 
-        string IThing.Id => Parent!.Id + "/energy-meter/phase-" + _phase;
+        string IThing.Id => Parent!.Parent!.Id + "/energy-meter/phase-" + _phase;
 
         string? IThing.Title => "Phase " + _phase.ToUpperInvariant();
 
         string IIconProvider.IconName => "fas fa-bolt";
 
         [ParentThing]
-        public ShellyEnergyMeter? Parent { get; protected set; }
+        internal ShellyEnergyMeter? Parent { get; set; }
 
         public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
 
