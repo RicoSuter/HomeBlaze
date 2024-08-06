@@ -27,13 +27,13 @@
                     {
                         <MudIconButton OnClick="@(() => MoveThingUp(child, group))"
                                        Icon="@Icons.Material.Filled.ArrowUpward"
-                                       Disabled="@(group.Things.First() == child)"
+                                       Disabled="@(group.Things.FirstOrDefault() == child)"
                                        Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
                                        Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
 
                         <MudIconButton OnClick="@(() => MoveThingDown(child, group))"
                                        Icon="@Icons.Material.Filled.ArrowDownward"
-                                       Disabled="@(group.Things.Last() == child)"
+                                       Disabled="@(group.Things.LastOrDefault() == child)"
                                        Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
                                        Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
                     }

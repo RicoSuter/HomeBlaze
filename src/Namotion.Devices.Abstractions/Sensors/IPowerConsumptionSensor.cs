@@ -9,5 +9,8 @@ namespace HomeBlaze.Abstractions.Sensors
         /// </summary>
         [State(Unit = StateUnit.Watt)]
         decimal? PowerConsumption { get; }
+
+        [State(Unit = StateUnit.WattHour, IsCumulative = true)]
+        double? TotalConsumedEnergy => null;
     }
 }
