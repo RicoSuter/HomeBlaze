@@ -112,119 +112,119 @@ namespace Namotion.Shelly
         /// <summary>
         /// Gets or sets the current of phase A in amperes.
         /// </summary>
-        [JsonPropertyName("a_current")]
-        public double PhaseACurrent { get; set; }
+        [JsonPropertyName("a_current"), JsonInclude]
+        public double PhaseACurrent { get; internal set; }
 
         /// <summary>
         /// Gets or sets the voltage of phase A in volts.
         /// </summary>
-        [JsonPropertyName("a_voltage")]
-        public double PhaseAVoltage { get; set; }
+        [JsonPropertyName("a_voltage"), JsonInclude]
+        public double PhaseAVoltage { get; internal set; }
 
         /// <summary>
         /// Gets or sets the active power of phase A in watts.
         /// Active power (real power) is the actual power consumed by electrical equipment to perform useful work, such as running a motor or lighting a bulb.
         /// </summary>
-        [JsonPropertyName("a_act_power")]
-        public double PhaseAActivePower { get; set; }
+        [JsonPropertyName("a_act_power"), JsonInclude]
+        public double PhaseAActivePower { get; internal set; }
 
         /// <summary>
         /// Gets or sets the apparent power of phase A in volt-amperes.
         /// Apparent power is the combination of active power (real power) and reactive power.
         /// It represents the total power used by the electrical equipment to do work and sustain the magnetic and electric fields.
         /// </summary>
-        [JsonPropertyName("a_aprt_power")]
-        public double PhaseAApparentPower { get; set; }
+        [JsonPropertyName("a_aprt_power"), JsonInclude]
+        public double PhaseAApparentPower { get; internal set; }
 
         /// <summary>
         /// Gets or sets the power factor of phase A.
         /// </summary>
-        [JsonPropertyName("a_pf")]
-        public double PhaseAPowerFactor { get; set; }
+        [JsonPropertyName("a_pf"), JsonInclude]
+        public double PhaseAPowerFactor { get; internal set; }
 
         /// <summary>
         /// Gets or sets the frequency of phase A in hertz.
         /// </summary>
-        [JsonPropertyName("a_freq")]
-        public double PhaseAFrequency { get; set; }
+        [JsonPropertyName("a_freq"), JsonInclude]
+        public double PhaseAFrequency { get; internal set; }
 
         /// <summary>
         /// Gets or sets the current of phase B in amperes.
         /// </summary>
-        [JsonPropertyName("b_current")]
-        public double PhaseBCurrent { get; set; }
+        [JsonPropertyName("b_current"), JsonInclude]
+        public double PhaseBCurrent { get; internal set; }
 
         /// <summary>
         /// Gets or sets the voltage of phase B in volts.
         /// </summary>
-        [JsonPropertyName("b_voltage")]
-        public double PhaseBVoltage { get; set; }
+        [JsonPropertyName("b_voltage"), JsonInclude]
+        public double PhaseBVoltage { get; internal set; }
 
         /// <summary>
         /// Gets or sets the active power of phase B in watts.
         /// Active power (real power) is the actual power consumed by electrical equipment to perform useful work, such as running a motor or lighting a bulb.
         /// </summary>
-        [JsonPropertyName("b_act_power")]
-        public double PhaseBActivePower { get; set; }
+        [JsonPropertyName("b_act_power"), JsonInclude]
+        public double PhaseBActivePower { get; internal set; }
 
         /// <summary>
         /// Gets or sets the apparent power of phase B in volt-amperes.
         /// Apparent power is the combination of active power (real power) and reactive power.
         /// It represents the total power used by the electrical equipment to do work and sustain the magnetic and electric fields.
         /// </summary>
-        [JsonPropertyName("b_aprt_power")]
-        public double PhaseBApparentPower { get; set; }
+        [JsonPropertyName("b_aprt_power"), JsonInclude]
+        public double PhaseBApparentPower { get; internal set; }
 
         /// <summary>
         /// Gets or sets the power factor of phase B.
         /// </summary>
-        [JsonPropertyName("b_pf")]
-        public double PhaseBPowerFactor { get; set; }
+        [JsonPropertyName("b_pf"), JsonInclude]
+        public double PhaseBPowerFactor { get; internal set; }
 
         /// <summary>
         /// Gets or sets the frequency of phase B in hertz.
         /// </summary>
-        [JsonPropertyName("b_freq")]
-        public double PhaseBFrequency { get; set; }
+        [JsonPropertyName("b_freq"), JsonInclude]
+        public double PhaseBFrequency { get; internal set; }
 
         /// <summary>
         /// Gets or sets the current of phase C in amperes.
         /// </summary>
-        [JsonPropertyName("c_current")]
-        public double PhaseCCurrent { get; set; }
+        [JsonPropertyName("c_current"), JsonInclude]
+        public double PhaseCCurrent { get; internal set; }
 
         /// <summary>
         /// Gets or sets the voltage of phase C in volts.
         /// </summary>
-        [JsonPropertyName("c_voltage")]
-        public double PhaseCVoltage { get; set; }
+        [JsonPropertyName("c_voltage"), JsonInclude]
+        public double PhaseCVoltage { get; internal set; }
 
         /// <summary>
         /// Gets or sets the active power of phase C in watts.
         /// Active power (real power) is the actual power consumed by electrical equipment to perform useful work, such as running a motor or lighting a bulb.
         /// </summary>
-        [JsonPropertyName("c_act_power")]
-        public double PhaseCActivePower { get; set; }
+        [JsonPropertyName("c_act_power"), JsonInclude]
+        public double PhaseCActivePower { get; internal set; }
 
         /// <summary>
         /// Gets or sets the apparent power of phase C in volt-amperes.
         /// Apparent power is the combination of active power (real power) and reactive power.
         /// It represents the total power used by the electrical equipment to do work and sustain the magnetic and electric fields.
         /// </summary>
-        [JsonPropertyName("c_aprt_power")]
-        public double PhaseCApparentPower { get; set; }
+        [JsonPropertyName("c_aprt_power"), JsonInclude]
+        public double PhaseCApparentPower { get; internal set; }
 
         /// <summary>
         /// Gets or sets the power factor of phase C.
         /// </summary>
-        [JsonPropertyName("c_pf")]
-        public double PhaseCPowerFactor { get; set; }
+        [JsonPropertyName("c_pf"), JsonInclude]
+        public double PhaseCPowerFactor { get; internal set; }
 
         /// <summary>
         /// Gets or sets the frequency of phase C in hertz.
         /// </summary>
-        [JsonPropertyName("c_freq")]
-        public double PhaseCFrequency { get; set; }
+        [JsonPropertyName("c_freq"), JsonInclude]
+        public double PhaseCFrequency { get; internal set; }
 
         [JsonExtensionData]
         public virtual Dictionary<string, object>? ExtensionData { get; set; }
