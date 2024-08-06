@@ -132,12 +132,13 @@ namespace Namotion.Shelly
                 var emStatusResponse = await httpClient.GetAsync($"http://{IpAddress}/rpc/EM.GetStatus?id=0", cancellationToken);
                 var json = await emStatusResponse.Content.ReadAsStringAsync(cancellationToken);
                 EnergyMeter = JsonUtilities.PopulateOrDeserialize(EnergyMeter, json);
-
+               
                 if (EnergyMeter is not null)
                 {
                     var emDataStatusResponse = await httpClient.GetAsync($"http://{IpAddress}/rpc/EMData.GetStatus?id=0", cancellationToken);
                     json = await emDataStatusResponse.Content.ReadAsStringAsync(cancellationToken);
                     EnergyMeter.EnergyData = JsonUtilities.PopulateOrDeserialize(EnergyMeter.EnergyData, json);
+                    EnergyMeter.Update();
                 }
             }
 

@@ -1,4 +1,5 @@
-﻿using Namotion.Proxy;
+﻿using HomeBlaze.Abstractions.Attributes;
+using Namotion.Proxy;
 using System.Text.Json.Serialization;
 
 namespace Namotion.Shelly
@@ -11,6 +12,18 @@ namespace Namotion.Shelly
         /// </summary>
         [JsonPropertyName("id")]
         public int Identifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total active energy across all phases, measured in watts.
+        /// </summary>
+        [JsonPropertyName("total_act"), State(Unit = StateUnit.WattHour)]
+        public double TotalActiveEnergy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total active returned energy across all phases, measured in watts.
+        /// </summary>
+        [JsonPropertyName("total_act_ret"), State(Unit = StateUnit.WattHour)]
+        public double TotalActiveReturnedEnergy { get; set; }
 
         /// <summary>
         /// Gets or sets the total active energy for phase A, measured in watts.
@@ -47,17 +60,5 @@ namespace Namotion.Shelly
         /// </summary>
         [JsonPropertyName("c_total_act_ret_energy")]
         public double PhaseCTotalActiveReturnedEnergy { get; set; }
-
-        /// <summary>
-        /// Gets or sets the total active energy across all phases, measured in watts.
-        /// </summary>
-        [JsonPropertyName("total_act")]
-        public double TotalActiveEnergy { get; set; }
-
-        /// <summary>
-        /// Gets or sets the total active returned energy across all phases, measured in watts.
-        /// </summary>
-        [JsonPropertyName("total_act_ret")]
-        public double TotalActiveReturnedEnergy { get; set; }
     }
 }

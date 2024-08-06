@@ -77,6 +77,7 @@ namespace HomeBlaze.Abstractions.Attributes
                 StateUnit.Percent => (int)(((decimal?)value) * 100m) + "%",
                 StateUnit.DegreeCelsius => value + " °C",
                 StateUnit.Watt => value + " W",
+                StateUnit.Hertz => value + " hz",
                 StateUnit.KiloWatt => value + " kW",
                 StateUnit.WattHour => value + " Wh",
                 StateUnit.Lumen => value + " lm",

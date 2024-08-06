@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Threading;
 
@@ -17,7 +18,8 @@ namespace Namotion.Shelly
         IThing,
         IIconProvider,
         IPowerConsumptionSensor,
-        IRollerShutter
+        IRollerShutter,
+        ILastUpdatedProvider
     {
         string IThing.Id => Parent!.Id + "/cover";
 
@@ -27,6 +29,8 @@ namespace Namotion.Shelly
 
         [ParentThing]
         public ShellyDevice? Parent { get; protected set; }
+
+        public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
 
         [State(Unit = StateUnit.Percent)]
         public virtual decimal? Position => (100 - CurrentPosition) / 100m;

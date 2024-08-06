@@ -20,6 +20,7 @@
         Kilobyte,
         KilobytePerSecond,
         MegabitsPerSecond,
-        LiterPerHour
+        LiterPerHour,
+        Hertz
     }
 }
