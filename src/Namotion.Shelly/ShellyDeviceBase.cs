@@ -1,19 +1,21 @@
-﻿using HomeBlaze.Abstractions;
-using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Networking;
-using HomeBlaze.Abstractions.Presentation;
-using HomeBlaze.Abstractions.Services;
-using HomeBlaze.Services.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Namotion.Devices.Abstractions.Utilities;
-using Namotion.Proxy;
 using System;
 using System.ComponentModel;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+
+using HomeBlaze.Abstractions;
+using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Networking;
+using HomeBlaze.Abstractions.Presentation;
+using HomeBlaze.Abstractions.Services;
+using HomeBlaze.Services.Abstractions;
+
+using Namotion.Devices.Abstractions.Utilities;
+using Namotion.Proxy;
 
 namespace Namotion.Shelly
 {

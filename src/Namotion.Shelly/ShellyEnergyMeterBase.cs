@@ -1,11 +1,13 @@
-﻿using HomeBlaze.Abstractions.Attributes;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using System;
+
+using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions;
+
 using Namotion.Proxy;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-using System;
 
 namespace Namotion.Shelly
 {

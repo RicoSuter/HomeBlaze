@@ -1,7 +1,9 @@
 ﻿using System;
+
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions;
+
 using Namotion.Proxy;
 
 namespace Namotion.Shelly

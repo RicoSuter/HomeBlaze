@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Namotion.Shelly;
+
 using System;
 using System.Net.Http;
+
+using Namotion.Shelly;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
