@@ -1,4 +1,6 @@
-﻿namespace HomeBlaze.Abstractions.Services
+﻿using HomeBlaze.Abstractions.Attributes;
+
+namespace HomeBlaze.Abstractions.Services
 {
     public interface ITypeManager
     {
@@ -9,5 +11,7 @@
         Type[] EventTypes { get; }
 
         Task InitializeAsync(CancellationToken cancellationToken);
+
+        ThingSetupAttribute? TryGetThingSetupAttribute(Type? thingType);
     }
 }

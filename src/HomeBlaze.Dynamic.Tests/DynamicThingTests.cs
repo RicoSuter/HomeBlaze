@@ -16,15 +16,15 @@ namespace HomeBlaze.Dynamic.Tests
             var typeManagerMock = new Mock<ITypeManager>();
             typeManagerMock
                 .Setup(m => m.ThingInterfaces)
-                .Returns(new Type[]
-                {
+                .Returns(
+                [
                     typeof(IDoorSensor)
-                });
+                ]);
 
             var eventManagerMock = new Mock<IEventManager>();
             eventManagerMock
                 .Setup(m => m.Subscribe(It.IsAny<IObserver<IEvent>>()))
-                .Returns<IDisposable>(null);
+                .Returns<IDisposable>(null!);
 
             var thing = new DynamicThing(null!, typeManagerMock.Object, eventManagerMock.Object, NullLogger<DynamicThing>.Instance)
             {
@@ -35,7 +35,7 @@ namespace HomeBlaze.Dynamic.Tests
             var doorSensor = thing.Thing as IDoorSensor;
 
             // Assert
-            Assert.Equal(Color.Default, doorSensor?.IconColor);
+            Assert.False(string.IsNullOrEmpty(doorSensor?.IconName));
             Assert.NotNull(doorSensor?.IconName);
         }
     }

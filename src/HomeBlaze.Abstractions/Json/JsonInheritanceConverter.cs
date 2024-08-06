@@ -1,5 +1,4 @@
-﻿using NJsonSchema.Converters;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -10,7 +9,7 @@ using System.Text.Json.Serialization;
 namespace HomeBlaze.Abstractions.Json
 {
     /// <summary>Defines the class as inheritance base class and adds a discriminator property to the serialized object.</summary>
-    public class JsonInheritanceConverter<TBase> : JsonConverter<TBase>
+    internal class JsonInheritanceConverter<TBase> : JsonConverter<TBase>
     {
         private readonly string _discriminatorName;
 
@@ -20,7 +19,7 @@ namespace HomeBlaze.Abstractions.Json
         /// <summary>Initializes a new instance of the <see cref="JsonInheritanceConverter{TBase}"/> class.</summary>
         public JsonInheritanceConverter()
         {
-            var attribute = typeof(TBase).GetCustomAttribute<JsonInheritanceConverterAttribute>();
+            var attribute = typeof(TBase).GetCustomAttribute<JsonInheritanceConverterAttribute>(true);
             _discriminatorName = attribute?.DiscriminatorName ?? "discriminator";
         }
 
@@ -77,12 +76,6 @@ namespace HomeBlaze.Abstractions.Json
                 return knownType.Key;
             }
 
-            var jsonInheritanceAttributeDiscriminator = GetSubtypeDiscriminator(type);
-            if (jsonInheritanceAttributeDiscriminator != null)
-            {
-                return jsonInheritanceAttributeDiscriminator;
-            }
-
             return type.Name;
         }
 
@@ -96,31 +89,6 @@ namespace HomeBlaze.Abstractions.Json
             if (AdditionalKnownTypes.ContainsKey(discriminatorValue))
             {
                 return AdditionalKnownTypes[discriminatorValue];
-            }
-
-            var jsonInheritanceAttributeSubtype = GetObjectSubtype(objectType, discriminatorValue);
-            if (jsonInheritanceAttributeSubtype != null)
-            {
-                return jsonInheritanceAttributeSubtype;
-            }
-
-            if (objectType.Name == discriminatorValue)
-            {
-                return objectType;
-            }
-
-            var knownTypeAttributesSubtype = GetSubtypeFromKnownTypeAttributes(objectType, discriminatorValue);
-            if (knownTypeAttributesSubtype != null)
-            {
-                return knownTypeAttributesSubtype;
-            }
-
-            // TODO: Fix potential security risk here
-            var typeName = objectType.Namespace + "." + discriminatorValue;
-            var subtype = objectType.GetTypeInfo().Assembly.GetType(typeName);
-            if (subtype != null)
-            {
-                return subtype;
             }
 
             throw new InvalidOperationException("Could not find subtype of '" + objectType.Name + "' with discriminator '" + discriminatorValue + "'.");
@@ -164,26 +132,6 @@ namespace HomeBlaze.Abstractions.Json
             } while (type != null);
 
             return null;
-        }
-
-        private static Type GetObjectSubtype(Type baseType, string discriminatorName)
-        {
-            var jsonInheritanceAttributes = baseType
-                .GetTypeInfo()
-                .GetCustomAttributes(true)
-                .OfType<JsonInheritanceAttribute>();
-
-            return jsonInheritanceAttributes.SingleOrDefault(a => a.Key == discriminatorName)?.Type;
-        }
-
-        private static string GetSubtypeDiscriminator(Type objectType)
-        {
-            var jsonInheritanceAttributes = objectType
-                .GetTypeInfo()
-                .GetCustomAttributes(true)
-                .OfType<JsonInheritanceAttribute>();
-
-            return jsonInheritanceAttributes.SingleOrDefault(a => a.Type == objectType)?.Key;
         }
     }
 }

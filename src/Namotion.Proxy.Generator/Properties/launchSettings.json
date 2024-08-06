@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "SampleWeb": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Namotion.Proxy.Sample\\Namotion.Proxy.Sample.csproj"
+    },
+    "SampleBlazor": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Namotion.Proxy.SampleBlazor\\Namotion.Proxy.SampleBlazor.csproj"
+    },
+    "SampleMachine": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Namotion.Proxy.SampleMachine\\Namotion.Proxy.SampleMachine.csproj"
+    },
+    "Namotion.Shelly": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Namotion.Shelly\\Namotion.Shelly.csproj"
+    }
+  }
+}

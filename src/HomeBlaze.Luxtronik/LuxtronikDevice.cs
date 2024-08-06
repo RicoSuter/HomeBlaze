@@ -22,8 +22,12 @@ namespace HomeBlaze.Luxtronik
     [DisplayName("Luxtronik Device")]
     [ThingSetup(typeof(LuxtronikDeviceSetup), CanEdit = true)]
     public class LuxtronikDevice : BackgroundService,
-        IConnectedThing, IAuthenticatedThing, IPowerConsumptionSensor,
-        IIconProvider, ILastUpdatedProvider
+        IThing,
+        IConnectedThing, 
+        IAuthenticatedThing,
+        IPowerConsumptionSensor,
+        IIconProvider, 
+        ILastUpdatedProvider
     {
         private readonly IThingManager _thingManager;
         private readonly ILogger _logger;

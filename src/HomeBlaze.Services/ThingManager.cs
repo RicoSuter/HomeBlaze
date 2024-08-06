@@ -344,7 +344,7 @@ namespace HomeBlaze.Services
                 _thingIds[thing.Id] = thing;
                 _things[thing] = new ThingMetadata
                 {
-                    ThingSetupAttribute = thing.GetType().GetCustomAttribute<ThingSetupAttribute>(),
+                    ThingSetupAttribute = _typeManager.TryGetThingSetupAttribute(thing.GetType()),
                 };
             }
 
@@ -439,7 +439,8 @@ namespace HomeBlaze.Services
             {
                 if (property.StateAttribute != null)
                 {
-                    var propertyName = prefix + property.StateAttribute.GetPropertyName(rootThing, property.Property);
+                    var propertyName = prefix + property.StateAttribute.GetPropertyName(
+                        rootThing, property.Property.PropertyInfo);
 
                     var oldState = default(PropertyState);
                     metadata?.CurrentFullState?.TryGetValue(propertyName, out oldState);

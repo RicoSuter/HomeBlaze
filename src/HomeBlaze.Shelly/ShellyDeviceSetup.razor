@@ -1,13 +1,18 @@
-﻿@using HomeBlaze.Abstractions
-@using HomeBlaze.Abstractions.Presentation
-@using HomeBlaze.Components
+﻿@using HomeBlaze.Abstractions.Attributes
 @using Microsoft.Extensions.DependencyInjection
 @using Microsoft.Extensions.Logging
-@using MudBlazor
 @using System.Threading
-@using HomeBlaze.Abstractions.Services
-@using HomeBlaze.Shelly
 
+@using MudBlazor
+
+@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Components
+@using HomeBlaze.Abstractions.Services
+
+@using Namotion.Shelly
+
+@attribute [ThingSetup(typeof(ShellyDevice), CanEdit = true)]
 @inherits ThingSetupComponent<ShellyDevice>
 
 <MudForm @bind-IsValid="_isFormValid">

@@ -2,6 +2,7 @@
 @using HomeBlaze.Abstractions.Presentation;
 @using HomeBlaze.Abstractions.Services;
 @using HomeBlaze.Abstractions;
+@using HomeBlaze.Components
 @using HomeBlaze.Components.Dialogs;
 @using HomeBlaze.Components.Inputs;
 @using HomeBlaze.Things;
@@ -10,9 +11,12 @@
 @using Microsoft.Extensions.Logging;
 @using System.Threading;
 @using System.Reflection;
+@using HomeBlaze.Host;
+@using HomeBlaze.Components.Abstractions;
 
 @inject IThingManager ThingManager
 @inject IThingSerializer ThingSerializer
+@inject ITypeManager TypeManager
 @inject IDialogService DialogService
 @inject ILogger<ThingPane> Logger
 @inject NavigationManager Navigation
@@ -43,7 +47,7 @@
 
             <h1 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 <MudIcon Size="Size.Small"
-                         Color="@(Thing is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)"
+                         Color="@(Thing is IIconProvider iconColorProvider ? iconColorProvider.IconColor.ToMudColor() : Color.Default)"
                          Icon="@(Thing is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"></MudIcon>
                 @Thing.GetActualTitle(ThingManager)
             </h1>
@@ -308,7 +312,7 @@
 
     public void EditThing(IThing thing)
     {
-        if (thing.GetType().GetCustomAttribute<ThingSetupAttribute>()?.EditParentThing == true)
+        if (TypeManager.TryGetThingSetupAttribute(thing.GetType())?.EditParentThing == true)
         {
             var parentThing = ThingManager.TryGetParent(thing);
             if (parentThing == null)

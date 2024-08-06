@@ -9,6 +9,7 @@ using HomeBlaze.Nuki.Model;
 using HomeBlaze.Services.Abstractions;
 using HomeBlaze.Services.Extensions;
 using Microsoft.Extensions.Logging;
+using Namotion.Devices.Abstractions.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -63,10 +64,10 @@ namespace HomeBlaze.Nuki
         public string? AuthToken { get; set; }
 
         [State]
-        public string? IpAddress => IpHelper.TryGetIpAddress(Host);
+        public string? IpAddress => IpUtilities.TryGetIpAddress(Host);
 
         [State]
-        public int[]? Ports => IpHelper.TryGetPorts(Host);
+        public int[]? Ports => IpUtilities.TryGetPorts(Host);
 
         [Configuration]
         public int RefreshInterval { get; set; } = 30 * 1000;

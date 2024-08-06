@@ -14,7 +14,6 @@ using HomeBlaze.Services.Abstractions;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Messages;
 using System.ComponentModel;
-using Namotion.Reflection;
 using System.Reflection;
 using HomeBlaze.Components.Editors;
 
@@ -27,7 +26,7 @@ namespace HomeBlaze.Dynamic
     {
         public class DynamicStateAttribute : StateAttribute
         {
-            public override string GetPropertyName(IThing thing, ContextualPropertyInfo property)
+            public override string GetPropertyName(object thing, PropertyInfo property)
             {
                 return ((DynamicThing)thing).PropertyName ?? base.GetPropertyName(thing, property);
             }
@@ -97,7 +96,7 @@ namespace HomeBlaze.Dynamic
                 if (interfaceType != null)
                 {
                     var proxy = (IThing)new ProxyGenerator()
-                        .CreateInterfaceProxyWithoutTarget(interfaceType, new ProxyGenerationOptions
+                        .CreateInterfaceProxyWithoutTarget(typeof(IThing), [interfaceType], new ProxyGenerationOptions
                         {
                             AdditionalAttributes =
                             {

@@ -1,6 +1,7 @@
 ﻿@page "/network"
 
 @using System.Threading
+@using HomeBlaze.Abstractions
 @using HomeBlaze.Abstractions.Networking
 @using HomeBlaze.Abstractions.Services
 @using HomeBlaze.Host.Components
@@ -43,8 +44,8 @@
             <MudCardContent>
                 @foreach (var thing in context.Item.Things)
                 {
-                    <MudText @onclick="@(() => Navigation.NavigateToThing(thing))" Style="cursor: pointer"
-                             Typo="Typo.subtitle1">@thing.GetActualTitle(ThingManager)</MudText>
+                    <MudText @onclick="@(() => Navigation.NavigateToThing((IThing)thing))" Style="cursor: pointer"
+                             Typo="Typo.subtitle1">@((IThing)thing).GetActualTitle(ThingManager)</MudText>
                     <MudText>@thing.GetType().Name</MudText>
                     <br />
                 }
@@ -79,7 +80,7 @@
                 .Select(g => new NetworkDevice
                     {
                         IpAddress = g.Key,
-                        Titles = string.Join("\n", g.Select(a => a.Title)),
+                        Titles = string.Join("\n", g.Select(a => ((IThing)a).Title)),
                         Types = string.Join("\n", g.Select(a => a.GetType().Name)),
                         MacAddresses = string.Join("\n", g.Select(a => a.MacAddress)),
                         Things = g.ToArray()

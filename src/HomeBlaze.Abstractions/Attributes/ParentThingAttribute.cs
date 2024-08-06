@@ -3,7 +3,7 @@
     /// <summary>
     /// Will inject the parent thing into the given property.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property, Inherited = true)]
     public class ParentThingAttribute : Attribute
     {
     }

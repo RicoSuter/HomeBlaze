@@ -6,6 +6,7 @@ using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.Logging;
+using Namotion.Devices.Abstractions.Utilities;
 using System;
 using System.ComponentModel;
 using System.Net.Http;
@@ -32,7 +33,7 @@ namespace HomeBlaze.Tesla.WallConnector
 
         // State
         [JsonIgnore]
-        public string? IpAddress => IpHelper.TryGetIpAddress(Host);
+        public string? IpAddress => IpUtilities.TryGetIpAddress(Host);
 
         [JsonIgnore]
         public bool IsConnected { get; private set; }
@@ -78,7 +79,7 @@ namespace HomeBlaze.Tesla.WallConnector
         public decimal? VoltageC => Vitals?.VoltageC_v;
 
         [State(Unit = StateUnit.WattHour, IsCumulative = true)]
-        public double? TotalConsumedEnergy => Lifetime?.TotalConsumedEnergy;
+        public decimal? TotalConsumedEnergy => Lifetime?.TotalConsumedEnergy;
 
         [State(Unit = StateUnit.Volt)]
         public decimal? GridVoltage => Vitals?.Grid_v;

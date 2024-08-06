@@ -8,13 +8,12 @@
 @implements IDisposable
 
 <MudDialog>
-    <TitleContent>@($"{(Lightbulb?.Title ?? "n/a")}")</TitleContent>
+    <TitleContent>@($"{((Lightbulb as IThing)?.Title ?? "n/a")}")</TitleContent>
     <DialogContent>
         <div style="height: 240px">
             @if (Lightbulb != null)
             {
-                <MudSwitch T="bool" Checked="(_isLightOn ?? false)"
-                       CheckedChanged="@LightOnChanged">On</MudSwitch>
+                <MudSwitch T="bool" Value="(_isLightOn ?? false)" ValueChanged="@LightOnChanged">On</MudSwitch>
 
                 @if (_isLightOn == true && _brightness != null)
                 {

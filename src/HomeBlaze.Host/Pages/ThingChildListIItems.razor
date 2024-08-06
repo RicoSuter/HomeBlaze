@@ -2,6 +2,7 @@
 @using HomeBlaze.Abstractions;
 @using HomeBlaze.Abstractions.Sensors;
 @using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components
 @using HomeBlaze.Things;
 @using HomeBlaze.Services.Extensions;
 @using System.Threading;
@@ -17,7 +18,7 @@
         <MudListItem Value="@child"
                      OnClick="@(() => Navigation.NavigateToThing(child))"
                      Icon="@(child is IIconProvider iconNameProvider ? iconNameProvider.IconName : Icons.Material.Filled.Help)"
-                     IconColor="@(child is IIconProvider iconColorProvider ? iconColorProvider.IconColor : Color.Default)">
+                     IconColor="@(child is IIconProvider iconColorProvider ? iconColorProvider.IconColor.ToMudColor() : Color.Default)">
 
             @if (child == SelectedThing)
             {
@@ -26,13 +27,13 @@
                     {
                         <MudIconButton OnClick="@(() => MoveThingUp(child, group))"
                                        Icon="@Icons.Material.Filled.ArrowUpward"
-                                       Disabled="@(group.Things.First() == child)"
+                                       Disabled="@(group.Things.FirstOrDefault() == child)"
                                        Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
                                        Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
 
                         <MudIconButton OnClick="@(() => MoveThingDown(child, group))"
                                        Icon="@Icons.Material.Filled.ArrowDownward"
-                                       Disabled="@(group.Things.Last() == child)"
+                                       Disabled="@(group.Things.LastOrDefault() == child)"
                                        Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2"
                                        Style="margin-top: -22px !important; margin-bottom: -5px !important; margin-left: 0px !important">Move</MudIconButton>
                     }

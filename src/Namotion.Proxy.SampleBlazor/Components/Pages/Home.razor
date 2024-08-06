@@ -1,0 +1,33 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+@using Namotion.Proxy.Abstractions
+@using Namotion.Proxy.Blazor
+@using Namotion.Proxy.ChangeTracking
+@using Namotion.Proxy.SampleBlazor.Models;
+
+@inject Game Game
+@inject Player Player
+
+@inherits ProxyComponentBase<Game>
+
+<PageTitle>The Game</PageTitle>
+
+<h1>Hi @Player.Name</h1>
+
+<p>
+    My name <input @bind-value="@Player.Name" />
+</p>
+
+<p>
+    Players in the game:
+
+    <ul>
+        @foreach (var player in Game.Players)
+        {
+            <li>@player.Name</li>
+        }
+    </ul>
+
+    Last update: @DateTimeOffset.Now
+</p>

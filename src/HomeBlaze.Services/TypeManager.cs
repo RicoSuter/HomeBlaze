@@ -1,4 +1,5 @@
 ﻿using HomeBlaze.Abstractions;
+using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Json;
 using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
@@ -27,6 +28,7 @@ namespace HomeBlaze.Services
         private readonly ILogger<TypeManager> _logger;
 
         private Task? _initializationTask;
+        private Dictionary<Type, ThingSetupAttribute> _thingSetupAttributes = [];
 
         public NuGetPlugin[] Plugins { get; private set; } = Array.Empty<NuGetPlugin>();
 
@@ -44,6 +46,11 @@ namespace HomeBlaze.Services
             _blobContainer = blobContainer;
             _nuGetPackageLoader = nuGetPackageLoader;
             _logger = logger;
+        }
+
+        public ThingSetupAttribute? TryGetThingSetupAttribute(Type? thingType)
+        {
+            return thingType is not null ? _thingSetupAttributes.TryGetValue(thingType, out var value) ? value : null : null;
         }
 
         public async Task InitializeAsync(CancellationToken cancellationToken)
@@ -71,15 +78,38 @@ namespace HomeBlaze.Services
 
                         try
                         {
-                            var assemblies = GetAssemblies();
+                            var exportedTypes = GetExportedTypes();
 
-                            ThingInterfaces = GetThingInterfaces(assemblies);
-                            ThingTypes = GetThingTypes(assemblies);
-                            EventTypes = GetEventTypes(assemblies);
+                            ThingInterfaces = GetThingInterfaces(exportedTypes);
+                            ThingTypes = GetThingTypes(exportedTypes);
+                            EventTypes = GetEventTypes(exportedTypes);
 
                             foreach (var type in ThingTypes)
                             {
-                                JsonInheritanceConverter<IThing>.AdditionalKnownTypes[type.FullName] = type;
+                                var thingTypeAttribute = type.GetCustomAttribute<ThingTypeAttribute>(true);
+                                var fullName = 
+                                    thingTypeAttribute?.FullName ??
+                                    type.FullName ?? 
+                                    throw new InvalidOperationException("No FullName.");
+
+                                var thingSetupAttribute = type.GetCustomAttribute<ThingSetupAttribute>(true);
+                                if (thingSetupAttribute is not null)
+                                {
+                                    _thingSetupAttributes[type] = thingSetupAttribute;
+                                }
+
+                                JsonInheritanceConverter<IThing>.AdditionalKnownTypes[fullName] = type;
+                            }
+
+                            foreach (var type in exportedTypes
+                                .Where(t => t.IsAssignableTo(typeof(IThingSetupComponent))))
+                            {
+                                var thingSetupAttribute = type.GetCustomAttribute<ThingSetupAttribute>(true);
+                                if (thingSetupAttribute is not null)
+                                {
+                                    _thingSetupAttributes[thingSetupAttribute.ComponentType!] = thingSetupAttribute;
+                                    thingSetupAttribute.ComponentType = type;
+                                }
                             }
                         }
                         catch (Exception e)
@@ -93,7 +123,7 @@ namespace HomeBlaze.Services
             await _initializationTask;
         }
 
-        private Assembly[] GetAssemblies()
+        private Type[] GetExportedTypes()
         {
             var assemblies = new Assembly[] { Assembly.GetEntryAssembly()! }
                .Concat(Assembly
@@ -113,13 +143,14 @@ namespace HomeBlaze.Services
                 .Where(a => a != null)
                 .ToArray();
 
-            return assemblies!;
+            return assemblies
+                .SelectMany(a => a?.ExportedTypes ?? Enumerable.Empty<Type>())
+                .ToArray();
         }
 
-        private Type[] GetThingTypes(Assembly[] assemblies)
+        private Type[] GetThingTypes(Type[] exportedTypes)
         {
-            var types = assemblies
-                .SelectMany(a => a?.ExportedTypes ?? Enumerable.Empty<Type>())
+            var types = exportedTypes
                 .Where(t => t.IsAssignableTo(typeof(IThing)))
                 .Where(t => t.IsClass && !t.IsAbstract)
                 .OrderBy(t => t.FullName)
@@ -128,10 +159,9 @@ namespace HomeBlaze.Services
             return types;
         }
 
-        private Type[] GetEventTypes(Assembly[] assemblies)
+        private Type[] GetEventTypes(Type[] exportedTypes)
         {
-            var types = assemblies
-                .SelectMany(a => a?.ExportedTypes ?? Enumerable.Empty<Type>())
+            var types = exportedTypes
                 .Where(t => t.IsAssignableTo(typeof(IEvent)))
                 .Where(t => t.IsClass && !t.IsAbstract)
                 .OrderBy(t => t.FullName)
@@ -140,11 +170,10 @@ namespace HomeBlaze.Services
             return types;
         }
 
-        private Type[] GetThingInterfaces(Assembly[] assemblies)
+        private Type[] GetThingInterfaces(Type[] exportedTypes)
         {
-            var types = assemblies
-                .SelectMany(a => a?.ExportedTypes.Where(t => t.IsInterface) ?? Enumerable.Empty<Type>())
-                .Where(t => t.IsAssignableTo(typeof(IThing)) && !t.IsConstructedGenericType)
+            var types = exportedTypes
+                .Where(t => t.IsInterface && t.IsAssignableTo(typeof(IThing)) && !t.IsConstructedGenericType)
                 .OrderBy(t => t.FullName)
                 .ToArray();
 

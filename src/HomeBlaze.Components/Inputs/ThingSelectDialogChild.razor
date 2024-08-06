@@ -18,7 +18,7 @@
                  ExpandedIcon="@(hasChildren ? "<path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z\"/>" : null)"
                  @bind-Expanded="_isExpanded"
                  Icon="@(iconProvider?.IconName ?? Icons.Material.Filled.Help)"
-                 IconColor="@(iconProvider?.IconColor ?? Color.Default)"
+                 IconColor="@(iconProvider?.IconColor.ToMudColor() ?? Color.Default)"
                  OnClick="@(() => { if (canBeSelected) { DialogInstance?.Close(new Tuple<bool, IThing?>(true, Thing)); } })">
 
             @if (_isExpanded)

@@ -3,6 +3,7 @@ using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Media;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
+using Namotion.Devices.Abstractions.Utilities;
 using Rssdp;
 using Sonos.Base.Metadata;
 using System;
@@ -49,7 +50,7 @@ namespace HomeBlaze.Sonos
         public string? Host => _rootDevice.UrlBase.Host;
 
         [State]
-        public string? IpAddress => IpHelper.TryGetIpAddress(Host);
+        public string? IpAddress => IpUtilities.TryGetIpAddress(Host);
 
         [State]
         public bool IsConnected => true;
