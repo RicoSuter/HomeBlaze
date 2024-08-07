@@ -4,12 +4,6 @@
 
 @inherits ThingSetupComponent<ZwaveController>
 
-<MudForm @bind-IsTouched="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.SerialPort" Label="Serial Port (e.g. COM3, /dev/ttyACM0)" Required="true" />
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

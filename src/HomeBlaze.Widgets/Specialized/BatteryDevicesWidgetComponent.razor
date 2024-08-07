@@ -16,7 +16,7 @@
                 <MudTh Style="width: 170px; text-align: right">Battery</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Title">@((IThing)context).Title</MudTd>
+                <MudTd DataLabel="Title">@(((IThing)context).Title)</MudTd>
                 <MudTd DataLabel="PowerConsumption" Style="text-align: right">
                     <MudChip Color="@(context.BatteryLevel <= 0.1m ? Color.Error : context.BatteryLevel <= 0.2m ? Color.Warning : Color.Default)">
                         @(Math.Round(context.BatteryLevel!.Value * 100m, 0)) %

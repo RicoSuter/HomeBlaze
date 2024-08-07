@@ -14,7 +14,7 @@
 
 @inherits ThingSetupComponent<IconWidget>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <div class="d-flex gap-4">
         <MudTextField @bind-Value="@Thing.Scale" Label="Scale" />
         <MudTextField @bind-Value="@Thing.Size" Label="Size" />
@@ -69,7 +69,5 @@
 </MudForm>
 
 @code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid && Thing.Conditions.Any();
+    public override bool IsValid => base.IsValid && Thing.Conditions.Any();
 }

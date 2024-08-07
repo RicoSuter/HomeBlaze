@@ -15,16 +15,12 @@
 @attribute [ThingSetup(typeof(ShellyDevice), CanEdit = true)]
 @inherits ThingSetupComponent<ShellyDevice>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.IpAddress" Label="IP Address" Required="true" />
     <MudTextField @bind-Value="@Thing.RefreshInterval" Label="Refresh Interval (Milliseconds)" Required="true" />
 </MudForm>
 
 @code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-
     public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
     {
         EditedThing!.Reset();

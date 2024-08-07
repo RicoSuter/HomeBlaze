@@ -6,7 +6,7 @@
 
 @inherits ThingSetupComponent<SwitchButtonWidget>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTabs>
         <MudTabPanel Text="General">
             <br />
@@ -22,9 +22,9 @@
             <MudTextField @bind-Value="@Thing.VerticalTextPosition" Label="Vertical Text Position" />
 
             <br />
-            <MudSwitch @bind-Checked="@Thing.AllowTurnOn" Label="Allow turning on" Color="Color.Info" />
+            <MudSwitch @bind-Value="@Thing.AllowTurnOn" Label="Allow turning on" Color="Color.Info" />
             <br />
-            <MudSwitch @bind-Checked="@Thing.AllowTurnOff" Label="Allow turning off" Color="Color.Info" />
+            <MudSwitch @bind-Value="@Thing.AllowTurnOff" Label="Allow turning off" Color="Color.Info" />
         </MudTabPanel>
         <MudTabPanel Text="Dynamic">
             <br />
@@ -42,9 +42,3 @@
         </MudTabPanel>
     </MudTabs>
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

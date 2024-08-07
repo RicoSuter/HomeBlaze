@@ -6,15 +6,9 @@
 
 @inherits ThingSetupComponent<RollerShutterWidget>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Width" Label="Width" Required="true" />
     <MudTextField @bind-Value="@Thing.Height" Label="Height" Required="true" />
 
     <ThingSelect @bind-ThingId="@Thing.ThingId" Label="Roller Shutter" Required="true" ThingFilter="@(t => t is IRollerShutter)" />
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

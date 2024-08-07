@@ -9,12 +9,12 @@
 
 @inherits ThingSetupComponent<Dashboard>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="Thing.Name" Label="Name ([a-z]+)" Required="true" Pattern="[a-z]+" />
     <IconTextField @bind-Value="Thing.Icon" Label="Icon" Required="true" />
 
     <br />
-    <MudSwitch @bind-Checked="@Thing.UseAutoScale" Label="Use Auto Scale (beta)" Color="Color.Info" />
+    <MudSwitch @bind-Value="@Thing.UseAutoScale" Label="Use Auto Scale (beta)" Color="Color.Info" />
     @if (Thing.UseAutoScale)
     {
         <MudTextField @bind-Value="Thing.Width" Label="Width" Required="true" Pattern="[a-z]+" />
@@ -23,9 +23,7 @@
 </MudForm>
 
 @code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid && ThingManager
+    public override bool IsValid => base.IsValid && ThingManager
         .AllThings
         .OfType<Dashboard>()
         .Where(d => d != EditedThing)

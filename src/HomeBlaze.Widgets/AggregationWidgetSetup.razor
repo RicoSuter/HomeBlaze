@@ -5,7 +5,7 @@
 
 @inherits ThingSetupComponent<AggregationWidget>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Label" Label="Label" Required="true" />
     <MudTextField @bind-Value="@Thing.Unit" Label="Unit" />
     <MudTextField @bind-Value="@Thing.ExpectedMaximum" Label="Expected Maximum" InputType="InputType.Number" Required="true" />
@@ -27,9 +27,3 @@
     <ThingSelect Label="Thing ID" @bind-ThingId="Thing.ThingId" Required="true" />
     <ThingPropertySelect Label="Property" @bind-PropertyName="@Thing.PropertyName" ThingId="@Thing.ThingId" Required="true" />
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

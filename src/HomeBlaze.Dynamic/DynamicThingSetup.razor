@@ -5,8 +5,7 @@
 
 @inherits ThingSetupComponent<DynamicThing>
 
-<MudForm @bind-IsValid="_isFormValid">
-
+<MudForm @ref="Form">
     <MudTabs>
         <MudTabPanel Text="General">
             <br />
@@ -63,10 +62,6 @@
 </MudForm>
 
 @code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-
     public void AddProperty()
     {
         Thing.Properties.Add(new DynamicProperty());

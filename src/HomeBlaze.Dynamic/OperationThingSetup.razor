@@ -12,7 +12,7 @@
 
 @inherits ThingSetupComponent<OperationThing>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Title" Label="Title" Required="true" />
     <br />
     <OperationEditor Operation="Thing.Operation" Required="true"></OperationEditor>
@@ -21,10 +21,6 @@
 </MudForm>
 
 @code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-
     public async Task ExecuteOperationAsync(CancellationToken cancellationToken = default)
     {
         if (Thing.Operation != null)

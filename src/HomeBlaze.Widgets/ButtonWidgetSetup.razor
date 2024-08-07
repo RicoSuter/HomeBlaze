@@ -4,7 +4,7 @@
 
 @inherits ThingSetupComponent<ButtonWidget>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Label" Label="Title" />
     <br />
 
@@ -15,9 +15,3 @@
     <h2>Operation</h2>
     <OperationEditor Operation="@Thing.Operation" Required="true" />
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}
