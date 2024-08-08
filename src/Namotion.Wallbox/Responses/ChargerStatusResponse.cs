@@ -19,9 +19,11 @@ namespace Namotion.Wallbox.Responses
         [JsonPropertyName("user_name")]
         public string? UserName { get; set; }
 
+        [State]
         [JsonPropertyName("car_id")]
         public int CarId { get; set; }
 
+        [State]
         [JsonPropertyName("car_plate")]
         public string? CarPlate { get; set; }
 
@@ -31,12 +33,15 @@ namespace Namotion.Wallbox.Responses
         [JsonPropertyName("last_sync")]
         public string? LastSync { get; set; }
 
+        [State]
         [JsonPropertyName("power_sharing_status")]
         public int PowerSharingStatus { get; set; }
 
+        [State]
         [JsonPropertyName("mid_status")]
         public int MidStatus { get; set; }
 
+        [State]
         [JsonPropertyName("status_id")]
         public int StatusId { get; set; }
 
@@ -73,6 +78,7 @@ namespace Namotion.Wallbox.Responses
         [JsonPropertyName("cost")]
         public float Cost { get; set; }
 
+        [State]
         [JsonPropertyName("current_mode")]
         public int CurrentMode { get; set; }
 

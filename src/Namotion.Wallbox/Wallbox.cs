@@ -31,7 +31,7 @@ namespace Namotion.Wallbox
 
         protected override TimeSpan PollingInterval => TimeSpan.FromMinutes(1);
 
-        public bool? IsPluggedIn => Status?.CarId > 0;
+        public bool? IsPluggedIn => Status?.Finished == false;
 
         public bool? IsCharging => Status?.ChargingPower > 1;
 
