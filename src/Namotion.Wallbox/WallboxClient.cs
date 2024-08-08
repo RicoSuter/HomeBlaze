@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Net.Http.Headers;
 using System.Collections.Generic;
 using Namotion.Wallbox.Responses;
+using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace Namotion.Wallbox
 {
@@ -53,6 +55,35 @@ namespace Namotion.Wallbox
             var responseBody = await response.Content.ReadAsStringAsync();
             var jsonDocument = JsonDocument.Parse(responseBody);
             _wallboxToken = jsonDocument.RootElement.GetProperty("jwt").GetString();
+        }
+
+        public async Task<string[]> GetGroupUidsAsync()
+        {
+            await AuthenticateAsync();
+
+            var requestUrl = $"{_baseUrl}v4/space-accesses?limit=999";
+            using var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _wallboxToken);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            var jsonResponse = JsonDocument.Parse(responseBody);
+            var groupUids = new List<string>();
+
+            foreach (var item in jsonResponse.RootElement.GetProperty("data").EnumerateArray())
+            {
+                var groupUid = item.GetProperty("attributes").GetProperty("group_uid").GetString();
+                if (groupUid is not null)
+                {
+                    groupUids.Add(groupUid);
+                }
+            }
+
+            return groupUids.ToArray();
         }
 
         public async Task<ChargerStatusResponse?> GetChargerStatusAsync(string chargerId)
@@ -146,5 +177,105 @@ namespace Namotion.Wallbox
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task<ChargerInformation[]> GetChargersAsync(string groupUuid)
+        {
+            await AuthenticateAsync();
+
+            var requestUrl = $"{_baseUrl}perseus/organizations/{groupUuid}/chargers?limit=50&offset=0&include=charger_info,charger_config,charger_status&filters=[]";
+            using var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _wallboxToken);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var chargerList = JsonSerializer.Deserialize<WallBoxApiResponse>(responseBody, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return chargerList?.Data?.Select(c => new ChargerInformation
+            {
+                Id = c.Id,
+                Name = c.Attributes?.Name,
+                Model = c.Attributes?.Model,
+                Status = c.Attributes?.Status ?? 0,
+                ConnectionStatus = c.Attributes?.ConnectionStatus,
+                LocationName = c.Attributes?.LocationName,
+                SerialNumber = c.Attributes?.SerialNumber,
+            }).ToArray() ?? Array.Empty<ChargerInformation>();
+        }
+
+        public async Task<ChargerInformation[]> GetChargersAsync()
+        {
+            var groupUids = await GetGroupUidsAsync();
+            var chargers = await Task.WhenAll(groupUids.Select(GetChargersAsync));
+            return chargers.SelectMany(c => c).ToArray();
+        }
+    }
+
+    public class WallBoxApiResponse
+    {
+        [JsonPropertyName("data")]
+        public List<ChargerData>? Data { get; set; }
+    }
+
+    public class ChargerData
+    {
+        [JsonPropertyName("type")]
+        public string? Type { get; set; }
+
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }
+
+        [JsonPropertyName("attributes")]
+        public ChargerAttributes? Attributes { get; set; }
+    }
+
+    public class ChargerAttributes
+    {
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+
+        [JsonPropertyName("model")]
+        public string? Model { get; set; }
+
+        [JsonPropertyName("status")]
+        public int? Status { get; set; }
+
+        [JsonPropertyName("connection_status")]
+        public string? ConnectionStatus { get; set; }
+
+        [JsonPropertyName("location_name")]
+        public string? LocationName { get; set; }
+
+        [JsonPropertyName("serial_number")]
+        public string? SerialNumber { get; set; }
+    }
+
+    public class ChargerInformation
+    {
+        [JsonPropertyName("id")]
+        public string? Id { get; set; }
+
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+
+        [JsonPropertyName("model")]
+        public string? Model { get; set; }
+
+        [JsonPropertyName("status")]
+        public int Status { get; set; }
+
+        [JsonPropertyName("connection_status")]
+        public string? ConnectionStatus { get; set; }
+
+        [JsonPropertyName("location_name")]
+        public string? LocationName { get; set; }
+
+        [JsonPropertyName("serial_number")]
+        public string? SerialNumber { get; set; }
     }
 }

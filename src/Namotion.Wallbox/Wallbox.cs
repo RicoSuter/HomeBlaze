@@ -9,6 +9,7 @@ using HomeBlaze.Abstractions.Attributes;
 using System;
 using HomeBlaze.Abstractions.Devices.Energy;
 using HomeBlaze.Abstractions.Sensors;
+using System.Linq;
 
 namespace Namotion.Wallbox
 {
@@ -17,10 +18,10 @@ namespace Namotion.Wallbox
         private WallboxClient? _wallboxClient;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public override string? Title => "Wallbox: " + (Status?.Name ?? ChargerId);
+        public override string? Title => "Wallbox: " + (Status?.Name ?? SerialNumber);
 
         [Configuration]
-        public string ChargerId { get; set; } = string.Empty;
+        public string SerialNumber { get; set; } = string.Empty;
 
         [Configuration]
         public string Email { get; set; } = string.Empty;
@@ -57,7 +58,7 @@ namespace Namotion.Wallbox
                 _wallboxClient = new WallboxClient(_httpClientFactory, Email, Password);
             }
 
-            Status = await _wallboxClient.GetChargerStatusAsync(ChargerId);
+            Status = await _wallboxClient.GetChargerStatusAsync(SerialNumber);
         }
     }
 }

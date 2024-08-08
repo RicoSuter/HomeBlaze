@@ -11,17 +11,63 @@
 @using HomeBlaze.Abstractions.Services
 
 @using Namotion.Wallbox
+@using System.Net.Http
+
+@inject IHttpClientFactory HttpClientFactory
 
 @attribute [ThingSetup(typeof(Wallbox), CanEdit = true)]
 @inherits ThingSetupComponent<Wallbox>
 
 <MudForm @ref="Form">
-    <MudTextField @bind-Value="@Thing.ChargerId" Label="Charger ID" Required="true" />
     <MudTextField @bind-Value="@Thing.Email" Label="E-Mail" Required="true" />
-    <MudTextField @bind-Value="@Thing.Password" Label="Password" Required="true" />
+    <MudTextField @bind-Value="@Thing.Password" Label="Password" Required="true" InputType="InputType.Password" />
+
+    <br />
+    <MudButton OnClick="() => LoadChargers()" Variant="Variant.Filled"
+               Color="Color.Primary">Load Chargers</MudButton>
+
+    <br />
+    @if (_chargers.Length > 0)
+    {
+        <MudItem>
+            <MudList Clickable="true" @bind-SelectedValue="SerialNumber" >
+                <MudDivider />
+                @foreach (var charger in _chargers)
+                {
+                    <MudListItem Value="charger.SerialNumber">
+                        @charger.Name (@charger.SerialNumber)
+                    </MudListItem>
+                    <MudDivider />
+                }
+            </MudList>
+        </MudItem>
+    }
 </MudForm>
 
 @code {
+    private object? SerialNumber
+    {
+        get => Thing.SerialNumber;
+        set => Thing.SerialNumber = value?.ToString() ?? "n/a";
+    }
+
+    private ChargerInformation[] _chargers = [];
+
+    public override bool IsValid => base.IsValid && !string.IsNullOrEmpty(Thing.SerialNumber);
+
+    public async Task LoadChargers()
+    {
+        try
+        {
+            var wallboxClient = new WallboxClient(HttpClientFactory, Thing.Email, Thing.Password);
+            _chargers = await wallboxClient.GetChargersAsync();
+        }
+        catch 
+        {
+            _chargers = [];
+        }
+    }
+
     public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
     {
         EditedThing!.Reset();
