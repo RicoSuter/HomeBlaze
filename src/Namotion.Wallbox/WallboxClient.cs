@@ -9,6 +9,8 @@ using Namotion.Wallbox.Responses;
 
 namespace Namotion.Wallbox
 {
+    // See https://github.com/tmenguy/wallboxAPIDoc
+
     public class WallboxClient
     {
         private readonly HttpClient _httpClient;
@@ -23,8 +25,6 @@ namespace Namotion.Wallbox
 
         public WallboxClient(IHttpClientFactory httpClientFactory, string email, string password)
         {
-            // See https://github.com/tmenguy/wallboxAPIDoc
-
             _httpClient = httpClientFactory.CreateClient();
             _email = email;
             _password = password;

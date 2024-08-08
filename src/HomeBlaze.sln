@@ -121,6 +121,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Namotion.Wallbox", "Namotio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Namotion.Wallbox.Tests", "Namotion.Wallbox.Tests\Namotion.Wallbox.Tests.csproj", "{01764EDC-4569-46BF-A967-9B81BF77873A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeBlaze.Wallbox", "HomeBlaze.Wallbox\HomeBlaze.Wallbox.csproj", "{7E4AC016-F967-4B0C-9A14-7034752D386D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -335,6 +337,10 @@ Global
 		{01764EDC-4569-46BF-A967-9B81BF77873A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01764EDC-4569-46BF-A967-9B81BF77873A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01764EDC-4569-46BF-A967-9B81BF77873A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E4AC016-F967-4B0C-9A14-7034752D386D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E4AC016-F967-4B0C-9A14-7034752D386D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E4AC016-F967-4B0C-9A14-7034752D386D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E4AC016-F967-4B0C-9A14-7034752D386D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -394,6 +400,7 @@ Global
 		{125D4D2D-23D1-418B-8C1D-278DD614DD4F} = {EE54A413-EECC-426E-A0AE-9E0A7FAEACB2}
 		{19A7040A-45E6-437A-A4DE-89AD950BF563} = {125D4D2D-23D1-418B-8C1D-278DD614DD4F}
 		{01764EDC-4569-46BF-A967-9B81BF77873A} = {125D4D2D-23D1-418B-8C1D-278DD614DD4F}
+		{7E4AC016-F967-4B0C-9A14-7034752D386D} = {125D4D2D-23D1-418B-8C1D-278DD614DD4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {67090661-749A-440E-BA59-292FCE80B866}

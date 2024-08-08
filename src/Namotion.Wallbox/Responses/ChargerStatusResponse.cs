@@ -5,6 +5,14 @@ namespace Namotion.Wallbox.Responses
 {
     public class ChargerStatusResponse
     {
+        [State]
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+
+        [State(Unit = StateUnit.Ampere)]
+        [JsonPropertyName("max_available_power"), JsonInclude]
+        public float MaximumAvailableCurrent { get; set; }
+
         [JsonPropertyName("user_id")]
         public int UserId { get; set; }
 
@@ -32,17 +40,8 @@ namespace Namotion.Wallbox.Responses
         [JsonPropertyName("status_id")]
         public int StatusId { get; set; }
 
-        [JsonPropertyName("name")]
-        public string? Name { get; set; }
-
-        [JsonPropertyName("charging_power")]
-        public float ChargingPower { get; set; }
-
-        [JsonPropertyName("max_available_power"), JsonInclude]
-        internal float MaxAvailablePowerRaw { get; set; }
-
-        [State(Unit = StateUnit.Ampere)]
-        public double MaximumAvailableCurrent { get; set; }
+        [JsonPropertyName("charging_power"), JsonInclude]
+        internal decimal ChargingPower { get; set; }
 
         [JsonPropertyName("depot_name")]
         public string? DepotName { get; set; }
@@ -80,6 +79,7 @@ namespace Namotion.Wallbox.Responses
         [JsonPropertyName("preventive_discharge")]
         public bool PreventiveDischarge { get; set; }
 
+        [State]
         [JsonPropertyName("state_of_charge")]
         public int? StateOfCharge { get; set; }
 
@@ -87,10 +87,7 @@ namespace Namotion.Wallbox.Responses
         public int OcppStatus { get; set; }
 
         [JsonPropertyName("config_data")]
+        [ScanForState]
         public ConfigData? ConfigData { get; set; }
     }
-
-
-
-
 }

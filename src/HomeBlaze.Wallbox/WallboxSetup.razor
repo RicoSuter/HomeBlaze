@@ -1,0 +1,30 @@
+﻿@using HomeBlaze.Abstractions.Attributes
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using System.Threading
+
+@using MudBlazor
+
+@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Components
+@using HomeBlaze.Abstractions.Services
+
+@using Namotion.Wallbox
+
+@attribute [ThingSetup(typeof(Wallbox), CanEdit = true)]
+@inherits ThingSetupComponent<Wallbox>
+
+<MudForm @ref="Form">
+    <MudTextField @bind-Value="@Thing.ChargerId" Label="Charger ID" Required="true" />
+    <MudTextField @bind-Value="@Thing.Email" Label="E-Mail" Required="true" />
+    <MudTextField @bind-Value="@Thing.Password" Label="Password" Required="true" />
+</MudForm>
+
+@code {
+    public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
+    {
+        EditedThing!.Reset();
+        return base.UpdateEditedThingAsync(cancellationToken);
+    }
+}

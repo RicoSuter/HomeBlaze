@@ -7,15 +7,12 @@ namespace Namotion.Shelly.Tests
         private const string TestCoverIpAddress = "192.168.1.125";
         private const string TestEmIpAddress = "192.168.1.133";
 
-        [Fact]
+        [Fact(Skip = "No CI")]
         public async Task ShouldConnectToCover()
         {
             var x = new WallboxClient(new HttpClient(), "", "");
-            var reso = await x.GetChargerStatusAsync("910037");
+            var reso = await x.GetChargerStatusAsync("123456");
             Assert.NotNull(reso);
-
-            // Garage: 910037
-            // Bastelraum: 669749
 
             //var shellyDevice = ShellyDevice.Create();
             //shellyDevice.IpAddress = TestCoverIpAddress;
