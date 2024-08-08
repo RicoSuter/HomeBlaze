@@ -5,7 +5,7 @@
 
 @inherits ThingSetupComponent<ButtonTriggerThing>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Title" Label="Title" Required="true" />
     <br />
 
@@ -19,9 +19,3 @@
         </MudTabPanel>
     </MudTabs>
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

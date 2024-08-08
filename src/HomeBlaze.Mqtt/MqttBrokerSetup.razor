@@ -4,14 +4,8 @@
 
 @inherits ThingSetupComponent<MqttBroker>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Title" Label="Title" Required="true" />
     <MudTextField @bind-Value="@Thing.Port" Label="Port" Required="true"
                   Disabled="IsEditing" InputType="InputType.Number" />
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

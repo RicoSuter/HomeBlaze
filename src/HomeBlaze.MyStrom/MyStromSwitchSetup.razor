@@ -10,20 +10,16 @@
 
 @inherits ThingSetupComponent<MyStromSwitch>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.DisplayTitle" Label="Title" Required="true" />
     <MudTextField @bind-Value="@Thing.IpAddress" Label="IP Address" Required="true" />
     <MudTextField @bind-Value="@Thing.TemperatureOffset" Label="Temperature Offset" Required="true" />
     <MudTextField @bind-Value="@Thing.RefreshInterval" Label="Refresh Interval (Milliseconds)" Required="true" />
     <br />
-    <MudSwitch @bind-Checked="@Thing.AllowTurnOff" Label="Allow to turn off the Switch" Color="Color.Info" />
+    <MudSwitch @bind-Value="@Thing.AllowTurnOff" Label="Allow to turn off the Switch" Color="Color.Info" />
 </MudForm>
 
 @code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-
     public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
     {
         EditedThing!.Reset();

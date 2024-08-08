@@ -4,16 +4,10 @@
 
 @inherits ThingSetupComponent<ThanksMisterWallPanel>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Host" Label="Host" Required="true" />
     <MudTextField @bind-Value="@Thing.Port" Label="Port" Required="true" />
 
     <br />
-    <MudSwitch @bind-Checked="@Thing.RelaunchOnStartup" Label="Relaunch on Startup" Color="Color.Info" />
+    <MudSwitch @bind-Value="@Thing.RelaunchOnStartup" Label="Relaunch on Startup" Color="Color.Info" />
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

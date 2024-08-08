@@ -5,14 +5,8 @@
 
 @inherits ThingSetupComponent<OpenWeatherMapTemperature>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.ApiKey" Label="API Key" />
     <MudTextField @bind-Value="@Thing.LocationQuery" Label="Location" />
     <MudTextField @bind-Value="@Thing.RefreshInterval" Label="Refresh Interval (Milliseconds)" InputType="InputType.Number" />
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

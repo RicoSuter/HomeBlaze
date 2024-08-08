@@ -5,12 +5,6 @@
 
 @inherits ThingSetupComponent<SonosSystem>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Host" Label="Host (e.g. HomeBlaze IP address)" />
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

@@ -5,7 +5,7 @@
 
 @inherits ThingSetupComponent<DynamicAggregatorThing>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField Label="Title" @bind-Value="@Thing.Title" Required="true" />
 
     <br />
@@ -21,9 +21,3 @@
         }
     </MudSelect>
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

@@ -11,7 +11,7 @@
 
 @inherits ThingSetupComponent<ImageWidget>
 
-<MudForm @bind-IsValid="@_isFormValid">
+<MudForm @ref="Form">
     <MudTextField Label="Title" @bind-Value="@Thing!.Title" />
 
     <br />
@@ -28,9 +28,3 @@
     <MudTextField Label="Width" @bind-Value="@Thing.Width" InputType="InputType.Number" />
     <MudTextField Label="Height" @bind-Value="@Thing.Height" InputType="InputType.Number" />
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

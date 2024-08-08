@@ -11,7 +11,7 @@
 
 @inherits ThingSetupComponent<PropertyWidget>
 
-<MudForm @ref="_form">
+<MudForm @ref="Form">
     <MudTextField Label="Title" @bind-Value="@Thing!.Title" />
 
     <br />
@@ -34,15 +34,3 @@
         <MudTextField Label="Decimals" @bind-Value="@Thing.Decimals" />
     </div>
 </MudForm>
-
-@code {
-    private MudForm? _form;
-
-    public override bool IsValid => _form?.IsValid == true;
-
-    protected override void OnParametersSet()
-    {        
-        // TODO: remove this hack and fix for all
-        _form?.Validate();
-    }
-}

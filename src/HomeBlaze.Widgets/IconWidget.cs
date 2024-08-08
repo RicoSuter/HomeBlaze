@@ -31,7 +31,7 @@ namespace HomeBlaze.Widgets
 
         public class IconCondition
         {
-            public string? Icon { get; set; } = "question-circle";
+            public string? Icon { get; set; } = "fas fa-question-circle";
 
             public decimal Opacity { get; set; } = 1.0m;
 

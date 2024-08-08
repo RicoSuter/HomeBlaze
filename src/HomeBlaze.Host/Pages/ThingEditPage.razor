@@ -39,8 +39,8 @@
 
     @if (_json == null)
     {
-        <MudButton OnClick="@(() => UpsertAsync(CancellationToken.None))"
-                   Disabled="@(_processing || _component?.IsValid != true)"
+        <MudButton OnClick="@(() => UpsertAsync(CancellationToken.None))" 
+                   Disabled="@(_processing || IsValid != true)"
                    Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">
             @if (_processing)
             {
@@ -114,9 +114,7 @@
 
                         @if (_json == null)
                         {
-                            <div>
-                                @SetupFragment
-                            </div>
+                            @SetupFragment
                         }
                         else
                         {
@@ -145,9 +143,7 @@
 
         @if (_json == null)
         {
-            <div>
-                @SetupFragment
-            </div>
+            @SetupFragment
         }
         else
         {
@@ -169,6 +165,8 @@
     private Type[] _thingTypes = new Type[0];
     private RenderFragment? _thingSetupFragment;
     private object? _selectedThingType;
+
+    private bool IsValid => _component?.IsValid == true;
 
     private RenderFragment? SetupFragment
     {
@@ -215,7 +213,6 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-
         _hotKeysContext = HotKeys
             .CreateContext()
             .Add(ModCode.None, Code.Escape, async () => await GoBackAsync(CancellationToken.None))

@@ -10,12 +10,6 @@
 
 @inherits ThingSetupComponent<SpeedtestNet>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     No configuration.
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

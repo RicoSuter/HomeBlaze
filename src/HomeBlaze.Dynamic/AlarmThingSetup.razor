@@ -12,11 +12,11 @@
 @inject IThingManager ThingManager
 @inject IDialogService DialogService;
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Title" Label="Title" Required="true" />
     <br />
 
-    <MudSwitch @bind-Checked="@Thing.IsEnabled" Label="Enabled" Color="Color.Info" />
+    <MudSwitch @bind-Value="@Thing.IsEnabled" Label="Enabled" Color="Color.Info" />
     <br />
     <br />
 
@@ -59,10 +59,6 @@
 </MudForm>
 
 @code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-
     public async Task AddPresenceThingAsync()
     {
         (var success, var thing) = await ThingSelectDialog.ShowAsync(DialogService, true, (thing) => thing is IPresenceSensor || thing is IDoorSensor);

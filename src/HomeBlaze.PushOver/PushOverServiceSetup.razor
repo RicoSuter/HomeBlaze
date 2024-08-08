@@ -10,7 +10,7 @@
 
 @inherits ThingSetupComponent<PushOverService>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Title" Label="Title" />
     <MudTextField @bind-Value="@Thing.Token" Label="Application Token" InputType="InputType.Password" />
 
@@ -31,9 +31,7 @@
 </MudForm>
 
 @code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid && Thing?.Targets.Any() == true;
+    public override bool IsValid => base.IsValid && Thing?.Targets.Any() == true;
 
     public void AddTarget()
     {

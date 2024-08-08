@@ -4,14 +4,8 @@
 
 @inherits ThingSetupComponent<AsusRouter>
 
-<MudForm @bind-IsValid="_isFormValid">
+<MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Host" Label="Host" Required="true" />
     <MudTextField @bind-Value="@Thing.Username" Label="Username" Required="true" />
     <MudTextField @bind-Value="@Thing.Password" Label="Password" InputType="InputType.Password" Required="true" />
 </MudForm>
-
-@code {
-    private bool _isFormValid;
-
-    public override bool IsValid => _isFormValid;
-}

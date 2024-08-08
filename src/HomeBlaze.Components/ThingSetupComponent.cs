@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
+
+using MudBlazor;
 
 using HomeBlaze.Abstractions;
-using System.Threading.Tasks;
 using HomeBlaze.Abstractions.Services;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading;
+
 using Namotion.Reflection;
 
 namespace HomeBlaze.Components
@@ -19,7 +23,7 @@ namespace HomeBlaze.Components
 
 #pragma warning restore CS8618
 
-        public override bool IsDirty => 
+        public override bool IsDirty =>
             EditedThing != null &&
             ThingSerializer?.SerializeThing(Thing) != ThingSerializer?.SerializeThing(EditedThing);
 
@@ -28,6 +32,17 @@ namespace HomeBlaze.Components
 
         [Inject]
         public IServiceProvider? ServiceProvider { get; set; }
+
+        public override bool IsValid
+        {
+            get
+            {
+                Form?.Validate();
+                return Form?.IsValid == true;
+            }
+        }
+
+        protected MudForm? Form { get; set; }
 
         protected override void OnInitialized()
         {
