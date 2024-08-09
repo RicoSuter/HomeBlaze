@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Namotion.Wallbox.Responses
+namespace Namotion.Wallbox.Responses.GetChargerStatus
 {
     public class Software
     {
@@ -16,8 +16,4 @@ namespace Namotion.Wallbox.Responses
         [JsonPropertyName("fileName")]
         public string? FileName { get; set; }
     }
-
-
-
-
 }

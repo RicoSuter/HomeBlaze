@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Namotion.Wallbox.Responses
+namespace Namotion.Wallbox.Responses.GetChargerStatus
 {
     public class Country
     {
@@ -19,8 +19,4 @@ namespace Namotion.Wallbox.Responses
         [JsonPropertyName("phone_code")]
         public string? PhoneCode { get; set; }
     }
-
-
-
-
 }

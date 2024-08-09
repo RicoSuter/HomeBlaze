@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Namotion.Wallbox.Responses
+namespace Namotion.Wallbox.Responses.GetChargerStatus
 {
     public class Plan
     {
@@ -10,8 +10,4 @@ namespace Namotion.Wallbox.Responses
         [JsonPropertyName("features")]
         public string[]? Features { get; set; }
     }
-
-
-
-
 }

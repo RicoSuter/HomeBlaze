@@ -1,15 +1,16 @@
-﻿using System.Net.Http;
+﻿using Microsoft.Extensions.Logging;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Namotion.Wallbox.Responses;
-using HomeBlaze.Services.Abstractions;
 using System.Threading;
-using HomeBlaze.Abstractions.Services;
-using Microsoft.Extensions.Logging;
-using HomeBlaze.Abstractions.Attributes;
 using System;
+
+using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices.Energy;
+using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Abstractions.Sensors;
-using System.Linq;
+using HomeBlaze.Services.Abstractions;
+
+using Namotion.Wallbox.Responses.GetChargerStatus;
 
 namespace Namotion.Wallbox
 {
@@ -35,10 +36,54 @@ namespace Namotion.Wallbox
 
         public bool? IsCharging => Status?.ChargingPower > 1;
 
-        [ScanForState]
-        internal ChargerStatusResponse? Status { get; private set; }
-
         public decimal? PowerConsumption => Status?.ChargingPower * 1000m;
+
+        [State(IsSignal = true)]
+        public bool? IsLocked =>
+            Status?.ConfigData?.Locked == 1 ? true :
+            Status?.ConfigData?.Locked == 0 ? false :
+            null;
+
+        [State(Unit = StateUnit.Ampere)]
+        public decimal? MaximumChargingCurrent => Status?.ConfigData?.MaximumChargingCurrent;
+
+        [ScanForState]
+        internal GetChargerStatusResponse? Status { get; private set; }
+
+        [Operation]
+        public async Task SetMaximumChargingCurrentAsync(int maximumChargingCurrent, CancellationToken cancellationToken)
+        {
+            if (_wallboxClient is not null &&
+                maximumChargingCurrent >= 6 &&
+                maximumChargingCurrent <= 32)
+            {
+                await _wallboxClient.SetMaximumChargingCurrentAsync(SerialNumber, maximumChargingCurrent, cancellationToken);
+                await PollAsync(cancellationToken);
+                ThingManager.DetectChanges(this);
+            }
+        }
+
+        [Operation]
+        public async Task LockAsync(CancellationToken cancellationToken)
+        {
+            if (_wallboxClient is not null)
+            {
+                await _wallboxClient.LockAsync(SerialNumber, cancellationToken);
+                await PollAsync(cancellationToken);
+                ThingManager.DetectChanges(this);
+            }
+        }
+
+        [Operation]
+        public async Task UnlockAsync(CancellationToken cancellationToken)
+        {
+            if (_wallboxClient is not null)
+            {
+                await _wallboxClient.UnlockAsync(SerialNumber, cancellationToken);
+                await PollAsync(cancellationToken);
+                ThingManager.DetectChanges(this);
+            }
+        }
 
         public Wallbox(IThingManager thingManager, IHttpClientFactory httpClientFactory, ILogger<Wallbox> logger)
             : base(thingManager, logger)
@@ -58,7 +103,7 @@ namespace Namotion.Wallbox
                 _wallboxClient = new WallboxClient(_httpClientFactory, Email, Password);
             }
 
-            Status = await _wallboxClient.GetChargerStatusAsync(SerialNumber);
+            Status = await _wallboxClient.GetChargerStatusAsync(SerialNumber, cancellationToken);
         }
     }
 }

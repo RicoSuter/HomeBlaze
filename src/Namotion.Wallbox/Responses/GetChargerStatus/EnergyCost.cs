@@ -1,17 +1,13 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Namotion.Wallbox.Responses
+namespace Namotion.Wallbox.Responses.GetChargerStatus
 {
     public class EnergyCost
     {
         [JsonPropertyName("value")]
-        public float Value { get; set; }
+        public decimal Value { get; set; }
 
         [JsonPropertyName("inheritedGroupId")]
         public int? InheritedGroupId { get; set; }
     }
-
-
-
-
 }

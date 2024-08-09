@@ -1,17 +1,18 @@
-﻿@using HomeBlaze.Abstractions.Attributes
-@using Microsoft.Extensions.DependencyInjection
+﻿@using Microsoft.Extensions.DependencyInjection
 @using Microsoft.Extensions.Logging
 @using System.Threading
+@using System.Net.Http
 
 @using MudBlazor
 
 @using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Abstractions.Presentation
 @using HomeBlaze.Components
 @using HomeBlaze.Abstractions.Services
 
 @using Namotion.Wallbox
-@using System.Net.Http
+@using Namotion.Wallbox.Responses.GetChargers
 
 @inject IHttpClientFactory HttpClientFactory
 
@@ -26,6 +27,7 @@
     <MudButton OnClick="() => LoadChargers()" Variant="Variant.Filled"
                Color="Color.Primary">Load Chargers</MudButton>
 
+    <br />
     <br />
     @if (_chargers.Length > 0)
     {
@@ -45,13 +47,13 @@
 </MudForm>
 
 @code {
+    private ChargerInformation[] _chargers = [];
+
     private object? SerialNumber
     {
         get => Thing.SerialNumber;
         set => Thing.SerialNumber = value?.ToString() ?? "n/a";
     }
-
-    private ChargerInformation[] _chargers = [];
 
     public override bool IsValid => base.IsValid && !string.IsNullOrEmpty(Thing.SerialNumber);
 
@@ -60,7 +62,7 @@
         try
         {
             var wallboxClient = new WallboxClient(HttpClientFactory, Thing.Email, Thing.Password);
-            _chargers = await wallboxClient.GetChargersAsync();
+            _chargers = await wallboxClient.GetChargersAsync(default);
         }
         catch 
         {

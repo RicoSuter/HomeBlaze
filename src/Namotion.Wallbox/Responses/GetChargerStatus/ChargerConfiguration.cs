@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using HomeBlaze.Abstractions.Attributes;
+using System.Text.Json.Serialization;
 
-namespace Namotion.Wallbox.Responses
+namespace Namotion.Wallbox.Responses.GetChargerStatus
 {
-    public class ConfigData
+    public class ChargerConfiguration
     {
         [JsonPropertyName("charger_id")]
         public int ChargerId { get; set; }
@@ -29,7 +30,7 @@ namespace Namotion.Wallbox.Responses
         public int Multiuser { get; set; }
 
         [JsonPropertyName("max_charging_current")]
-        public int MaxChargingCurrent { get; set; }
+        public decimal? MaximumChargingCurrent { get; set; }
 
         [JsonPropertyName("language")]
         public string? Language { get; set; }
@@ -41,7 +42,7 @@ namespace Namotion.Wallbox.Responses
         public int GridType { get; set; }
 
         [JsonPropertyName("energy_price")]
-        public float EnergyPrice { get; set; }
+        public decimal EnergyPrice { get; set; }
 
         [JsonPropertyName("energyCost")]
         public EnergyCost? EnergyCost { get; set; }
@@ -53,7 +54,7 @@ namespace Namotion.Wallbox.Responses
         public int PowerSharingConfig { get; set; }
 
         [JsonPropertyName("purchased_power")]
-        public float PurchasedPower { get; set; }
+        public decimal PurchasedPower { get; set; }
 
         [JsonPropertyName("show_name")]
         public int ShowName { get; set; }
@@ -178,8 +179,4 @@ namespace Namotion.Wallbox.Responses
         [JsonPropertyName("ecosmart")]
         public EcoSmart? Ecosmart { get; set; }
     }
-
-
-
-
 }

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Namotion.Wallbox.Responses
+namespace Namotion.Wallbox.Responses.GetChargerStatus
 {
     public class Currency
     {
@@ -16,8 +16,4 @@ namespace Namotion.Wallbox.Responses
         [JsonPropertyName("code")]
         public string? Code { get; set; }
     }
-
-
-
-
 }

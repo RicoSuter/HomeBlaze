@@ -11,7 +11,7 @@ namespace Namotion.Shelly.Tests
         public async Task ShouldConnectToCover()
         {
             var x = new WallboxClient(new HttpClient(), "", "");
-            var reso = await x.GetChargerStatusAsync("123456");
+            var reso = await x.GetChargerStatusAsync("123456", default);
             Assert.NotNull(reso);
 
             //var shellyDevice = ShellyDevice.Create();

@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Namotion.Wallbox.Responses
+namespace Namotion.Wallbox.Responses.GetChargerStatus
 {
     public class EcoSmart
     {
         [JsonPropertyName("enabled")]
-        public bool Enabled { get; set; }
+        public bool IsEnabled { get; set; }
 
         [JsonPropertyName("mode")]
         public int Mode { get; set; }
@@ -13,8 +13,4 @@ namespace Namotion.Wallbox.Responses
         [JsonPropertyName("percentage")]
         public int Percentage { get; set; }
     }
-
-
-
-
 }
