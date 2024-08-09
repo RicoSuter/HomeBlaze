@@ -19,7 +19,9 @@ namespace Namotion.Wallbox.Responses.GetChargerStatus
         public decimal? MaximumAllowedChargingCurrent { get; set; }
 
         [State(Unit = StateUnit.Volt)]
-        public decimal? GridVoltage => ChargingPower * 1000m / ChargingSpeed / CurrentMode;
+        public decimal? GridVoltage => ChargingSpeed > 0 && CurrentMode > 0 ?
+            ChargingPower * 1000m / ChargingSpeed / CurrentMode :
+            null;
 
         [JsonPropertyName("user_id")]
         public int UserId { get; set; }

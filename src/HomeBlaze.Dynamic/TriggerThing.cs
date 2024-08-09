@@ -1,19 +1,19 @@
-﻿using HomeBlaze.Abstractions;
-using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Messages;
-using HomeBlaze.Abstractions.Services;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
-using HomeBlaze.Services.Abstractions;
-using HomeBlaze.Abstractions.Presentation;
-using HomeBlaze.Messages;
 using System.ComponentModel;
+
+using HomeBlaze.Abstractions;
+using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Messages;
+using HomeBlaze.Abstractions.Services;
+using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Components.Editors;
-using MudBlazor;
+using HomeBlaze.Messages;
+using HomeBlaze.Services.Abstractions;
 
 namespace HomeBlaze.Dynamic
 {
@@ -69,10 +69,16 @@ namespace HomeBlaze.Dynamic
                                         v.PropertyName == stateChangedEvent.PropertyName))
                 {
                     foreach (var conditions in Conditions
+                        .Where(v => v.IsInitialized == false))
+                    {
+                        conditions.UpdateResult(_thingManager);
+                    }
+
+                    foreach (var conditions in Conditions
                         .Where(v => v.ThingId == stateChangedEvent.Thing.Id &&
                                     v.PropertyName == stateChangedEvent.PropertyName))
                     {
-                        conditions.Apply(_thingManager, stateChangedEvent);
+                        conditions.UpdateResult(_thingManager);
                     }
 
                     Evaluate();

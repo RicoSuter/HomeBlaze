@@ -1,7 +1,6 @@
 ﻿using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Services;
 using System;
-using HomeBlaze.Messages;
 using DynamicExpresso;
 
 namespace HomeBlaze.Dynamic
@@ -28,6 +27,8 @@ namespace HomeBlaze.Dynamic
 
         public TimeSpan? MinimumHoldDuration { get; set; }
 
+        public bool IsInitialized => _state is not null;
+
         public bool Result
         {
             get
@@ -36,6 +37,19 @@ namespace HomeBlaze.Dynamic
                 {
                     return _state == true &&
                         (MinimumHoldDuration == null || DateTimeOffset.Now - _lastStateChange > MinimumHoldDuration);
+                }
+            }
+        }
+
+        public void UpdateResult(IThingManager thingManager)
+        {
+            lock (this)
+            {
+                var state = Evaluate(thingManager);
+                if (state != _state)
+                {
+                    _state = state;
+                    _lastStateChange = DateTimeOffset.Now;
                 }
             }
         }
@@ -65,23 +79,6 @@ namespace HomeBlaze.Dynamic
 
             var result = interpreter.Eval<bool>(expression);
             return result is bool boolean && boolean;
-        }
-
-        public void Apply(IThingManager thingManager, ThingStateChangedEvent stateChangedEvent)
-        {
-            if (ThingId == stateChangedEvent.Thing.Id &&
-                PropertyName == stateChangedEvent.PropertyName)
-            {
-                lock (this)
-                {
-                    var state = Evaluate(thingManager);
-                    if (state != _state)
-                    {
-                        _state = state;
-                        _lastStateChange = DateTimeOffset.Now;
-                    }
-                }
-            }
         }
     }
 }
