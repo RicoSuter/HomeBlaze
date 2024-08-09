@@ -5,7 +5,7 @@ namespace HomeBlaze.Abstractions.Sensors
     public interface IPowerConsumptionSensor
     {
         /// <summary>
-        /// Gets the current power consumption in Watts/h.
+        /// Gets the current power consumption in Watts.
         /// </summary>
         [State(Unit = StateUnit.Watt)]
         decimal? PowerConsumption { get; }
