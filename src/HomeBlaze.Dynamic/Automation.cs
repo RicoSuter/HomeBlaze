@@ -27,7 +27,7 @@ namespace HomeBlaze.Dynamic
 
         public string IconName => "fas fa-microchip";
 
-        public Color IconColor => IsEnabled ? Color.Success : Color.Error;
+        public string IconColor => IsEnabled ? "Success" : "Error";
 
         [Configuration(IsIdentifier = true)]
         public string Id { get; set; } = Guid.NewGuid().ToString();

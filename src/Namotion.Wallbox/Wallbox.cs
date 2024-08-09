@@ -11,15 +11,29 @@ using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Services.Abstractions;
 
 using Namotion.Wallbox.Responses.GetChargerStatus;
+using HomeBlaze.Abstractions.Presentation;
+using HomeBlaze.Abstractions.Networking;
+using System.Text.Json.Serialization;
 
 namespace Namotion.Wallbox
 {
-    public class Wallbox : PollingThing, IVehicleCharger, IPowerConsumptionSensor
+    public class Wallbox : PollingThing, 
+        IVehicleCharger, 
+        IConnectedThing,
+        IPowerConsumptionSensor, 
+        IIconProvider
     {
         private WallboxClient? _wallboxClient;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public override string? Title => "Wallbox: " + (Status?.Name ?? SerialNumber);
+
+        string IIconProvider.IconName => "fas fa-plug";
+
+        string IIconProvider.IconColor => 
+            IsConnected == false ? "Error" : 
+            IsPluggedIn == true ? "Warning" : 
+            "Success";
 
         [Configuration]
         public string SerialNumber { get; set; } = string.Empty;
@@ -30,7 +44,8 @@ namespace Namotion.Wallbox
         [Configuration(IsSecret = true)]
         public string Password { get; set; } = string.Empty;
 
-        protected override TimeSpan PollingInterval => TimeSpan.FromMinutes(1);
+        [JsonIgnore]
+        public bool IsConnected { get; private set; }
 
         public bool? IsPluggedIn => Status?.Finished == false;
 
@@ -85,6 +100,8 @@ namespace Namotion.Wallbox
             }
         }
 
+        protected override TimeSpan PollingInterval => TimeSpan.FromMinutes(1);
+
         public Wallbox(IThingManager thingManager, IHttpClientFactory httpClientFactory, ILogger<Wallbox> logger)
             : base(thingManager, logger)
         {
@@ -102,8 +119,16 @@ namespace Namotion.Wallbox
             {
                 _wallboxClient = new WallboxClient(_httpClientFactory, Email, Password);
             }
-
-            Status = await _wallboxClient.GetChargerStatusAsync(SerialNumber, cancellationToken);
+            try
+            {
+                Status = await _wallboxClient.GetChargerStatusAsync(SerialNumber, cancellationToken);
+                IsConnected = true;
+            }
+            catch (Exception)
+            {
+                IsConnected = false;
+                throw;
+            }
         }
     }
 }

@@ -37,10 +37,9 @@ namespace HomeBlaze.Philips.Hue
 
         public override string IconName => "fas fa-lightbulb";
 
-        public override MudBlazor.Color IconColor =>
-            IsConnected == false ? MudBlazor.Color.Error : 
-            IsOn == true ? MudBlazor.Color.Warning :
-                MudBlazor.Color.Default;
+        public override string IconColor =>
+            IsConnected == false ? "Error" : 
+            IsOn == true ? "Warning" : "Default";
 
         public Guid ReferenceId => LightResource.Id;
 

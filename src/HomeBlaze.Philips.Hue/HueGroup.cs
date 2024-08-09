@@ -33,7 +33,7 @@ namespace HomeBlaze.Philips.Hue
 
         public string IconName => "fas fa-layer-group";
 
-        public MudBlazor.Color IconColor => IsOn == true ? MudBlazor.Color.Warning : MudBlazor.Color.Default;
+        public string IconColor => IsOn == true ? "Warning" : "Default";
 
         public DateTimeOffset? LastUpdated { get; internal set; }
 

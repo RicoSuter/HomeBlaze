@@ -31,7 +31,7 @@ namespace HomeBlaze.Philips.Hue
 
         public virtual string IconName => "fas fa-question-circle";
 
-        public virtual MudBlazor.Color IconColor => IsConnected ? MudBlazor.Color.Default : MudBlazor.Color.Error;
+        public virtual string IconColor => IsConnected ? "Default" : "Error";
 
         [State]
         public bool? IsCertified => Device.ProductData.Certified;

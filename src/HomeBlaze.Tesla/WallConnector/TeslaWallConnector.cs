@@ -19,8 +19,12 @@ namespace HomeBlaze.Tesla.WallConnector
 {
     [DisplayName("Tesla Wall Connector")]
     [ThingSetup(typeof(TeslaWallConnectorSetup), CanEdit = true)]
-    public class TeslaWallConnector : PollingThing, IIconProvider, 
-        IConnectedThing, IPowerConsumptionSensor, IVehicleCharger,
+    public class TeslaWallConnector : 
+        PollingThing, 
+        IIconProvider, 
+        IConnectedThing, 
+        IPowerConsumptionSensor, 
+        IVehicleCharger,
         INetworkAdapter
     {
         private readonly IHttpClientFactory _httpClientFactory;

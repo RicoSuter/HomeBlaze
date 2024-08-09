@@ -3,7 +3,6 @@ using HomeBlaze.Abstractions.Devices.Energy;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
-using MudBlazor;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Threading;
@@ -15,7 +14,7 @@ namespace HomeBlaze.Gardena
     {
         public string IconName => "fas fa-seedling";
 
-        public Color IconColor => IsConnected ? Color.Default : Color.Error;
+        public string IconColor => IsConnected ? "Success" : "Error";
 
         public override string Id => Location.Id + "/sensors/" + GardenaId;
 

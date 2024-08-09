@@ -49,7 +49,7 @@ namespace HomeBlaze.Philips.Hue
 
         public string IconName => "fab fa-hubspot";
 
-        public Color IconColor => IsConnected ? Color.Default : Color.Error;
+        public string IconColor => IsConnected ? "Success" : "Error";
 
         public DateTimeOffset? LastUpdated { get; private set; }
 

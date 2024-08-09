@@ -20,7 +20,7 @@ namespace HomeBlaze.Philips.Hue
             Icons.Material.Filled.RadioButtonChecked :
             Icons.Material.Filled.RadioButtonUnchecked;
 
-        public override MudBlazor.Color IconColor => IsConnected ? MudBlazor.Color.Default : MudBlazor.Color.Error;
+        public override string IconColor => IsConnected ? "Default" : "Error";
 
         internal DevicePower? DevicePowerResource { get; set; }
 
