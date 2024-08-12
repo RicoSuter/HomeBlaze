@@ -224,7 +224,7 @@ namespace HomeBlaze.Services
 
             RootThing = await _thingStorage.ReadRootThingAsync(stoppingToken);
 
-            Register(RootThing);
+            Register(RootThing, stoppingToken);
             DetectChanges(RootThing);
 
             _eventManager.Publish(new RootThingLoadedEvent(RootThing));
@@ -251,7 +251,7 @@ namespace HomeBlaze.Services
                 {
                     try
                     {
-                        DetectChanges(thing, checkedThings);
+                        DetectChanges(thing, checkedThings, stoppingToken);
                     }
                     catch (Exception e)
                     {
@@ -274,7 +274,7 @@ namespace HomeBlaze.Services
             }
         }
 
-        private void DetectChanges(IThing thing, List<IThing> checkedThings)
+        private void DetectChanges(IThing thing, List<IThing> checkedThings, CancellationToken cancellationToken)
         {
             if (checkedThings.Contains(thing))
             {
@@ -294,7 +294,7 @@ namespace HomeBlaze.Services
                     var lastUpdated = thing is ILastUpdatedProvider lastUpdatedProvider ? lastUpdatedProvider.LastUpdated : null;
 
                     LoadState(thing, thing, thing.GetType(), newState, newChildThings, string.Empty, lastUpdated);
-                    HandleChildThings(thing, _things[thing].Children, newChildThings);
+                    HandleChildThings(thing, _things[thing].Children, newChildThings, cancellationToken);
 
                     foreach (var newPair in newState)
                     {
@@ -332,7 +332,7 @@ namespace HomeBlaze.Services
             }
         }
 
-        private void Register(IThing thing)
+        private void Register(IThing thing, CancellationToken cancellationToken)
         {
             lock (_things)
             {
@@ -353,7 +353,7 @@ namespace HomeBlaze.Services
             if (thing is IHostedService hostedService)
             {
                 // TODO: Why is task needed?
-                Task.Run(async () => await hostedService.StartAsync(CancellationToken.None));
+                Task.Run(async () => await hostedService.StartAsync(cancellationToken));
             }
 
             _logger.LogInformation("Thing {ThingId} registered.", thing.Id);
@@ -527,7 +527,7 @@ namespace HomeBlaze.Services
             }
         }
 
-        private void HandleChildThings(IThing parent, IEnumerable<IThing>? oldThings, IEnumerable<IThing>? newThings)
+        private void HandleChildThings(IThing parent, IEnumerable<IThing>? oldThings, IEnumerable<IThing>? newThings, CancellationToken cancellationToken)
         {
             var addedThings = newThings?
                 .Where(t => oldThings?.Any(x => x == t) != true)
@@ -551,7 +551,7 @@ namespace HomeBlaze.Services
                 }
 
                 _things[parent].Children.Add(thing);
-                Register(thing);
+                Register(thing, cancellationToken);
             }
 
             foreach (var thing in removedThings)
