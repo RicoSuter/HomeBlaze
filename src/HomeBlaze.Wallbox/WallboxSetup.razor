@@ -24,7 +24,7 @@
     <MudTextField @bind-Value="@Thing.Password" Label="Password" Required="true" InputType="InputType.Password" />
 
     <br />
-    <MudButton OnClick="() => LoadChargers()" Variant="Variant.Filled"
+    <MudButton OnClick="() => LoadChargersAsync()" Variant="Variant.Filled"
                Color="Color.Primary">Load Chargers</MudButton>
 
     <br />
@@ -57,7 +57,7 @@
 
     public override bool IsValid => base.IsValid && !string.IsNullOrEmpty(Thing.SerialNumber);
 
-    public async Task LoadChargers()
+    public async Task LoadChargersAsync()
     {
         try
         {

@@ -78,10 +78,9 @@ namespace HomeBlaze.MyStrom
         protected override TimeSpan PollingInterval => TimeSpan.FromMilliseconds(RefreshInterval);
 
         public MyStromSwitch(
-            IThingManager thingManager,
             IHttpClientFactory httpClientFactory,
             ILogger<MyStromSwitch> logger)
-            : base(thingManager, logger)
+            : base(logger)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -121,7 +120,7 @@ namespace HomeBlaze.MyStrom
             using var httpClient = _httpClientFactory.CreateClient();
             await httpClient.GetAsync($"http://{IpAddress}/relay?state=1", cancellationToken);
             await RefreshReportAsync(cancellationToken);
-            ThingManager.DetectChanges(this);
+            DetectChanges(this);
         }
 
         [Operation]
@@ -132,7 +131,7 @@ namespace HomeBlaze.MyStrom
                 using var httpClient = _httpClientFactory.CreateClient();
                 await httpClient.GetAsync($"http://{IpAddress}/relay?state=0", cancellationToken);
                 await RefreshReportAsync(cancellationToken);
-                ThingManager.DetectChanges(this);
+                DetectChanges(this);
             }
         }
 

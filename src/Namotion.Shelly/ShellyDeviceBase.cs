@@ -11,7 +11,6 @@ using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
-using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
 
 using Namotion.Devices.Abstractions.Utilities;
@@ -24,10 +23,10 @@ namespace Namotion.Shelly
     [GenerateProxy]
     public abstract class ShellyDeviceBase :
         PollingThing,
-        ILastUpdatedProvider,
-        IIconProvider,
         IConnectedThing,
-        INetworkAdapter
+        INetworkAdapter,
+        IIconProvider,
+        ILastUpdatedProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
@@ -68,8 +67,7 @@ namespace Namotion.Shelly
             return serviceProvider.GetRequiredKeyedService<ShellyDevice>(string.Empty);
         }
 
-        public ShellyDeviceBase(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger, IThingManager? thingManager = null)
-            : base(thingManager!, logger)
+        public ShellyDeviceBase(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger) : base( logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
@@ -147,7 +145,7 @@ namespace Namotion.Shelly
             LastUpdated = DateTimeOffset.Now;
             IsConnected = true;
 
-            ThingManager.DetectChanges(this);
+            DetectChanges(this);
         }
     }
 }

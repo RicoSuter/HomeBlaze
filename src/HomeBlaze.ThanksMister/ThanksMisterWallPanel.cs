@@ -56,7 +56,7 @@ namespace HomeBlaze.ThanksMister
         protected override TimeSpan FailureInterval => TimeSpan.FromSeconds(60);
 
         public ThanksMisterWallPanel(IThingManager thingManager, IHttpClientFactory httpClientFactory, ILogger<ThanksMisterWallPanel> logger) 
-            : base(thingManager, logger)
+            : base(logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;

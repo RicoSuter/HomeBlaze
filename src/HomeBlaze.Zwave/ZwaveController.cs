@@ -61,7 +61,7 @@ namespace HomeBlaze.Zwave
         protected override TimeSpan FailureInterval => TimeSpan.FromSeconds(60);
 
         public ZwaveController(IThingManager thingManager, ILogger<ZWaveController> logger)
-            : base(thingManager, logger)
+            : base(logger)
         {
             Logger = logger;
         }
@@ -74,7 +74,7 @@ namespace HomeBlaze.Zwave
                 if (await _controller.StartAddingNodesToNetwork(cancellationToken))
                 {
                     IsAddingNodes = true;
-                    ThingManager.DetectChanges(this);
+                    DetectChanges(this);
                     return true;
                 }
             }
@@ -89,7 +89,7 @@ namespace HomeBlaze.Zwave
                 if (await _controller.StopAddingNodesToNetwork(cancellationToken))
                 {
                     IsAddingNodes = false;
-                    ThingManager.DetectChanges(this);
+                    DetectChanges(this);
                     return true;
                 }
             }
@@ -104,7 +104,7 @@ namespace HomeBlaze.Zwave
                 if (await _controller.StartRemoveNodeFromNetwork(cancellationToken))
                 {
                     IsRemovingNodes = true;
-                    ThingManager.DetectChanges(this);
+                    DetectChanges(this);
                     return true;
                 }
             }
@@ -119,7 +119,7 @@ namespace HomeBlaze.Zwave
                 if (await _controller.StopRemoveNodeFromNetwork(cancellationToken))
                 {
                     IsRemovingNodes = false;
-                    ThingManager.DetectChanges(this);
+                    DetectChanges(this);
                     return true;
                 }
             }
@@ -182,7 +182,7 @@ namespace HomeBlaze.Zwave
                 }
             }
 
-            ThingManager.DetectChanges(this);
+            DetectChanges(this);
 
             await RefreshAsync(cancellationToken);
         }
@@ -198,7 +198,7 @@ namespace HomeBlaze.Zwave
 
             try
             {
-                ThingManager.DetectChanges(this);
+                DetectChanges(this);
 
                 if (_controller != null)
                 {
@@ -224,7 +224,7 @@ namespace HomeBlaze.Zwave
                 }
 
                 Logger.LogDebug("Refreshing Z-Wave devices info...");
-                ThingManager.DetectChanges(this);
+                DetectChanges(this);
 
                 foreach (var thing in Things
                     .OfType<ZwaveDevice>())
@@ -246,7 +246,7 @@ namespace HomeBlaze.Zwave
             finally
             {
                 IsLoading = false;
-                ThingManager.DetectChanges(this);
+                DetectChanges(this);
             }
 
             return true;
@@ -333,7 +333,7 @@ namespace HomeBlaze.Zwave
             //Things = Array.Empty<IThing>();
             IsConnected = false;
 
-            ThingManager.DetectChanges(this);
+            DetectChanges(this);
         }
 
         public override void Dispose()

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Net.Http;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
@@ -13,7 +14,6 @@ using HomeBlaze.Services.Abstractions;
 using Namotion.Wallbox.Responses.GetChargerStatus;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Networking;
-using System.Text.Json.Serialization;
 
 namespace Namotion.Wallbox
 {
@@ -74,7 +74,7 @@ namespace Namotion.Wallbox
             {
                 await _wallboxClient.SetMaximumChargingCurrentAsync(SerialNumber, maximumChargingCurrent, cancellationToken);
                 await PollAsync(cancellationToken);
-                ThingManager.DetectChanges(this);
+                DetectChanges(this);
             }
         }
 
@@ -85,7 +85,7 @@ namespace Namotion.Wallbox
             {
                 await _wallboxClient.LockAsync(SerialNumber, cancellationToken);
                 await PollAsync(cancellationToken);
-                ThingManager.DetectChanges(this);
+                DetectChanges(this);
             }
         }
 
@@ -96,14 +96,14 @@ namespace Namotion.Wallbox
             {
                 await _wallboxClient.UnlockAsync(SerialNumber, cancellationToken);
                 await PollAsync(cancellationToken);
-                ThingManager.DetectChanges(this);
+                DetectChanges(this);
             }
         }
 
         protected override TimeSpan PollingInterval => TimeSpan.FromMinutes(1);
 
-        public Wallbox(IThingManager thingManager, IHttpClientFactory httpClientFactory, ILogger<Wallbox> logger)
-            : base(thingManager, logger)
+        public Wallbox(IHttpClientFactory httpClientFactory, ILogger<Wallbox> logger)
+            : base(logger)
         {
             _httpClientFactory = httpClientFactory;
         }

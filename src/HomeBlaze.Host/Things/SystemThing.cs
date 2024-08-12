@@ -30,7 +30,7 @@ namespace HomeBlaze.Things
             IEventManager eventManager, ILogger<PollingThing> logger)
             : base(thingManager)
         {
-            SystemDiagnostics = new SystemDiagnostics(this, thingManager, eventManager, logger);
+            SystemDiagnostics = new SystemDiagnostics(this, eventManager, logger);
             PluginManager = new PluginManager(this, typeManager);
         }
     }

@@ -87,7 +87,7 @@ namespace HomeBlaze.Philips.Hue
         protected override TimeSpan FailureInterval => TimeSpan.FromSeconds(5);
 
         public HueBridge(IThingManager thingManager, IEventManager eventManager, IHttpClientFactory httpClientFactory, ILogger<HueBridge> logger)
-            : base(thingManager, logger)
+            : base(logger)
         {
             EventManager = eventManager;
 
@@ -352,7 +352,7 @@ namespace HomeBlaze.Philips.Hue
                             button.Update(Merge(button.ButtonResource, data), false);
                             button.LastUpdated = DateTimeOffset.Now;
 
-                            ThingManager.DetectChanges(buttonDevice);
+                            DetectChanges(buttonDevice);
                         }
                     }
                     else if (data.Type == "light")
@@ -366,16 +366,16 @@ namespace HomeBlaze.Philips.Hue
                             lightDevice.LightResource = Merge(lightDevice.LightResource, data);
                             lightDevice.LastUpdated = DateTimeOffset.Now;
                           
-                            ThingManager.DetectChanges(lightDevice);
+                            DetectChanges(lightDevice);
 
                             foreach (var room in Rooms.OfType<HueGroup>().Where(r => r.Lights.Contains(lightDevice)))
                             {
-                                ThingManager.DetectChanges(room);
+                                DetectChanges(room);
                             }
 
                             foreach (var zone in Zones.OfType<HueGroup>().Where(r => r.Lights.Contains(lightDevice)))
                             {
-                                ThingManager.DetectChanges(zone);
+                                DetectChanges(zone);
                             }
                         }
                     }
@@ -390,7 +390,7 @@ namespace HomeBlaze.Philips.Hue
                         {
                             group.GroupedLight = Merge(group.GroupedLight, data);
                             group.LastUpdated = DateTimeOffset.Now;
-                            ThingManager.DetectChanges(group);
+                            DetectChanges(group);
                         }
                     }
                     else if (data.Type == "motion")
@@ -403,7 +403,7 @@ namespace HomeBlaze.Philips.Hue
                         {
                             motion.MotionResource = Merge(motion.MotionResource, data);
                             motion.LastUpdated = DateTimeOffset.Now;
-                            ThingManager.DetectChanges(motion);
+                            DetectChanges(motion);
                         }
                     }
                     else if (data.Type == "temperature")
@@ -416,7 +416,7 @@ namespace HomeBlaze.Philips.Hue
                         {
                             motion.TemperatureResource = Merge(motion.TemperatureResource, data);
                             motion.LastUpdated = DateTimeOffset.Now;
-                            ThingManager.DetectChanges(motion);
+                            DetectChanges(motion);
                         }
                     }
                     else if (data.Type == "light_level")
@@ -429,7 +429,7 @@ namespace HomeBlaze.Philips.Hue
                         {
                             motion.LightLevelResource = Merge(motion.LightLevelResource, data);
                             motion.LastUpdated = DateTimeOffset.Now;
-                            ThingManager.DetectChanges(motion);
+                            DetectChanges(motion);
                         }
                     }
                     else if (data.Type == "device_power")
@@ -442,7 +442,7 @@ namespace HomeBlaze.Philips.Hue
                         {
                             motion.DevicePowerResource = Merge(motion.DevicePowerResource, data);
                             motion.LastUpdated = DateTimeOffset.Now;
-                            ThingManager.DetectChanges(motion);
+                            DetectChanges(motion);
                         }
                     }
                     else if (data.Type == "scene")

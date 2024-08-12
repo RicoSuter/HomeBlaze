@@ -214,7 +214,7 @@ namespace HomeBlaze.Philips.Hue
             if (response.Errors.Any() == false)
             {
                 LightResource.On.IsOn = true;
-                Bridge.ThingManager.DetectChanges(this);
+                Bridge.DetectChanges(this);
             }
         }
 
@@ -229,7 +229,7 @@ namespace HomeBlaze.Philips.Hue
             if (response.Errors.Any() == false)
             {
                 LightResource.On.IsOn = false;
-                Bridge.ThingManager.DetectChanges(this);
+                Bridge.DetectChanges(this);
             }
         }
 
@@ -246,7 +246,7 @@ namespace HomeBlaze.Philips.Hue
             if (response.Errors.Any() == false && LightResource.Dimming is not null)
             {
                 LightResource.Dimming.Brightness = (double)(brightness * 100m);
-                Bridge.ThingManager.DetectChanges(this);
+                Bridge.DetectChanges(this);
             }
 
             if (turnOffAfterChange)
@@ -267,7 +267,7 @@ namespace HomeBlaze.Philips.Hue
             if (response.Errors.Any() == false)
             {
                 LightResource.Color = rgbColor.ToColor();
-                Bridge.ThingManager.DetectChanges(this);
+                Bridge.DetectChanges(this);
             }
         }
 
@@ -293,7 +293,7 @@ namespace HomeBlaze.Philips.Hue
                 if (response.Errors.Any() == false && LightResource.ColorTemperature is not null)
                 {
                     LightResource.ColorTemperature.Mirek = newColorTemperature;
-                    Bridge.ThingManager.DetectChanges(this);
+                    Bridge.DetectChanges(this);
                 }
             }
         }

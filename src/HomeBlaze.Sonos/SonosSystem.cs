@@ -52,7 +52,7 @@ namespace HomeBlaze.Sonos
             IThingManager thingManager,
             IHttpClientFactory httpClientFactory,
             ILogger<SonosSystem> logger)
-            : base(thingManager, logger)
+            : base(logger)
         {
             _httpClientFactory = httpClientFactory;
         }

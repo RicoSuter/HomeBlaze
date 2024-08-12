@@ -437,7 +437,7 @@ namespace HomeBlaze.Zwave
                 _powerConsumptionComponent.Unit = e.Report.Unit;
                 _powerConsumptionComponent.Scale = (ElectricMeterScale)e.Report.Scale;
 
-                Controller.ThingManager.DetectChanges(_powerConsumptionComponent);
+                Controller.DetectChanges(_powerConsumptionComponent);
             }
             else
             {
@@ -510,7 +510,7 @@ namespace HomeBlaze.Zwave
             component.Unit = e.Report.Unit;
             component.LastUpdated = DateTimeOffset.Now;
 
-            Controller.ThingManager.DetectChanges(component);
+            Controller.DetectChanges(component);
 
             UpdateThings();
         }
@@ -524,7 +524,7 @@ namespace HomeBlaze.Zwave
 
             _sensorAlarmComponent.LastUpdated = DateTimeOffset.Now;
 
-            Controller.ThingManager.DetectChanges(_sensorAlarmComponent);
+            Controller.DetectChanges(_sensorAlarmComponent);
             UpdateThings();
         }
 
@@ -595,7 +595,7 @@ namespace HomeBlaze.Zwave
                         _multiChannelComponents.Add(doorSensorComponent);
                     }
 
-                    Controller.ThingManager.DetectChanges(doorSensorComponent);
+                    Controller.DetectChanges(doorSensorComponent);
                 }
 
                 if (component.Type == NotificationType.Flood)
@@ -614,10 +614,10 @@ namespace HomeBlaze.Zwave
                         component.Event == NotificationState.LeakDetected ||
                         component.Event == NotificationState.LeakDetectedUnknownLocation;
 
-                    Controller.ThingManager.DetectChanges(floodSensorComponent);
+                    Controller.DetectChanges(floodSensorComponent);
                 }
 
-                Controller.ThingManager.DetectChanges(component);
+                Controller.DetectChanges(component);
                 UpdateThings();
             }
         }
@@ -628,7 +628,7 @@ namespace HomeBlaze.Zwave
             _batteryComponent.BatteryLevel = e.Report?.IsLow == true ? 0.1m : e.Report?.Value / 100m; // 255 is used for IsLow
             _batteryComponent.LastUpdated = DateTimeOffset.Now;
 
-            Controller.ThingManager.DetectChanges(_batteryComponent);
+            Controller.DetectChanges(_batteryComponent);
             UpdateThings();
         }
 
@@ -639,31 +639,31 @@ namespace HomeBlaze.Zwave
             if (e.Report.KeyState == CentralSceneKeyState.KeyPressed)
             {
                 _buttonComponent.ButtonState = ButtonState.Press;
-                Controller.ThingManager.DetectChanges(_buttonComponent);
+                Controller.DetectChanges(_buttonComponent);
 
                 await Task.Delay(100);
 
                 _buttonComponent.ButtonState = ButtonState.None;
-                Controller.ThingManager.DetectChanges(_buttonComponent);
+                Controller.DetectChanges(_buttonComponent);
             }
             else if (e.Report.KeyState == CentralSceneKeyState.KeyHeldDown)
             {
                 _buttonComponent.ButtonState = ButtonState.Down;
-                Controller.ThingManager.DetectChanges(_buttonComponent);
+                Controller.DetectChanges(_buttonComponent);
             }
             else if (e.Report.KeyState == CentralSceneKeyState.KeyReleased)
             {
                 _buttonComponent.ButtonState = ButtonState.LongPress;
-                Controller.ThingManager.DetectChanges(_buttonComponent);
+                Controller.DetectChanges(_buttonComponent);
 
                 await Task.Delay(100);
 
                 _buttonComponent.ButtonState = ButtonState.None;
-                Controller.ThingManager.DetectChanges(_buttonComponent);
+                Controller.DetectChanges(_buttonComponent);
             }
 
             _buttonComponent.LastUpdated = DateTimeOffset.Now;
-            Controller.ThingManager.DetectChanges(_buttonComponent);
+            Controller.DetectChanges(_buttonComponent);
 
             UpdateThings();
         }
@@ -684,7 +684,7 @@ namespace HomeBlaze.Zwave
                 .Concat(_sensorComponents)
                 .ToArray()!;
 
-            Controller.ThingManager.DetectChanges(this);
+            Controller.DetectChanges(this);
         }
     }
 }
