@@ -13,6 +13,21 @@ namespace HomeBlaze.Services
 
         public int QueueSize => _queue.Count;
 
+        public void OnCompleted()
+        {
+            // TODO: Write log
+        }
+
+        public void OnError(Exception error)
+        {
+            // TODO: Write log
+        }
+
+        public void OnNext(IEvent value)
+        {
+            _queue.Post(value);
+        }
+
         public void Publish(IEvent @event)
         {
             _queue.Post(@event);

@@ -5,17 +5,20 @@ using HomeBlaze.Abstractions.Presentation;
 using HueApi.Models;
 using MudBlazor;
 using System;
+using System.Reactive.Subjects;
 
 namespace HomeBlaze.Philips.Hue
 {
-    [ThingEvent(typeof(Abstractions.Inputs.ButtonEvent))]
     public class HueButton :
         IThing,
         IIconProvider,
         ILastUpdatedProvider,
-        IButtonDevice
+        IButtonDevice,
+        IObservable<Abstractions.Inputs.ButtonEvent>,
+        IDisposable
     {
         private readonly string _name;
+        private readonly Subject<Abstractions.Inputs.ButtonEvent> _buttonEventSubject = new();
 
         private ButtonState? _currentButtonState;
         private DateTimeOffset? _currentButtonChangeDate;
@@ -79,23 +82,26 @@ namespace HomeBlaze.Philips.Hue
             return Abstractions.Inputs.ButtonState.None;
         }
 
-        public HueButton(string name, ButtonResource buttonResource, HueButtonDevice buttonDevice)
+        public HueButton(string name, ButtonResource buttonResource, HueButtonDevice buttonDevice, bool initialization)
         {
             _name = name;
 
             ButtonResource = buttonResource;
             ParentDevice = buttonDevice;
-            Update(buttonResource);
+            Update(buttonResource, initialization);
 
             _currentButtonChangeDate = ButtonChangeDate;
             _currentButtonState = InternalButtonState;
         }
 
-        internal HueButton Update(ButtonResource buttonResource)
+        internal HueButton Update(ButtonResource buttonResource, bool initialization)
         {
             ButtonResource = buttonResource;
             LastUpdated = DateTimeOffset.Now;
-            RefreshButtonState();
+            if (!initialization)
+            {
+                RefreshButtonState();
+            }
             return this;
         }
 
@@ -119,7 +125,7 @@ namespace HomeBlaze.Philips.Hue
 
                     if (newButtonState.HasValue)
                     {
-                        ParentDevice.Bridge.EventManager.Publish(new Abstractions.Inputs.ButtonEvent
+                        _buttonEventSubject.OnNext(new Abstractions.Inputs.ButtonEvent
                         {
                             ThingId = Id,
                             ButtonState = newButtonState.Value
@@ -135,6 +141,16 @@ namespace HomeBlaze.Philips.Hue
                     }
                 }
             }
+        }
+
+        public IDisposable Subscribe(IObserver<Abstractions.Inputs.ButtonEvent> observer)
+        {
+            return _buttonEventSubject.Subscribe(observer);
+        }
+
+        public void Dispose()
+        {
+            _buttonEventSubject.Dispose();
         }
     }
 }

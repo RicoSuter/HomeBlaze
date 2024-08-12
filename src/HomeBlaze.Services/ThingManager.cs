@@ -334,6 +334,7 @@ namespace HomeBlaze.Services
 
         private void Register(IThing thing, CancellationToken cancellationToken)
         {
+            ThingMetadata thingMetadata;
             lock (_things)
             {
                 if (_things.ContainsKey(thing))
@@ -342,13 +343,21 @@ namespace HomeBlaze.Services
                 }
 
                 _thingIds[thing.Id] = thing;
-                _things[thing] = new ThingMetadata
+
+                thingMetadata = new ThingMetadata
                 {
                     ThingSetupAttribute = _typeManager.TryGetThingSetupAttribute(thing.GetType()),
                 };
+
+                _things[thing] = thingMetadata;
             }
 
-            _eventManager.Publish(new ThingRegisteredEvent(thing));
+            thingMetadata.Disposables = thing
+                .GetType()
+                .FindInterfaces((t, _) => t.Name == "IObservable`1", null)
+                .Select(t => t.GetMethod("Subscribe")?.Invoke(thing, [_eventManager]) as IDisposable)
+                .OfType<IDisposable>()
+                .ToArray();
 
             if (thing is IHostedService hostedService)
             {
@@ -356,6 +365,7 @@ namespace HomeBlaze.Services
                 Task.Run(async () => await hostedService.StartAsync(cancellationToken));
             }
 
+            _eventManager.Publish(new ThingRegisteredEvent(thing));
             _logger.LogInformation("Thing {ThingId} registered.", thing.Id);
         }
 
@@ -381,6 +391,18 @@ namespace HomeBlaze.Services
             }
 
             UnregisterChildren(thing, children);
+
+            foreach (var disposable in _things[thing].Disposables)
+            {
+                try
+                {
+                    disposable.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed to dispose part of thing {thing.Id}.");
+                }
+            }
 
             Task.Run(async () => await StopAndDisposeThingAsync(thing));
 

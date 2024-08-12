@@ -34,8 +34,8 @@ namespace HomeBlaze.Dynamic
         {
             return thing
                 .GetType()
-                .GetCustomAttributes<ThingEventAttribute>()
-                .Any(a => a.EventType == typeof(ButtonEvent));
+                .GetInterfaces()
+                .Any(a => a.Name == "IObservable`1" && a.GenericTypeArguments[0].IsAssignableTo(typeof(ButtonEvent)));
         }
 
         [Configuration]

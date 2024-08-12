@@ -2,7 +2,9 @@
 
 namespace HomeBlaze.Abstractions.Services
 {
-    public interface IEventManager : IObservable<IEvent>
+    public interface IEventManager : 
+        IObservable<IEvent>, 
+        IObserver<IEvent>
     {
         int QueueSize { get; }
 

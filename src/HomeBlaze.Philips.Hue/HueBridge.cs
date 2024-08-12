@@ -349,7 +349,7 @@ namespace HomeBlaze.Philips.Hue
                         var button = buttonDevice?.Buttons.SingleOrDefault(b => b.ResourceId == data.Id);
                         if (button is not null && buttonDevice is not null)
                         {
-                            button.Update(Merge(button.ButtonResource, data));
+                            button.Update(Merge(button.ButtonResource, data), false);
                             button.LastUpdated = DateTimeOffset.Now;
 
                             ThingManager.DetectChanges(buttonDevice);

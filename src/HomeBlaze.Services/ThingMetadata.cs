@@ -18,5 +18,7 @@ namespace HomeBlaze.Services
         public ThingSetupAttribute? ThingSetupAttribute { get; set; }
 
         IEnumerable<IThing> IThingMetadata.Children => Children;
+
+        internal IDisposable[] Disposables { get; set; } = [];
     }
 }
