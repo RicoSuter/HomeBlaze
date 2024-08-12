@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Namotion.Shelly.Tests
 {
     public class ShellyDeviceTests
@@ -8,7 +10,7 @@ namespace Namotion.Shelly.Tests
         [Fact(Skip = "No CI")]
         public async Task ShouldConnectToCover()
         {
-            var shellyDevice = ShellyDevice.Create();
+            var shellyDevice = CreateShellyDevice();
             shellyDevice.IpAddress = TestCoverIpAddress;
 
             await shellyDevice.StartAsync(CancellationToken.None);
@@ -33,7 +35,7 @@ namespace Namotion.Shelly.Tests
         [Fact(Skip = "No CI")]
         public async Task ShouldConnectToEm()
         {
-            var shellyDevice = ShellyDevice.Create();
+            var shellyDevice = CreateShellyDevice();
             shellyDevice.IpAddress = TestEmIpAddress;
 
             await shellyDevice.StartAsync(CancellationToken.None);
@@ -66,6 +68,15 @@ namespace Namotion.Shelly.Tests
                     break;
                 }
             }
+        }
+
+        public static ShellyDevice CreateShellyDevice(Action<ShellyDevice>? configure = null)
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddShellyDevice(string.Empty, configure);
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            return serviceProvider.GetRequiredShellyDevice(string.Empty);
         }
     }
 }

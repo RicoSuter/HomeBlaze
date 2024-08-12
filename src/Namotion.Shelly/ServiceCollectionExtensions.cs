@@ -29,5 +29,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 })
                 .AddSingleton<IHostedService>(sp => sp.GetRequiredKeyedService<ShellyDeviceBase>(name));
         }
+        
+        public static ShellyDevice GetRequiredShellyDevice(this IServiceProvider serviceProvider, string name)
+        {
+            return serviceProvider.GetRequiredKeyedService<ShellyDevice>(name);
+        }
     }
 }

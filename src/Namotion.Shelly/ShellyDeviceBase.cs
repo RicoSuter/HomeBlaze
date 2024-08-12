@@ -58,15 +58,6 @@ namespace Namotion.Shelly
         protected override TimeSpan PollingInterval =>
             TimeSpan.FromMilliseconds(Cover?.IsMoving == true ? 1000 : RefreshInterval);
 
-        public static ShellyDevice Create(Action<ShellyDevice>? configure = null)
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddShellyDevice(string.Empty, configure);
-
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            return serviceProvider.GetRequiredKeyedService<ShellyDevice>(string.Empty);
-        }
-
         public ShellyDeviceBase(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger) : base( logger)
         {
             _httpClientFactory = httpClientFactory;
