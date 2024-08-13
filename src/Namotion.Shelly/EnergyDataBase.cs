@@ -13,7 +13,7 @@ namespace Namotion.Shelly
         /// Gets the identifier.
         /// </summary>
         [JsonPropertyName("id")]
-        public int Identifier { get; init; }
+        public int Id { get; init; }
 
         /// <summary>
         /// Gets the total active energy across all phases, measured in watt-hours.
