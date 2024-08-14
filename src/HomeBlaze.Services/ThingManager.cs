@@ -386,6 +386,7 @@ namespace HomeBlaze.Services
         {
             IThing[] children;
 
+            var disposables = _things[thing].Disposables;
             lock (_things)
             {
                 if (_things.Any(t => t.Value.Children.Contains(thing)))
@@ -405,7 +406,7 @@ namespace HomeBlaze.Services
 
             UnregisterChildren(thing, children);
 
-            foreach (var disposable in _things[thing].Disposables)
+            foreach (var disposable in disposables)
             {
                 try
                 {
