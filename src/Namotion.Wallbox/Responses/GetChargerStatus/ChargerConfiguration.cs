@@ -1,5 +1,4 @@
-﻿using HomeBlaze.Abstractions.Attributes;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Namotion.Wallbox.Responses.GetChargerStatus
 {
