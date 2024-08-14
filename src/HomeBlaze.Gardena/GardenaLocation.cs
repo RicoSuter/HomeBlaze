@@ -5,7 +5,6 @@ using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Security;
 using HomeBlaze.Abstractions.Sensors;
-using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -15,7 +14,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -72,8 +70,7 @@ namespace HomeBlaze.Gardena
 
         protected override TimeSpan FailureInterval => TimeSpan.FromMinutes(15);
 
-        public GardenaLocation(IThingManager thingManager, ILogger<GardenaLocation> logger)
-            : base(thingManager, logger)
+        public GardenaLocation(ILogger<GardenaLocation> logger) : base(logger)
         {
             _logger = logger;
         }
@@ -264,7 +261,7 @@ namespace HomeBlaze.Gardena
                                                         device.Update(jObj);
                                                     }
 
-                                                    ThingManager?.DetectChanges(device);
+                                                    DetectChanges(device);
                                                 }
                                             }
 
@@ -295,7 +292,7 @@ namespace HomeBlaze.Gardena
                                 await Task.Delay(1000);
                             }
 
-                            ThingManager!.DetectChanges(this);
+                            DetectChanges(this);
                         }
                         else
                         {

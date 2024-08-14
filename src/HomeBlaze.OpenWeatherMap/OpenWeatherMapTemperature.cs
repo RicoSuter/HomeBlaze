@@ -64,7 +64,7 @@ namespace HomeBlaze.OpenWeatherMap
             IThingManager thingManager,
             IHttpClientFactory httpClientFactory,
             ILogger<OpenWeatherMapTemperature> logger)
-            : base(thingManager, logger)
+            : base(logger)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -105,7 +105,7 @@ namespace HomeBlaze.OpenWeatherMap
                            .GetDouble();
 
                         LastUpdated = DateTimeOffset.Now;
-                        ThingManager.DetectChanges(this);
+                        DetectChanges(this);
                     }
                 }
                 finally

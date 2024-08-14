@@ -23,9 +23,9 @@ namespace HomeBlaze.Services
             // TODO: Write log
         }
 
-        public void OnNext(IEvent value)
+        public void OnNext(IEvent @event)
         {
-            _queue.Post(value);
+            Publish(@event);
         }
 
         public void Publish(IEvent @event)

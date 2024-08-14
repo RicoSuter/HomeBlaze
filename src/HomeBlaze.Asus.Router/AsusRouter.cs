@@ -81,7 +81,7 @@ namespace HomeBlaze.AsusRouter
             IThingManager thingManager,
             IHttpClientFactory httpClientFactory,
             ILogger<AsusRouter> logger)
-            : base(thingManager, logger)
+            : base(logger)
         {
             _httpClientFactory = httpClientFactory;
         }

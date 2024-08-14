@@ -99,7 +99,7 @@ namespace HomeBlaze.Tesla
         public string IconName => "fa-solid fa-car";
 
         public TeslaVehicle(IThingManager thingManager, IHttpClientFactory httpClientFactory, ILogger<TeslaVehicle> logger)
-            : base(thingManager, logger)
+            : base(logger)
         {
             _httpClientFactory = httpClientFactory;
         }

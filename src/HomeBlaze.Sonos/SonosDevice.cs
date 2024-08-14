@@ -147,7 +147,7 @@ namespace HomeBlaze.Sonos
                 IsAudioMuted = mute.CurrentMute;
             }
 
-            _parent.ThingManager.DetectChanges(_parent);
+            _parent.DetectChanges(_parent);
         }
 
         private static string? GetTrackTitle(string? trackMetaData, Didl? trackMetaDataObject)
@@ -184,13 +184,13 @@ namespace HomeBlaze.Sonos
             if (e.Volume?.TryGetValue("Master", out var volume) == true)
             {
                 AudioVolume = volume;
-                _parent.ThingManager.DetectChanges(this);
+                _parent.DetectChanges(this);
             }
 
             if (e.Mute?.TryGetValue("Master", out var mute) == true)
             {
                 IsAudioMuted = mute;
-                _parent.ThingManager.DetectChanges(this);
+                _parent.DetectChanges(this);
             }
         }
 
@@ -202,7 +202,7 @@ namespace HomeBlaze.Sonos
             CurrentAudioTrackAlbum = e.CurrentTrackMetaDataObject?.Items.FirstOrDefault()?.Album;
             CurrentAudioTrackImageUri = e.CurrentTrackMetaDataObject?.Items.FirstOrDefault()?.AlbumArtUri;
 
-            _parent.ThingManager.DetectChanges(this);
+            _parent.DetectChanges(this);
         }
 
         [Operation]

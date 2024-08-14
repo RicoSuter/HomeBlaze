@@ -83,7 +83,7 @@ namespace HomeBlaze.Philips.Hue
                 if (response.Errors.Any() == false)
                 {
                     GroupedLight.On.IsOn = true;
-                    Bridge.ThingManager.DetectChanges(this);
+                    Bridge.DetectChanges(this);
                 }
             }
         }
@@ -101,7 +101,7 @@ namespace HomeBlaze.Philips.Hue
                 if (response.Errors.Any() == false)
                 {
                     GroupedLight.On.IsOn = false;
-                    Bridge.ThingManager.DetectChanges(this);
+                    Bridge.DetectChanges(this);
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace HomeBlaze.Philips.Hue
                 if (response.Errors.Any() == false && GroupedLight.Dimming is not null)
                 {
                     GroupedLight.Dimming.Brightness = (double)(brightness * 100m);
-                    Bridge.ThingManager.DetectChanges(this);
+                    Bridge.DetectChanges(this);
                 }
 
                 if (turnOffAfterChange)

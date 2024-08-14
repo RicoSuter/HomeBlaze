@@ -63,7 +63,7 @@ namespace HomeBlaze.Logitech
         protected override TimeSpan FailureInterval => TimeSpan.FromSeconds(5);
 
         public LogitechHarmonyHub(IThingManager thingManager, ILogger<LogitechHarmonyHub> logger) 
-            : base(thingManager, logger)
+            : base(logger)
         {
             _thingManager = thingManager;
             _logger = logger;

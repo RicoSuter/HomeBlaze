@@ -31,7 +31,7 @@ namespace HomeBlaze.Zwave.Components
         internal void OnSwitchBinary(object? sender, ReportEventArgs<SwitchBinaryReport> e)
         {
             IsOn = e.Report.CurrentValue;
-            ParentDevice.Controller.ThingManager.DetectChanges(this);
+            ParentDevice.Controller.DetectChanges(this);
         }
 
         public async Task TurnOnAsync(CancellationToken cancellationToken)
@@ -41,7 +41,7 @@ namespace HomeBlaze.Zwave.Components
             var report = await _switchBinary.Get(cancellationToken);
             IsOn = report.CurrentValue;
 
-            ParentDevice.Controller.ThingManager.DetectChanges(this);
+            ParentDevice.Controller.DetectChanges(this);
         }
 
         public async Task TurnOffAsync(CancellationToken cancellationToken)
@@ -51,7 +51,7 @@ namespace HomeBlaze.Zwave.Components
             var report = await _switchBinary.Get(cancellationToken);
             IsOn = report.CurrentValue;
 
-            ParentDevice.Controller.ThingManager.DetectChanges(this);
+            ParentDevice.Controller.DetectChanges(this);
         }
     }
 }

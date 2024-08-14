@@ -77,7 +77,7 @@ namespace HomeBlaze.Nuki
         protected override TimeSpan FailureInterval => TimeSpan.FromSeconds(5);
 
         public NukiBridge(IThingManager thingManager, IHttpClientFactory httpClientFactory, ILogger<NukiBridge> logger)
-            : base(thingManager, logger)
+            : base(logger)
         {
             _thingManager = thingManager;
             _httpClientFactory = httpClientFactory;

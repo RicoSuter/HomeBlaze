@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.ComponentModel;
 using System.Net.Http;
@@ -11,7 +10,6 @@ using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
-using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
 
 using Namotion.Devices.Abstractions.Utilities;
@@ -24,10 +22,10 @@ namespace Namotion.Shelly
     [GenerateProxy]
     public abstract class ShellyDeviceBase :
         PollingThing,
-        ILastUpdatedProvider,
-        IIconProvider,
         IConnectedThing,
-        INetworkAdapter
+        INetworkAdapter,
+        IIconProvider,
+        ILastUpdatedProvider
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
@@ -59,17 +57,7 @@ namespace Namotion.Shelly
         protected override TimeSpan PollingInterval =>
             TimeSpan.FromMilliseconds(Cover?.IsMoving == true ? 1000 : RefreshInterval);
 
-        public static ShellyDevice Create(Action<ShellyDevice>? configure = null)
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddShellyDevice(string.Empty, configure);
-
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            return serviceProvider.GetRequiredKeyedService<ShellyDevice>(string.Empty);
-        }
-
-        public ShellyDeviceBase(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger, IThingManager? thingManager = null)
-            : base(thingManager!, logger)
+        public ShellyDeviceBase(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger) : base( logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
@@ -147,7 +135,7 @@ namespace Namotion.Shelly
             LastUpdated = DateTimeOffset.Now;
             IsConnected = true;
 
-            ThingManager.DetectChanges(this);
+            DetectChanges(this);
         }
     }
 }

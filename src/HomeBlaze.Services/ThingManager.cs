@@ -12,7 +12,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace HomeBlaze.Services
 {
-    public class ThingManager : BackgroundService, IThingManager
+    public class ThingManager : BackgroundService, IThingManager, IObserver<DetectChangesEvent>
     {
         private readonly BufferBlock<IThing> _changeDetectionTriggers = new BufferBlock<IThing>();
         private readonly HashSet<IThing> _thingsMarkedForChangeDetection = new HashSet<IThing>();
@@ -355,7 +355,20 @@ namespace HomeBlaze.Services
             thingMetadata.Disposables = thing
                 .GetType()
                 .FindInterfaces((t, _) => t.Name == "IObservable`1", null)
-                .Select(t => t.GetMethod("Subscribe")?.Invoke(thing, [_eventManager]) as IDisposable)
+                .SelectMany(t =>
+                {
+                    var method = t.GetMethod("Subscribe");
+                    if (method is not null)
+                    {
+                        var disposable = t.GetMethod("Subscribe")?.Invoke(thing, [_eventManager]) as IDisposable;
+                        if (t.GenericTypeArguments[0].IsAssignableTo(typeof(DetectChangesEvent)))
+                        {
+                            return [disposable, t.GetMethod("Subscribe")?.Invoke(thing, [this]) as IDisposable];
+                        }
+                        return [disposable];
+                    }
+                    return Array.Empty<IDisposable?>();
+                })
                 .OfType<IDisposable>()
                 .ToArray();
 
@@ -373,6 +386,7 @@ namespace HomeBlaze.Services
         {
             IThing[] children;
 
+            var disposables = _things[thing].Disposables;
             lock (_things)
             {
                 if (_things.Any(t => t.Value.Children.Contains(thing)))
@@ -392,7 +406,7 @@ namespace HomeBlaze.Services
 
             UnregisterChildren(thing, children);
 
-            foreach (var disposable in _things[thing].Disposables)
+            foreach (var disposable in disposables)
             {
                 try
                 {
@@ -581,6 +595,19 @@ namespace HomeBlaze.Services
                 _things[parent].Children.Remove(thing);
                 Unregister(thing);
             }
+        }
+
+        public void OnCompleted()
+        {
+        }
+
+        public void OnError(Exception error)
+        {
+        }
+
+        public void OnNext(DetectChangesEvent value)
+        {
+            DetectChanges(value.Thing);
         }
     }
 }

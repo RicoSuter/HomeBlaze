@@ -1,14 +1,16 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Services;
+using HomeBlaze.Messages;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Reactive.Subjects;
 
 namespace HomeBlaze.Services.Abstractions
 {
-    public abstract class PollingThing : BackgroundService, IThing
+    public abstract class PollingThing : BackgroundService, IThing, IObservable<DetectChangesEvent>
     {
         private readonly ILogger _logger;
+        private readonly Subject<DetectChangesEvent> _detectChanges = new();
 
         [Configuration(IsIdentifier = true)]
         public virtual string Id { get; set; } = Guid.NewGuid().ToString();
@@ -19,13 +21,8 @@ namespace HomeBlaze.Services.Abstractions
 
         protected virtual TimeSpan FailureInterval => TimeSpan.FromSeconds(60);
 
-        public IThingManager ThingManager { get; private set; }
-
-        public PollingThing(
-            IThingManager thingManager,
-            ILogger logger)
+        public PollingThing(ILogger logger)
         {
-            ThingManager = thingManager;
             _logger = logger;
         }
 
@@ -36,7 +33,7 @@ namespace HomeBlaze.Services.Abstractions
                 try
                 {
                     await PollAsync(stoppingToken);
-                    ThingManager?.DetectChanges(this);
+                    DetectChanges(this);
 
                     // TODO(perf): Is this a good idea?
 
@@ -51,14 +48,29 @@ namespace HomeBlaze.Services.Abstractions
                 }
                 catch (Exception e)
                 {
-                    ThingManager?.DetectChanges(this);
-
+                    DetectChanges(this);
                     _logger.LogWarning(e, "Polling of thing failed.");
                     await Task.Delay(FailureInterval, stoppingToken);
                 }
             }
         }
+        
+        public void DetectChanges(IThing thing)
+        {
+            _detectChanges.OnNext(new DetectChangesEvent(thing));
+        }
 
         public abstract Task PollAsync(CancellationToken cancellationToken);
+
+        public IDisposable Subscribe(IObserver<DetectChangesEvent> observer)
+        {
+            return _detectChanges.Subscribe(observer);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _detectChanges.Dispose();
+        }
     }
 }

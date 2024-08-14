@@ -53,8 +53,8 @@ namespace HomeBlaze.Things
         [State]
         public int EventQueueSize => _eventManager.QueueSize;
 
-        public SystemDiagnostics(SystemThing systemThing, IThingManager thingManager, IEventManager eventManager, ILogger logger)
-            : base(thingManager, logger)
+        public SystemDiagnostics(SystemThing systemThing, IEventManager eventManager, ILogger logger)
+            : base(logger)
         {
             _systemThing = systemThing;
             _eventManager = eventManager;

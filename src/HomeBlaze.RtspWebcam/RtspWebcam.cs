@@ -60,7 +60,7 @@ namespace HomeBlaze.RtspWebcam
         public DateTimeOffset? LastUpdated { get; private set; }
 
         public RtspWebcam(IThingManager thingManager, ILogger<RtspWebcam> logger)
-            : base(thingManager, logger)
+            : base(logger)
         {
             _logger = logger;
         }

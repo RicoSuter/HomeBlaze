@@ -120,7 +120,7 @@ namespace HomeBlaze.Tesla.WallConnector
         protected override TimeSpan FailureInterval => TimeSpan.FromSeconds(5);
 
         public TeslaWallConnector(IThingManager thingManager, IHttpClientFactory httpClientFactory, ILogger<TeslaWallConnector> logger) 
-            : base(thingManager, logger)
+            : base(logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;

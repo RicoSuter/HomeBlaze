@@ -7,10 +7,11 @@ using System.Net.Http.Headers;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Threading;
 
 using Namotion.Wallbox.Responses.GetChargers;
 using Namotion.Wallbox.Responses.GetChargerStatus;
-using System.Threading;
+using Namotion.Wallbox.Responses.GetChargingSessions;
 
 namespace Namotion.Wallbox
 {
@@ -124,6 +125,31 @@ namespace Namotion.Wallbox
 
                 var responseBody = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<GetChargerStatusResponse>(responseBody) ?? new GetChargerStatusResponse();
+            }, cancellationToken);
+        }
+
+        public async Task<ChargingSessionsData[]> GetChargerChargingSessionsAsync(
+            int groupId, int chargerId, DateTimeOffset startTime, DateTimeOffset endTime,
+            int limit = 10000, int offset = 0, CancellationToken cancellationToken = default)
+        {
+            return await AuthenticateAsync(async () =>
+            {
+                var filters = $"{{\"filters\":[{{\"field\":\"start_time\",\"operator\":\"gte\",\"value\":{startTime.ToUnixTimeSeconds()}}}," +
+                              $"{{\"field\":\"start_time\",\"operator\":\"lt\",\"value\":{endTime.ToUnixTimeSeconds()}}}," +
+                              $"{{\"field\":\"charger_id\",\"operator\":\"eq\",\"value\":{chargerId}}}]}}";
+
+                var requestUrl = $"{_baseUrl}v4/groups/{groupId}/charger-charging-sessions?filters={Uri.EscapeDataString(filters)}" +
+                                 $"&fields[charger_charging_session]=&limit={limit}&offset={offset}";
+
+                using var request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _wallboxToken);
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var response = await _httpClient.SendAsync(request, cancellationToken);
+                response.EnsureSuccessStatusCode();
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<GetChargingSessionsResponse>(responseBody)?.Data ?? [];
             }, cancellationToken);
         }
 

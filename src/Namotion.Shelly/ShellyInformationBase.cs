@@ -11,18 +11,18 @@ namespace Namotion.Shelly
     public class ShellyInformationBase
     {
         /// <summary>
+        /// Gets the ID of the device.
+        /// </summary>
+        [JsonPropertyName("id")]
+        [State]
+        public virtual string? Id { get; init; }
+
+        /// <summary>
         /// Gets the name of the device.
         /// </summary>
         [JsonPropertyName("name")]
         [State]
         public virtual string? Name { get; init; }
-
-        /// <summary>
-        /// Gets the ID of the device.
-        /// </summary>
-        [JsonPropertyName("id")]
-        [State]
-        public virtual string? Identifier { get; init; }
 
         /// <summary>
         /// Gets the MAC address of the device.

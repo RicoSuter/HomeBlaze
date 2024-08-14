@@ -79,7 +79,10 @@ namespace HomeBlaze.Abstractions.Attributes
                 StateUnit.Watt => value + " W",
                 StateUnit.Hertz => value + " hz",
                 StateUnit.KiloWatt => value + " kW",
-                StateUnit.WattHour => value + " Wh",
+                StateUnit.WattHour => 
+                    value is not null && 
+                    decimal.TryParse(value.ToString(), out var kwh) &&
+                    kwh > 10000 ? $"{Math.Round(kwh / 1000, 3)} kWh" : value + " Wh",
                 StateUnit.Lumen => value + " lm",
                 StateUnit.Meter => value + " m",
                 StateUnit.Millimeter => value + " mm",

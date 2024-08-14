@@ -81,13 +81,13 @@ namespace HomeBlaze.Nuki
                 if (_device.LastKnownState != null)
                 {
                     _device.LastKnownState.State = 4;
-                    Bridge.ThingManager.DetectChanges(this);
+                    Bridge.DetectChanges(this);
                 }
 
                 using var httpClient = Bridge._httpClientFactory.CreateClient();
                 await httpClient.GetAsync($"http://{Bridge.Host}/lock?nukiId={NukiId}&token=" + Bridge.AuthToken, cancellationToken);
 
-                Bridge.ThingManager.DetectChanges(this);
+                Bridge.DetectChanges(this);
             }
         }
 
@@ -98,13 +98,13 @@ namespace HomeBlaze.Nuki
                 if (_device.LastKnownState != null)
                 {
                     _device.LastKnownState.State = 2;
-                    Bridge.ThingManager.DetectChanges(this);
+                    Bridge.DetectChanges(this);
                 }
 
                 using var httpClient = Bridge._httpClientFactory.CreateClient();
                 await httpClient.GetAsync($"http://{Bridge.Host}/unlock?nukiId={NukiId}&token=" + Bridge.AuthToken, cancellationToken);
 
-                Bridge.ThingManager.DetectChanges(this);
+                Bridge.DetectChanges(this);
             }
         }
     }

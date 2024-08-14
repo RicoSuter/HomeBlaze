@@ -36,7 +36,7 @@ namespace HomeBlaze.Xbox
         protected override TimeSpan FailureInterval => TimeSpan.FromMinutes(5);
 
         public XboxLiveAccount(IThingManager thingManager, ILogger<XboxLiveAccount> logger) 
-            : base(thingManager, logger)
+            : base(logger)
         {
         }
 

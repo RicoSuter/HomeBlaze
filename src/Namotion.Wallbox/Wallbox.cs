@@ -1,19 +1,19 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Net.Http;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
+using System.Linq;
 
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices.Energy;
-using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Services.Abstractions;
 
 using Namotion.Wallbox.Responses.GetChargerStatus;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Networking;
-using System.Text.Json.Serialization;
 
 namespace Namotion.Wallbox
 {
@@ -62,6 +62,9 @@ namespace Namotion.Wallbox
         [State(Unit = StateUnit.Ampere)]
         public decimal? MaximumChargingCurrent => Status?.ConfigData?.MaximumChargingCurrent;
 
+        [State(Unit = StateUnit.WattHour, IsCumulative = true)]
+        public decimal? TotalConsumedEnergy { get; private set; }
+
         [ScanForState]
         internal GetChargerStatusResponse? Status { get; private set; }
 
@@ -74,7 +77,7 @@ namespace Namotion.Wallbox
             {
                 await _wallboxClient.SetMaximumChargingCurrentAsync(SerialNumber, maximumChargingCurrent, cancellationToken);
                 await PollAsync(cancellationToken);
-                ThingManager.DetectChanges(this);
+                DetectChanges(this);
             }
         }
 
@@ -85,7 +88,7 @@ namespace Namotion.Wallbox
             {
                 await _wallboxClient.LockAsync(SerialNumber, cancellationToken);
                 await PollAsync(cancellationToken);
-                ThingManager.DetectChanges(this);
+                DetectChanges(this);
             }
         }
 
@@ -96,14 +99,14 @@ namespace Namotion.Wallbox
             {
                 await _wallboxClient.UnlockAsync(SerialNumber, cancellationToken);
                 await PollAsync(cancellationToken);
-                ThingManager.DetectChanges(this);
+                DetectChanges(this);
             }
         }
 
         protected override TimeSpan PollingInterval => TimeSpan.FromMinutes(1);
 
-        public Wallbox(IThingManager thingManager, IHttpClientFactory httpClientFactory, ILogger<Wallbox> logger)
-            : base(thingManager, logger)
+        public Wallbox(IHttpClientFactory httpClientFactory, ILogger<Wallbox> logger)
+            : base(logger)
         {
             _httpClientFactory = httpClientFactory;
         }
@@ -112,6 +115,8 @@ namespace Namotion.Wallbox
         {
             _wallboxClient = null;
         }
+
+        private DateTimeOffset _lastSessionsRetrieval = DateTimeOffset.MinValue;
 
         public override async Task PollAsync(CancellationToken cancellationToken)
         {
@@ -122,6 +127,26 @@ namespace Namotion.Wallbox
             try
             {
                 Status = await _wallboxClient.GetChargerStatusAsync(SerialNumber, cancellationToken);
+                
+                if (DateTimeOffset.UtcNow > _lastSessionsRetrieval.AddMinutes(30) &&
+                    Status is not null &&
+                    Status.ConfigData?.GroupId is not null)
+                {
+                    // TODO: We should cache the previous sum and retrieval date and only retrieve new sessions
+
+                    var sessions = await _wallboxClient.GetChargerChargingSessionsAsync(
+                        Status.ConfigData.GroupId,
+                        Status.ConfigData.ChargerId, 
+                        DateTimeOffset.MinValue, 
+                        DateTimeOffset.Now, cancellationToken: cancellationToken);
+
+                    _lastSessionsRetrieval = DateTimeOffset.UtcNow;
+                   
+                    TotalConsumedEnergy = 
+                        sessions.Sum(s => s.Attributes.Energy) + 
+                        Status.AddedEnergy * 1000;
+                }
+
                 IsConnected = true;
             }
             catch (Exception)

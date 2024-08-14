@@ -21,14 +21,18 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var device = new ShellyDevice(
                         sp.GetRequiredService<IHttpClientFactory>(),
-                        sp.GetRequiredService<ILogger<ShellyDevice>>(),
-                        null);
+                        sp.GetRequiredService<ILogger<ShellyDevice>>());
 
                     configure?.Invoke(device);
 
                     return device;
                 })
                 .AddSingleton<IHostedService>(sp => sp.GetRequiredKeyedService<ShellyDeviceBase>(name));
+        }
+        
+        public static ShellyDevice GetRequiredShellyDevice(this IServiceProvider serviceProvider, string name)
+        {
+            return serviceProvider.GetRequiredKeyedService<ShellyDevice>(name);
         }
     }
 }
