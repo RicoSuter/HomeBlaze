@@ -57,7 +57,8 @@ namespace Namotion.Shelly
         protected override TimeSpan PollingInterval =>
             TimeSpan.FromMilliseconds(Cover?.IsMoving == true ? 1000 : RefreshInterval);
 
-        public ShellyDeviceBase(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger) : base( logger)
+        public ShellyDeviceBase(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger) 
+            : base( logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
@@ -134,8 +135,6 @@ namespace Namotion.Shelly
 
             LastUpdated = DateTimeOffset.Now;
             IsConnected = true;
-
-            DetectChanges(this);
         }
     }
 }

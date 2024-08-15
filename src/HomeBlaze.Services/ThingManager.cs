@@ -4,6 +4,7 @@ using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Messages;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Namotion.Proxy;
 using Namotion.Reflection;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -28,12 +29,33 @@ namespace HomeBlaze.Services
         private readonly IEventManager _eventManager;
         private readonly ILogger<ThingManager> _logger;
 
+        private readonly ProxyContext _context;
+        private IDisposable _subscription;
+
         public ThingManager(IThingStorage thingLoader, ITypeManager typeManager, IEventManager eventManager, ILogger<ThingManager> thingManager)
         {
             _thingStorage = thingLoader;
             _typeManager = typeManager;
             _eventManager = eventManager;
             _logger = thingManager;
+
+            _context = ProxyContext
+               .CreateBuilder()
+               .WithRegistry()
+               .WithFullPropertyTracking()
+               .WithProxyLifecycle()
+               .WithDataAnnotationValidation()
+               .Build();
+
+            _subscription = _context
+                .GetPropertyChangedObservable()
+                .Subscribe((args) =>
+                {
+                    if (args.Property.Proxy is IThing thing)
+                    {
+                        DetectChanges(thing);
+                    }
+                });
         }
 
         public IGroupThing? RootThing { get; private set; }
@@ -60,6 +82,12 @@ namespace HomeBlaze.Services
             {
                 return _thingIds.TryGetValue(thingId, out var thing) ? thing : null;
             }
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _subscription.Dispose();
         }
 
         public PropertyState? TryGetPropertyState(string? thingId, string? property, bool includeExtensions)
@@ -342,8 +370,13 @@ namespace HomeBlaze.Services
                     return;
                 }
 
-                _thingIds[thing.Id] = thing;
+                if (thing is IProxy proxy)
+                {
+                    proxy.SetContext(_context);
+                }
 
+                _thingIds[thing.Id] = thing;
+                
                 thingMetadata = new ThingMetadata
                 {
                     ThingSetupAttribute = _typeManager.TryGetThingSetupAttribute(thing.GetType()),
@@ -399,6 +432,11 @@ namespace HomeBlaze.Services
                     .Children
                     .Where(c => c != null)
                     .ToArray()!;
+
+                if (thing is IProxy proxy)
+                {
+                    proxy.SetContext(null);
+                }
 
                 _things.Remove(thing);
                 _thingIds.Remove(thing.Id);

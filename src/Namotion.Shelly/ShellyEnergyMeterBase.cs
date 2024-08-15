@@ -20,7 +20,7 @@ namespace Namotion.Shelly
     {
         string IThing.Id => Parent!.Id + "/energy-meter";
 
-        string? IThing.Title => "EnergyMeter";
+        string? IThing.Title => "Energy Meter";
 
         string IIconProvider.IconName => "fas fa-bolt";
 

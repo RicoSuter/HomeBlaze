@@ -23,6 +23,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />
 		<ProjectReference Include="..\Namotion.NuGetPlugins\Namotion.NuGetPlugins.csproj" />
+		<ProjectReference Include="..\Namotion.Proxy\Namotion.Proxy.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -95,7 +95,10 @@ namespace HomeBlaze.MyStrom
                 {
                     var infoResponse = await httpClient.GetAsync($"http://{IpAddress}/info", cancellationToken);
                     var json = await infoResponse.Content.ReadAsStringAsync(cancellationToken);
-                    Information = JsonSerializer.Deserialize<MyStromSwitchInformation>(json);
+                    if (json != "Not Found")
+                    {
+                        Information = JsonSerializer.Deserialize<MyStromSwitchInformation>(json);
+                    }
                 }
 
                 await RefreshReportAsync(cancellationToken);

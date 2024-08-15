@@ -74,6 +74,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Shelly", "HomeBlaze.Shelly\HomeBlaze.Shelly.csproj", "{1DB6BA01-7DA7-47DA-922C-82210C96C3CD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00 Build", "00 Build", "{448CDBC3-84DD-404D-96BD-CB259070DE3B}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\docker-publish.yml = ..\.github\workflows\docker-publish.yml
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Namotion.Shelly", "Namotion.Shelly\Namotion.Shelly.csproj", "{CC54A2BC-3582-4C6A-A52A-FBCF3D30E10B}"
 EndProject
@@ -117,11 +120,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shelly", "Shelly", "{218376
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Wallbox", "Wallbox", "{125D4D2D-23D1-418B-8C1D-278DD614DD4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Namotion.Wallbox", "Namotion.Wallbox\Namotion.Wallbox.csproj", "{19A7040A-45E6-437A-A4DE-89AD950BF563}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Namotion.Wallbox", "Namotion.Wallbox\Namotion.Wallbox.csproj", "{19A7040A-45E6-437A-A4DE-89AD950BF563}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Namotion.Wallbox.Tests", "Namotion.Wallbox.Tests\Namotion.Wallbox.Tests.csproj", "{01764EDC-4569-46BF-A967-9B81BF77873A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Namotion.Wallbox.Tests", "Namotion.Wallbox.Tests\Namotion.Wallbox.Tests.csproj", "{01764EDC-4569-46BF-A967-9B81BF77873A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeBlaze.Wallbox", "HomeBlaze.Wallbox\HomeBlaze.Wallbox.csproj", "{7E4AC016-F967-4B0C-9A14-7034752D386D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Wallbox", "HomeBlaze.Wallbox\HomeBlaze.Wallbox.csproj", "{7E4AC016-F967-4B0C-9A14-7034752D386D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
