@@ -376,7 +376,7 @@ namespace HomeBlaze.Services
                 }
 
                 _thingIds[thing.Id] = thing;
-                
+
                 thingMetadata = new ThingMetadata
                 {
                     ThingSetupAttribute = _typeManager.TryGetThingSetupAttribute(thing.GetType()),
@@ -385,7 +385,21 @@ namespace HomeBlaze.Services
                 _things[thing] = thingMetadata;
             }
 
-            thingMetadata.Disposables = thing
+            thingMetadata.Disposables = SubscribeToEvents(thing);
+
+            if (thing is IHostedService hostedService)
+            {
+                // TODO: Why is task needed?
+                Task.Run(async () => await hostedService.StartAsync(cancellationToken));
+            }
+
+            _eventManager.Publish(new ThingRegisteredEvent(thing));
+            _logger.LogInformation("Thing {ThingId} registered.", thing.Id);
+        }
+
+        private IDisposable[] SubscribeToEvents(IThing thing)
+        {
+            return thing
                 .GetType()
                 .FindInterfaces((t, _) => t.Name == "IObservable`1", null)
                 .SelectMany(t =>
@@ -404,15 +418,6 @@ namespace HomeBlaze.Services
                 })
                 .OfType<IDisposable>()
                 .ToArray();
-
-            if (thing is IHostedService hostedService)
-            {
-                // TODO: Why is task needed?
-                Task.Run(async () => await hostedService.StartAsync(cancellationToken));
-            }
-
-            _eventManager.Publish(new ThingRegisteredEvent(thing));
-            _logger.LogInformation("Thing {ThingId} registered.", thing.Id);
         }
 
         private void Unregister(IThing thing)
