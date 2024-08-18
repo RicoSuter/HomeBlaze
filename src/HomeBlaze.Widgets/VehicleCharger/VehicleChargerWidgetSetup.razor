@@ -1,0 +1,23 @@
+﻿@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Components
+@using HomeBlaze.Components.Inputs
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using MudBlazor
+@using System.Threading
+@using HomeBlaze.Abstractions.Services
+@using System.Diagnostics.CodeAnalysis;
+
+@inherits ThingSetupComponent<VehicleChargerWidget>
+
+<MudForm @ref="Form">
+    <br />
+    <ThingSelect Label="Vehicle Charger" Required="true" @bind-ThingId="Thing.VehicleChargerId" />
+
+    <br />
+    <h2>Display</h2>
+    <div class="d-flex gap-4">
+        <MudTextField Label="Scale" @bind-Value="@Thing.Scale" />
+    </div>
+</MudForm>
