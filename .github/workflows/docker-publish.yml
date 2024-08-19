@@ -40,7 +40,7 @@ jobs:
         run: dotnet test ./src/HomeBlaze.sln --no-restore --verbosity normal
 
       - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        uses: docker/login-action@5cd11c3a4ced054e52742c5fd54dca954e0edd85
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -48,15 +48,16 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        uses: docker/metadata-action@5cd11c3a4ced054e52742c5fd54dca954e0edd85
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: docker/build-push-action@5cd11c3a4ced054e52742c5fd54dca954e0edd85
         with:
           context: ./src
           file: ./src/HomeBlaze/Dockerfile
+          platforms: linux/amd64,linux/386,linux/arm64,linux/arm/v7
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
