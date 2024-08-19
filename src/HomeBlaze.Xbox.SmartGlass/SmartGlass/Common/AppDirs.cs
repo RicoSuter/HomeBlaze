@@ -17,14 +17,14 @@ namespace SmartGlass.Common
                  */
                 baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                /*
-                 * Mac OS X
-                 * Result: /Users/<username>/.config
-                 */
-                baseDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            }
+            //else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            //{
+            //    /*
+            //     * Mac OS X
+            //     * Result: /Users/<username>/.config
+            //     */
+            //    baseDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            //}
             else
             {
                 /*
