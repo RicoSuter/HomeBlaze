@@ -39,8 +39,8 @@ jobs:
       - name: Test
         run: dotnet test ./src/HomeBlaze.sln --no-restore --verbosity normal
 
-        # Add support for more platforms with QEMU (optional)
-        # https://github.com/docker/setup-qemu-action
+      # Add support for more platforms with QEMU (optional)
+      # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -65,7 +65,7 @@ jobs:
         with:
           context: ./src
           file: ./src/HomeBlaze/Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64 # removed linux/arm/v7 and linux/386
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
