@@ -40,7 +40,7 @@ jobs:
         run: dotnet test ./src/HomeBlaze.sln --no-restore --verbosity normal
 
       - name: Log in to the Container registry
-        uses: docker/login-action@5cd11c3a4ced054e52742c5fd54dca954e0edd85
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -48,12 +48,12 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@5cd11c3a4ced054e52742c5fd54dca954e0edd85
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@5cd11c3a4ced054e52742c5fd54dca954e0edd85
+        uses: docker/build-push-action@v6
         with:
           context: ./src
           file: ./src/HomeBlaze/Dockerfile
