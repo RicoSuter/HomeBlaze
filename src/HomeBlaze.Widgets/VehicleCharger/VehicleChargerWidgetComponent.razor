@@ -10,8 +10,8 @@
 @inject IThingManager ThingManager
 
 <div style="height: @(Thing?.Scale * 100)px">
-    <div style="transform: scale(@(((Thing?.Scale * 100 - 20) / 80) ?? 1.0m)); transform-origin: top left"
-         onclick="@(() => OnClick())">
+    <div style="transform: scale(@(((Thing?.Scale * 100 - 20) / 80) ?? 1.0m)); transform-origin: top left; pointer-events: all"
+         @onclick="@(() => ShowHistoryAsync())" @ontouchend="@(() => ShowHistoryAsync())">
         <div>
             @if (Thing?.VehicleCharger?.IsPluggedIn == false)
             {
@@ -301,7 +301,7 @@
     [Parameter]
     public VehicleChargerWidget? Thing { get; set; }
 
-    public async void OnClick()
+    public async Task ShowHistoryAsync()
     {
         if (Thing?.VehicleCharger is IThing thing)
         {
