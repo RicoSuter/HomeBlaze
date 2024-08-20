@@ -1,5 +1,8 @@
 ﻿@page "/logs"
+
 @using System.Threading;
+@using Microsoft.Extensions.Logging;
+
 @using HomeBlaze.Host.Logging;
 
 @implements IDisposable
@@ -7,11 +10,26 @@
 <PageTitle>Logs</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
-    <div style="margin: 20px;">
+    <MudTable Items="@MemoryLogger.LogEntries" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm">
+        <HeaderContent>
+            <MudTh Style="width: 100px">Time</MudTh>
+            <MudTh Style="width: 100px">Level</MudTh>
+            <MudTh>Message</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Time">@context.Time.ToString("HH:mm:ss.fff")</MudTd>
+            <MudTd DataLabel="Level"><MudChip Color="@(GetLevelColor(context.Level))">@context.Level</MudChip></MudTd>
+            <MudTd DataLabel="Message">
+                @context.Message
+                @if (context.Exception is not null)
+                {
 <pre>
-@(MemoryLogger.CurrentOutput)
+@context.Exception
 </pre>
-    </div>
+                }
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
 </MudContainer>
 
 @code {
@@ -20,6 +38,15 @@
     protected override void OnInitialized()
     {
         _timer = new Timer(OnTimer!, null, 5000, 5000);
+    }
+
+    private Color GetLevelColor(LogLevel level)
+    {
+        return
+            level == LogLevel.Critical ? Color.Error :
+            level == LogLevel.Error ? Color.Error :
+            level == LogLevel.Warning ? Color.Warning :
+            Color.Default;
     }
 
     private void OnTimer(object o)

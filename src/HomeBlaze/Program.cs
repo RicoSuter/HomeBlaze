@@ -22,7 +22,9 @@ if (!string.IsNullOrEmpty(seqEndpoint))
     builder.Logging.AddSerilog(serilogLogger);
 }
 
-builder.Logging.AddProvider(new MemoryLoggerProvider());
+builder.Logging
+    .AddConsole()
+    .AddProvider(new MemoryLoggerProvider());
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 

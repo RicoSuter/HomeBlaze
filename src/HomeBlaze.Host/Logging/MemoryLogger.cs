@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace HomeBlaze.Host.Logging
 {
     public class MemoryLogger : ILogger
     {
-        public static string CurrentOutput { get; private set; } = "";
+        public static Collection<LogEntry> LogEntries { get; } = [];
 
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => default;
 
@@ -23,11 +23,29 @@ namespace HomeBlaze.Host.Logging
                 return;
             }
 
-            var newOutput =
-                $"{logLevel.ToString().Substring(0, 4)} - {_name} | {DateTimeOffset.Now.ToString("O")}\n" +
-                $"       {formatter(state, exception)}\n{(exception != null ? exception.ToString() + "\n" : string.Empty)}" + CurrentOutput;
+            LogEntries.Insert(0, new LogEntry
+            {
+                Level = logLevel,
+                Time = DateTimeOffset.Now,
+                Message = formatter(state, exception),
+                Exception = exception != null ? "\n" + exception.ToString() : null
+            });
 
-            CurrentOutput = string.Join('\n', newOutput.Split('\n').Take(1000));
+            if (LogEntries.Count > 1000)
+            {
+                LogEntries.RemoveAt(1000);
+            }
+        }
+
+        public record LogEntry
+        {
+            public LogLevel Level { get; init; }
+
+            public DateTimeOffset Time { get; init; }
+
+            public required string Message { get; init; }
+
+            public required string? Exception { get; init; }
         }
     }
 }
