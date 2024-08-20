@@ -205,16 +205,16 @@
     {
         await dialogService.Show<StateHistoryDialog>(string.Empty,
             new DialogParameters
-                            {
+            {
                 { "Thing", thing },
                 { "PropertyName", propertyName }
-                            },
+            },
             new DialogOptions
-                {
-                    CloseOnEscapeKey = true,
-                    NoHeader = true,
-                    FullScreen = true
-                }).Result;
+            {
+                CloseOnEscapeKey = true,
+                NoHeader = true,
+                FullScreen = true
+            }).Result;
     }
 
     string FormatTime(object value)
@@ -227,10 +227,11 @@
         IsInitialized = true;
 
         Series.Add(new SeriesDto
-            {
-                ThingId = Thing?.Id,
-                PropertyName = PropertyName
-            });
+        {
+            ThingId = Thing?.Id,
+            PropertyName = PropertyName,
+            Color = "#776BE7"
+        });
 
         await RefreshAsync();
     }

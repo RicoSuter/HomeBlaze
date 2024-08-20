@@ -5,7 +5,8 @@
 @inject IDialogService DialogService
 @inject IThingManager ThingManager
 
-<div @ondblclick="OnDoubleClick" style="@(Node?.Widget.NoPointerEvents == true ? "" : "pointer-events: all")">
+<div @ondblclick="OnDoubleClick" @ontouchstart="OnTouchStart" 
+     style="@(Node?.Widget.NoPointerEvents == true ? "" : "pointer-events: all")">
     <div style="@(Node?.Locked != true ? $"pointer-events: none; outline: 5px solid {OutlineColor}; outline-offset: -5px" : "")">
         @Node?.Widget.RenderFragment
     </div>
@@ -17,7 +18,28 @@
 
     public string OutlineColor => Node?.Selected == true ? "Blue" : "Gray";
 
-    public async void OnDoubleClick(MouseEventArgs args)
+    private async void OnDoubleClick(MouseEventArgs args)
+    {
+        await EditThingAsync();
+    }
+
+    private DateTime _lastTapTime = DateTime.MinValue;
+    private const int DoubleTapThreshold = 300;
+
+    private async void OnTouchStart()
+    {
+        var currentTime = DateTime.Now;
+      
+        var timeDifference = (currentTime - _lastTapTime).TotalMilliseconds;
+        if (timeDifference < DoubleTapThreshold)
+        {
+            await EditThingAsync();
+        }
+
+        _lastTapTime = currentTime;
+    }
+
+    private async Task EditThingAsync()
     {
         if (Node?.Locked == false && Node.Widget.Thing != null)
         {
