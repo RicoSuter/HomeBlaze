@@ -65,6 +65,11 @@ Custom script to be used in an automation (blinking lights can be used as alarm)
 
 ## Installation
 
+Supported platforms: 
+
+- linux/amd64 (x64)
+- linux/arm64 (e.g. Raspberry Pi 4/5)
+
 ### Docker
 
 To run HomeBlaze on port 9800 via Docker, create a `HomeBlaze` directory in your `C:` drive and run:
