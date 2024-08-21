@@ -1,27 +1,43 @@
-﻿using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Messages;
-using HomeBlaze.Abstractions.Services;
+﻿using Microsoft.Extensions.Logging;
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
-using HomeBlaze.Services.Abstractions;
 using System.ComponentModel;
-using HomeBlaze.Components.Editors;
-using Microsoft.Extensions.Logging;
-using HomeBlaze.Abstractions;
-using System.Reflection;
 using System.Linq;
+
+using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Messages;
+using HomeBlaze.Abstractions.Services;
+using HomeBlaze.Services.Abstractions;
+using HomeBlaze.Components.Editors;
+using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Inputs;
+using HomeBlaze.Abstractions.Presentation;
 
 namespace HomeBlaze.Dynamic
 {
     [DisplayName("Button Trigger")]
     [ThingSetup(typeof(ButtonTriggerThingSetup), CanEdit = true, CanClone = true)]
-    public class ButtonTriggerThing : ExtensionThing
+    public class ButtonTriggerThing : ExtensionThing, IIconProvider
     {
         private readonly IThingManager _thingManager;
         private readonly ILogger<ButtonTriggerThing> _logger;
+
+        public string IconName => "fa-solid fa-circle-dot";
+
+        [Configuration]
+        public IList<Operation> Operations { get; set; } = [];
+
+        [Configuration, State]
+        public bool IsEnabled { get; set; } = true;
+
+        [State]
+        public bool IsTriggered { get; private set; }
+
+        [State]
+        public DateTimeOffset? LastExecution { get; private set; }
 
         public ButtonTriggerThing(IThingManager thingManager, IEventManager eventManager, ILogger<ButtonTriggerThing> logger)
             : base(thingManager, eventManager)
@@ -37,18 +53,6 @@ namespace HomeBlaze.Dynamic
                 .GetInterfaces()
                 .Any(a => a.Name == "IObservable`1" && a.GenericTypeArguments[0].IsAssignableTo(typeof(ButtonEvent)));
         }
-
-        [Configuration]
-        public IList<Operation> Operations { get; set; } = new List<Operation>();
-
-        [Configuration, State]
-        public bool IsEnabled { get; set; } = true;
-
-        [State]
-        public bool IsTriggered { get; private set; }
-
-        [State]
-        public DateTimeOffset? LastExecution { get; private set; }
 
         protected override async Task HandleMessageAsync(IEvent @event, CancellationToken cancellationToken)
         {
