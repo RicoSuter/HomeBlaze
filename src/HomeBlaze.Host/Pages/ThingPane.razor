@@ -110,9 +110,18 @@
                 }
 
                 @* Custom Control Component *@
-                @if (Thing is IControlComponentProvider controlComponentProvider)
+                @if (TypeManager.TryGetThingComponentAttribute(Thing.GetType()) is ThingComponentAttribute attribute)
                 {
-                    @controlComponentProvider.ControlComponentRenderFragment
+                    @((new RenderFragment(builder =>
+                    {
+                        var controlViewType = attribute.ComponentType;
+                        if (controlViewType != null)
+                        {
+                            builder.OpenComponent(0, controlViewType);
+                            builder.AddAttribute(1, "Thing", Thing);
+                            builder.CloseComponent();
+                        }
+                    })))
                     <br />
                     <br />
                 }

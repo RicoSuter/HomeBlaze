@@ -13,5 +13,7 @@ namespace HomeBlaze.Abstractions.Services
         Task InitializeAsync(CancellationToken cancellationToken);
 
         ThingSetupAttribute? TryGetThingSetupAttribute(Type? thingType);
+
+        ThingComponentAttribute? TryGetThingComponentAttribute(Type? thingType);
     }
 }

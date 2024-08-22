@@ -17,6 +17,7 @@
 @inject IHttpClientFactory HttpClientFactory
 
 @attribute [ThingSetup(typeof(Wallbox), CanEdit = true)]
+
 @inherits ThingSetupComponent<Wallbox>
 
 <MudForm @ref="Form">
@@ -72,7 +73,7 @@
 
     public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
     {
-        EditedThing!.Reset();
+        EditedThing?.Reset();
         return base.UpdateEditedThingAsync(cancellationToken);
     }
 }

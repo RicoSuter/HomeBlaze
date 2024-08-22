@@ -75,9 +75,15 @@ namespace Namotion.Wallbox
                 maximumChargingCurrent >= 6 &&
                 maximumChargingCurrent <= 32)
             {
-                await _wallboxClient.SetMaximumChargingCurrentAsync(SerialNumber, maximumChargingCurrent, cancellationToken);
-                await PollAsync(cancellationToken);
-                DetectChanges(this);
+                try
+                {
+                    await _wallboxClient.SetMaximumChargingCurrentAsync(SerialNumber, maximumChargingCurrent, cancellationToken);
+                    await PollAsync(cancellationToken);
+                }
+                finally
+                {
+                    DetectChanges(this);
+                }
             }
         }
 
@@ -86,9 +92,15 @@ namespace Namotion.Wallbox
         {
             if (_wallboxClient is not null)
             {
-                await _wallboxClient.LockAsync(SerialNumber, cancellationToken);
-                await PollAsync(cancellationToken);
-                DetectChanges(this);
+                try
+                {
+                    await _wallboxClient.LockAsync(SerialNumber, cancellationToken);
+                    await PollAsync(cancellationToken);
+                }
+                finally
+                {
+                    DetectChanges(this);
+                }
             }
         }
 
@@ -97,9 +109,15 @@ namespace Namotion.Wallbox
         {
             if (_wallboxClient is not null)
             {
-                await _wallboxClient.UnlockAsync(SerialNumber, cancellationToken);
-                await PollAsync(cancellationToken);
-                DetectChanges(this);
+                try
+                {
+                    await _wallboxClient.UnlockAsync(SerialNumber, cancellationToken);
+                    await PollAsync(cancellationToken);
+                }
+                finally
+                {
+                    DetectChanges(this);
+                }
             }
         }
 
@@ -149,7 +167,7 @@ namespace Namotion.Wallbox
 
                 IsConnected = true;
             }
-            catch (Exception)
+            catch
             {
                 IsConnected = false;
                 throw;

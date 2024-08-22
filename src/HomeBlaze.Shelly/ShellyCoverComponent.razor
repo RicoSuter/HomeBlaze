@@ -1,7 +1,13 @@
 ﻿@using System.Threading
+
 @using MudBlazor
-@using HomeBlaze.Abstractions.Devices
+
 @using Namotion.Shelly
+
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Devices
+
+@attribute [ThingComponent(typeof(ShellyCover))]
 
 @if (Thing != null)
 {

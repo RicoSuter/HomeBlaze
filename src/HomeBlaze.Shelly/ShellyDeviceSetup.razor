@@ -13,6 +13,7 @@
 @using Namotion.Shelly
 
 @attribute [ThingSetup(typeof(ShellyDevice), CanEdit = true)]
+
 @inherits ThingSetupComponent<ShellyDevice>
 
 <MudForm @ref="Form">
@@ -23,7 +24,7 @@
 @code {
     public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
     {
-        EditedThing!.Reset();
+        EditedThing?.Reset();
         return base.UpdateEditedThingAsync(cancellationToken);
     }
 }

@@ -32,7 +32,7 @@ namespace Namotion.Shelly
         public virtual decimal? PowerConsumption => TotalActivePower;
 
         [ScanForState]
-        public virtual EnergyData? EnergyData { get; internal set; }
+        public virtual ShellyEnergyData? EnergyData { get; internal set; }
 
         [State]
         public virtual ShellyEnergyMeterPhase PhaseA { get; protected set; } = new ShellyEnergyMeterPhase("a");

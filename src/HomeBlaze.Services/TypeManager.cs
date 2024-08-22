@@ -1,11 +1,14 @@
-﻿using HomeBlaze.Abstractions;
+﻿using Microsoft.Extensions.Logging;
+
+using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Json;
 using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
-using Microsoft.Extensions.Logging;
+
 using Namotion.NuGetPlugins;
 using Namotion.Storage;
+
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Encodings.Web;
@@ -29,6 +32,7 @@ namespace HomeBlaze.Services
 
         private Task? _initializationTask;
         private Dictionary<Type, ThingSetupAttribute> _thingSetupAttributes = [];
+        private Dictionary<Type, ThingComponentAttribute> _thingComponentAttributes = [];
 
         public NuGetPlugin[] Plugins { get; private set; } = Array.Empty<NuGetPlugin>();
 
@@ -51,6 +55,11 @@ namespace HomeBlaze.Services
         public ThingSetupAttribute? TryGetThingSetupAttribute(Type? thingType)
         {
             return thingType is not null ? _thingSetupAttributes.TryGetValue(thingType, out var value) ? value : null : null;
+        }
+
+        public ThingComponentAttribute? TryGetThingComponentAttribute(Type? thingType)
+        {
+            return thingType is not null ? _thingComponentAttributes.TryGetValue(thingType, out var value) ? value : null : null;
         }
 
         public async Task InitializeAsync(CancellationToken cancellationToken)
@@ -87,11 +96,12 @@ namespace HomeBlaze.Services
                             foreach (var type in ThingTypes)
                             {
                                 var thingTypeAttribute = type.GetCustomAttribute<ThingTypeAttribute>(true);
-                                var fullName = 
+                                var fullName =
                                     thingTypeAttribute?.FullName ??
-                                    type.FullName ?? 
+                                    type.FullName ??
                                     throw new InvalidOperationException("No FullName.");
 
+                                // TODO: Remove and fix usages
                                 var thingSetupAttribute = type.GetCustomAttribute<ThingSetupAttribute>(true);
                                 if (thingSetupAttribute is not null)
                                 {
@@ -101,16 +111,20 @@ namespace HomeBlaze.Services
                                 JsonInheritanceConverter<IThing>.AdditionalKnownTypes[fullName] = type;
                             }
 
-                            foreach (var type in exportedTypes
-                                .Where(t => t.IsAssignableTo(typeof(IThingSetupComponent))))
+                            FindTypesWithAttribute<ThingSetupAttribute>(exportedTypes, (type, attribute) =>
                             {
-                                var thingSetupAttribute = type.GetCustomAttribute<ThingSetupAttribute>(true);
-                                if (thingSetupAttribute is not null)
+                                if (attribute.ComponentType is not null)
                                 {
-                                    _thingSetupAttributes[thingSetupAttribute.ComponentType!] = thingSetupAttribute;
-                                    thingSetupAttribute.ComponentType = type;
+                                    _thingSetupAttributes[attribute.ComponentType!] = attribute;
+                                    attribute.ComponentType = type;
                                 }
-                            }
+                            });
+
+                            FindTypesWithAttribute<ThingComponentAttribute>(exportedTypes, (type, attribute) =>
+                            {
+                                _thingComponentAttributes[attribute.ThingType] = attribute;
+                                attribute.ComponentType = type;
+                            });
                         }
                         catch (Exception e)
                         {
@@ -121,6 +135,19 @@ namespace HomeBlaze.Services
             }
 
             await _initializationTask;
+        }
+
+        private void FindTypesWithAttribute<TAttribute>(Type[] exportedTypes, Action<Type, TAttribute> action)
+            where TAttribute : Attribute
+        {
+            foreach (var type in exportedTypes)
+            {
+                var attribute = type.GetCustomAttribute<TAttribute>(true);
+                if (attribute is not null)
+                {
+                    action(type, attribute);
+                }
+            }
         }
 
         private Type[] GetExportedTypes()
