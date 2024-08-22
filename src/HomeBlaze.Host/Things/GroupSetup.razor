@@ -7,9 +7,9 @@
 @using MudBlazor
 
 @attribute [ThingSetup(typeof(Group), CanEdit = true)]
-@inject IThingManager ThingManager
-
 @inherits ThingSetupComponent<Group>
+
+@inject IThingManager ThingManager
 
 <MudForm @ref="Form">
     <MudTextField @bind-Value="Thing.Title" Label="Title" Required="true" />
