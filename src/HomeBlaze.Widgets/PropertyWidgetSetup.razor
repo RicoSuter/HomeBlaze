@@ -1,14 +1,18 @@
-﻿@using HomeBlaze.Abstractions
+﻿@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using System.Threading
+@using System.Diagnostics.CodeAnalysis;
+
+@using MudBlazor
+
+@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Abstractions.Presentation
 @using HomeBlaze.Components
 @using HomeBlaze.Components.Inputs
-@using Microsoft.Extensions.DependencyInjection
-@using Microsoft.Extensions.Logging
-@using MudBlazor
-@using System.Threading
 @using HomeBlaze.Abstractions.Services
-@using System.Diagnostics.CodeAnalysis;
 
+@attribute [ThingSetup(typeof(PropertyWidget))]
 @inherits ThingSetupComponent<PropertyWidget>
 
 <MudForm @ref="Form">

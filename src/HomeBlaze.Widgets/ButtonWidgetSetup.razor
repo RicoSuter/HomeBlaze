@@ -1,7 +1,10 @@
-﻿@using HomeBlaze.Components;
-@using HomeBlaze.Components.Editors;
-@using MudBlazor
+﻿@using MudBlazor
 
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Components;
+@using HomeBlaze.Components.Editors;
+
+@attribute [ThingSetup(typeof(ButtonWidgetSetup))]
 @inherits ThingSetupComponent<ButtonWidget>
 
 <MudForm @ref="Form">

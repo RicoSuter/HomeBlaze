@@ -1,13 +1,15 @@
-﻿@using HomeBlaze.Components;
+﻿@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Components;
 @using Microsoft.Extensions.DependencyInjection;
 @using MudBlazor
 @using System.Threading
 @using System.Net.Http
 
+@attribute [ThingSetup(typeof(GardenaLocation))]
+@inherits ThingSetupComponentBase<GardenaLocation>
+
 @inject IDialogService DialogService
 @inject IServiceProvider ServiceProvider
-
-@inherits ThingSetupComponentBase<GardenaLocation>
 
 <MudTextField @bind-Value="@_username" Label="Username" FullWidth="true"></MudTextField>
 <MudTextField @bind-Value="@_password" Label="Password" FullWidth="true" InputType="InputType.Password"></MudTextField>

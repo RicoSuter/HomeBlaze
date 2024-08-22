@@ -10,7 +10,6 @@ using System.Linq;
 
 namespace Namotion
 {
-    [ThingSetup(null)]
     public class HueBridgeExtension :
         ExtensionThing<HueBridge>,
         ILastUpdatedProvider,

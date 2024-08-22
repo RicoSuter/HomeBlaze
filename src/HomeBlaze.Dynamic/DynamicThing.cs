@@ -21,7 +21,6 @@ namespace HomeBlaze.Dynamic
 {
     [DisplayName("Dynamic Thing")]
     [Description("Dynamically implement a Thing Interface and its properties.")]
-    [ThingSetup(typeof(DynamicThingSetup), CanEdit = true, CanClone = true)]
     public class DynamicThing : ExtensionThing, IIconProvider, IInterceptor
     {
         public class DynamicStateAttribute : StateAttribute

@@ -101,23 +101,13 @@ namespace HomeBlaze.Services
                                     type.FullName ??
                                     throw new InvalidOperationException("No FullName.");
 
-                                // TODO: Remove and fix usages
-                                var thingSetupAttribute = type.GetCustomAttribute<ThingSetupAttribute>(true);
-                                if (thingSetupAttribute is not null)
-                                {
-                                    _thingSetupAttributes[type] = thingSetupAttribute;
-                                }
-
                                 JsonInheritanceConverter<IThing>.AdditionalKnownTypes[fullName] = type;
                             }
 
                             FindTypesWithAttribute<ThingSetupAttribute>(exportedTypes, (type, attribute) =>
                             {
-                                if (attribute.ComponentType is not null)
-                                {
-                                    _thingSetupAttributes[attribute.ComponentType!] = attribute;
-                                    attribute.ComponentType = type;
-                                }
+                                _thingSetupAttributes[attribute.ThingType] = attribute;
+                                attribute.ComponentType = type;
                             });
 
                             FindTypesWithAttribute<ThingComponentAttribute>(exportedTypes, (type, attribute) =>

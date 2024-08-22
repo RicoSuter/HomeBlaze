@@ -1,18 +1,23 @@
-﻿@using HomeBlaze.Abstractions
+﻿@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using System.Threading
+
+@using MudBlazor
+
+@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Abstractions.Presentation
 @using HomeBlaze.Abstractions.Services
 @using HomeBlaze.Components
 @using HomeBlaze.Components.Inputs
-@using Microsoft.Extensions.DependencyInjection
-@using Microsoft.Extensions.Logging
-@using HomeBlaze.Services.Json;
-@using MudBlazor
-@using System.Threading
+@using HomeBlaze.Services.Json
+
 @using static HomeBlaze.Widgets.IconWidget;
 
-@inject IThingManager ThingManager
-
+@attribute [ThingSetup(typeof(IconWidget))]
 @inherits ThingSetupComponent<IconWidget>
+
+@inject IThingManager ThingManager
 
 <MudForm @ref="Form">
     <div class="d-flex gap-4">
@@ -34,8 +39,8 @@
         @foreach (var condition in Thing.Conditions)
         {
             <MudTabPanel Icon="@condition.Icon"
-                     Text="@(condition.Color + " (" + (int)(condition.Opacity * 100) + "%)")"
-                     Style="@("justify-content: left; color: " + condition.Color)">
+                         Text="@(condition.Color + " (" + (int)(condition.Opacity * 100) + "%)")"
+                         Style="@("justify-content: left; color: " + condition.Color)">
                 <br />
 
                 <IconTextField Label="Icon" @bind-Value="condition.Icon" />
@@ -62,7 +67,7 @@
 
                 <br />
                 <MudButton StartIcon="@Icons.Material.Filled.Delete" OnClick="@(x => Thing.Conditions.Remove(condition))"
-                       Variant="Variant.Filled" Color="Color.Error" Size="Size.Small">Delete</MudButton>
+                           Variant="Variant.Filled" Color="Color.Error" Size="Size.Small">Delete</MudButton>
             </MudTabPanel>
         }
     </MudTabs>

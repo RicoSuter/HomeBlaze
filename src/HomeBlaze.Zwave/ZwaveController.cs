@@ -17,7 +17,6 @@ using ZWave.CommandClasses;
 namespace HomeBlaze.Zwave
 {
     [DisplayName("Z-Wave Controller")]
-    [ThingSetup(typeof(ZwaveControllerSetup), CanEdit = true)]
     public class ZwaveController : PollingThing, IIconProvider, IConnectedThing
     {
         private ZWaveController? _controller;

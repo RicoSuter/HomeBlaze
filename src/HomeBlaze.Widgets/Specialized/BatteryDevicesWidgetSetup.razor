@@ -1,8 +1,10 @@
-﻿@using HomeBlaze.Abstractions.Devices.Light;
+﻿@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Devices.Light;
 @using HomeBlaze.Components;
 @using HomeBlaze.Components.Inputs
 @using MudBlazor
 
+@attribute [ThingSetup(typeof(BatteryDevicesWidget))]
 @inherits ThingSetupComponent<BatteryDevicesWidget>
 
 <MudForm @ref="Form">

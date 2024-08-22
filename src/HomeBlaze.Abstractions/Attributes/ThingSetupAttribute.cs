@@ -3,10 +3,15 @@
     [AttributeUsage(AttributeTargets.Class, Inherited = true)]
     public class ThingSetupAttribute : Attribute
     {
-        public ThingSetupAttribute(Type? componentType)
+        public ThingSetupAttribute(Type thingType)
         {
-            ComponentType = componentType;
+            ThingType = thingType;
         }
+
+        /// <summary>
+        /// Gets or sets the type of the thing.
+        /// </summary>
+        public Type ThingType { get; internal set; }
 
         /// <summary>
         /// Gets or sets the type of the setup component.

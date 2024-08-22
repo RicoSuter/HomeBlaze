@@ -1,10 +1,12 @@
-﻿@using HomeBlaze.Abstractions.Services;
+﻿@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Services;
 @using HomeBlaze.Components;
 @using HomeBlaze.Components.Editors;
 @using HomeBlaze.Components.Inputs;
 @using HomeBlaze.Things;
 @using MudBlazor
 
+@attribute [ThingSetup(typeof(Group), CanEdit = true)]
 @inject IThingManager ThingManager
 
 @inherits ThingSetupComponent<Group>

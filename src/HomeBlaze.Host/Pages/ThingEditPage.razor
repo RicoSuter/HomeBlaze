@@ -1,17 +1,21 @@
-﻿@using System.Reflection
+﻿@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.JSInterop
+@using System.Threading
+@using System.Reflection
 @using System.ComponentModel
-@using HomeBlaze.Services
-@using Microsoft.Extensions.DependencyInjection
-@using HomeBlaze.Abstractions.Attributes
+
+@using MudBlazor;
+
 @using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Abstractions.Services
 @using HomeBlaze.Abstractions
 @using HomeBlaze.Components;
 @using HomeBlaze.Components.Dialogs;
 @using HomeBlaze.Host.Components
+@using HomeBlaze.Services
 @using HomeBlaze.Things;
-@using MudBlazor;
-@using System.Threading;
+
 @using Toolbelt.Blazor.HotKeys2;
 @using Namotion.Reflection;
 
@@ -231,6 +235,7 @@
             .Where(t => string.IsNullOrEmpty(ExtendedThingId) || (
                 t.IsAssignableTo(typeof(IExtensionThing)) &&
                 t.GetMethod("CanExtend")?.Invoke(null, new[] { ThingManager.TryGetById(ExtendedThingId) }) as bool? != false))
+            .OrderBy(t => t.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName ?? t.Name)
             .ToArray();
 
         if (Thing != null)
@@ -297,11 +302,11 @@
         if (_selectedThingType != null && ServiceProvider is not null)
         {
             var attribute = TypeManager.TryGetThingSetupAttribute((Type)_selectedThingType);
-            if (attribute != null && attribute.ComponentType != null)
+            if (attribute != null && attribute.ThingType != null)
             {
                 _thingSetupFragment = builder =>
                 {
-                    builder.OpenComponent(0, attribute.ComponentType);
+                    builder.OpenComponent(0, attribute.ThingType);
                     builder.AddAttribute(1, nameof(IThingSetupComponent.Page), this);
                     builder.AddAttribute(2, nameof(ThingSetupComponentBase<IThing>.ExtendedThing), ThingManager.TryGetById(ExtendedThingId));
                     builder.CloseComponent();

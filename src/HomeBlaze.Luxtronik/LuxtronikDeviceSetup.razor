@@ -1,9 +1,11 @@
-﻿@using HomeBlaze.Components;
+﻿@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Components;
 @using Microsoft.Extensions.DependencyInjection;
 @using MudBlazor
 @using System.Threading
 @using System.Net.Http
 
+@attribute [ThingSetup(typeof(LuxtronikDevice), CanEdit = true)]
 @inherits ThingSetupComponent<LuxtronikDevice>
 
 <MudForm @ref="Form">

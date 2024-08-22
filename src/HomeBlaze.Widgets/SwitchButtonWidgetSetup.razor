@@ -1,9 +1,12 @@
-﻿@using HomeBlaze.Abstractions.Devices.Light;
+﻿@using MudBlazor
+
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Devices.Light;
 @using HomeBlaze.Components;
 @using HomeBlaze.Components.Editors
 @using HomeBlaze.Components.Inputs
-@using MudBlazor
 
+@attribute [ThingSetup(typeof(SwitchButtonWidget))]
 @inherits ThingSetupComponent<SwitchButtonWidget>
 
 <MudForm @ref="Form">

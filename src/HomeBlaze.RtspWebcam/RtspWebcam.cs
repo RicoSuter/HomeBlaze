@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 namespace HomeBlaze.RtspWebcam
 {
     [DisplayName("RTSP Webcam")]
-    [ThingSetup(typeof(RtspWebcamSetup), CanEdit = true)]
     public class RtspWebcam : PollingThing, IConnectedThing, ILastUpdatedProvider, ICameraSensor, IDisposable
     {
         private ILogger _logger;

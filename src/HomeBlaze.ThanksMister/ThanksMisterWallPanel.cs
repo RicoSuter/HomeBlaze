@@ -15,7 +15,6 @@ namespace HomeBlaze.ThanksMister
 {
     [DisplayName("ThanksMister WallPanel")]
     [Description("WallPanel is an Android application for Web Based Dashboards and Home Automation Platforms.")]
-    [ThingSetup(typeof(ThanksMisterWallPanelSetup), CanEdit = true)]
     public class ThanksMisterWallPanel : PollingThing, IIconProvider, 
         IConnectedThing
     {

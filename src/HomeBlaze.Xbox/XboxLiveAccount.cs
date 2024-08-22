@@ -13,7 +13,6 @@ using XboxWebApi.Authentication;
 namespace HomeBlaze.Xbox
 {
     [DisplayName("Microsoft Xbox Live Account")]
-    [ThingSetup(typeof(XboxLiveAccountSetup), CanEdit = true)]
     public class XboxLiveAccount : PollingThing, IIconProvider, IAuthenticatedThing
     {
         internal AuthenticationService? Authentication { get; set; }

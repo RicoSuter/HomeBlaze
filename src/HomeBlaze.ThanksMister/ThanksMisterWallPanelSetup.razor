@@ -1,7 +1,9 @@
 ﻿@using System.Threading;
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Components;
 @using MudBlazor;
 
+@attribute [ThingSetup(typeof(ThanksMisterWallPanel), CanEdit = true)]
 @inherits ThingSetupComponent<ThanksMisterWallPanel>
 
 <MudForm @ref="Form">

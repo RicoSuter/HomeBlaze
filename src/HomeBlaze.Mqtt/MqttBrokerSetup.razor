@@ -1,7 +1,9 @@
 ﻿@using System.Threading;
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Components;
 @using MudBlazor;
 
+@attribute [ThingSetup(typeof(MqttBroker), CanEdit = true)]
 @inherits ThingSetupComponent<MqttBroker>
 
 <MudForm @ref="Form">

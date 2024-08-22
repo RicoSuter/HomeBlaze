@@ -16,7 +16,6 @@ using XboxWebApi.Services;
 namespace HomeBlaze.Xbox
 {
     [DisplayName("Microsoft Xbox")]
-    [ThingSetup(typeof(XboxDeviceSetup), CanEdit = true)]
     public class XboxDevice : PollingThing, IIconProvider,
         IConnectedThing, IActivityDevice, INetworkAdapter
     {

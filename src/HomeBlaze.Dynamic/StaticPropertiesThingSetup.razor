@@ -1,12 +1,14 @@
-﻿@using HomeBlaze.Components;
+﻿@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Components;
 @using HomeBlaze.Components.Editors
 @using HomeBlaze.Components.Inputs
 @using Microsoft.JSInterop;
 @using MudBlazor
 
-@inject IJSRuntime JsRuntime
-
+@attribute [ThingSetup(typeof(StaticPropertiesThing), CanEdit = true, CanClone = true)]
 @inherits ThingSetupComponent<StaticPropertiesThing>
+
+@inject IJSRuntime JsRuntime
 
 <MudForm @ref="Form">
     <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddProperty" Variant="Variant.Filled" Color="Color.Primary" Class="ma-2">Add Property</MudButton>

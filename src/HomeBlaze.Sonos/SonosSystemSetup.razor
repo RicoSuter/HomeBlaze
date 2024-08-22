@@ -1,8 +1,12 @@
 ﻿@using System.Threading;
-@using HomeBlaze.Sonos;
-@using HomeBlaze.Components;
+
 @using MudBlazor;
 
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Sonos;
+@using HomeBlaze.Components;
+
+@attribute [ThingSetup(typeof(SonosSystem), CanEdit = true)]
 @inherits ThingSetupComponent<SonosSystem>
 
 <MudForm @ref="Form">

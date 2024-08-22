@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 namespace HomeBlaze.Logitech
 {
     [DisplayName("Logitech Harmony Hub")]
-    [ThingSetup(typeof(LogitechHarmonyHubSetup))]
     public class LogitechHarmonyHub : PollingThing, IIconProvider, IAsyncDisposable, 
         IConnectedThing, IHubDevice, IActivityDevice, IActionDevice, IPowerConsumptionSensor,
         INetworkAdapter

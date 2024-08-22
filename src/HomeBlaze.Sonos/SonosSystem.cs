@@ -21,7 +21,6 @@ using Microsoft.Extensions.Options;
 namespace HomeBlaze.Sonos
 {
     [DisplayName("Sonos System")]
-    [ThingSetup(typeof(SonosSetup), CanEdit = true)]
     public class SonosSystem :
         PollingThing,
         IIconProvider,

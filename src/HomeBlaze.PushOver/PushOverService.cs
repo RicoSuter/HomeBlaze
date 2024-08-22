@@ -13,7 +13,6 @@ namespace HomeBlaze.PushOver
 {
     [Category("Service")]
     [DisplayName("PushOver (Push Notifications)")]
-    [ThingSetup(typeof(PushOverServiceSetup), CanEdit = true)]
     public class PushOverService : IThing, IIconProvider, INotificationPublisher
     {
         internal IHttpClientFactory HttpClientFactory { get; }

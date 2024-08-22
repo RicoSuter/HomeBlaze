@@ -4,7 +4,6 @@ using HomeBlaze.Abstractions.Devices.Energy;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
-using HomeBlaze.Abstractions.Services;
 using HomeBlaze.MyStrom.Model;
 using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -19,7 +18,6 @@ using System.Threading.Tasks;
 namespace HomeBlaze.MyStrom
 {
     [DisplayName("myStrom Switch")]
-    [ThingSetup(typeof(MyStromSwitchSetup), CanEdit = true)]
     public class MyStromSwitch : PollingThing,
         ILastUpdatedProvider, IIconProvider,
         IConnectedThing, IPowerConsumptionSensor, ITemperatureSensor, IPowerRelay,

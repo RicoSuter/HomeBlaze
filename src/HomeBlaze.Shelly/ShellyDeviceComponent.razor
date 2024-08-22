@@ -1,5 +1,10 @@
 ﻿@using MudBlazor
+
+@using HomeBlaze.Abstractions.Attributes
+
 @using Namotion.Shelly
+
+@attribute [ThingComponent(typeof(ShellyDevice))]
 
 <MudButton Variant="Variant.Filled"
            Color="Color.Secondary"

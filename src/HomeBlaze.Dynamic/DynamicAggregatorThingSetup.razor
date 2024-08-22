@@ -1,8 +1,10 @@
-﻿@using HomeBlaze.Components;
+﻿@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Components;
 @using HomeBlaze.Components.Editors;
 @using HomeBlaze.Components.Inputs
 @using MudBlazor
 
+@attribute [ThingSetup(typeof(DynamicAggregatorThing), CanEdit = true)]
 @inherits ThingSetupComponent<DynamicAggregatorThing>
 
 <MudForm @ref="Form">

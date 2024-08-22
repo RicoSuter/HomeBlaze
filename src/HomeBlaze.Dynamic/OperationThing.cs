@@ -12,7 +12,6 @@ using System;
 namespace HomeBlaze.Dynamic
 {
     [DisplayName("Operation Thing")]
-    [ThingSetup(typeof(OperationThingSetup), CanEdit = true, CanClone = true)]
     public class OperationThing : IThing, IIconProvider
     {
         private readonly IThingManager _thingManager;

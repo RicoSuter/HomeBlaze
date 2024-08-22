@@ -27,7 +27,6 @@ namespace HomeBlaze.Philips.Hue
 {
     [DisplayName("Philips Hue Bridge")]
     [Description("The brains of the Philips Hue smart lighting system, the Hue Bridge allows you to connect and control up to 50 lights and accessories.")]
-    [ThingSetup(typeof(HueBridgeSetup), CanEdit = true)]
     public class HueBridge : PollingThing,
         IIconProvider,
         ILastUpdatedProvider,

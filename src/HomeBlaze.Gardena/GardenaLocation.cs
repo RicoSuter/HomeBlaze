@@ -20,7 +20,6 @@ using System.Threading.Tasks;
 namespace HomeBlaze.Gardena
 {
     [DisplayName("Gardena Location")]
-    [ThingSetup(typeof(GardenaLocationSetup))]
     public class GardenaLocation : PollingThing, IIconProvider, IConnectedThing, IAuthenticatedThing, IHubDevice, IPowerConsumptionSensor
     {
         private ClientWebSocket? _webSocket;

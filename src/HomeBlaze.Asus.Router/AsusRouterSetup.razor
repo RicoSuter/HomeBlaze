@@ -1,7 +1,9 @@
-﻿@using HomeBlaze.AsusRouter
+﻿@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.AsusRouter
 @using HomeBlaze.Components
 @using MudBlazor
 
+@attribute [ThingSetup(typeof(AsusRouter), CanEdit = true)]
 @inherits ThingSetupComponent<AsusRouter>
 
 <MudForm @ref="Form">

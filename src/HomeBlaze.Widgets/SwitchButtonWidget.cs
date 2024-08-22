@@ -7,7 +7,6 @@ using System.ComponentModel;
 namespace HomeBlaze.Widgets
 {
     [DisplayName("Switch Button")]
-    [ThingSetup(typeof(SwitchButtonWidgetSetup))]
     [ThingWidget(typeof(SwitchButtonWidgetComponent))]
     public class SwitchButtonWidget : IThing
     {

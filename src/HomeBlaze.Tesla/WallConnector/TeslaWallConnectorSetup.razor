@@ -1,7 +1,11 @@
 ﻿@using System.Threading
-@using HomeBlaze.Components
+
 @using MudBlazor
 
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Components
+
+@attribute [ThingSetup(typeof(TeslaWallConnector), CanEdit = true)]
 @inherits ThingSetupComponent<TeslaWallConnector>
 
 <MudForm @ref="Form">

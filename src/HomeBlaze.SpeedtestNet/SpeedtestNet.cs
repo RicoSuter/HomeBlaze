@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 namespace HomeBlaze.SpeedtestNet
 {
     [DisplayName("Speedtest.net Internet Speed")]
-    [ThingSetup(typeof(SpeedtestNetSetup), CanEdit = true)]
     public class SpeedtestNet : IThing, ILastUpdatedProvider
     {
         private readonly IThingManager _thingManager;

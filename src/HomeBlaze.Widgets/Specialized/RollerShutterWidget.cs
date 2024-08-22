@@ -1,13 +1,12 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Components.Editors;
+
 using System;
 using System.ComponentModel;
 
 namespace HomeBlaze.Widgets.Specialized
 {
     [DisplayName("Roller Shutter")]
-    [ThingSetup(typeof(RollerShutterWidgetSetup))]
     [ThingWidget(typeof(RollerShutterWidgetComponent))]
     public class RollerShutterWidget : IThing
     {

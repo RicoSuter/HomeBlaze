@@ -1,16 +1,20 @@
-﻿@using HomeBlaze.Abstractions.Services;
-@using HomeBlaze.Components;
-@using HomeBlaze.Components.Inputs
-@using Microsoft.Extensions.DependencyInjection;
-@using MudBlazor
+﻿@using Microsoft.Extensions.DependencyInjection;
 @using System.Threading
 @using System.Net
+
+@using MudBlazor
+
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components;
+@using HomeBlaze.Components.Inputs
+
+@attribute [ThingSetup(typeof(XboxDevice), CanEdit = true)]
+@inherits ThingSetupComponentBase<XboxDevice>
 
 @inject IThingManager ThingManager
 @inject IDialogService DialogService
 @inject IServiceProvider ServiceProvider
-
-@inherits ThingSetupComponentBase<XboxDevice>
 
 @if (ThingManager.AllThings.OfType<XboxLiveAccount>().Count() == 0)
 {

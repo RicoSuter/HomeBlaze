@@ -1,19 +1,24 @@
-﻿@using HomeBlaze.Components;
-@using HomeBlaze.Tesla.Vehicle.Models;
-@using Microsoft.Extensions.DependencyInjection;
-@using MudBlazor
-@using System.Threading
+﻿@using Microsoft.Extensions.DependencyInjection;
 @using Microsoft.JSInterop
+@using System.Threading
 @using System.Net.Http;
 @using System.Text.Json;
+
+@using MudBlazor
+
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Components;
+@using HomeBlaze.Tesla.Vehicle.Models;
+
 @using TeslaAuth;
+
+@attribute [ThingSetup(typeof(TeslaVehicle), CanEdit = true)]
+@inherits ThingSetupComponentBase<TeslaVehicle>
 
 @inject IDialogService DialogService
 @inject IServiceProvider ServiceProvider
 @inject IJSRuntime JsRuntime
 @inject IHttpClientFactory HttpClientFactory
-
-@inherits ThingSetupComponentBase<TeslaVehicle>
 
 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@OpenLoginPage">Login with your Tesla account</MudButton>
 

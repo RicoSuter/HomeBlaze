@@ -10,14 +10,12 @@ using System.ComponentModel;
 using HomeBlaze.Components.Editors;
 using Microsoft.Extensions.Logging;
 using HomeBlaze.Abstractions;
-using System.Reflection;
 using System.Linq;
 using HomeBlaze.Abstractions.Inputs;
 
 namespace HomeBlaze.Dynamic
 {
     [DisplayName("Button Trigger")]
-    [ThingSetup(typeof(ButtonTriggerThingSetup), CanEdit = true, CanClone = true)]
     public class ButtonTriggerThing : ExtensionThing
     {
         private readonly IThingManager _thingManager;

@@ -5,7 +5,6 @@ using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.Logging;
-using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -16,7 +15,6 @@ using System.Threading.Tasks;
 
 namespace HomeBlaze.Dynamic
 {
-    [ThingSetup(typeof(AutomationSetup), CanEdit = true, CanClone = true)]
     public class Automation : AsyncEventListener, IThing, IIconProvider, IJsonOnDeserialized
     {
         internal const string IdleStateName = "Idle";
