@@ -6,7 +6,6 @@ using System.ComponentModel;
 namespace HomeBlaze.Widgets.Specialized
 {
     [DisplayName("Battery Devices Table")]
-    [ThingSetup(typeof(BatteryDevicesWidgetSetup))]
     [ThingWidget(typeof(BatteryDevicesWidgetComponent))]
     public class BatteryDevicesWidget : IThing
     {

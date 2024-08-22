@@ -8,7 +8,6 @@ using System.Threading;
 using HomeBlaze.Services.Abstractions;
 using HomeBlaze.Abstractions.Presentation;
 using System.ComponentModel;
-using MudBlazor;
 using HomeBlaze.Messages;
 using HomeBlaze.Abstractions.Sensors;
 using System.Collections.Generic;
@@ -17,7 +16,6 @@ using HomeBlaze.Abstractions.Devices.Light;
 namespace HomeBlaze.Dynamic
 {
     [DisplayName("Alarm")]
-    [ThingSetup(typeof(AlarmThingSetup), CanEdit = true, CanClone = true)]
     public class AlarmThing : 
         AsyncEventListener, 
         IThing,

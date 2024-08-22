@@ -18,7 +18,6 @@ using HomeBlaze.Services.Abstractions;
 namespace HomeBlaze.Dynamic
 {
     [DisplayName("Trigger")]
-    [ThingSetup(typeof(TriggerThingSetup), CanEdit = true, CanClone = true)]
     public class TriggerThing : AsyncEventListener, IThing, IIconProvider
     {
         private readonly IThingManager _thingManager;

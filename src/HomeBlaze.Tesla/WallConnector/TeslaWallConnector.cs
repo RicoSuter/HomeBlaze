@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 namespace HomeBlaze.Tesla.WallConnector
 {
     [DisplayName("Tesla Wall Connector")]
-    [ThingSetup(typeof(TeslaWallConnectorSetup), CanEdit = true)]
     public class TeslaWallConnector : 
         PollingThing, 
         IIconProvider, 

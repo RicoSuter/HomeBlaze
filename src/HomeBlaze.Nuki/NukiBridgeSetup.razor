@@ -1,4 +1,5 @@
-﻿@using HomeBlaze.Abstractions.Services;
+﻿@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Services;
 @using HomeBlaze.Components;
 @using HomeBlaze.Nuki.Model;
 @using Microsoft.Extensions.DependencyInjection;
@@ -8,11 +9,12 @@
 @using System.Net.Http
 @using System.Text.Json;
 
+@attribute [ThingSetup(typeof(NukiBridge), CanEdit = true)]
+@inherits ThingSetupComponentBase<NukiBridge>
+
 @inject IDialogService DialogService
 @inject IServiceProvider ServiceProvider
 @inject IHttpClientFactory HttpClientFactory
-
-@inherits ThingSetupComponentBase<NukiBridge>
 
 @if (Bridges == null)
 {

@@ -1,4 +1,5 @@
 ﻿@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Abstractions.Presentation
 @using HomeBlaze.Components
 @using HomeBlaze.Components.Inputs
@@ -9,6 +10,7 @@
 @using HomeBlaze.Abstractions.Services
 @using System.Diagnostics.CodeAnalysis;
 
+@attribute [ThingSetup(typeof(VehicleChargerWidgetSetup))]
 @inherits ThingSetupComponent<VehicleChargerWidget>
 
 <MudForm @ref="Form">

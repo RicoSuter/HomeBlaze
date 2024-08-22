@@ -3,7 +3,6 @@ using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Services;
-using HomeBlaze.Asus.Router;
 using HomeBlaze.Services.Abstractions;
 using HomeBlaze.Services.Extensions;
 using Microsoft.Extensions.Logging;
@@ -20,7 +19,6 @@ using System.Threading.Tasks;
 namespace HomeBlaze.AsusRouter
 {
     [DisplayName("ASUS Router")]
-    [ThingSetup(typeof(AsusRouterSetup), CanEdit = true)]
     public class AsusRouter : 
         PollingThing,
         ILastUpdatedProvider, 

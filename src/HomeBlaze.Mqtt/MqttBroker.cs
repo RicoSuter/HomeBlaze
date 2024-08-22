@@ -17,7 +17,6 @@ using System.ComponentModel;
 namespace HomeBlaze.Mqtt
 {
     [DisplayName("MQTT Broker")]
-    [ThingSetup(typeof(MqttBrokerSetup), CanEdit = true)]
     public class MqttBroker : BackgroundService, IIconProvider, IThing, IServerThing
     {
         private readonly IThingManager _thingManager;

@@ -5,7 +5,6 @@ using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Security;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
-using HomeBlaze.Services.Json;
 using HomeBlaze.Tesla.Vehicle;
 using HomeBlaze.Tesla.Vehicle.Models;
 using Microsoft.Extensions.Logging;
@@ -23,7 +22,6 @@ using System.Threading.Tasks;
 namespace HomeBlaze.Tesla
 {
     [DisplayName("Tesla Vehicle")]
-    [ThingSetup(typeof(TeslaVehicleSetup), CanEdit = true)]
     public class TeslaVehicle : PollingThing, ILastUpdatedProvider,
         IConnectedThing, IAuthenticatedThing, IIconProvider
     {

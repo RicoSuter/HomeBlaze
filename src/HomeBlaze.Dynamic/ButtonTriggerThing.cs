@@ -19,8 +19,7 @@ using HomeBlaze.Abstractions.Presentation;
 namespace HomeBlaze.Dynamic
 {
     [DisplayName("Button Trigger")]
-    [ThingSetup(typeof(ButtonTriggerThingSetup), CanEdit = true, CanClone = true)]
-    public class ButtonTriggerThing : ExtensionThing, IIconProvider
+    public class ButtonTriggerThing : ExtensionThing
     {
         private readonly IThingManager _thingManager;
         private readonly ILogger<ButtonTriggerThing> _logger;

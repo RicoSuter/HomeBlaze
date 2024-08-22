@@ -7,7 +7,6 @@ using System.ComponentModel;
 namespace HomeBlaze.Widgets
 {
     [DisplayName("Image")]
-    [ThingSetup(typeof(ImageWidgetSetup))]
     [ThingWidget(typeof(ImageWidgetComponent))]
     public class ImageWidget : IThing
     {

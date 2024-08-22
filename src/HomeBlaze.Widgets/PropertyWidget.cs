@@ -7,7 +7,6 @@ using System.ComponentModel;
 namespace HomeBlaze.Widgets
 {
     [DisplayName("Property")]
-    [ThingSetup(typeof(PropertyWidgetSetup))]
     [ThingWidget(typeof(PropertyWidgetComponent))]
     public class PropertyWidget : IThing
     {

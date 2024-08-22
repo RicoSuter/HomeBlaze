@@ -16,7 +16,6 @@ using HomeBlaze.Components.Editors;
 namespace HomeBlaze.Dynamic
 {
     [DisplayName("Dynamic Aggregator")]
-    [ThingSetup(typeof(DynamicAggregatorThingSetup), CanEdit = true)]
     public class DynamicAggregatorThing : AsyncEventListener, IIconProvider, IThing
     {
         private readonly IThingManager _thingManager;

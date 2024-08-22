@@ -1,13 +1,17 @@
-﻿@using HomeBlaze.Abstractions
-@using HomeBlaze.Abstractions.Presentation
-@using HomeBlaze.Components
+﻿@using System.Threading
+@using System.Net.Http
 @using Microsoft.Extensions.DependencyInjection
 @using Microsoft.Extensions.Logging
-@using MudBlazor
-@using System.Threading
-@using HomeBlaze.Abstractions.Services
-@using System.Net.Http;
 
+@using MudBlazor
+
+@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Presentation
+@using HomeBlaze.Components
+@using HomeBlaze.Abstractions.Services
+
+@attribute [ThingSetup(typeof(RtspWebcam), CanEdit = true)]
 @inherits ThingSetupComponent<RtspWebcam>
 
 <MudForm @ref="Form">

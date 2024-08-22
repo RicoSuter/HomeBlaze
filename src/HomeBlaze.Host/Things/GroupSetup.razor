@@ -1,13 +1,15 @@
-﻿@using HomeBlaze.Abstractions.Services;
+﻿@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Services;
 @using HomeBlaze.Components;
 @using HomeBlaze.Components.Editors;
 @using HomeBlaze.Components.Inputs;
 @using HomeBlaze.Things;
 @using MudBlazor
 
-@inject IThingManager ThingManager
-
+@attribute [ThingSetup(typeof(Group), CanEdit = true)]
 @inherits ThingSetupComponent<Group>
+
+@inject IThingManager ThingManager
 
 <MudForm @ref="Form">
     <MudTextField @bind-Value="Thing.Title" Label="Title" Required="true" />

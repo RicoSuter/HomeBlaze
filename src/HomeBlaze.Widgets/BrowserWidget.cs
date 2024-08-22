@@ -6,7 +6,6 @@ using System;
 namespace HomeBlaze.Widgets
 {
     [DisplayName("Browser")]
-    [ThingSetup(typeof(BrowserWidgetSetup))]
     [ThingWidget(typeof(BrowserWidgetComponent))]
     public class BrowserWidget : IThing
     {

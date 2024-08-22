@@ -20,7 +20,6 @@ using System.Xml.Linq;
 namespace HomeBlaze.Luxtronik
 {
     [DisplayName("Luxtronik Device")]
-    [ThingSetup(typeof(LuxtronikDeviceSetup), CanEdit = true)]
     public class LuxtronikDevice : BackgroundService,
         IThing,
         IConnectedThing, 

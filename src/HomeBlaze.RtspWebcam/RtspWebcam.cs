@@ -1,6 +1,14 @@
-﻿using FFMpegCore;
+﻿using System;
+using System.ComponentModel;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+
+using FFMpegCore;
 using FFMpegCore.Arguments;
 using FFMpegCore.Pipes;
+
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Networking;
@@ -8,17 +16,10 @@ using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
-using Microsoft.Extensions.Logging;
-using System;
-using System.ComponentModel;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace HomeBlaze.RtspWebcam
 {
     [DisplayName("RTSP Webcam")]
-    [ThingSetup(typeof(RtspWebcamSetup), CanEdit = true)]
     public class RtspWebcam : PollingThing,
         ICameraSensor,
         IConnectedThing, ILastUpdatedProvider, IIconProvider,

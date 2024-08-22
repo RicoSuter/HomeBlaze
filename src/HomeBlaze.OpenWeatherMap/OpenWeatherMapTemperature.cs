@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 namespace HomeBlaze.OpenWeatherMap
 {
     [DisplayName("OpenWeatherMap Temperature")]
-    [ThingSetup(typeof(OpenWeatherMapTemperatureSetup), CanEdit = true)]
     public class OpenWeatherMapTemperature : PollingThing, IIconProvider, ILastUpdatedProvider,
         ITemperatureSensor, IVirtualThing
     {

@@ -1,13 +1,17 @@
-﻿@using HomeBlaze.Abstractions
+﻿@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+@using System.Threading
+
+@using MudBlazor
+
+@using HomeBlaze.Abstractions
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Abstractions.Presentation
 @using HomeBlaze.Components
-@using Microsoft.Extensions.DependencyInjection
-@using Microsoft.Extensions.Logging
-@using MudBlazor
-@using System.Threading
 @using HomeBlaze.Abstractions.Services
 @using HomeBlaze.MyStrom
 
+@attribute [ThingSetup(typeof(MyStromSwitch), CanEdit = true)]
 @inherits ThingSetupComponent<MyStromSwitch>
 
 <MudForm @ref="Form">

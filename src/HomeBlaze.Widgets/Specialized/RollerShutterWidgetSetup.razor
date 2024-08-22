@@ -1,9 +1,12 @@
-﻿@using HomeBlaze.Abstractions.Devices
+﻿@using MudBlazor
+
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Abstractions.Devices
 @using HomeBlaze.Abstractions.Devices.Light;
 @using HomeBlaze.Components;
 @using HomeBlaze.Components.Inputs
-@using MudBlazor
 
+@attribute [ThingSetup(typeof(RollerShutterWidget))]
 @inherits ThingSetupComponent<RollerShutterWidget>
 
 <MudForm @ref="Form">

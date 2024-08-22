@@ -1,4 +1,5 @@
 ﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Abstractions.Devices.Light;
 @using HomeBlaze.Abstractions.Sensors;
 @using HomeBlaze.Abstractions.Services;
@@ -7,6 +8,7 @@
 @using HomeBlaze.Components.Inputs
 @using MudBlazor
 
+@attribute [ThingSetup(typeof(AlarmThing), CanEdit = true, CanClone = true)]
 @inherits ThingSetupComponent<AlarmThing>
 
 @inject IThingManager ThingManager

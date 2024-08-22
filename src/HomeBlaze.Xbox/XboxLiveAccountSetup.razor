@@ -1,15 +1,20 @@
-﻿@using HomeBlaze.Components;
-@using Microsoft.Extensions.DependencyInjection;
-@using MudBlazor
-@using XboxWebApi.Authentication
-@using System.Threading
+﻿@using Microsoft.Extensions.DependencyInjection;
 @using Microsoft.JSInterop
+@using System.Threading
+
+@using MudBlazor
+
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Components;
+
+@using XboxWebApi.Authentication
+
+@attribute [ThingSetup(typeof(XboxLiveAccount), CanEdit = true)]
+@inherits ThingSetupComponentBase<XboxLiveAccount>
 
 @inject IDialogService DialogService
 @inject IServiceProvider ServiceProvider
 @inject IJSRuntime JsRuntime
-
-@inherits ThingSetupComponentBase<XboxLiveAccount>
 
 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@OpenLoginPage">Login with your Xbox account</MudButton>
 

@@ -16,6 +16,6 @@
         /// <summary>
         /// Gets or sets the type of the setup component.
         /// </summary>
-        public Type? ComponentType { get; set; }
+        public Type? ComponentType { get; internal set; }
     }
 }

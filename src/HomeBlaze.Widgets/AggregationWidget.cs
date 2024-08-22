@@ -6,7 +6,6 @@ using System;
 namespace HomeBlaze.Widgets
 {
     [DisplayName("Aggregation")]
-    [ThingSetup(typeof(AggregationWidgetSetup))]
     [ThingWidget(typeof(AggregationWidgetComponent))]
     public class AggregationWidget : IThing
     {

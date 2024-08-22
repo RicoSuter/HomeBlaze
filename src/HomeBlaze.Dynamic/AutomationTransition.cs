@@ -1,7 +1,6 @@
 ﻿using Blazor.Diagrams.Core.Models;
 using HomeBlaze.Components.Editors;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace HomeBlaze.Dynamic

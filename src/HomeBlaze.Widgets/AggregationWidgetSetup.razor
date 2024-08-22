@@ -1,8 +1,11 @@
-﻿@using HomeBlaze.Components;
+﻿@using MudBlazor
+
+@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Components;
 @using HomeBlaze.Components.Editors;
 @using HomeBlaze.Components.Inputs
-@using MudBlazor
 
+@attribute [ThingSetup(typeof(AggregationWidget))]
 @inherits ThingSetupComponent<AggregationWidget>
 
 <MudForm @ref="Form">

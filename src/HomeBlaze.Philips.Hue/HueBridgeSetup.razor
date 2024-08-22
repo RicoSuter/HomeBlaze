@@ -1,4 +1,5 @@
 ﻿@using HomeBlaze.Abstractions;
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Components;
 @using HueApi
 @using HueApi.BridgeLocator
@@ -8,13 +9,14 @@
 @using HomeBlaze.Abstractions.Services
 @using System.Net.Http
 
+@attribute [ThingSetup(typeof(HueBridge), CanEdit = true)]
+@inherits ThingSetupComponentBase<HueBridge>
+
 @inject IThingManager ThingManager
 @inject IEventManager EventManager
 @inject IDialogService DialogService
 @inject IHttpClientFactory HttpClientFactory
 @inject ILogger<HueBridge> Logger
-
-@inherits ThingSetupComponentBase<HueBridge>
 
 <br />
 @if (_bridges == null)

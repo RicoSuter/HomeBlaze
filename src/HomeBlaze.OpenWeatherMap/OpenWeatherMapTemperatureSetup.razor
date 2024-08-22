@@ -1,8 +1,10 @@
 ﻿@using System.Threading;
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.OpenWeatherMap;
 @using HomeBlaze.Components;
 @using MudBlazor;
 
+@attribute [ThingSetup(typeof(OpenWeatherMapTemperature), CanEdit = true)]
 @inherits ThingSetupComponent<OpenWeatherMapTemperature>
 
 <MudForm @ref="Form">

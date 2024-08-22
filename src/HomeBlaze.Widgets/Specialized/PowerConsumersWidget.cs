@@ -6,7 +6,6 @@ using System.ComponentModel;
 namespace HomeBlaze.Widgets.Specialized
 {
     [DisplayName("Power Consumers Table")]
-    [ThingSetup(typeof(PowerConsumersWidgetSetup))]
     [ThingWidget(typeof(PowerConsumersWidgetComponent))]
     public class PowerConsumersWidget : IThing
     {

@@ -13,11 +13,11 @@ namespace HomeBlaze.Services
 
         public IReadOnlyDictionary<string, PropertyState>? CurrentFullState { get; set; }
 
-        public IList<IThing> Children { get; } = new List<IThing>();
-
-        public ThingSetupAttribute? ThingSetupAttribute { get; set; }
+        public IList<IThing> Children { get; } = [];
 
         IEnumerable<IThing> IThingMetadata.Children => Children;
+
+        internal ThingSetupAttribute? ThingSetupAttribute { get; set; }
 
         internal IDisposable[] Disposables { get; set; } = [];
     }

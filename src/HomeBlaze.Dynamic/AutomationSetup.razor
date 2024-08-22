@@ -2,15 +2,18 @@
 @using Blazor.Diagrams.Core;
 @using Blazor.Diagrams.Core.Geometry;
 @using Blazor.Diagrams.Core.Models;
+@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Components.Dialogs;
 @using MudBlazor;
 @using HomeBlaze.Components;
 @using System.Threading;
+
 @using static HomeBlaze.Dynamic.Automation;
 
-@inject IDialogService DialogService
-
+@attribute [ThingSetup(typeof(Automation), CanEdit = true, CanClone = true)]
 @inherits ThingSetupComponent<Automation>
+
+@inject IDialogService DialogService
 
 <MudTextField @bind-Value="@Thing.Title" Label="Title"></MudTextField>
 

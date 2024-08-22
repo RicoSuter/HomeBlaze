@@ -1,4 +1,11 @@
-﻿@using HomeBlaze.Abstractions.Attributes;
+﻿@using System.Threading;
+@using System.Reflection;
+@using System.Collections;
+@using Microsoft.Extensions.Logging;
+
+@using MudBlazor
+
+@using HomeBlaze.Abstractions.Attributes;
 @using HomeBlaze.Abstractions.Presentation;
 @using HomeBlaze.Abstractions.Services;
 @using HomeBlaze.Abstractions;
@@ -7,10 +14,6 @@
 @using HomeBlaze.Components.Inputs;
 @using HomeBlaze.Things;
 @using HomeBlaze.Services.Extensions;
-@using System.Collections;
-@using Microsoft.Extensions.Logging;
-@using System.Threading;
-@using System.Reflection;
 @using HomeBlaze.Host;
 @using HomeBlaze.Components.Abstractions;
 
@@ -30,9 +33,9 @@
             var metadata = ThingManager.TryGetMetadata(Thing);
 
             var stateGroups = ThingManager
-            .GetState(Thing.Id, true)
-            .OrderBy(s => s.Value.Attribute?.Order ?? 0)
-            .GroupBy(p => p.Value.SourceThing);
+                .GetState(Thing.Id, true)
+                .OrderBy(s => s.Value.Attribute?.Order ?? 0)
+                .GroupBy(p => p.Value.SourceThing);
 
             var operations = ThingManager.GetOperations(Thing.Id, true);
         }
@@ -57,9 +60,9 @@
             <MudListSubheader>
                 @* Buttons: Edit, Move, Delete & Exend *@
                 @if (metadata?.CanEdit == true ||
-               metadata?.CanDelete == true ||
-               ParentThing is GroupBase ||
-               canExtend)
+                    metadata?.CanDelete == true ||
+                    ParentThing is GroupBase ||
+                    canExtend)
                 {
                     @if (metadata?.CanEdit == true)
                     {

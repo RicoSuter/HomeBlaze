@@ -9,7 +9,6 @@ using HomeBlaze.Abstractions.Devices.Energy;
 namespace HomeBlaze.Widgets.VehicleCharger;
 
 [DisplayName("Vehicle Charger")]
-[ThingSetup(typeof(VehicleChargerWidgetSetup))]
 [ThingWidget(typeof(VehicleChargerWidgetComponent))]
 public class VehicleChargerWidget : IThing
 {

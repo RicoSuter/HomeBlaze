@@ -1,12 +1,15 @@
-﻿@using HomeBlaze.Components;
+﻿@using HomeBlaze.Abstractions.Attributes
+@using HomeBlaze.Components;
 @using Microsoft.Extensions.DependencyInjection;
 @using MudBlazor
 @using System.Threading;
 
+@attribute [ThingSetup(typeof(LogitechHarmonyHub))]
+@inherits ThingSetupComponentBase<LogitechHarmonyHub>
+
 @inject IDialogService DialogService
 @inject IServiceProvider ServiceProvider
 
-@inherits ThingSetupComponentBase<LogitechHarmonyHub>
 @implements IDisposable
 
 @if (_hubInfos.Any() == false)

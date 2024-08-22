@@ -8,7 +8,6 @@ using System.ComponentModel;
 namespace HomeBlaze.Widgets
 {
     [DisplayName("Icon")]
-    [ThingSetup(typeof(IconWidgetSetup))]
     [ThingWidget(typeof(IconWidgetComponent), NoPointerEvents = true)]
     public class IconWidget : IThing
     {
