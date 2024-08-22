@@ -4,6 +4,7 @@ using FFMpegCore.Pipes;
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Networking;
+using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
@@ -17,7 +18,10 @@ using System.Threading.Tasks;
 namespace HomeBlaze.RtspWebcam
 {
     [DisplayName("RTSP Webcam")]
-    public class RtspWebcam : PollingThing, IConnectedThing, ILastUpdatedProvider, ICameraSensor, IDisposable
+    public class RtspWebcam : PollingThing,
+        ICameraSensor,
+        IConnectedThing, ILastUpdatedProvider, IIconProvider,
+        IDisposable
     {
         private ILogger _logger;
 
@@ -27,6 +31,8 @@ namespace HomeBlaze.RtspWebcam
         private const string PixelFormat = "yuvj420p";
 
         public override string Title => InternalTitle + " (RTSP Webcam)";
+        
+        public string IconName => "fa-solid fa-camera";
 
         // Configuration
 

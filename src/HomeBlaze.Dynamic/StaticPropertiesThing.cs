@@ -1,6 +1,8 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Services;
+using HomeBlaze.Abstractions.Presentation;
+
 using System.ComponentModel;
 using System;
 using System.Collections.Generic;
@@ -18,6 +20,8 @@ namespace HomeBlaze.Dynamic
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
         public string? Title => $"{ExtendedThing?.Title}: Static Properties";
+
+        public string IconName => "fa-solid fa-rectangle-list";
 
         [Configuration]
         public string? ExtendedThingId { get; set; }
