@@ -37,7 +37,10 @@ namespace HomeBlaze.Components
         {
             get
             {
-                Form?.Validate();
+                if (Form?.IsTouched == true)
+                {
+                    Form?.Validate();
+                }
                 return Form?.IsValid == true;
             }
         }
