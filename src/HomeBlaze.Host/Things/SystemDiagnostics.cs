@@ -67,7 +67,7 @@ namespace HomeBlaze.Things
             try
             {
                 var result = RunCommand(command, args);
-                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />").Replace(" ", "&nbsp;")));
+                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />")));
             }
             catch (Exception e)
             {
@@ -81,7 +81,7 @@ namespace HomeBlaze.Things
             try
             {
                 var result = RunCommand("bash", $"-c \"{command}\"");
-                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />").Replace(" ", "&nbsp;")));
+                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />")));
             }
             catch (Exception e)
             {
@@ -95,7 +95,7 @@ namespace HomeBlaze.Things
             try
             {
                 var result = RunCommand("/host/bin/bash", $"-c \"{command}\"");
-                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />").Replace(" ", "&nbsp;")));
+                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />")));
             }
             catch (Exception e)
             {
@@ -109,7 +109,7 @@ namespace HomeBlaze.Things
             try
             {
                 var result = RunCommand("/host/bin/bash", $"-c \"chroot /host /bin/bash -c \\\"{command}\\\"\"");
-                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />").Replace(" ", "&nbsp;")));
+                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />")));
             }
             catch (Exception e)
             {
