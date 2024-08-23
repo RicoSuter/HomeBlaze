@@ -21,7 +21,9 @@ RUN dotnet publish "HomeBlaze.csproj" -c Release -o /app/publish /p:UseAppHost=f
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
 RUN apt-get update -qq && apt-get install ffmpeg -y
+
 ENTRYPOINT ["dotnet", "HomeBlaze.dll"]
 
 # To build for multiple architectures:

@@ -3,6 +3,7 @@ using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
 using System;
@@ -65,8 +66,50 @@ namespace HomeBlaze.Things
         {
             try
             {
-                var result = RunCommand("/host/bin/bash", $"-c \"{command} {args}\"");
-                await dialogService.ShowMessageBox("Result", result);
+                var result = RunCommand(command, args);
+                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />").Replace(" ", "&nbsp;")));
+            }
+            catch (Exception e)
+            {
+                await dialogService.ShowMessageBox("Error", e.ToString());
+            }
+        }
+
+        [Operation]
+        public async Task ExecuteBashCommand2Async(string command, IDialogService dialogService)
+        {
+            try
+            {
+                var result = RunCommand("bash", $"-c \"{command}\"");
+                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />").Replace(" ", "&nbsp;")));
+            }
+            catch (Exception e)
+            {
+                await dialogService.ShowMessageBox("Error", e.ToString());
+            }
+        }
+
+        [Operation]
+        public async Task ExecuteHostCommandAsync(string command, IDialogService dialogService)
+        {
+            try
+            {
+                var result = RunCommand("/host/bin/bash", $"-c \"{command}\"");
+                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />").Replace(" ", "&nbsp;")));
+            }
+            catch (Exception e)
+            {
+                await dialogService.ShowMessageBox("Error", e.ToString());
+            }
+        }
+
+        [Operation]
+        public async Task ExecuteChrootCommandAsync(string command, IDialogService dialogService)
+        {
+            try
+            {
+                var result = RunCommand("/host/bin/bash", $"-c \"chroot /host /bin/bash -c \\\"{command}\\\"\"");
+                await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />").Replace(" ", "&nbsp;")));
             }
             catch (Exception e)
             {
