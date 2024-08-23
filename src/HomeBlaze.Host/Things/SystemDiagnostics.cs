@@ -65,7 +65,7 @@ namespace HomeBlaze.Things
         {
             try
             {
-                var result = RunCommand(command, args);
+                var result = RunCommand("/host/bin/bash", $"-c \"{command} {args}\"");
                 await dialogService.ShowMessageBox("Result", result);
             }
             catch (Exception e)
