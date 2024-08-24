@@ -49,9 +49,9 @@ namespace Namotion.Wallbox
 
         public bool? IsPluggedIn => Status?.Finished == false;
 
-        public bool? IsCharging => Status?.ChargingPower > 1;
+        public bool? IsCharging => Status?.ChargingPowerInKw > 1;
 
-        public decimal? PowerConsumption => Status?.ChargingPower * 1000m;
+        public decimal? PowerConsumption => Status?.ChargingPowerInKw * 1000m;
 
         [State(IsSignal = true)]
         public bool? IsLocked =>
@@ -112,6 +112,40 @@ namespace Namotion.Wallbox
                 try
                 {
                     await _wallboxClient.UnlockAsync(SerialNumber, cancellationToken);
+                    await PollAsync(cancellationToken);
+                }
+                finally
+                {
+                    DetectChanges(this);
+                }
+            }
+        }
+
+        [Operation]
+        public async Task PauseAsync(CancellationToken cancellationToken)
+        {
+            if (_wallboxClient is not null)
+            {
+                try
+                {
+                    await _wallboxClient.PauseAsync(SerialNumber, cancellationToken);
+                    await PollAsync(cancellationToken);
+                }
+                finally
+                {
+                    DetectChanges(this);
+                }
+            }
+        }
+
+        [Operation]
+        public async Task ResumeAsync(CancellationToken cancellationToken)
+        {
+            if (_wallboxClient is not null)
+            {
+                try
+                {
+                    await _wallboxClient.ResumeAsync(SerialNumber, cancellationToken);
                     await PollAsync(cancellationToken);
                 }
                 finally
