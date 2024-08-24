@@ -1,14 +1,17 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Presentation;
 using System.Text.Json.Serialization;
 
 namespace HomeBlaze.Tesla.Vehicle.Models
 {
-    public partial class DriveState : IThing
+    public partial class DriveState : IThing, IIconProvider
     {
         public string Id => Parent!.Id + "/drive";
 
         public string? Title => "Drive";
+
+        public string IconName => "fa-solid fa-forward";
 
         [ParentThing]
         public TeslaVehicle? Parent { get; private set; }

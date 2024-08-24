@@ -1,16 +1,19 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Presentation;
 using System.Text.Json.Serialization;
 
 namespace HomeBlaze.Tesla.Vehicle.Models
 {
     // https://tesla-api.timdorr.com/
 
-    public partial class ChargeState : IThing
+    public partial class ChargeState : IThing, IIconProvider
     {
         public string Id => Parent!.Id + "/charge";
 
         public string? Title => "Charge";
+
+        public string IconName => "fa-solid fa-bolt-lightning";
 
         [ParentThing]
         public TeslaVehicle? Parent { get; private set; }
@@ -159,7 +162,7 @@ namespace HomeBlaze.Tesla.Vehicle.Models
         public bool IsScheduledChargingPending { get; set; }
 
         [JsonPropertyName("scheduled_charging_start_time"), State]
-        public long ScheduledChargingStartTime { get; set; }
+        public long? ScheduledChargingStartTime { get; set; }
 
         [JsonPropertyName("scheduled_charging_start_time_app"), State]
         public long ScheduledChargingStartTimeApp { get; set; }
@@ -168,7 +171,7 @@ namespace HomeBlaze.Tesla.Vehicle.Models
         public long ScheduledChargingStartTimeMinutes { get; set; }
 
         [JsonPropertyName("scheduled_departure_time"), State]
-        public long ScheduledDepartureTime { get; set; }
+        public long? ScheduledDepartureTime { get; set; }
 
         [JsonPropertyName("scheduled_departure_time_minutes"), State]
         public long ScheduledDepartureTimeMinutes { get; set; }
@@ -183,7 +186,7 @@ namespace HomeBlaze.Tesla.Vehicle.Models
         public long Timestamp { get; set; }
 
         [JsonPropertyName("trip_charging"), State]
-        public bool TripCharging { get; set; }
+        public bool? TripCharging { get; set; }
 
         [JsonPropertyName("user_charge_enable_request"), State]
         public object? UserChargeEnableRequest { get; set; }

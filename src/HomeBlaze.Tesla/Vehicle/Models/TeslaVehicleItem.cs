@@ -2,14 +2,13 @@
 
 namespace HomeBlaze.Tesla.Vehicle.Models
 {
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.6.9.0 (Newtonsoft.Json v13.0.0.0)")]
     public partial class TeslaVehicleItem
     {
-        [System.Text.Json.Serialization.JsonPropertyName("id")]
-        public long Id { get; set; }
+        //[System.Text.Json.Serialization.JsonPropertyName("id")]
+        //public string? Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("vehicle_id")]
-        public long VehicleId { get; set; }
+        public long? VehicleId { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("vin")]
         public string? Vin { get; set; }

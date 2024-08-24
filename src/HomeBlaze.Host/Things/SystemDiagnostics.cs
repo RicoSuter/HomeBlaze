@@ -61,7 +61,7 @@ namespace HomeBlaze.Things
             _eventManager = eventManager;
         }
 
-        [Operation]
+        //[Operation]
         public async Task ExecuteCommandAsync(string command, string args, IDialogService dialogService)
         {
             try
@@ -75,7 +75,7 @@ namespace HomeBlaze.Things
             }
         }
 
-        [Operation]
+        //[Operation]
         public async Task ExecuteBashCommand2Async(string command, IDialogService dialogService)
         {
             try
@@ -89,7 +89,7 @@ namespace HomeBlaze.Things
             }
         }
 
-        [Operation]
+        //[Operation]
         public async Task ExecuteHostCommandAsync(string command, IDialogService dialogService)
         {
             try
@@ -104,10 +104,11 @@ namespace HomeBlaze.Things
         }
 
         [Operation]
-        public async Task ExecuteChrootCommandAsync(string command, IDialogService dialogService)
+        public async Task ExecuteCommandAsync(string command, IDialogService dialogService)
         {
             try
             {
+                // This is the one to keep (docker ps works)
                 var result = RunCommand("/host/bin/bash", $"-c \"chroot /host /bin/bash -c \\\"{command}\\\"\"");
                 await dialogService.ShowMessageBox("Result", new MarkupString(result.Replace("\n", "<br />")));
             }
