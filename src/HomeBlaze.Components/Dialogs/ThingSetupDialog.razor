@@ -233,11 +233,11 @@
         if (_selectedThingType != null)
         {
             var attribute = TypeManager.TryGetThingSetupAttribute(_selectedThingType);
-            if (attribute != null && attribute.ThingType != null)
+            if (attribute != null && attribute.ComponentType != null)
             {
                 _thingSetupFragment = builder =>
                 {
-                    builder.OpenComponent(0, attribute.ThingType);
+                    builder.OpenComponent(0, attribute.ComponentType);
                     builder.AddAttribute(1, nameof(IThingSetupComponent.Page), this);
                     builder.AddAttribute(2, nameof(ThingSetupComponentBase<IThing>.ExtendedThing), ExtendedThing);
                     builder.CloseComponent();
