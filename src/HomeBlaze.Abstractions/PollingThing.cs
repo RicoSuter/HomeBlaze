@@ -35,8 +35,6 @@ namespace HomeBlaze.Services.Abstractions
                     await PollAsync(stoppingToken);
                     DetectChanges(this);
 
-                    // TODO(perf): Is this a good idea?
-
                     // use for-loop to allow polling interval changes
                     for (int i = 0; i < PollingInterval.TotalSeconds; i++)
                     {
@@ -50,7 +48,12 @@ namespace HomeBlaze.Services.Abstractions
                 {
                     DetectChanges(this);
                     _logger.LogWarning(e, "Polling of thing failed.");
-                    await Task.Delay(FailureInterval, stoppingToken);
+
+                    // use for-loop to allow polling interval changes
+                    for (int i = 0; i < FailureInterval.TotalSeconds; i++)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+                    }
                 }
             }
         }

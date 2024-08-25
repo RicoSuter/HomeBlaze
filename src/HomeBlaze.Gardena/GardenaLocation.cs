@@ -179,19 +179,22 @@ namespace HomeBlaze.Gardena
                             .ToArray();
                     }
 
-                    var webSocketAddress = await GardenaClient.GetWebSocketAddressAsync(LocationId, cancellationToken);
-                    if (webSocketAddress != null)
+                    if (_webSocket is not null)
                     {
-                        try
+                        var webSocketAddress = await GardenaClient.GetWebSocketAddressAsync(LocationId, cancellationToken);
+                        if (webSocketAddress is not null)
                         {
-                            _webSocket = new ClientWebSocket();
-                            await _webSocket.ConnectAsync(new Uri(webSocketAddress), cancellationToken);
-                        }
-                        catch (Exception e)
-                        {
-                            _logger.LogWarning(e, "Failed to open websocket.");
-                            _webSocket?.Dispose();
-                            _webSocket = null;
+                            try
+                            {
+                                _webSocket = new ClientWebSocket();
+                                await _webSocket.ConnectAsync(new Uri(webSocketAddress), cancellationToken);
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.LogWarning(e, "Failed to open websocket.");
+                                _webSocket?.Dispose();
+                                _webSocket = null;
+                            }
                         }
                     }
 
@@ -225,15 +228,19 @@ namespace HomeBlaze.Gardena
                 _isRunning = true;
                 Task.Run(async () =>
                 {
+                    var buffer = WebSocket.CreateClientBuffer(10 * 1024, 10 * 1024);
                     while (_isRunning)
                     {
-                        if (_webSocket != null)
+                        if (_webSocket == null)
+                        {
+                            await Task.Delay(1000);
+                        }
+                        else
                         {
                             if (_webSocket.State == WebSocketState.Open)
                             {
                                 try
                                 {
-                                    var buffer = WebSocket.CreateClientBuffer(10 * 1024, 10 * 1024);
                                     var result = await _webSocket.ReceiveAsync(buffer, CancellationToken.None);
                                     if (result.Count > 0)
                                     {
@@ -292,10 +299,6 @@ namespace HomeBlaze.Gardena
                             }
 
                             DetectChanges(this);
-                        }
-                        else
-                        {
-                            await Task.Delay(1000);
                         }
                     }
                 });
