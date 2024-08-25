@@ -196,7 +196,7 @@ namespace Namotion.Wallbox
                    
                     TotalConsumedEnergy = 
                         sessions.Sum(s => s.Attributes.Energy) + 
-                        Status.AddedEnergy * 1000;
+                        (IsPluggedIn == true ? Status.AddedEnergy * 1000 : 0);
                 }
 
                 IsConnected = true;
