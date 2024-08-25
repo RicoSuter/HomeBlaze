@@ -1,5 +1,6 @@
 ﻿@using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Abstractions.Devices.Light;
+@using HomeBlaze.Abstractions.Sensors
 @using HomeBlaze.Components;
 @using HomeBlaze.Components.Inputs
 @using MudBlazor
@@ -10,4 +11,6 @@
 <MudForm @ref="Form">
     <MudTextField @bind-Value="@Thing.Width" Label="Width" Required="true" />
     <MudTextField @bind-Value="@Thing.Height" Label="Height" Required="true" />
+
+    <ThingSelect @bind-ThingId="@Thing.TotalPowerConsumptionSensorId" Label="Total Power Consumption Sensor (e.g. house main power meter)" ThingFilter="@(t => t is IPowerConsumptionSensor)" />
 </MudForm>
