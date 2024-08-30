@@ -17,10 +17,10 @@ using HomeBlaze.Abstractions.Networking;
 
 namespace Namotion.Wallbox
 {
-    public class Wallbox : PollingThing, 
-        IVehicleCharger, 
+    public class Wallbox : PollingThing,
+        IVehicleCharger,
         IConnectedThing,
-        IPowerConsumptionSensor, 
+        IPowerConsumptionSensor,
         IIconProvider
     {
         private WallboxClient? _wallboxClient;
@@ -30,9 +30,9 @@ namespace Namotion.Wallbox
 
         string IIconProvider.IconName => "fas fa-plug";
 
-        string IIconProvider.IconColor => 
-            IsConnected == false ? "Error" : 
-            IsPluggedIn == true ? "Warning" : 
+        string IIconProvider.IconColor =>
+            IsConnected == false ? "Error" :
+            IsPluggedIn == true ? "Warning" :
             "Success";
 
         [Configuration]
@@ -155,6 +155,21 @@ namespace Namotion.Wallbox
             }
         }
 
+        [Operation]
+        public async Task UnlockVehicleChargePortAsync(CancellationToken cancellationToken)
+        {
+            // Tested with Tesla Model 3 (2024-08)
+
+            if (IsCharging == true)
+            {
+                await PauseAsync(cancellationToken);
+            }
+            else
+            {
+                await ResumeAsync(cancellationToken);
+            }
+        }
+
         protected override TimeSpan PollingInterval => TimeSpan.FromMinutes(1);
 
         public Wallbox(IHttpClientFactory httpClientFactory, ILogger<Wallbox> logger)
@@ -179,7 +194,7 @@ namespace Namotion.Wallbox
             try
             {
                 Status = await _wallboxClient.GetChargerStatusAsync(SerialNumber, cancellationToken);
-                
+
                 if (DateTimeOffset.UtcNow > _lastSessionsRetrieval.AddMinutes(30) &&
                     Status is not null &&
                     Status.ConfigData?.GroupId is not null)
@@ -188,14 +203,14 @@ namespace Namotion.Wallbox
 
                     var sessions = await _wallboxClient.GetChargerChargingSessionsAsync(
                         Status.ConfigData.GroupId,
-                        Status.ConfigData.ChargerId, 
-                        DateTimeOffset.MinValue, 
+                        Status.ConfigData.ChargerId,
+                        DateTimeOffset.MinValue,
                         DateTimeOffset.Now, cancellationToken: cancellationToken);
 
                     _lastSessionsRetrieval = DateTimeOffset.UtcNow;
-                   
-                    TotalConsumedEnergy = 
-                        sessions.Sum(s => s.Attributes.Energy) + 
+
+                    TotalConsumedEnergy =
+                        sessions.Sum(s => s.Attributes.Energy) +
                         (IsPluggedIn == true ? Status.AddedEnergy * 1000 : 0);
                 }
 
