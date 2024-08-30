@@ -1,10 +1,10 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
 using Microsoft.Extensions.Logging;
+using Namotion.Devices.Abstractions.Messages;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

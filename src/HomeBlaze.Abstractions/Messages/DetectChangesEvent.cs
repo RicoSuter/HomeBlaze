@@ -1,15 +1,16 @@
-﻿using HomeBlaze.Abstractions;
-using HomeBlaze.Abstractions.Messages;
+﻿using Namotion.Devices.Abstractions.Messages;
+
+using HomeBlaze.Abstractions;
 
 namespace HomeBlaze.Messages
 {
     public record DetectChangesEvent : IEvent
     {
-        public IThing Thing { get; }
+        public object Source { get; }
 
         public DetectChangesEvent(IThing thing)
         {
-            Thing = thing;
+            Source = thing;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.Logging;
 using System.Linq;
@@ -12,6 +11,7 @@ using System;
 using HomeBlaze.Abstractions;
 using System.ComponentModel;
 using HomeBlaze.Components.Editors;
+using Namotion.Devices.Abstractions.Messages;
 
 namespace HomeBlaze.Dynamic
 {
@@ -61,7 +61,8 @@ namespace HomeBlaze.Dynamic
                         .FirstOrDefault(i => i.FullName == InterfaceName);
                 }
 
-                if (_interfaceType != null && stateChangedEvent.Thing.GetType().IsAssignableTo(_interfaceType))
+                if (_interfaceType != null && (stateChangedEvent.Source as IThing)?
+                    .GetType().IsAssignableTo(_interfaceType) == true)
                 {
                     var values = _thingManager
                         .AllThings

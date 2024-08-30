@@ -81,12 +81,12 @@ namespace HomeBlaze.Host.Pages
                 .Subscribe(message =>
                 {
                     if (message is ThingRegisteredEvent thingRegisteredEvent &&
-                        thingRegisteredEvent.Thing is Dashboard)
+                        thingRegisteredEvent.Source is Dashboard)
                     {
                         InvokeAsync(() => RefreshDashboard());
                     }
                     else if (message is ThingUnregisteredEvent thingUnregisteredEvent &&
-                        thingUnregisteredEvent.Thing is Dashboard)
+                        thingUnregisteredEvent.Source is Dashboard)
                     {
                         InvokeAsync(() => RefreshDashboard());
                     }

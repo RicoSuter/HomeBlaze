@@ -7,14 +7,14 @@ using System.Threading;
 using System.ComponentModel;
 using System.Linq;
 
+using Namotion.Devices.Abstractions.Messages;
+
 using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
 using HomeBlaze.Components.Editors;
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Inputs;
-using HomeBlaze.Abstractions.Presentation;
 
 namespace HomeBlaze.Dynamic
 {
@@ -50,13 +50,14 @@ namespace HomeBlaze.Dynamic
             return thing
                 .GetType()
                 .GetInterfaces()
-                .Any(a => a.Name == "IObservable`1" && a.GenericTypeArguments[0].IsAssignableTo(typeof(ButtonEvent)));
+                .Any(a => a.Name == "IObservable`1" && 
+                          a.GenericTypeArguments[0].IsAssignableTo(typeof(ButtonEvent)));
         }
 
         protected override async Task HandleMessageAsync(IEvent @event, CancellationToken cancellationToken)
         {
             if (@event is ButtonEvent buttonEvent &&
-                buttonEvent.ThingId == ExtendedThingId &&
+                (buttonEvent.Source as IThing)?.Id == ExtendedThingId &&
                 buttonEvent.ButtonState == ButtonState.Release)
             {
                 Execute();

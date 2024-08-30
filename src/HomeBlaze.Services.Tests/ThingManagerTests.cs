@@ -1,5 +1,7 @@
-﻿using HomeBlaze.Abstractions.Messages;
-using HomeBlaze.Messages;
+﻿using HomeBlaze.Messages;
+
+using Namotion.Devices.Abstractions.Messages;
+
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HomeBlaze.Services.Tests
@@ -51,7 +53,7 @@ namespace HomeBlaze.Services.Tests
 
                 Assert.Contains(
                     _events.OfType<ThingRegisteredEvent>(),
-                    e => e.Thing == mockThing);
+                    e => e.Source == mockThing);
 
                 Assert.Empty(_events.OfType<ThingUnregisteredEvent>());
             });
@@ -150,7 +152,7 @@ namespace HomeBlaze.Services.Tests
 
                 Assert.Single(_events
                     .OfType<ThingUnregisteredEvent>()
-                    .Where(e => e.Thing == mockThing1));
+                    .Where(e => e.Source == mockThing1));
             });
         }
 
@@ -185,7 +187,7 @@ namespace HomeBlaze.Services.Tests
             {
                 Assert.Single(_events
                     .OfType<ThingStateChangedEvent>()
-                    .Where(e => e.Thing == mockThing && Equals(e.NewValue, expectedValue)));
+                    .Where(e => e.Source == mockThing && Equals(e.NewValue, expectedValue)));
             });
 
             var valueAfterDetectChanges = _thingManager

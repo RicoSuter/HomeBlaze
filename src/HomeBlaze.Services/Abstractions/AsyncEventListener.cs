@@ -1,6 +1,6 @@
-﻿using HomeBlaze.Abstractions.Messages;
-using HomeBlaze.Abstractions.Services;
+﻿using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.Hosting;
+using Namotion.Devices.Abstractions.Messages;
 using System.Threading.Tasks.Dataflow;
 
 namespace HomeBlaze.Services.Abstractions

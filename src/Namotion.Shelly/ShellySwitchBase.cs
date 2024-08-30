@@ -20,10 +20,10 @@ namespace Namotion.Shelly
         IIconProvider,
         ISwitchDevice,
         ILastUpdatedProvider,
-        IObservable<ButtonEvent>,
+        IObservable<SwitchEvent>,
         IDisposable
     {
-        private readonly Subject<ButtonEvent> _buttonEventSubject = new();
+        private readonly Subject<SwitchEvent> _switchEventSubject = new();
 
         string IThing.Id => Parent!.Id + "/switch" + Index;
 
@@ -55,19 +55,19 @@ namespace Namotion.Shelly
             await Parent!.CallHttpGetAsync("relay/" + Index + "?turn=off", cancellationToken);
         }
 
-        internal void IsOnChanged(ButtonEvent buttonEvent)
+        internal void IsOnChanged(SwitchEvent switchEvent)
         {
-            _buttonEventSubject.OnNext(buttonEvent);
+            _switchEventSubject.OnNext(switchEvent);
         }
 
-        public IDisposable Subscribe(IObserver<ButtonEvent> observer)
+        public IDisposable Subscribe(IObserver<SwitchEvent> observer)
         {
-            return _buttonEventSubject.Subscribe(observer);
+            return _switchEventSubject.Subscribe(observer);
         }
 
         public void Dispose()
         {
-            _buttonEventSubject.Dispose();
+            _switchEventSubject.Dispose();
         }
     }
 }

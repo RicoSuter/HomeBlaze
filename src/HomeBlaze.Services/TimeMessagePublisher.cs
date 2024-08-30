@@ -28,6 +28,7 @@ namespace HomeBlaze.Services
                 {
                     _eventManager.Publish(new TimerEvent
                     {
+                        Source = this,
                         DateTime = DateTimeOffset
                             .FromUnixTimeSeconds(timeToPublish)
                             .ToOffset(now.Offset)

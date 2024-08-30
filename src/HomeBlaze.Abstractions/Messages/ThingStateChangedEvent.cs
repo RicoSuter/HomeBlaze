@@ -1,5 +1,5 @@
 ﻿using HomeBlaze.Abstractions;
-using HomeBlaze.Abstractions.Messages;
+using Namotion.Devices.Abstractions.Messages;
 
 namespace HomeBlaze.Messages
 {
@@ -13,11 +13,11 @@ namespace HomeBlaze.Messages
 
         public object? NewValue { get; init; }
 
-        public IThing Thing { get; }
+        public object Source { get; }
 
         public ThingStateChangedEvent(IThing thing)
         {
-            Thing = thing;
+            Source = thing;
         }
     }
 }

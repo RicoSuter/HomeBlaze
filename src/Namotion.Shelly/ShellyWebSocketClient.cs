@@ -67,12 +67,10 @@ namespace Namotion.Shelly
                                     _device.Switch0 = JsonUtilities.PopulateOrDeserialize(_device.Switch0, switch0Object);
                                     _device.DetectChanges(_device);
 
-                                    _device.Switch0.IsOnChanged(new ButtonEvent
+                                    _device.Switch0.IsOnChanged(new SwitchEvent
                                     {
-                                        ThingId = _device.Id,
-                                        ButtonState = _device.Switch0.IsOn == true ?
-                                            ButtonState.Down :
-                                            ButtonState.Release
+                                        Source = _device,
+                                        IsOn = _device.Switch0.IsOn == true
                                     });
 
                                     return Task.CompletedTask;
@@ -83,12 +81,10 @@ namespace Namotion.Shelly
                                     _device.Switch1 = JsonUtilities.PopulateOrDeserialize(_device.Switch1, switch1Object);
                                     _device.DetectChanges(_device);
 
-                                    _device.Switch1.IsOnChanged(new ButtonEvent
+                                    _device.Switch1.IsOnChanged(new SwitchEvent
                                     {
-                                        ThingId = _device.Id,
-                                        ButtonState = _device.Switch1.IsOn == true ?
-                                            ButtonState.Down :
-                                            ButtonState.Release
+                                        Source = _device,
+                                        IsOn = _device.Switch1.IsOn == true
                                     });
 
                                     return Task.CompletedTask;

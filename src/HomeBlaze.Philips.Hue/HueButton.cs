@@ -127,7 +127,7 @@ namespace HomeBlaze.Philips.Hue
                     {
                         _buttonEventSubject.OnNext(new Abstractions.Inputs.ButtonEvent
                         {
-                            ThingId = Id,
+                            Source = this,
                             ButtonState = newButtonState.Value
                         });
                     }

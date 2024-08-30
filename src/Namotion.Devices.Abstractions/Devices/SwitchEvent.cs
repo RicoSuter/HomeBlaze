@@ -2,10 +2,10 @@
 
 namespace HomeBlaze.Abstractions.Inputs
 {
-    public class ButtonEvent : IEvent
+    public class SwitchEvent : IEvent
     {
         public required object Source { get; init; }
 
-        public required ButtonState ButtonState { get; init; }
+        public required bool IsOn { get; init; }
     }
 }

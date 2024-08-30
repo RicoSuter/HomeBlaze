@@ -1,9 +1,9 @@
-using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MudBlazor;
+using Namotion.Devices.Abstractions.Messages;
 
 namespace HomeBlaze.Dynamic.Tests
 {

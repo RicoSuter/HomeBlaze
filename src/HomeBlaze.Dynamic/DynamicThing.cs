@@ -1,7 +1,6 @@
 ﻿using Castle.DynamicProxy;
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,6 +15,7 @@ using HomeBlaze.Messages;
 using System.ComponentModel;
 using System.Reflection;
 using HomeBlaze.Components.Editors;
+using Namotion.Devices.Abstractions.Messages;
 
 namespace HomeBlaze.Dynamic
 {
@@ -119,11 +119,11 @@ namespace HomeBlaze.Dynamic
         {
             if (@event is ThingStateChangedEvent stateChangedEvent)
             {
-                if (Variables.Any(v => v.ThingId == stateChangedEvent.Thing.Id &&
+                if (Variables.Any(v => v.ThingId == (stateChangedEvent.Source as IThing)?.Id &&
                                        v.PropertyName == stateChangedEvent.PropertyName))
                 {
                     foreach (var variable in Variables
-                        .Where(v => v.ThingId == stateChangedEvent.Thing.Id &&
+                        .Where(v => v.ThingId == (stateChangedEvent.Source as IThing)?.Id &&
                                     v.PropertyName == stateChangedEvent.PropertyName))
                     {
                         variable.Apply(stateChangedEvent);

@@ -6,6 +6,7 @@ using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Writes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using HomeBlaze.Abstractions;
 
 namespace HomeBlaze.Services
 {
@@ -93,13 +94,13 @@ namespace HomeBlaze.Services
                 var newValue = stateChangedEvent.NewValue;
                 if (newValue is not byte[])
                 {
-                    var thingId = stateChangedEvent.Thing.Id;
-                    if (thingId != null && newValue != null)
+                    var thing = stateChangedEvent.Source as IThing;
+                    if (thing != null && newValue != null)
                     {
                         var point = PointData
-                            .Measurement(thingId)
-                            .Tag("Type", stateChangedEvent.Thing.GetType().FullName)
-                            .Tag("Title", stateChangedEvent.Thing.Title)
+                            .Measurement(thing.Id)
+                            .Tag("Type", thing.GetType().FullName)
+                            .Tag("Title", thing.Title)
                             .Field(stateChangedEvent.PropertyName, 
                                 newValue is Enum ? newValue.ToString() : 
                                 newValue is TimeSpan timeSpan ? timeSpan.TotalSeconds : 

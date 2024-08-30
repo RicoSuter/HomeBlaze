@@ -3,11 +3,11 @@
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Json;
-using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
 
 using Namotion.NuGetPlugins;
 using Namotion.Storage;
+using Namotion.Devices.Abstractions.Messages;
 
 using System.Reflection;
 using System.Runtime.Loader;

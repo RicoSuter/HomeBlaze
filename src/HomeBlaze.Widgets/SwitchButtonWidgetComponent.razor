@@ -1,4 +1,5 @@
 ﻿@using DynamicExpresso;
+@using HomeBlaze.Abstractions
 @using HomeBlaze.Abstractions.Devices.Energy;
 @using HomeBlaze.Abstractions.Devices.Light;
 @using HomeBlaze.Abstractions.Devices;
@@ -69,7 +70,7 @@
         _subscription = EventManager.Subscribe(@event =>
         {
             if (@event is ThingStateChangedEvent stateChangedEvent &&
-                stateChangedEvent.Thing.Id == Thing?.ThingId)
+                (stateChangedEvent.Source as IThing)?.Id == Thing?.ThingId)
             {
                 Update();
             }
