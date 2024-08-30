@@ -15,6 +15,7 @@ using HomeBlaze.Services.Abstractions;
 using HomeBlaze.Components.Editors;
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Inputs;
+using Namotion.Devices.Abstractions.Inputs;
 
 namespace HomeBlaze.Dynamic
 {

@@ -1,6 +1,7 @@
-﻿using Namotion.Devices.Abstractions.Messages;
+﻿using HomeBlaze.Abstractions.Inputs;
+using Namotion.Devices.Abstractions.Messages;
 
-namespace HomeBlaze.Abstractions.Inputs
+namespace Namotion.Devices.Abstractions.Inputs
 {
     public class ButtonEvent : IEvent
     {
