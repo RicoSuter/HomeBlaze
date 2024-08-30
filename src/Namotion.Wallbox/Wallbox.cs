@@ -160,13 +160,16 @@ namespace Namotion.Wallbox
         {
             // Tested with Tesla Model 3 (2024-08)
 
-            if (IsCharging == true)
+            if (Status?.Status != ChargerStatus.Paused)
             {
-                await PauseAsync(cancellationToken);
-            }
-            else
-            {
-                await ResumeAsync(cancellationToken);
+                if (IsCharging == true)
+                {
+                    await PauseAsync(cancellationToken);
+                }
+                else
+                {
+                    await ResumeAsync(cancellationToken);
+                }
             }
         }
 
