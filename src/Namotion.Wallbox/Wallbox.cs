@@ -156,6 +156,28 @@ namespace Namotion.Wallbox
         }
 
         [Operation]
+        public async Task ToggleVehicleChargePortLockAsync(CancellationToken cancellationToken)
+        {
+            if (Status?.Status == ChargerStatus.Paused)
+            {
+                await LockVehicleChargePortLockAsync(cancellationToken);
+            }
+            else
+            {
+                await UnlockVehicleChargePortAsync(cancellationToken);
+            }
+        }
+
+        [Operation]
+        public async Task LockVehicleChargePortLockAsync(CancellationToken cancellationToken)
+        {
+            if (Status?.Status == ChargerStatus.Paused)
+            {
+                await ResumeAsync(cancellationToken);
+            }
+        }
+
+        [Operation]
         public async Task UnlockVehicleChargePortAsync(CancellationToken cancellationToken)
         {
             // Tested with Tesla Model 3 (2024-08)
