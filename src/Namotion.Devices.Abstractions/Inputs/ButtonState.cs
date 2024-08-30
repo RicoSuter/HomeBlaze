@@ -8,7 +8,7 @@ namespace HomeBlaze.Abstractions.Inputs
         None,
         Down,
         Repeat,
-        Press,
-        LongPress
+        Release,
+        LongRelease
     }
 }

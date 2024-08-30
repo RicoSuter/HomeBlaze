@@ -57,7 +57,7 @@ namespace HomeBlaze.Dynamic
         {
             if (@event is ButtonEvent buttonEvent &&
                 buttonEvent.ThingId == ExtendedThingId &&
-                buttonEvent.ButtonState == ButtonState.Press)
+                buttonEvent.ButtonState == ButtonState.Release)
             {
                 Execute();
             }

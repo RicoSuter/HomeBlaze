@@ -638,7 +638,7 @@ namespace HomeBlaze.Zwave
 
             if (e.Report.KeyState == CentralSceneKeyState.KeyPressed)
             {
-                _buttonComponent.ButtonState = ButtonState.Press;
+                _buttonComponent.ButtonState = ButtonState.Release;
                 Controller.DetectChanges(_buttonComponent);
 
                 await Task.Delay(100);
@@ -653,7 +653,7 @@ namespace HomeBlaze.Zwave
             }
             else if (e.Report.KeyState == CentralSceneKeyState.KeyReleased)
             {
-                _buttonComponent.ButtonState = ButtonState.LongPress;
+                _buttonComponent.ButtonState = ButtonState.LongRelease;
                 Controller.DetectChanges(_buttonComponent);
 
                 await Task.Delay(100);

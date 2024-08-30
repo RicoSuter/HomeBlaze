@@ -10,7 +10,8 @@ namespace HomeBlaze.Services.Abstractions
     public abstract class PollingThing : BackgroundService, IThing, IObservable<DetectChangesEvent>
     {
         private readonly ILogger _logger;
-        private readonly Subject<DetectChangesEvent> _detectChanges = new();
+
+        private Subject<DetectChangesEvent>? _detectChanges = new();
 
         [Configuration(IsIdentifier = true)]
         public virtual string Id { get; set; } = Guid.NewGuid().ToString();
@@ -60,20 +61,21 @@ namespace HomeBlaze.Services.Abstractions
         
         public void DetectChanges(IThing thing)
         {
-            _detectChanges.OnNext(new DetectChangesEvent(thing));
+            _detectChanges?.OnNext(new DetectChangesEvent(thing));
         }
 
         public abstract Task PollAsync(CancellationToken cancellationToken);
 
         public IDisposable Subscribe(IObserver<DetectChangesEvent> observer)
         {
-            return _detectChanges.Subscribe(observer);
+            return _detectChanges?.Subscribe(observer) ?? throw new ObjectDisposedException(Id);
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            _detectChanges.Dispose();
+            _detectChanges?.Dispose();
+            _detectChanges = null;
         }
     }
 }

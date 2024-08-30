@@ -20,13 +20,15 @@ using System.Threading.Tasks;
 namespace HomeBlaze.Gardena
 {
     [DisplayName("Gardena Location")]
-    public class GardenaLocation : PollingThing, IIconProvider, IConnectedThing, IAuthenticatedThing, IHubDevice, IPowerConsumptionSensor
+    public class GardenaLocation : 
+        PollingThing, 
+        IIconProvider, IConnectedThing,
+        IAuthenticatedThing, IHubDevice, 
+        IPowerConsumptionSensor
     {
-        private ClientWebSocket? _webSocket;
-
-        private bool _isRunning = false;
-        private DateTimeOffset _lastRefresh = DateTimeOffset.MinValue;
         private readonly ILogger _logger;
+
+        private DateTimeOffset _lastRefresh = DateTimeOffset.MinValue;
 
         public DateTimeOffset? LastUpdated { get; private set; }
 
@@ -44,10 +46,10 @@ namespace HomeBlaze.Gardena
         public GardenaDevice[] Devices { get; private set; } = Array.Empty<GardenaDevice>();
 
         [State]
-        public bool IsConnected => _webSocket?.State == WebSocketState.Open;
+        public bool IsConnected => GardenaSocket?.WebSocket?.State == WebSocketState.Open;
 
         [State]
-        public bool IsAuthenticated { get; private set; }
+        public bool IsAuthenticated { get; internal set; }
 
         public decimal? PowerConsumption => 2.5m;
 
@@ -65,6 +67,8 @@ namespace HomeBlaze.Gardena
 
         internal GardenaRestClient? GardenaClient { get; private set; }
 
+        internal GardenaWebSocketClient? GardenaSocket { get; private set; }
+
         protected override TimeSpan PollingInterval => TimeSpan.FromMinutes(2);
 
         protected override TimeSpan FailureInterval => TimeSpan.FromMinutes(15);
@@ -79,14 +83,15 @@ namespace HomeBlaze.Gardena
             if (GardenaClient == null)
             {
                 GardenaClient = new GardenaRestClient(ClientId!, Username!, Password!);
+                GardenaSocket = new GardenaWebSocketClient(this, _logger);
             }
 
-            TryStartBackgroundTask();
+            GardenaSocket?.StartWebSocket(cancellationToken);
 
             if (IsConnected)
             {
                 // keep alive
-                await _webSocket!.SendAsync(Encoding.UTF8.GetBytes("{}"), WebSocketMessageType.Text, true, CancellationToken.None);
+                await GardenaSocket!.WebSocket!.SendAsync(Encoding.UTF8.GetBytes("{}"), WebSocketMessageType.Text, true, CancellationToken.None);
                 _logger.LogInformation("Gardena websocket kept alive.");
             }
             else
@@ -178,26 +183,6 @@ namespace HomeBlaze.Gardena
                             .Where(v => v.GardenaId?.StartsWith(irrigationControl.GardenaId + ":") == true)
                             .ToArray();
                     }
-
-                    if (_webSocket is not null)
-                    {
-                        var webSocketAddress = await GardenaClient.GetWebSocketAddressAsync(LocationId, cancellationToken);
-                        if (webSocketAddress is not null)
-                        {
-                            try
-                            {
-                                _webSocket = new ClientWebSocket();
-                                await _webSocket.ConnectAsync(new Uri(webSocketAddress), cancellationToken);
-                            }
-                            catch (Exception e)
-                            {
-                                _logger.LogWarning(e, "Failed to open websocket.");
-                                _webSocket?.Dispose();
-                                _webSocket = null;
-                            }
-                        }
-                    }
-
                     var childValves = irrigationControls
                         .SelectMany(c => c.Valves)
                         .ToArray();
@@ -220,96 +205,10 @@ namespace HomeBlaze.Gardena
             return true;
         }
 
-
-        private void TryStartBackgroundTask()
-        {
-            if (!_isRunning)
-            {
-                _isRunning = true;
-                Task.Run(async () =>
-                {
-                    var buffer = WebSocket.CreateClientBuffer(10 * 1024, 10 * 1024);
-                    while (_isRunning)
-                    {
-                        if (_webSocket == null)
-                        {
-                            await Task.Delay(1000);
-                        }
-                        else
-                        {
-                            if (_webSocket.State == WebSocketState.Open)
-                            {
-                                try
-                                {
-                                    var result = await _webSocket.ReceiveAsync(buffer, CancellationToken.None);
-                                    if (result.Count > 0)
-                                    {
-                                        var json = Encoding.UTF8.GetString(buffer.Array!, 0, result.Count);
-                                        _logger.LogInformation("Gardena websocket message received: {Json}.", json);
-
-                                        try
-                                        {
-                                            var jObj = JObject.Parse(json);
-
-                                            var gardenaId = jObj["id"]?.Value<string>();
-                                            var type = jObj["type"]?.Value<string>();
-                                            if (!string.IsNullOrEmpty(gardenaId) && !string.IsNullOrEmpty(type))
-                                            {
-                                                var device = AllDevices.FirstOrDefault(d => d.GardenaId == gardenaId);
-                                                if (device != null)
-                                                {
-                                                    if (type == "COMMON")
-                                                    {
-                                                        device.UpdateCommon(jObj);
-                                                    }
-                                                    else
-                                                    {
-                                                        device.Update(jObj);
-                                                    }
-
-                                                    DetectChanges(device);
-                                                }
-                                            }
-
-                                            IsAuthenticated = true;
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            _logger.LogError(ex, "Failed to parse websocket message.");
-                                            IsAuthenticated = false;
-                                        }
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    _logger.LogError(e, "Failed to receive websocket message.");
-                                    await Task.Delay(1000);
-                                    IsAuthenticated = false;
-                                }
-                            }
-                            else if (_webSocket.State == WebSocketState.Closed)
-                            {
-                                IsAuthenticated = false;
-                                _webSocket.Dispose();
-                                _webSocket = null;
-                            }
-                            else
-                            {
-                                await Task.Delay(1000);
-                            }
-
-                            DetectChanges(this);
-                        }
-                    }
-                });
-            }
-        }
-
         public override void Dispose()
         {
-            _webSocket?.Dispose();
-            _webSocket = null;
-            _isRunning = false;
-        }
+            GardenaSocket?.Dispose();
+            GardenaSocket = null;
+        }       
     }
 }

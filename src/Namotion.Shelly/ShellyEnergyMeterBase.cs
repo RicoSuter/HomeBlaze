@@ -87,6 +87,7 @@ namespace Namotion.Shelly
             PhaseA.ApparentPower = PhaseAApparentPower;
             PhaseA.PowerFactor = PhaseAPowerFactor;
             PhaseA.Frequency = PhaseAFrequency;
+
             PhaseA.TotalActiveEnergy = EnergyData?.PhaseATotalActiveEnergy;
             PhaseA.TotalActiveReturnedEnergy = EnergyData?.PhaseATotalActiveReturnedEnergy;
 
@@ -96,6 +97,7 @@ namespace Namotion.Shelly
             PhaseB.ApparentPower = PhaseBApparentPower;
             PhaseB.PowerFactor = PhaseBPowerFactor;
             PhaseB.Frequency = PhaseBFrequency;
+
             PhaseB.TotalActiveEnergy = EnergyData?.PhaseBTotalActiveEnergy;
             PhaseB.TotalActiveReturnedEnergy = EnergyData?.PhaseBTotalActiveReturnedEnergy;
 
@@ -105,6 +107,7 @@ namespace Namotion.Shelly
             PhaseC.ApparentPower = PhaseCApparentPower;
             PhaseC.PowerFactor = PhaseCPowerFactor;
             PhaseC.Frequency = PhaseCFrequency;
+
             PhaseC.TotalActiveEnergy = EnergyData?.PhaseCTotalActiveEnergy;
             PhaseC.TotalActiveReturnedEnergy = EnergyData?.PhaseCTotalActiveReturnedEnergy;
         }

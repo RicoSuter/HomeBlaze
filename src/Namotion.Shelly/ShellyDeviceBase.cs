@@ -43,19 +43,27 @@ namespace Namotion.Shelly
         public virtual int RefreshInterval { get; set; } = 15 * 1000;
 
         [State]
-        public virtual bool IsConnected { get; protected set; }
+        public virtual bool IsConnected { get; internal set; }
 
         [ScanForState]
         public virtual ShellyInformation? Information { get; protected set; }
 
         [State]
-        public virtual ShellyEnergyMeter? EnergyMeter { get; protected set; }
+        public virtual ShellyEnergyMeter? EnergyMeter { get; internal set; }
+
+        [State]
+        public virtual ShellySwitch? Switch0 { get; internal set; }
+
+        [State]
+        public virtual ShellySwitch? Switch1 { get; internal set; }
 
         [State]
         public virtual ShellyCover? Cover { get; protected set; }
 
         protected override TimeSpan PollingInterval =>
             TimeSpan.FromMilliseconds(Cover?.IsMoving == true ? 1000 : RefreshInterval);
+
+        internal ShellyWebSocketClient? WebSocketClient { get; private set; }
 
         public ShellyDeviceBase(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger) 
             : base( logger)
@@ -68,6 +76,13 @@ namespace Namotion.Shelly
         {
             try
             {
+                if (WebSocketClient == null)
+                {
+                    WebSocketClient = new ShellyWebSocketClient(this, _logger);
+                }
+
+                WebSocketClient?.StartWebSocket(cancellationToken);
+
                 using var httpClient = _httpClientFactory.CreateClient();
 
                 if (Information == null)
@@ -88,8 +103,16 @@ namespace Namotion.Shelly
 
         public void Reset()
         {
+            WebSocketClient?.Dispose();
+            WebSocketClient = null;
             Information = null;
             Cover = null;
+        }
+
+        public override void Dispose()
+        {
+            Reset();
+            base.Dispose();
         }
 
         internal async Task CallHttpGetAsync(string route, CancellationToken cancellationToken)

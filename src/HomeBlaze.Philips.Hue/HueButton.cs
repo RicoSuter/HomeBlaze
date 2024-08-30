@@ -72,11 +72,11 @@ namespace HomeBlaze.Philips.Hue
             }
             else if (eventType == HueApi.Models.ButtonEvent.short_release)
             {
-                return Abstractions.Inputs.ButtonState.Press;
+                return Abstractions.Inputs.ButtonState.Release;
             }
             else if (eventType == HueApi.Models.ButtonEvent.long_release)
             {
-                return Abstractions.Inputs.ButtonState.LongPress;
+                return Abstractions.Inputs.ButtonState.LongRelease;
             }
 
             return Abstractions.Inputs.ButtonState.None;
