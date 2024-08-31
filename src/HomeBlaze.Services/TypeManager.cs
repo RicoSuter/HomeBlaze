@@ -190,7 +190,10 @@ namespace HomeBlaze.Services
         private Type[] GetThingInterfaces(Type[] exportedTypes)
         {
             var types = exportedTypes
-                .Where(t => t.IsInterface && t.IsAssignableTo(typeof(IThing)) && !t.IsConstructedGenericType)
+                .Where(t => t.IsInterface && 
+                            (t.IsAssignableTo(typeof(IThing)) || 
+                             t.GetProperties().Any(p => p.IsDefined(typeof(StateAttribute))))&& 
+                            !t.IsConstructedGenericType)
                 .OrderBy(t => t.FullName)
                 .ToArray();
 
