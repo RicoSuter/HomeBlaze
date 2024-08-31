@@ -16,16 +16,19 @@ using HomeBlaze.Components.Editors;
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Inputs;
 using Namotion.Devices.Abstractions.Inputs;
+using HomeBlaze.Abstractions.Presentation;
 
 namespace HomeBlaze.Dynamic
 {
     [DisplayName("Button Trigger")]
-    public class ButtonTriggerThing : ExtensionThing
+    public class ButtonTriggerThing : 
+        ExtensionThing, 
+        IIconProvider
     {
         private readonly IThingManager _thingManager;
         private readonly ILogger<ButtonTriggerThing> _logger;
 
-        public string IconName => "fa-solid fa-circle-dot";
+        string IIconProvider.IconName => "fa-solid fa-circle-dot";
 
         [Configuration]
         public IList<Operation> Operations { get; set; } = [];
