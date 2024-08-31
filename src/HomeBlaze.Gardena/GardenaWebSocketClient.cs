@@ -69,7 +69,6 @@ namespace HomeBlaze.Gardena
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to parse websocket message.");
-                _gardenaLocation.IsAuthenticated = false;
             }
 
             return Task.CompletedTask;

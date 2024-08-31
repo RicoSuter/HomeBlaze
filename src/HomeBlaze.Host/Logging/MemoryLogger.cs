@@ -31,9 +31,9 @@ namespace HomeBlaze.Host.Logging
                 Exception = exception != null ? "\n" + exception.ToString() : null
             });
 
-            if (LogEntries.Count > 1000)
+            if (LogEntries.Count > 200)
             {
-                LogEntries.RemoveAt(1000);
+                LogEntries.RemoveAt(200);
             }
         }
 

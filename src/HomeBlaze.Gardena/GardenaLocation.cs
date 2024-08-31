@@ -1,4 +1,18 @@
-﻿using HomeBlaze.Abstractions;
+﻿using Microsoft.Extensions.Logging;
+
+using Newtonsoft.Json.Linq;
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Net.WebSockets;
+using System.Security;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Networking;
@@ -6,24 +20,14 @@ using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Security;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Services.Abstractions;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace HomeBlaze.Gardena
 {
     [DisplayName("Gardena Location")]
-    public class GardenaLocation : 
-        PollingThing, 
+    public class GardenaLocation :
+        PollingThing,
         IIconProvider, IConnectedThing,
-        IAuthenticatedThing, IHubDevice, 
+        IAuthenticatedThing, IHubDevice,
         IPowerConsumptionSensor
     {
         private readonly ILogger _logger;
@@ -103,7 +107,9 @@ namespace HomeBlaze.Gardena
         [Operation]
         public async Task<bool> RefreshAsync(CancellationToken cancellationToken)
         {
-            if (DateTimeOffset.Now - _lastRefresh < TimeSpan.FromMinutes(60) || GardenaClient == null || LocationId == null)
+            if (DateTimeOffset.Now - _lastRefresh < TimeSpan.FromMinutes(60) ||
+                GardenaClient == null ||
+                LocationId == null)
             {
                 return false;
             }
@@ -183,6 +189,7 @@ namespace HomeBlaze.Gardena
                             .Where(v => v.GardenaId?.StartsWith(irrigationControl.GardenaId + ":") == true)
                             .ToArray();
                     }
+
                     var childValves = irrigationControls
                         .SelectMany(c => c.Valves)
                         .ToArray();
@@ -196,6 +203,11 @@ namespace HomeBlaze.Gardena
                 }
                 catch (Exception exception)
                 {
+                    if (exception is SecurityException securityException)
+                    {
+                        IsAuthenticated = false;
+                    }
+
                     _logger.LogError(exception, "Failed to refresh Gardena Location.");
                     await Task.Delay(FailureInterval, cancellationToken);
                 }
@@ -207,8 +219,15 @@ namespace HomeBlaze.Gardena
 
         public override void Dispose()
         {
+            Reset();
+        }
+
+        public override void Reset()
+        {
             GardenaSocket?.Dispose();
             GardenaSocket = null;
-        }       
+            _lastRefresh = DateTimeOffset.MinValue;
+            base.Reset();
+        }
     }
 }

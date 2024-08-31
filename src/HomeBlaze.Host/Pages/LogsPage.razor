@@ -10,7 +10,9 @@
 <PageTitle>Logs</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
-    <MudTable Items="@MemoryLogger.LogEntries" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm">
+    <br />
+    <MudTable Items="@MemoryLogger.LogEntries" Hover="true" Dense="true" 
+              Breakpoint="Breakpoint.Sm" Height="calc(100vh - 100px)">
         <HeaderContent>
             <MudTh Style="width: 100px">Time</MudTh>
             <MudTh Style="width: 100px">Level</MudTh>

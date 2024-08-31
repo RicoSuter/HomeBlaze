@@ -22,11 +22,3 @@
     <br />
     <MudSwitch @bind-Value="@Thing.AllowTurnOff" Label="Allow to turn off the Switch" Color="Color.Info" />
 </MudForm>
-
-@code {
-    public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
-    {
-        EditedThing!.Reset();
-        return base.UpdateEditedThingAsync(cancellationToken);
-    }
-}

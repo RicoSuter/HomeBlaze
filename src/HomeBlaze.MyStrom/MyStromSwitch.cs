@@ -108,11 +108,12 @@ namespace HomeBlaze.MyStrom
             }
         }
 
-        internal void Reset()
+        public override void Reset()
         {
             Information = null;
             ReportResponse = null;
             TemperatureResponse = null;
+            base.Reset();
         }
 
         [Operation]

@@ -67,6 +67,7 @@ namespace HomeBlaze.Abstractions
                             {
                                 _logger.LogWarning(exception, "Failed to open websocket.");
                                 Dispose();
+                                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
                             }
                         }
                         else
@@ -86,7 +87,7 @@ namespace HomeBlaze.Abstractions
                                 {
                                     _logger.LogError(exception, "Failed to receive websocket message.");
                                     await HandleExceptionAsync(exception, stoppingToken);
-                                    await Task.Delay(1000);
+                                    await Task.Delay(1000, stoppingToken);
                                 }
                             }
                             else if (WebSocket.State == WebSocketState.Closed)
@@ -95,7 +96,7 @@ namespace HomeBlaze.Abstractions
                             }
                             else
                             {
-                                await Task.Delay(1000);
+                                await Task.Delay(1000, stoppingToken);
                             }
                         }
                     }

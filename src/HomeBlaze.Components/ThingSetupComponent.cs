@@ -9,6 +9,7 @@ using MudBlazor;
 
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Services;
+using HomeBlaze.Services.Abstractions;
 
 using Namotion.Reflection;
 
@@ -80,6 +81,12 @@ namespace HomeBlaze.Components
         public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
         {
             ThingSerializer!.PopulateThing(Thing!, EditedThing!);
+           
+            if (EditedThing is PollingThing pollingThing) // TODO: Use interface with Reset method
+            {
+                pollingThing.Reset();
+            }
+
             return Task.FromResult(true);
         }
     }

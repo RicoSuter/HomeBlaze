@@ -101,12 +101,13 @@ namespace Namotion.Shelly
             }
         }
 
-        public void Reset()
+        public override void Reset()
         {
             WebSocketClient?.Dispose();
             WebSocketClient = null;
             Information = null;
             Cover = null;
+            base.Reset();
         }
 
         public override void Dispose()

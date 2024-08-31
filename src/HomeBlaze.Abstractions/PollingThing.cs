@@ -7,11 +7,15 @@ using System.Reactive.Subjects;
 
 namespace HomeBlaze.Services.Abstractions
 {
-    public abstract class PollingThing : BackgroundService, IThing, IObservable<DetectChangesEvent>
+    public abstract class PollingThing : 
+        BackgroundService, 
+        IThing,
+        IObservable<DetectChangesEvent>
     {
         private readonly ILogger _logger;
 
         private Subject<DetectChangesEvent>? _detectChanges = new();
+        private int _waitTimeSeconds = 0;
 
         [Configuration(IsIdentifier = true)]
         public virtual string Id { get; set; } = Guid.NewGuid().ToString();
@@ -37,7 +41,7 @@ namespace HomeBlaze.Services.Abstractions
                     DetectChanges(this);
 
                     // use for-loop to allow polling interval changes
-                    for (int i = 0; i < PollingInterval.TotalSeconds; i++)
+                    for (_waitTimeSeconds = 0; _waitTimeSeconds < PollingInterval.TotalSeconds; _waitTimeSeconds++)
                     {
                         await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
                     }
@@ -48,10 +52,12 @@ namespace HomeBlaze.Services.Abstractions
                 catch (Exception e)
                 {
                     DetectChanges(this);
-                    _logger.LogWarning(e, "Polling of thing failed.");
+                  
+                    _logger.LogWarning(e, "Polling of thing {ThingType} with ID {ThingId} failed.", 
+                        GetType().FullName, Id);
 
                     // use for-loop to allow polling interval changes
-                    for (int i = 0; i < FailureInterval.TotalSeconds; i++)
+                    for (_waitTimeSeconds = 0; _waitTimeSeconds < FailureInterval.TotalSeconds; _waitTimeSeconds++)
                     {
                         await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
                     }
@@ -65,6 +71,11 @@ namespace HomeBlaze.Services.Abstractions
         }
 
         public abstract Task PollAsync(CancellationToken cancellationToken);
+
+        public virtual void Reset()
+        {
+            _waitTimeSeconds = int.MaxValue;
+        }
 
         public IDisposable Subscribe(IObserver<DetectChangesEvent> observer)
         {

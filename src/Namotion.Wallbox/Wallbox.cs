@@ -203,9 +203,10 @@ namespace Namotion.Wallbox
             _httpClientFactory = httpClientFactory;
         }
 
-        public void Reset()
+        public override void Reset()
         {
             _wallboxClient = null;
+            base.Reset();
         }
 
         private DateTimeOffset _lastSessionsRetrieval = DateTimeOffset.MinValue;
