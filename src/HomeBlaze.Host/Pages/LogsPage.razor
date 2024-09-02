@@ -11,7 +11,7 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge">
     <br />
-    <MudTable Items="@MemoryLogger.LogEntries" Hover="true" Dense="true" 
+    <MudTable Items="@MemoryLogger.LogEntries" Hover="true" Dense="true" ReadOnly="true"
               Breakpoint="Breakpoint.Sm" Height="calc(100vh - 100px)">
         <HeaderContent>
             <MudTh Style="width: 100px">Time</MudTh>
@@ -19,14 +19,14 @@
             <MudTh>Message</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Time">@context.Time.ToString("HH:mm:ss.fff")</MudTd>
-            <MudTd DataLabel="Level"><MudChip Color="@(GetLevelColor(context.Level))">@context.Level</MudChip></MudTd>
+            <MudTd DataLabel="Time">@context?.Time.ToString("HH:mm:ss.fff")</MudTd>
+            <MudTd DataLabel="Level"><MudChip Color="@(GetLevelColor(context?.Level))">@context?.Level</MudChip></MudTd>
             <MudTd DataLabel="Message">
-                @context.Message
-                @if (context.Exception is not null)
+                @context?.Message
+                @if (context?.Exception is not null)
                 {
 <pre>
-@context.Exception
+@context?.Exception
 </pre>
                 }
             </MudTd>
@@ -42,7 +42,7 @@
         _timer = new Timer(OnTimer!, null, 5000, 5000);
     }
 
-    private Color GetLevelColor(LogLevel level)
+    private Color GetLevelColor(LogLevel? level)
     {
         return
             level == LogLevel.Critical ? Color.Error :
