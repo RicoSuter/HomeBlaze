@@ -44,7 +44,7 @@ else
     if (_devices?.Any() == true)
     {
         <MudItem>
-            <MudList Clickable="true" @bind-SelectedValue="_selectedBridge">
+            <MudList @bind-SelectedValue="_selectedBridge">
                 <MudDivider />
                 @foreach (var device in _devices)
                 {

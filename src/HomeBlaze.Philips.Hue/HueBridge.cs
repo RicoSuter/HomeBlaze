@@ -105,7 +105,7 @@ namespace HomeBlaze.Philips.Hue
             return client;
         }
 
-        public override async Task PollAsync(CancellationToken cancellationToken)
+        public override async Task PollAsync(CancellationToken stoppingToken)
         {
             if (_isRefreshing || string.IsNullOrEmpty(AppKey))
             {
@@ -144,7 +144,13 @@ namespace HomeBlaze.Philips.Hue
 
                     _client = new LocalHueApi(Bridge.IpAddress, AppKey, _httpClientFactory.CreateClient());
                     _client.OnEventStreamMessage += OnEventStreamMessage;
-                    _client.StartEventStream();
+
+#pragma warning disable CS4014
+                    Task.Run(async () =>
+                    {
+                        await _client.StartEventStream(cancellationToken: stoppingToken);
+                    });
+#pragma warning restore CS4014
 
                     LastUpdated = DateTimeOffset.Now;
 

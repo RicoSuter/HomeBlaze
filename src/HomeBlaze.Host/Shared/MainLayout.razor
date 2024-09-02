@@ -7,7 +7,7 @@
 
 @inherits LayoutComponentBase
 
-<MudThemeProvider Theme="CurrentTheme" />
+<MudThemeProvider @bind-IsDarkMode="UseDarkTheme" />
 <MudDialogProvider Position="DialogPosition.Center" />
 <MudSnackbarProvider />
 
@@ -45,13 +45,11 @@
 @code {
     bool _drawerOpen = false;
 
-    public static MudTheme CurrentTheme { get; private set; } = new MudTheme();
     public static MainLayout? Instance { get; private set; }
 
     protected override void OnInitialized()
     {
         Instance = this;
-        CurrentTheme = darkTheme;
     }
 
     void DrawerToggle()
@@ -61,50 +59,8 @@
 
     void ToggleTheme()
     {
-        if (CurrentTheme == defaultTheme)
-        {
-            CurrentTheme = darkTheme;
-        }
-        else
-        {
-            CurrentTheme = defaultTheme;
-        }
+        UseDarkTheme = !UseDarkTheme;
     }
 
-    public static bool UseDarkTheme => CurrentTheme != defaultTheme;
-
-    static MudTheme defaultTheme = new MudTheme()
-        {
-            PaletteLight = new PaletteLight()
-            {
-                Black = "#272c34"
-            }
-        };
-
-    static MudTheme darkTheme = new MudTheme()
-        {
-            PaletteDark = new PaletteDark()
-            {
-                Black = "#27272f",
-                Background = "#32333d",
-                BackgroundGray = "#27272f",
-                Surface = "#373740",
-                DrawerBackground = "#27272f",
-                DrawerText = "rgba(255,255,255, 0.50)",
-                DrawerIcon = "rgba(255,255,255, 0.50)",
-                AppbarBackground = "#27272f",
-                AppbarText = "rgba(255,255,255, 0.70)",
-                TextPrimary = "rgba(255,255,255, 0.70)",
-                TextSecondary = "rgba(255,255,255, 0.50)",
-                ActionDefault = "#adadb1",
-                ActionDisabled = "rgba(255,255,255, 0.26)",
-                ActionDisabledBackground = "rgba(255,255,255, 0.12)",
-                Divider = "rgba(255,255,255, 0.12)",
-                DividerLight = "rgba(255,255,255, 0.06)",
-                TableLines = "rgba(255,255,255, 0.12)",
-                LinesDefault = "rgba(255,255,255, 0.12)",
-                LinesInputs = "rgba(255,255,255, 0.3)",
-                TextDisabled = "rgba(255,255,255, 0.2)"
-            }
-        };
+    public static bool UseDarkTheme { get; private set; } = true;
 }

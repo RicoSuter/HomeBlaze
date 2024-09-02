@@ -33,9 +33,9 @@
             var metadata = ThingManager.TryGetMetadata(Thing);
 
             var stateGroups = ThingManager
-                .GetState(Thing.Id, true)
-                .OrderBy(s => s.Value.Attribute?.Order ?? 0)
-                .GroupBy(p => p.Value.SourceThing);
+            .GetState(Thing.Id, true)
+            .OrderBy(s => s.Value.Attribute?.Order ?? 0)
+            .GroupBy(p => p.Value.SourceThing);
 
             var operations = ThingManager.GetOperations(Thing.Id, true);
         }
@@ -60,9 +60,9 @@
             <MudListSubheader>
                 @* Buttons: Edit, Move, Delete & Exend *@
                 @if (metadata?.CanEdit == true ||
-                    metadata?.CanDelete == true ||
-                    ParentThing is GroupBase ||
-                    canExtend)
+               metadata?.CanDelete == true ||
+               ParentThing is GroupBase ||
+               canExtend)
                 {
                     @if (metadata?.CanEdit == true)
                     {
@@ -116,15 +116,15 @@
                 @if (TypeManager.TryGetThingComponentAttribute(Thing.GetType()) is ThingComponentAttribute attribute)
                 {
                     @((new RenderFragment(builder =>
-                    {
-                        var controlViewType = attribute.ComponentType;
-                        if (controlViewType != null)
                         {
-                            builder.OpenComponent(0, controlViewType);
-                            builder.AddAttribute(1, "Thing", Thing);
-                            builder.CloseComponent();
-                        }
-                    })))
+                            var controlViewType = attribute.ComponentType;
+                            if (controlViewType != null)
+                            {
+                                builder.OpenComponent(0, controlViewType);
+                                builder.AddAttribute(1, "Thing", Thing);
+                                builder.CloseComponent();
+                            }
+                        })))
                     <br />
                     <br />
                 }
@@ -198,7 +198,7 @@
                         var count = pair.Value.Children.Count();
                         if (count == 1)
                         {
-                            <MudList Clickable="true" SelectedValue="SelectedThing" Style="padding-top: 0; padding-bottom: 0">
+                            <MudList SelectedValue="SelectedThing" Style="padding-top: 0; padding-bottom: 0">
                                 <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing"
                                                       Subtitle="@(group.Key != Thing ? group.Key.Title : null)"
                                                       Children="pair.Value.Children">
@@ -207,10 +207,10 @@
                         }
                         else if (count > 1)
                         {
-                            <MudExpansionPanel Gutters="false" Dense="true" in
-                                               IsInitiallyExpanded="Thing == ThingManager.RootThing ||
-                                                 stateGroups.Count() == 1 ||
-                                                 pair.Value.Property?.PropertyType.Type.IsAssignableTo(typeof(IThing)) == true">
+                            <MudExpansionPanel Gutters="false" Dense="true"
+                                               Expanded="@(Thing == ThingManager.RootThing ||
+                                            stateGroups.Count() == 1 ||
+                                            pair.Value.Property?.PropertyType.Type.IsAssignableTo(typeof(IThing)) == true)">
                                 <TitleContent>
                                     @pair.Key
 
@@ -220,10 +220,10 @@
                                         <small>(@group.Key.Title)</small>
                                     }
 
-                                    <MudChip Color="Color.Default" Size="Size.Small">@pair.Value.Children.Count()</MudChip>
+                                    <MudChip Color="Color.Default" Size="Size.Small" T="string">@pair.Value.Children.Count()</MudChip>
                                 </TitleContent>
                                 <ChildContent>
-                                    <MudList Clickable="true" SelectedValue="SelectedThing">
+                                    <MudList SelectedValue="SelectedThing">
                                         <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing" Children="pair.Value.Children">
                                         </ThingChildListIItems>
                                     </MudList>
@@ -235,16 +235,18 @@
             </MudExpansionPanels>
 
             @* Technical Details *@
-            <MudExpansionPanels DisableBorders="true" Elevation="0">
-                <MudExpansionPanel Text="Details" IsInitiallyExpanded="true">
-                    <small style="word-break: break-all">
-                        <p>
-                            <strong>ID:</strong> @(Thing.Id ?? "Loading...")
-                        </p>
-                        <p>
-                            <strong>Type:</strong> @(Thing.GetType().FullName)
-                        </p>
-                    </small>
+            <MudExpansionPanels Outlined="false" Elevation="0">
+                <MudExpansionPanel Text="Details" Expanded="true">
+                    <MudListSubheader>
+                        <small style="word-break: break-all">
+                            <p>
+                                <strong>ID:</strong> @(Thing.Id ?? "Loading...")
+                            </p>
+                            <p>
+                                <strong>Type:</strong> @(Thing.GetType().FullName)
+                            </p>
+                        </small>
+                    </MudListSubheader>
                 </MudExpansionPanel>
             </MudExpansionPanels>
         </div>

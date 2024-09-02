@@ -23,7 +23,7 @@
             @if (child == SelectedThing)
             {
                 <div style="float: right; line-height: 0">
-                    @if (Thing is GroupBase group)
+                    @if (Thing is GroupBase group && Thing is not SystemThing)
                     {
                         <MudIconButton OnClick="@(() => MoveThingUp(child, group))"
                                        Icon="@Icons.Material.Filled.ArrowUpward"
