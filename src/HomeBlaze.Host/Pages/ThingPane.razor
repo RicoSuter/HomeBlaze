@@ -207,7 +207,7 @@
                         }
                         else if (count > 1)
                         {
-                            <MudExpansionPanel Gutters="false" Dense="true"
+                            <MudExpansionPanel Gutters="false" Dense="true" 
                                                Expanded="@(Thing == ThingManager.RootThing ||
                                             stateGroups.Count() == 1 ||
                                             pair.Value.Property?.PropertyType.Type.IsAssignableTo(typeof(IThing)) == true)">
@@ -220,10 +220,10 @@
                                         <small>(@group.Key.Title)</small>
                                     }
 
-                                    <MudChip Color="Color.Default" Size="Size.Small" T="string">@pair.Value.Children.Count()</MudChip>
+                                    <MudChip Color="Color.Dark" Size="Size.Small" T="string">@pair.Value.Children.Count()</MudChip>
                                 </TitleContent>
                                 <ChildContent>
-                                    <MudList SelectedValue="SelectedThing">
+                                    <MudList SelectedValue="SelectedThing" Style="margin-left: -24px; margin-right: -24px">
                                         <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing" Children="pair.Value.Children">
                                         </ThingChildListIItems>
                                     </MudList>

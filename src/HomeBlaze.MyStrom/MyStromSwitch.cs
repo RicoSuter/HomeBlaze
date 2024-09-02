@@ -99,7 +99,10 @@ namespace HomeBlaze.MyStrom
                     }
                 }
 
-                await RefreshReportAsync(cancellationToken);
+                if (Information is not null)
+                {
+                    await RefreshReportAsync(cancellationToken);
+                }
             }
             catch
             {
@@ -142,15 +145,18 @@ namespace HomeBlaze.MyStrom
             using var httpClient = _httpClientFactory.CreateClient();
 
             var reportResponse = await httpClient.GetAsync($"http://{IpAddress}/report", cancellationToken);
-            var reportJson = await reportResponse.Content.ReadAsStringAsync(cancellationToken);
+            reportResponse.EnsureSuccessStatusCode();
 
+            var reportJson = await reportResponse.Content.ReadAsStringAsync(cancellationToken);
             ReportResponse = JsonSerializer.Deserialize<MyStromSwitchReport>(reportJson);
 
             var temperatureResponse = await httpClient.GetAsync($"http://{IpAddress}/api/v1/temperature", cancellationToken);
+            temperatureResponse.EnsureSuccessStatusCode();
+
             var temperatureJson = await temperatureResponse.Content.ReadAsStringAsync(cancellationToken);
+            TemperatureResponse = JsonSerializer.Deserialize<MyStromSwitchTemperature>(temperatureJson);
 
             LastUpdated = DateTimeOffset.Now;
-            TemperatureResponse = JsonSerializer.Deserialize<MyStromSwitchTemperature>(temperatureJson);
 
             IsConnected = true;
         }
