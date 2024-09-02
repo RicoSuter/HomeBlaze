@@ -34,7 +34,7 @@
                 @if (_isLightOn == true && _color != null)
                 {
                     <MudColorPicker Label="Color"
-                            DisableAlpha="true"
+                            ShowAlpha="false"
                             Value="@(new MudBlazor.Utilities.MudColor(_color ?? "#FFFFFF"))"
                             ValueChanged="@(value => ColorChanged(value.Value.Substring(0, 7)))" />
                 }
@@ -42,7 +42,7 @@
         </div>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(null))" Class="px-10">Close</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(DialogResult.Ok<object?>(null)))" Class="px-10">Close</MudButton>
     </DialogActions>
 </MudDialog>
 

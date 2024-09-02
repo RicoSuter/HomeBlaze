@@ -190,7 +190,7 @@
             </MudListSubheader>
 
             @* Children *@
-            <MudExpansionPanels MultiExpansion="true" DisableBorders="true" Elevation="0" DisableGutters="true" Dense="true">
+            <MudExpansionPanels MultiExpansion="true" Elevation="0" Gutters="false" Outlined="false" Dense="true">
                 @foreach (var group in stateGroups)
                 {
                     foreach (var pair in group.Where(p => p.Value.HasThingChildren))
@@ -207,7 +207,7 @@
                         }
                         else if (count > 1)
                         {
-                            <MudExpansionPanel DisableGutters="true" Dense="true"
+                            <MudExpansionPanel Gutters="false" Dense="true" in
                                                IsInitiallyExpanded="Thing == ThingManager.RootThing ||
                                                  stateGroups.Count() == 1 ||
                                                  pair.Value.Property?.PropertyType.Type.IsAssignableTo(typeof(IThing)) == true">

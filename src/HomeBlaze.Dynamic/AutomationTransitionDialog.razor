@@ -13,7 +13,7 @@
 @inject ITypeManager TypeManager
 @inject IDialogService DialogService
 
-<MudDialog ClassContent="edit-dialog">
+<MudDialog ContentClass="edit-dialog">
     <TitleContent>@(DialogInstance?.Title)</TitleContent>
     <DialogContent>
         @if (Transition != null)
@@ -100,7 +100,7 @@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="@(() => DialogInstance?.Close(null))" Color="Color.Primary">Close</MudButton>
+        <MudButton OnClick="@(() => DialogInstance?.Close(DialogResult.Ok<object?>(null)))" Color="Color.Primary">Close</MudButton>
         <MudButton OnClick="@(() => DialogInstance?.Close(Transition))" Variant="Variant.Filled" Color="Color.Primary">
             Update Transition
         </MudButton>

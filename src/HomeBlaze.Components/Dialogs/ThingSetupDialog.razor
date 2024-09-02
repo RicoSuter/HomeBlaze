@@ -17,7 +17,7 @@
 @inject IDialogService DialogService
 @inject IThingSerializer ThingSerializer
 
-<MudDialog ClassContent="edit-dialog">
+<MudDialog ContentClass="edit-dialog">
     <TitleContent>
         @if (Thing != null)
         {
@@ -86,7 +86,7 @@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="@(() => DialogInstance?.Close(null))" Color="Color.Primary">Close</MudButton>
+        <MudButton OnClick="@(() => DialogInstance?.Close(DialogResult.Ok<object?>(null)))" Color="Color.Primary">Close</MudButton>
         @if (_json == null)
         {
             <MudButton OnClick="@Upsert" Disabled="@(_processing || _component?.IsValid != true)"

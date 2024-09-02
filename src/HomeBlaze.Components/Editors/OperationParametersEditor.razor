@@ -16,7 +16,7 @@
         @if (attribute?.Unit == StateUnit.HexColor)
         {
             <MudColorPicker Label="@parameterName"
-                DisableAlpha="true"
+                ShowAlpha="false"
                 Value="@(Parameters[parameterName]?.ToString() ?? "#FFFFFF")"
                 ValueChanged="@(value => Parameters[parameterName] = value.Value.Substring(0, 7))" />
         }

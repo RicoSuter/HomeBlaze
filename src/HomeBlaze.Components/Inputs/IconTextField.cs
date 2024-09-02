@@ -1,6 +1,7 @@
 ﻿using MudBlazor;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HomeBlaze.Components.Inputs
@@ -14,13 +15,13 @@ namespace HomeBlaze.Components.Inputs
             Adornment = Adornment.End;
         }
 
-        protected override Task SetValueAsync(string value, bool updateText = true, bool force = false)
+        protected override Task SetTextAsync(string? text, bool updateValue = true)
         {
-            AdornmentIcon = value;
-            return base.SetValueAsync(value, updateText);
+            AdornmentIcon = text;
+            return base.SetTextAsync(text, updateValue);
         }
 
-        private Task<IEnumerable<string>> OnSearch(string search)
+        private Task<IEnumerable<string>> OnSearch(string search, CancellationToken cancellationToken)
         {
             var lowerSearch = search?.ToLowerInvariant() ?? "";
             return Task.FromResult(_icons

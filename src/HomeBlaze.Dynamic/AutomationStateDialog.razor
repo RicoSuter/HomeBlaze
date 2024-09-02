@@ -9,7 +9,7 @@
 @inject IThingManager ThingManager
 @inject IDialogService DialogService
 
-<MudDialog ClassContent="edit-dialog">
+<MudDialog ContentClass="edit-dialog">
     <TitleContent>@(DialogInstance?.Title)</TitleContent>
     <DialogContent>
         @if (State != null)
@@ -21,7 +21,7 @@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="@(() => DialogInstance?.Close(null))" Color="Color.Primary">Close</MudButton>
+        <MudButton OnClick="@(() => DialogInstance?.Close(DialogResult.Ok<object?>(null)))" Color="Color.Primary">Close</MudButton>
         <MudButton OnClick="@(() => DialogInstance?.Close(State))" Disabled="string.IsNullOrEmpty(State?.Name)"
                    Variant="Variant.Filled" Color="Color.Primary">
             Update State

@@ -29,7 +29,7 @@
     </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                   OnClick="@(() => DialogInstance?.Close(null))" Class="px-10">Close</MudButton>
+                   OnClick="@(() => DialogInstance?.Close(DialogResult.Ok<object?>(null)))" Class="px-10">Close</MudButton>
     </DialogActions>
 </MudDialog>
 

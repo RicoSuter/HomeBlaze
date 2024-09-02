@@ -42,7 +42,7 @@
             .ToArray();
     }
 
-    public static async Task<DialogResult> ShowAsync(IDialogService dialogService, string title, string thingId, string operationId, Dictionary<string, object?> parameters)
+    public static async Task<DialogResult?> ShowAsync(IDialogService dialogService, string title, string thingId, string operationId, Dictionary<string, object?> parameters)
     {
         return await dialogService.Show<OperationParametersDialog>(title,
             new DialogParameters

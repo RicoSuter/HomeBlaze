@@ -39,7 +39,7 @@ else if (_locations != null)
     </MudItem>
 
     <MudItem>
-        <MudList Clickable="true" @bind-SelectedValue="_selectedLocation">
+        <MudList @bind-SelectedValue="_selectedLocation">
             <MudDivider />
             @foreach (var location in _locations)
             {
