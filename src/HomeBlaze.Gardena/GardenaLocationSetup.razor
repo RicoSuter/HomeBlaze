@@ -5,7 +5,7 @@
 @using System.Threading
 @using System.Net.Http
 
-@attribute [ThingSetup(typeof(GardenaLocation))]
+@attribute [ThingSetup(typeof(GardenaLocation), CanEdit = true)]
 @inherits ThingSetupComponentBase<GardenaLocation>
 
 @inject IDialogService DialogService
@@ -65,6 +65,27 @@ else if (_locations != null)
 
     public override bool IsValid => _selectedLocation != null;
 
+    protected override void OnInitialized()
+    {
+        if (EditedThing is GardenaLocation gardenaLocation)
+        {
+            _username = gardenaLocation.Username;
+            _password = gardenaLocation.Password;
+            _clientId = gardenaLocation.ClientId;
+        }
+    }
+
+    private void Update(GardenaLocation thing)
+    {
+        if (_selectedLocation is Location selectedLocation)
+        {
+            thing.Username = _username;
+            thing.Password = _password;
+            thing.LocationId = selectedLocation.Id;
+            thing.Reset();
+        }
+    }
+
     private async void LoadLocations()
     {
         try
@@ -94,9 +115,7 @@ else if (_locations != null)
             if (_selectedLocation is Location selectedLocation)
             {
                 var thing = (GardenaLocation)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(GardenaLocation));
-                thing.Username = _username;
-                thing.Password = _password;
-                thing.LocationId = selectedLocation.Id;
+                Update(thing);
                 return thing;
             }
 
@@ -107,5 +126,11 @@ else if (_locations != null)
         }
 
         return null;
+    }
+
+    public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
+    {
+        Update(EditedThing!);
+        return Task.FromResult(true);
     }
 }

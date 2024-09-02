@@ -1,16 +1,19 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Presentation;
 using System.Text.Json.Serialization;
 
 namespace HomeBlaze.Tesla.Vehicle.Models
 {
-    public partial class VehicleState : IThing
+    public partial class VehicleState : IThing, IIconProvider
     {
         private decimal _odometer;
 
         public string Id => Parent?.Id + "/vehicle";
 
         public string? Title => "Vehicle";
+
+        public string IconName => "fa-solid fa-car";
 
         [ParentThing]
         public TeslaVehicle? Parent { get; private set; }

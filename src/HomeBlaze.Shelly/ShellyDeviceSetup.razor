@@ -20,11 +20,3 @@
     <MudTextField @bind-Value="@Thing.IpAddress" Label="IP Address" Required="true" />
     <MudTextField @bind-Value="@Thing.RefreshInterval" Label="Refresh Interval (Milliseconds)" Required="true" />
 </MudForm>
-
-@code {
-    public override Task<bool> UpdateEditedThingAsync(CancellationToken cancellationToken)
-    {
-        EditedThing?.Reset();
-        return base.UpdateEditedThingAsync(cancellationToken);
-    }
-}

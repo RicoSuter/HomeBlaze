@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Messages;
+using HomeBlaze.Abstractions;
 
 namespace HomeBlaze.Services
 {
@@ -80,7 +81,7 @@ namespace HomeBlaze.Services
             {
                 if (!(stateChangedEvent.NewValue is byte[]))
                 {
-                    var thingId = stateChangedEvent.Thing.Id;
+                    var thingId = (stateChangedEvent.Source as IThing)?.Id;
                     if (thingId != null)
                     {
                         var fileName = GetFileName(thingId);

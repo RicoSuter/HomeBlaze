@@ -20,7 +20,7 @@ namespace Namotion.Wallbox.Responses.GetChargerStatus
 
         [State(Unit = StateUnit.Volt)]
         public decimal? GridVoltage => ChargingSpeed > 0 && CurrentMode > 0 ?
-            ChargingPower * 1000m / ChargingSpeed / CurrentMode :
+            ChargingPowerInKw * 1000m / ChargingSpeed / CurrentMode :
             null;
 
         [JsonPropertyName("user_id")]
@@ -95,7 +95,7 @@ namespace Namotion.Wallbox.Responses.GetChargerStatus
         }
 
         [JsonPropertyName("charging_power"), JsonInclude]
-        internal decimal ChargingPower { get; set; }
+        internal decimal ChargingPowerInKw { get; set; }
 
         [JsonPropertyName("depot_name")]
         public string? DepotName { get; set; }

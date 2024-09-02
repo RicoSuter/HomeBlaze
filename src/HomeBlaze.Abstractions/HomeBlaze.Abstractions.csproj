@@ -20,4 +20,8 @@
 		<ProjectReference Include="..\Namotion.Devices.Abstractions\Namotion.Devices.Abstractions.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Inputs\" />
+	</ItemGroup>
+
 </Project>

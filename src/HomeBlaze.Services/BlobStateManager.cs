@@ -81,7 +81,7 @@ namespace HomeBlaze.Services
             {
                 if (stateChangedEvent.NewValue is not Image)
                 {
-                    var thingId = stateChangedEvent.Thing.Id;
+                    var thingId = (stateChangedEvent.Source as IThing)?.Id;
                     if (thingId != null)
                     {
                         var fileName = GetFileName(thingId);

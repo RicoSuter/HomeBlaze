@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,7 +45,8 @@ namespace HomeBlaze.Gardena
                 var response = await client.PostAsync(url, new FormUrlEncodedContent(parameters!), cancellationToken);
                 var data = await response.Content.ReadAsStringAsync(cancellationToken);
                 var result = JObject.Parse(data);
-                return result["access_token"]?.Value<string>();
+                return result["access_token"]?.Value<string>() 
+                    ?? throw new SecurityException($"Authorization failed: \n\n{data}.");
             }
         }
 
@@ -119,6 +121,8 @@ namespace HomeBlaze.Gardena
             await EnsureAuthenticatedAsync(cancellationToken);
             try
             {
+                // See https://developer.husqvarnagroup.cloud/apis/GARDENA+smart+system+API?tab=readme#sample-websocket-client
+
                 using (var client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.Accept.Clear();

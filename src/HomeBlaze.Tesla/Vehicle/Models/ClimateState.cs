@@ -1,14 +1,17 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Presentation;
 using System.Text.Json.Serialization;
 
 namespace HomeBlaze.Tesla.Vehicle.Models
 {
-    public partial class ClimateState : IThing
+    public partial class ClimateState : IThing, IIconProvider
     {
         public string Id => Parent!.Id + "/climate";
 
         public string? Title => "Climate";
+
+        public string IconName => "fa-solid fa-sun";
 
         [ParentThing]
         public TeslaVehicle? Parent { get; private set; }

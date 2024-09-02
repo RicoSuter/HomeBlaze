@@ -3,11 +3,11 @@
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Json;
-using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
 
 using Namotion.NuGetPlugins;
 using Namotion.Storage;
+using Namotion.Devices.Abstractions.Messages;
 
 using System.Reflection;
 using System.Runtime.Loader;
@@ -190,7 +190,10 @@ namespace HomeBlaze.Services
         private Type[] GetThingInterfaces(Type[] exportedTypes)
         {
             var types = exportedTypes
-                .Where(t => t.IsInterface && t.IsAssignableTo(typeof(IThing)) && !t.IsConstructedGenericType)
+                .Where(t => t.IsInterface && 
+                            (t.IsAssignableTo(typeof(IThing)) || 
+                             t.GetProperties().Any(p => p.IsDefined(typeof(StateAttribute))))&& 
+                            !t.IsConstructedGenericType)
                 .OrderBy(t => t.FullName)
                 .ToArray();
 

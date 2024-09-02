@@ -145,7 +145,7 @@
                         {
                             <MudText @onclick="@(() => Navigation.NavigateToThingProperty(Thing, value.Value.Name))"
                                      Color="SelectedProperty == value.Key ? Color.Primary : Color.Default"
-                                     Style="cursor: pointer">
+                                     Style="@("cursor: pointer; " + (value.Value.Value is null ? "opacity: 0.5" : ""))">
                                 <strong>@(value.Key): </strong>
 
                                 @if (value.Value.Value is Image image)
@@ -160,6 +160,8 @@
                                         <br />
                                         @item
                                     }
+                                    <br />
+                                    <br />
                                 }
                                 else
                                 {

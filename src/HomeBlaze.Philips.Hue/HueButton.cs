@@ -14,11 +14,11 @@ namespace HomeBlaze.Philips.Hue
         IIconProvider,
         ILastUpdatedProvider,
         IButtonDevice,
-        IObservable<Abstractions.Inputs.ButtonEvent>,
+        IObservable<Namotion.Devices.Abstractions.Inputs.ButtonEvent>,
         IDisposable
     {
         private readonly string _name;
-        private readonly Subject<Abstractions.Inputs.ButtonEvent> _buttonEventSubject = new();
+        private readonly Subject<Namotion.Devices.Abstractions.Inputs.ButtonEvent> _buttonEventSubject = new();
 
         private ButtonState? _currentButtonState;
         private DateTimeOffset? _currentButtonChangeDate;
@@ -72,11 +72,11 @@ namespace HomeBlaze.Philips.Hue
             }
             else if (eventType == HueApi.Models.ButtonEvent.short_release)
             {
-                return Abstractions.Inputs.ButtonState.Press;
+                return Abstractions.Inputs.ButtonState.Release;
             }
             else if (eventType == HueApi.Models.ButtonEvent.long_release)
             {
-                return Abstractions.Inputs.ButtonState.LongPress;
+                return Abstractions.Inputs.ButtonState.LongRelease;
             }
 
             return Abstractions.Inputs.ButtonState.None;
@@ -125,9 +125,9 @@ namespace HomeBlaze.Philips.Hue
 
                     if (newButtonState.HasValue)
                     {
-                        _buttonEventSubject.OnNext(new Abstractions.Inputs.ButtonEvent
+                        _buttonEventSubject.OnNext(new Namotion.Devices.Abstractions.Inputs.ButtonEvent
                         {
-                            ThingId = Id,
+                            Source = this,
                             ButtonState = newButtonState.Value
                         });
                     }
@@ -143,7 +143,7 @@ namespace HomeBlaze.Philips.Hue
             }
         }
 
-        public IDisposable Subscribe(IObserver<Abstractions.Inputs.ButtonEvent> observer)
+        public IDisposable Subscribe(IObserver<Namotion.Devices.Abstractions.Inputs.ButtonEvent> observer)
         {
             return _buttonEventSubject.Subscribe(observer);
         }

@@ -12,7 +12,10 @@ namespace HomeBlaze.Dynamic
 {
     [DisplayName("Static Properties")]
     [Description("Add static properties to a thing.")]
-    public class StaticPropertiesThing : IExtensionThing, IStateProvider
+    public class StaticPropertiesThing : 
+        IExtensionThing, 
+        IStateProvider,
+        IIconProvider
     {
         private readonly IThingManager _thingManager;
 

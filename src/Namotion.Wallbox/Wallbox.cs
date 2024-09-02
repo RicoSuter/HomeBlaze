@@ -17,10 +17,10 @@ using HomeBlaze.Abstractions.Networking;
 
 namespace Namotion.Wallbox
 {
-    public class Wallbox : PollingThing, 
-        IVehicleCharger, 
+    public class Wallbox : PollingThing,
+        IVehicleCharger,
         IConnectedThing,
-        IPowerConsumptionSensor, 
+        IPowerConsumptionSensor,
         IIconProvider
     {
         private WallboxClient? _wallboxClient;
@@ -30,9 +30,9 @@ namespace Namotion.Wallbox
 
         string IIconProvider.IconName => "fas fa-plug";
 
-        string IIconProvider.IconColor => 
-            IsConnected == false ? "Error" : 
-            IsPluggedIn == true ? "Warning" : 
+        string IIconProvider.IconColor =>
+            IsConnected == false ? "Error" :
+            IsPluggedIn == true ? "Warning" :
             "Success";
 
         [Configuration]
@@ -49,9 +49,9 @@ namespace Namotion.Wallbox
 
         public bool? IsPluggedIn => Status?.Finished == false;
 
-        public bool? IsCharging => Status?.ChargingPower > 1;
+        public bool? IsCharging => Status?.ChargingPowerInKw > 1;
 
-        public decimal? PowerConsumption => Status?.ChargingPower * 1000m;
+        public decimal? PowerConsumption => Status?.ChargingPowerInKw * 1000m;
 
         [State(IsSignal = true)]
         public bool? IsLocked =>
@@ -121,6 +121,80 @@ namespace Namotion.Wallbox
             }
         }
 
+        [Operation]
+        public async Task PauseAsync(CancellationToken cancellationToken)
+        {
+            if (_wallboxClient is not null)
+            {
+                try
+                {
+                    await _wallboxClient.PauseAsync(SerialNumber, cancellationToken);
+                    await PollAsync(cancellationToken);
+                }
+                finally
+                {
+                    DetectChanges(this);
+                }
+            }
+        }
+
+        [Operation]
+        public async Task ResumeAsync(CancellationToken cancellationToken)
+        {
+            if (_wallboxClient is not null)
+            {
+                try
+                {
+                    await _wallboxClient.ResumeAsync(SerialNumber, cancellationToken);
+                    await PollAsync(cancellationToken);
+                }
+                finally
+                {
+                    DetectChanges(this);
+                }
+            }
+        }
+
+        [Operation]
+        public async Task ToggleVehicleChargePortLockAsync(CancellationToken cancellationToken)
+        {
+            if (Status?.Status == ChargerStatus.Paused)
+            {
+                await LockVehicleChargePortLockAsync(cancellationToken);
+            }
+            else
+            {
+                await UnlockVehicleChargePortAsync(cancellationToken);
+            }
+        }
+
+        [Operation]
+        public async Task LockVehicleChargePortLockAsync(CancellationToken cancellationToken)
+        {
+            if (Status?.Status == ChargerStatus.Paused)
+            {
+                await ResumeAsync(cancellationToken);
+            }
+        }
+
+        [Operation]
+        public async Task UnlockVehicleChargePortAsync(CancellationToken cancellationToken)
+        {
+            // Tested with Tesla Model 3 (2024-08)
+
+            if (Status?.Status != ChargerStatus.Paused)
+            {
+                if (IsCharging == true)
+                {
+                    await PauseAsync(cancellationToken);
+                }
+                else
+                {
+                    await ResumeAsync(cancellationToken);
+                }
+            }
+        }
+
         protected override TimeSpan PollingInterval => TimeSpan.FromMinutes(1);
 
         public Wallbox(IHttpClientFactory httpClientFactory, ILogger<Wallbox> logger)
@@ -129,9 +203,10 @@ namespace Namotion.Wallbox
             _httpClientFactory = httpClientFactory;
         }
 
-        public void Reset()
+        public override void Reset()
         {
             _wallboxClient = null;
+            base.Reset();
         }
 
         private DateTimeOffset _lastSessionsRetrieval = DateTimeOffset.MinValue;
@@ -145,7 +220,7 @@ namespace Namotion.Wallbox
             try
             {
                 Status = await _wallboxClient.GetChargerStatusAsync(SerialNumber, cancellationToken);
-                
+
                 if (DateTimeOffset.UtcNow > _lastSessionsRetrieval.AddMinutes(30) &&
                     Status is not null &&
                     Status.ConfigData?.GroupId is not null)
@@ -154,15 +229,15 @@ namespace Namotion.Wallbox
 
                     var sessions = await _wallboxClient.GetChargerChargingSessionsAsync(
                         Status.ConfigData.GroupId,
-                        Status.ConfigData.ChargerId, 
-                        DateTimeOffset.MinValue, 
+                        Status.ConfigData.ChargerId,
+                        DateTimeOffset.MinValue,
                         DateTimeOffset.Now, cancellationToken: cancellationToken);
 
                     _lastSessionsRetrieval = DateTimeOffset.UtcNow;
-                   
-                    TotalConsumedEnergy = 
-                        sessions.Sum(s => s.Attributes.Energy) + 
-                        Status.AddedEnergy * 1000;
+
+                    TotalConsumedEnergy =
+                        sessions.Sum(s => s.Attributes.Energy) +
+                        (IsPluggedIn == true ? Status.AddedEnergy * 1000 : 0);
                 }
 
                 IsConnected = true;

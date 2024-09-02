@@ -1,6 +1,5 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
 using System;
 using System.Threading.Tasks;
@@ -12,6 +11,7 @@ using HomeBlaze.Messages;
 using HomeBlaze.Abstractions.Sensors;
 using System.Collections.Generic;
 using HomeBlaze.Abstractions.Devices.Light;
+using Namotion.Devices.Abstractions.Messages;
 
 namespace HomeBlaze.Dynamic
 {
@@ -106,14 +106,15 @@ namespace HomeBlaze.Dynamic
         private Task SearchIntruderAsync(IEvent @event, CancellationToken cancellationToken)
         {
             if (@event is ThingStateChangedEvent changedEvent &&
-                PresenceThingIds.Contains(changedEvent.Thing.Id))
+                changedEvent.Source is IThing thing &&
+                PresenceThingIds.Contains(thing.Id))
             {
                 var isPresent = 
-                    changedEvent.Thing is IPresenceSensor presenceSensor &&
+                    changedEvent.Source is IPresenceSensor presenceSensor &&
                     presenceSensor.IsPresent == true;
 
                 var isDoorOpen =
-                    changedEvent.Thing is IDoorSensor doorSensor &&
+                    changedEvent.Source is IDoorSensor doorSensor &&
                     doorSensor.DoorState == DoorState.Open;
 
                 if (isPresent || isDoorOpen)

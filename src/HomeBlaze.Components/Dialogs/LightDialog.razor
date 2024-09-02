@@ -82,7 +82,7 @@
         _subscription = EventManager.Subscribe(@event =>
         {
             if (@event is ThingStateChangedEvent changed &&
-                changed.Thing == Lightbulb)
+                changed.Source == Lightbulb)
             {
                 InvokeAsync(() => UpdateState());
             }

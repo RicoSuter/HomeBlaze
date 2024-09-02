@@ -5,7 +5,6 @@ using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Security;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
-using HomeBlaze.Tesla.Vehicle;
 using HomeBlaze.Tesla.Vehicle.Models;
 using Microsoft.Extensions.Logging;
 using Namotion.Devices.Abstractions.Utilities;
@@ -172,9 +171,7 @@ namespace HomeBlaze.Tesla
         }
 
         [Operation]
-        public async Task SetChargeSpeedAsync(
-           decimal chargingAmpere,
-           CancellationToken cancellationToken)
+        public async Task SetChargeSpeedAsync(decimal chargingAmpere, CancellationToken cancellationToken)
         {
             // see https://github.com/timdorr/tesla-api/blob/master/lib/tesla_api/vehicle.rb#L108
 
@@ -189,9 +186,7 @@ namespace HomeBlaze.Tesla
         }
 
         [Operation]
-        public async Task SetScheduledChargingAsync(
-           TimeSpan time,
-           CancellationToken cancellationToken)
+        public async Task SetScheduledChargingAsync(TimeSpan time, CancellationToken cancellationToken)
         {
             using var httpClient = await CreateHttpClientAsync(cancellationToken);
 
@@ -200,6 +195,24 @@ namespace HomeBlaze.Tesla
                 JsonContent.Create(new { enable = true, time = (int)time.TotalMinutes }),
                 cancellationToken);
 
+            // https://github.com/timdorr/tesla-api/blob/master/docs/vehicle/commands/charging.md
+
+            response.EnsureSuccessStatusCode();
+        }
+
+        [Operation]
+        public async Task OpenChargePortDoorAsync(CancellationToken cancellationToken)
+        {
+            using var httpClient = await CreateHttpClientAsync(cancellationToken);
+
+            var response = await httpClient.PostAsync($"https://owner-api.teslamotors.com/api/1/vehicles/" + VehicleId +
+                "/command/charge_port_door_open",
+                JsonContent.Create(new { }),
+                cancellationToken);
+
+            var result = response.Content.ReadAsStringAsync(cancellationToken);
+
+            // POST /api/1/vehicles/{id}/command/charge_port_door_open
             // https://github.com/timdorr/tesla-api/blob/master/docs/vehicle/commands/charging.md
 
             response.EnsureSuccessStatusCode();

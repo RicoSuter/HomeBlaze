@@ -27,18 +27,19 @@
 <MudTextField @bind-Value="@_callbackUrl" Label="Paste redirect authenticate URL" Lines="5" />
 
 <br />
-<MudButton Variant="Variant.Filled" OnClick="@(_ => LoadVehiclesAsync(default))" 
-    Color="Color.Primary">Load Vehicles</MudButton>
+<MudButton Variant="Variant.Filled" OnClick="@(_ => LoadVehiclesAsync(default))"
+           Disabled="_isLoading"
+           Color="Color.Primary">Load Vehicles</MudButton>
 
 <br />
 <br />
-@if (_vehicles?.Response != null)
+@if (_vehicles != null)
 {
     <br />
     <MudItem>
         <MudList Clickable="true" @bind-SelectedValue="_selectedVehicle">
             <MudDivider />
-            @foreach (var vehicle in _vehicles.Response)
+            @foreach (var vehicle in _vehicles)
             {
                 <MudListItem Value="vehicle">
                     @vehicle.DisplayName (@vehicle.Vin)
@@ -54,9 +55,10 @@
     private TeslaAuthHelper _helper = new TeslaAuthHelper("HomeBlaze", TeslaAccountRegion.USA);
 
     private string? _callbackUrl;
-    private Vehicles? _vehicles;
+    private TeslaVehicleItem[]? _vehicles;
     private object? _selectedVehicle;
     private Tokens? _tokens;
+    private bool _isLoading = false;
 
     public override bool IsValid => !string.IsNullOrEmpty(_callbackUrl) && _selectedVehicle != null;
 
@@ -77,6 +79,7 @@
         try
         {
             _vehicles = null;
+            _isLoading = true;
 
             var tokens = await GetAuthenticationTokensAsync();
             if (tokens != null)
@@ -88,16 +91,24 @@
                     tokens.CreatedAt + tokens.ExpiresIn,
                     cancellationToken);
 
-                var message = await httpClient.GetAsync("https://owner-api.teslamotors.com/api/1/vehicles", cancellationToken);
+                var message = await httpClient.GetAsync("https://owner-api.teslamotors.com/api/1/products?orders=true", cancellationToken);
                 var json = await message.Content.ReadAsStringAsync(cancellationToken);
 
-                _vehicles = JsonSerializer.Deserialize<Vehicles>(json);
+                _vehicles = JsonSerializer.Deserialize<Vehicles>(json)!
+                    .Response
+                    .Where(v => v.VehicleId is not null)
+                    .ToArray();
+
                 _tokens = tokens;
             }
         }
         catch (Exception e)
         {
             await DialogService.ShowMessageBox("Failed to load vehicles.", e.ToString());
+        }
+        finally
+        {
+            _isLoading = false;
         }
     }
 

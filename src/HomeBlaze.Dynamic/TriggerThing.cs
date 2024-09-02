@@ -8,12 +8,12 @@ using System.ComponentModel;
 
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Components.Editors;
 using HomeBlaze.Messages;
 using HomeBlaze.Services.Abstractions;
+using Namotion.Devices.Abstractions.Messages;
 
 namespace HomeBlaze.Dynamic
 {
@@ -64,7 +64,7 @@ namespace HomeBlaze.Dynamic
 
             if (@event is ThingStateChangedEvent stateChangedEvent)
             {
-                if (Conditions.Any(v => v.ThingId == stateChangedEvent.Thing.Id &&
+                if (Conditions.Any(v => v.ThingId == (stateChangedEvent.Source as IThing)?.Id &&
                                         v.PropertyName == stateChangedEvent.PropertyName))
                 {
                     foreach (var conditions in Conditions
@@ -74,7 +74,7 @@ namespace HomeBlaze.Dynamic
                     }
 
                     foreach (var conditions in Conditions
-                        .Where(v => v.ThingId == stateChangedEvent.Thing.Id &&
+                        .Where(v => v.ThingId == (stateChangedEvent.Source as IThing)?.Id &&
                                     v.PropertyName == stateChangedEvent.PropertyName))
                     {
                         conditions.UpdateResult(_thingManager);

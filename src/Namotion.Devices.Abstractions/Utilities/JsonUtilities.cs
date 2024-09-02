@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
 
 namespace Namotion.Devices.Abstractions.Utilities;
@@ -33,6 +34,21 @@ public static class JsonUtilities
         {
             PopulateTypeInfoResolver._root = root;
             return JsonSerializer.Deserialize<T>(json, GetOptionsWithPopulateResolver(options));
+        }
+        finally
+        {
+            PopulateTypeInfoResolver._root = null;
+        }
+    }
+
+    public static T PopulateOrDeserialize<T>(T? root, JsonNode json, JsonSerializerOptions? options = null)
+        where T : class, new()
+    {
+        root = root ?? new T();
+        try
+        {
+            PopulateTypeInfoResolver._root = root;
+            return JsonSerializer.Deserialize<T>(json, GetOptionsWithPopulateResolver(options)) ?? root;
         }
         finally
         {

@@ -158,6 +158,23 @@ namespace Namotion.Wallbox
             await ControlWallboxAsync(chargerId, "maxChargingCurrent", maximumChargingCurrent, cancellationToken);
         }
 
+        // https://github.com/tmenguy/wallboxAPIDoc?tab=readme-ov-file#variables-for-action-value
+
+        public async Task ResumeAsync(string chargerId, CancellationToken cancellationToken)
+        {
+            await PerformRemoteActionAsync(chargerId, 1, cancellationToken);
+        }
+
+        public async Task PauseAsync(string chargerId, CancellationToken cancellationToken)
+        {
+            await PerformRemoteActionAsync(chargerId, 2, cancellationToken);
+        }
+
+        public async Task RebootAsync(string chargerId, CancellationToken cancellationToken)
+        {
+            await PerformRemoteActionAsync(chargerId, 3, cancellationToken);
+        }
+
         public async Task LockAsync(string chargerId, CancellationToken cancellationToken)
         {
             await ControlWallboxAsync(chargerId, "locked", 1, cancellationToken);
@@ -206,7 +223,7 @@ namespace Namotion.Wallbox
             }, cancellationToken);
         }
 
-        internal async Task PerformRemoteActionAsync(string chargerId, string action, decimal value, CancellationToken cancellationToken)
+        internal async Task PerformRemoteActionAsync(string chargerId, int value, CancellationToken cancellationToken)
         {
             await AuthenticateAsync<object>(async () =>
             {
@@ -215,7 +232,7 @@ namespace Namotion.Wallbox
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _wallboxToken);
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var data = new Dictionary<string, object?> { { action, value } };
+                var data = new Dictionary<string, object?> { { "action", value } };
                 request.Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
                 var response = await _httpClient.SendAsync(request, cancellationToken);

@@ -650,7 +650,10 @@ namespace HomeBlaze.Services
 
         public void OnNext(DetectChangesEvent value)
         {
-            DetectChanges(value.Thing);
+            if (value.Source is IThing thing)
+            {
+                DetectChanges(thing);
+            }
         }
     }
 }

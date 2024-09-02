@@ -19,5 +19,8 @@ namespace HomeBlaze.Widgets.Specialized
 
         [Configuration]
         public int Height { get; set; } = 400;
+
+        [Configuration]
+        public string? TotalPowerConsumptionSensorId { get; set; }
     }
 }

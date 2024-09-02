@@ -3,23 +3,30 @@
 @using HomeBlaze.Abstractions.Devices.Light;
 @using HomeBlaze.Abstractions.Sensors;
 @using HomeBlaze.Abstractions.Services;
+@using HomeBlaze.Components.Dialogs
 @using MudBlazor
 
 @inject IThingManager ThingManager
+@inject IDialogService DialogService
 
 @if (Thing != null)
 {
     <div style="width: @(Thing?.Width + "px"); padding: 10px">
-        <MudTable T="IPowerConsumptionSensor" Items="Consumers" FixedHeader="true" Height="@(Thing?.Height + "px")">
+        <MudTable T="IPowerConsumptionSensor" Items="Consumers"
+            OnRowClick="((ctx) => ShowHistory(ctx.Item))"
+            FixedHeader="true" Height="@(Thing?.Height + "px")">
             <HeaderContent>
-                <MudTh>Total Power Consumption</MudTh>
-                <MudTh Style="width: 170px; text-align: right">
+                <MudTh>Total Power Consumption @(TotalPowerConsumptionSensor is IThing sensor ? " (" + sensor.Title + ")" : "")</MudTh>
+                <MudTh Style="width: 170px; text-align: right"
+                       @onclick="@(() => ShowHistory(TotalPowerConsumptionSensor))"
+                       @ontouchstart="@(() => ShowHistory(TotalPowerConsumptionSensor))">
                     @Math.Round(TotalPowerConsumption ?? 0m) W
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Title">@(((IThing)context).Title)</MudTd>
-                <MudTd DataLabel="PowerConsumption" Style="text-align: right">
+                <MudTd DataLabel="PowerConsumption" Style="text-align: right"
+                       @ontouchstart="@(() => ShowHistory(context))">
                     @(context.PowerConsumption ?? 0m) W
                 </MudTd>
             </RowTemplate>
@@ -28,16 +35,53 @@
 }
 
 @code {
-    public IEnumerable<IPowerConsumptionSensor> Consumers => ThingManager
+    public IEnumerable<IPowerConsumptionSensor> KnownConsumers => ThingManager
         .AllThings
         .OfType<IPowerConsumptionSensor>()
-        .Where(c => c.PowerConsumption > 0)
-        .OrderByDescending(c => c.PowerConsumption);
+        .Where(c => c is IThing thing ? thing.Id != Thing?.TotalPowerConsumptionSensorId : true)
+        .Where(c => c.PowerConsumption > 0);
 
-    public decimal? TotalPowerConsumption => Consumers
+    public decimal? KnownPowerConsumption => KnownConsumers
         .Select(c => c.PowerConsumption)
         .Sum();
 
+    public IEnumerable<IPowerConsumptionSensor> Consumers => KnownConsumers
+        .Union(
+            TotalPowerConsumptionSensor is IPowerConsumptionSensor sensor &&
+            sensor.PowerConsumption is decimal total &&
+            KnownPowerConsumption is decimal known ?
+            [new UnknownPowerConsumption(total - known, ThingManager)] : [])
+        .OrderByDescending(c => c.PowerConsumption);
+
+    public decimal? TotalPowerConsumption => TotalPowerConsumptionSensor is IPowerConsumptionSensor sensor ?
+        sensor.PowerConsumption : KnownPowerConsumption;
+
     [Parameter]
     public PowerConsumersWidget? Thing { get; set; }
+
+    private IPowerConsumptionSensor? TotalPowerConsumptionSensor =>
+        ThingManager.TryGetById(Thing?.TotalPowerConsumptionSensorId)
+        as IPowerConsumptionSensor;
+
+    public async void ShowHistory(IPowerConsumptionSensor? sensor)
+    {
+        if (sensor is IThing thing && !string.IsNullOrEmpty(thing.Id))
+        {
+            await StateHistoryDialog.ShowAsync(DialogService, thing, nameof(IPowerConsumptionSensor.PowerConsumption));
+        }
+    }
+
+    public class UnknownPowerConsumption : IPowerConsumptionSensor, IThing
+    {
+        public string Id => string.Empty;
+
+        public string Title => "Unknown";
+
+        public UnknownPowerConsumption(decimal unknownPowerConsumption, IThingManager thingManager)
+        {
+            PowerConsumption = unknownPowerConsumption;
+        }
+
+        public decimal? PowerConsumption { get; }
+    }
 }

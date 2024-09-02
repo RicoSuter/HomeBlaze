@@ -1,8 +1,8 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Messages;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Messages;
+using Namotion.Devices.Abstractions.Messages;
 
 namespace HomeBlaze.Services.Abstractions
 {
@@ -41,7 +41,7 @@ namespace HomeBlaze.Services.Abstractions
         protected override Task HandleMessageAsync(IEvent @event, CancellationToken cancellationToken)
         {
             if (@event is ThingStateChangedEvent stateChangedEvent &&
-                stateChangedEvent.Thing.Id == ExtendedThingId)
+                (stateChangedEvent.Source as IThing)?.Id == ExtendedThingId)
             {
                 _thingManager.DetectChanges(this);
             }

@@ -1,15 +1,15 @@
 ﻿using HomeBlaze.Abstractions;
-using HomeBlaze.Abstractions.Messages;
+using Namotion.Devices.Abstractions.Messages;
 
 namespace HomeBlaze.Messages
 {
     public record ThingUnregisteredEvent : IEvent
     {
-        public IThing Thing { get; }
+        public object Source { get; }
 
         public ThingUnregisteredEvent(IThing thing)
         {
-            Thing = thing;
+            Source = thing;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using HomeBlaze.Abstractions.Services;
+﻿using HomeBlaze.Abstractions;
+using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Components.Extensions;
 using HomeBlaze.Messages;
 using System;
@@ -76,7 +77,7 @@ namespace HomeBlaze.Components.Editors
         {
             if (WindowAggregation != AggregationType.None && 
                 WindowDuration != null &&
-                ThingId == stateChangedEvent.Thing.Id &&
+                ThingId == (stateChangedEvent.Source as IThing)?.Id &&
                 PropertyName == stateChangedEvent.PropertyName)
             {
                 lock (_values)

@@ -1,8 +1,9 @@
 ﻿using DynamicExpresso;
-using HomeBlaze.Abstractions.Messages;
+using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Components.Editors;
 using HomeBlaze.Messages;
+using Namotion.Devices.Abstractions.Messages;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,11 +34,11 @@ namespace HomeBlaze.Dynamic
                 return EvaluateExpression(automation, null, thingMangager);
             }
             else if (@event is ThingStateChangedEvent stateChangedEvent &&
-                     Variables.Any(p => p.ThingId == stateChangedEvent.Thing.Id &&
+                     Variables.Any(p => p.ThingId == (stateChangedEvent.Source as IThing)?.Id &&
                                         p.PropertyName == stateChangedEvent.PropertyName))
             {
                 foreach (var variable in Variables
-                    .Where(v => v.ThingId == stateChangedEvent.Thing.Id &&
+                    .Where(v => v.ThingId == (stateChangedEvent.Source as IThing)?.Id &&
                                 v.PropertyName == stateChangedEvent.PropertyName))
                 {
                     variable.Apply(stateChangedEvent);

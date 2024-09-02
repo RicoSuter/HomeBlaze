@@ -1,13 +1,11 @@
 ﻿using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Presentation;
-using HomeBlaze.Host.Things;
 using System;
 using System.Collections.Generic;
 
 namespace HomeBlaze.Things
 {
-    [ThingSetup(typeof(DashboardSetup), CanEdit = true)]
     public class Dashboard : IThing, IIconProvider
     {
         [Configuration(IsIdentifier = true)]
