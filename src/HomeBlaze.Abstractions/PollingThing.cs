@@ -74,7 +74,7 @@ namespace HomeBlaze.Services.Abstractions
 
         public virtual void Reset()
         {
-            _waitTimeSeconds = int.MaxValue;
+            _waitTimeSeconds = int.MaxValue - 100;
         }
 
         public IDisposable Subscribe(IObserver<DetectChangesEvent> observer)

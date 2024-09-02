@@ -107,8 +107,18 @@ namespace HomeBlaze.Abstractions
         public void Dispose()
         {
             _isRunning = false;
-            WebSocket?.Dispose();
-            WebSocket = null;
+
+            try
+            {
+                WebSocket?.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None)
+                    .GetAwaiter()
+                    .GetResult();
+            }
+            finally
+            {
+                WebSocket?.Dispose();
+                WebSocket = null;
+            }
         }
     }
 }

@@ -105,8 +105,13 @@ namespace Namotion.Shelly
         {
             WebSocketClient?.Dispose();
             WebSocketClient = null;
+
             Information = null;
             Cover = null;
+            Switch0 = null;
+            Switch1 = null;
+            EnergyMeter = null;
+
             base.Reset();
         }
 
