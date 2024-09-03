@@ -1,5 +1,4 @@
 ﻿using Blazor.Diagrams.Core.Models;
-using MudBlazor;
 
 namespace HomeBlaze.Dynamic
 {
@@ -7,7 +6,8 @@ namespace HomeBlaze.Dynamic
     {
         public AutomationTransition Transition { get; }
 
-        public AutomationTransitionLinkModel(AutomationTransition transition, PortModel sourcePort, PortModel? targetPort = null)
+        public AutomationTransitionLinkModel(
+            AutomationTransition transition, PortModel sourcePort, PortModel targetPort)
             : base(sourcePort, targetPort)
         {
             TargetMarker = LinkMarker.Arrow;
@@ -15,13 +15,13 @@ namespace HomeBlaze.Dynamic
 
             Labels.Add(new LinkLabelModel(this, transition.Title));
 
-            Changed += () =>
+            Changed += (m) =>
             {
-                Transition.FromState = (SourceNode as AutomationStateNodeModel)?.State.Name;
-                Transition.FromPort = SourcePort?.Alignment;
+                Transition.FromState = (Source.Model as AutomationStateNodeModel)?.State.Name;
+                //Transition.FromPort = Source?.;
 
-                Transition.ToState = (TargetNode as AutomationStateNodeModel)?.State.Name;
-                Transition.ToPort = TargetPort?.Alignment;
+                Transition.ToState = (Target.Model as AutomationStateNodeModel)?.State.Name;
+                //Transition.ToPort = this.Target?.Alignment;
             };
         }
 

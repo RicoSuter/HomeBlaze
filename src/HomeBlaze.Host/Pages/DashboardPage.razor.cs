@@ -1,21 +1,22 @@
-﻿using Blazor.Diagrams.Core;
+﻿using System.Reflection;
+using System;
+using System.Linq;
+using System.Threading;
+using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components;
+
+using Blazor.Diagrams;
 using Blazor.Diagrams.Core.Geometry;
+using Blazor.Diagrams.Options;
+
+using Namotion.Reflection;
 
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Components.Dialogs;
 using HomeBlaze.Things;
-
-using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components;
-
-using System.Reflection;
-using System;
-using System.Linq;
-using System.Threading;
-using Microsoft.JSInterop;
-using Namotion.Reflection;
 using HomeBlaze.Messages;
 
 namespace HomeBlaze.Host.Pages
@@ -24,7 +25,7 @@ namespace HomeBlaze.Host.Pages
     {
         private IDisposable? _eventSubscription;
 
-        private Diagram _diagram;
+        private BlazorDiagram _diagram;
 
         public bool _isEditMode;
 
@@ -41,22 +42,20 @@ namespace HomeBlaze.Host.Pages
 
         public DashboardPage()
         {
-            var options = new DiagramOptions
+            var options = new BlazorDiagramOptions
             {
-                DeleteKey = "Delete",
-
                 AllowPanning = false,
                 AllowMultiSelection = false,
 
                 GridSize = 25,
-                Zoom = new DiagramZoomOptions
+                Zoom =
                 {
                     Enabled = false
                 }
             };
 
-            _diagram = new Diagram(options);
-            _diagram.RegisterModelComponent<DashboardWidgetNodeModel, DashboardWidgetNode>();
+            _diagram = new BlazorDiagram(options);
+            _diagram.RegisterComponent<DashboardWidgetNodeModel, DashboardWidgetNode>();
             _diagram.SelectionChanged += node =>
             {
                 InvokeAsync(StateHasChanged);
@@ -319,7 +318,7 @@ namespace HomeBlaze.Host.Pages
             }
         }
 
-        public void OnKeyDown(KeyboardEventArgs args)
+        public void OnKeyDown(Blazor.Diagrams.Core.Events.KeyboardEventArgs args)
         {
             if ((args.AltKey || args.CtrlKey || args.ShiftKey) &&
                 args.Code != "ArrowLeft" && args.Code != "ArrowRight" &&

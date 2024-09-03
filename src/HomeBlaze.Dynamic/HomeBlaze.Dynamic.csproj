@@ -9,7 +9,7 @@
 	<ItemGroup>
 		<PackageReference Include="Castle.Core" Version="5.1.1" />
 		<PackageReference Include="DynamicExpresso.Core" Version="2.16.1" />
-		<PackageReference Include="Z.Blazor.Diagrams" Version="2.1.6" />
+		<PackageReference Include="Z.Blazor.Diagrams" Version="3.0.2" />
 		<PackageReference Include="MudBlazor" Version="7.7.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.8" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.8" />

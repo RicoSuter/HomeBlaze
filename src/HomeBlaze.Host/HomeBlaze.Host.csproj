@@ -22,7 +22,7 @@
 		<PackageReference Include="Namotion.Storage.Azure.Storage.Blob" Version="0.11.0" />
 		<PackageReference Include="MudBlazor" Version="7.7.0" />
 		<PackageReference Include="Toolbelt.Blazor.HotKeys2" Version="5.1.0" />
-		<PackageReference Include="Z.Blazor.Diagrams" Version="2.1.6" />
+		<PackageReference Include="Z.Blazor.Diagrams" Version="3.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>

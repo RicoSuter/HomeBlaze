@@ -4,6 +4,7 @@
 @using Blazor.Diagrams.Core.Geometry;
 @using Blazor.Diagrams.Core.Models
 @using Blazor.Diagrams.Components
+
 @using HomeBlaze.Abstractions.Attributes;
 @using HomeBlaze.Abstractions.Services;
 @using HomeBlaze.Abstractions;
@@ -18,8 +19,8 @@
 @inject IThingSerializer ThingSerializer
 @inject IDialogService DialogService
 @inject IEventManager EventManager
-@inject NavigationManager Navigation
 @inject IJSRuntime JsRuntime
+@inject NavigationManager Navigation
 
 <PageTitle>Dashboard</PageTitle>
 
@@ -72,6 +73,10 @@
 <style>
     .dashboard {
         color: @(MainLayout.UseDarkTheme ? "#ffffff" : "#000000");
+    }
+
+    .diagram-node {
+        position: absolute !important;
     }
 
     .locked {
