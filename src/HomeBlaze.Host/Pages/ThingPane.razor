@@ -223,7 +223,7 @@
                                     <MudChip Color="Color.Dark" Size="Size.Small" T="string">@pair.Value.Children.Count()</MudChip>
                                 </TitleContent>
                                 <ChildContent>
-                                    <MudList SelectedValue="SelectedThing" Style="margin-left: -24px; margin-right: -24px">
+                                    <MudList SelectedValue="SelectedThing">
                                         <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing" Children="pair.Value.Children">
                                         </ThingChildListIItems>
                                     </MudList>
@@ -235,7 +235,7 @@
             </MudExpansionPanels>
 
             @* Technical Details *@
-            <MudExpansionPanels Outlined="false" Elevation="0" Gutters="false">
+            <MudExpansionPanels Outlined="false" Elevation="0" Gutters="true">
                 <MudExpansionPanel Text="Details" Expanded="true" Gutters="false">
                     <small style="word-break: break-all">
                         <p>
