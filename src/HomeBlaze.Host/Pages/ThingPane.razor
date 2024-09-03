@@ -207,7 +207,7 @@
                         }
                         else if (count > 1)
                         {
-                            <MudExpansionPanel Gutters="false" Dense="true" 
+                            <MudExpansionPanel Gutters="false" Dense="true"
                                                Expanded="@(Thing == ThingManager.RootThing ||
                                             stateGroups.Count() == 1 ||
                                             pair.Value.Property?.PropertyType.Type.IsAssignableTo(typeof(IThing)) == true)">
@@ -235,18 +235,16 @@
             </MudExpansionPanels>
 
             @* Technical Details *@
-            <MudExpansionPanels Outlined="false" Elevation="0">
-                <MudExpansionPanel Text="Details" Expanded="true">
-                    <MudListSubheader>
-                        <small style="word-break: break-all">
-                            <p>
-                                <strong>ID:</strong> @(Thing.Id ?? "Loading...")
-                            </p>
-                            <p>
-                                <strong>Type:</strong> @(Thing.GetType().FullName)
-                            </p>
-                        </small>
-                    </MudListSubheader>
+            <MudExpansionPanels Outlined="false" Elevation="0" Gutters="false">
+                <MudExpansionPanel Text="Details" Expanded="true" Gutters="false">
+                    <small style="word-break: break-all">
+                        <p>
+                            <strong>ID:</strong> @(Thing.Id ?? "Loading...")
+                        </p>
+                        <p>
+                            <strong>Type:</strong> @(Thing.GetType().FullName)
+                        </p>
+                    </small>
                 </MudExpansionPanel>
             </MudExpansionPanels>
         </div>
