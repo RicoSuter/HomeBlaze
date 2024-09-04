@@ -17,11 +17,11 @@ namespace HomeBlaze.Dynamic
 
             Changed += (m) =>
             {
-                Transition.FromState = (Source.Model as AutomationStateNodeModel)?.State.Name;
-                //Transition.FromPort = Source?.;
+                Transition.FromState = ((Source.Model as PortModel)?.Parent as AutomationStateNodeModel)?.State.Name;
+                Transition.FromPort = (Source.Model as PortModel)?.Alignment;
 
-                Transition.ToState = (Target.Model as AutomationStateNodeModel)?.State.Name;
-                //Transition.ToPort = this.Target?.Alignment;
+                Transition.ToState = ((Target.Model as PortModel)?.Parent as AutomationStateNodeModel)?.State.Name;
+                Transition.ToPort = (Target.Model as PortModel)?.Alignment;
             };
         }
 
