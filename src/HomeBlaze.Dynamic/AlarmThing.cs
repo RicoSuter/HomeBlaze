@@ -1,17 +1,19 @@
-﻿using HomeBlaze.Abstractions;
-using HomeBlaze.Abstractions.Attributes;
-using HomeBlaze.Abstractions.Services;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Threading;
+
+using Namotion.Devices.Abstractions.Messages;
+
+using HomeBlaze.Abstractions;
+using HomeBlaze.Abstractions.Attributes;
+using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Services.Abstractions;
 using HomeBlaze.Abstractions.Presentation;
-using System.ComponentModel;
 using HomeBlaze.Messages;
 using HomeBlaze.Abstractions.Sensors;
-using System.Collections.Generic;
 using HomeBlaze.Abstractions.Devices.Light;
-using Namotion.Devices.Abstractions.Messages;
 
 namespace HomeBlaze.Dynamic
 {
