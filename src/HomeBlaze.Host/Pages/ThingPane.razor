@@ -70,7 +70,7 @@
                                        Icon="@Icons.Material.Filled.Edit"
                                        Variant="Variant.Filled"
                                        Color="Color.Primary"
-                                       Class="ma-2">Edit</MudIconButton>
+                                       Class="mr-4">Edit</MudIconButton>
                     }
 
                     @if (canExtend)
@@ -79,7 +79,7 @@
                                        Icon="@Icons.Material.Filled.BackupTable"
                                        Variant="Variant.Filled"
                                        Color="Color.Primary"
-                                       Class="ma-2">Extend</MudIconButton>
+                                       Class="mr-4">Extend</MudIconButton>
                     }
 
                     @if (ParentThing is GroupBase parentGroup)
@@ -89,14 +89,14 @@
                             <MudIconButton OnClick="@(() => CloneThing(Thing, parentGroup))"
                                            Icon="@Icons.Material.Filled.ContentCopy"
                                            Variant="Variant.Filled" Color="Color.Primary"
-                                           Class="ma-2">Clone</MudIconButton>
+                                           Class="mr-4">Clone</MudIconButton>
                         }
 
                         <MudIconButton OnClick="@(() => MoveThing(Thing, parentGroup))"
                                        Icon="@Icons.Material.Filled.MoveUp"
                                        Variant="Variant.Filled"
                                        Color="Color.Primary"
-                                       Class="ma-2">Move</MudIconButton>
+                                       Class="mr-4">Move</MudIconButton>
 
                         @if (metadata?.CanDelete == true)
                         {
@@ -104,7 +104,7 @@
                                            Icon="@Icons.Material.Filled.Delete"
                                            Variant="Variant.Filled"
                                            Color="Color.Error"
-                                           Class="ma-2">Delete</MudIconButton>
+                                           Class="mr-4">Delete</MudIconButton>
                         }
                     }
 
@@ -181,7 +181,7 @@
                         <MudButton OnClick="() => ExecuteOperation(operation)"
                                    Disabled="@_isExecutingOperation.Contains(operation.Id)"
                                    Variant="Variant.Filled"
-                                   Color="Color.Primary" Class="ma-2">
+                                   Color="Color.Primary" Class="mr-4 mb-4">
                             @(operation.Title ?? operation.Name)
                         </MudButton>
                     }
@@ -190,61 +190,63 @@
             </MudListSubheader>
 
             @* Children *@
-            <MudExpansionPanels MultiExpansion="true" Elevation="0" Gutters="false" Outlined="false" Dense="true">
-                @foreach (var group in stateGroups)
+            @foreach (var group in stateGroups)
+            {
+                foreach (var pair in group.Where(p => p.Value.HasThingChildren))
                 {
-                    foreach (var pair in group.Where(p => p.Value.HasThingChildren))
+                    var count = pair.Value.Children.Count();
+                    if (count == 1)
                     {
-                        var count = pair.Value.Children.Count();
-                        if (count == 1)
-                        {
-                            <MudList SelectedValue="SelectedThing" Style="padding-top: 0; padding-bottom: 0">
-                                <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing"
-                                                      Subtitle="@(group.Key != Thing ? group.Key.Title : null)"
-                                                      Children="pair.Value.Children">
-                                </ThingChildListIItems>
-                            </MudList>
-                        }
-                        else if (count > 1)
-                        {
-                            <MudExpansionPanel Gutters="false" Dense="true"
-                                               Expanded="@(Thing == ThingManager.RootThing ||
+                        <MudList SelectedValue="SelectedThing" Style="padding-top: 0; padding-bottom: 0">
+                            <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing"
+                                                  Subtitle="@(group.Key != Thing ? group.Key.Title : null)"
+                                                  Children="pair.Value.Children">
+                            </ThingChildListIItems>
+                        </MudList>
+                    }
+                    else if (count > 1)
+                    {
+                        <MudExpansionPanel Gutters="false" Dense="true"
+                                           Expanded="@(Thing == ThingManager.RootThing ||
                                             stateGroups.Count() == 1 ||
                                             pair.Value.Property?.PropertyType.Type.IsAssignableTo(typeof(IThing)) == true)">
-                                <TitleContent>
-                                    @pair.Key
+                            <TitleContent>
+                                @pair.Key
 
-                                    @if (group.Key != Thing)
-                                    {
-                                        <span>&nbsp;&nbsp;</span>
-                                        <small>(@group.Key.Title)</small>
-                                    }
+                                @if (group.Key != Thing)
+                                {
+                                    <span>&nbsp;&nbsp;</span>
+                                    <small>(@group.Key.Title)</small>
+                                }
 
-                                    <MudChip Color="Color.Dark" Size="Size.Small" T="string">@pair.Value.Children.Count()</MudChip>
-                                </TitleContent>
-                                <ChildContent>
-                                    <MudList SelectedValue="SelectedThing">
-                                        <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing" Children="pair.Value.Children">
-                                        </ThingChildListIItems>
-                                    </MudList>
-                                </ChildContent>
-                            </MudExpansionPanel>
-                        }
+                                <MudChip Color="Color.Dark" Size="Size.Small" T="string">@pair.Value.Children.Count()</MudChip>
+                            </TitleContent>
+                            <ChildContent>
+                                <MudList SelectedValue="SelectedThing">
+                                    <ThingChildListIItems Thing="Thing" SelectedThing="SelectedThing" Children="pair.Value.Children">
+                                    </ThingChildListIItems>
+                                </MudList>
+                            </ChildContent>
+                        </MudExpansionPanel>
                     }
                 }
-            </MudExpansionPanels>
+            }
 
-            @* Technical Details *@
-            <MudExpansionPanels Outlined="false" Elevation="0" Gutters="true">
+            <br />
+            <MudExpansionPanels MultiExpansion="true" Elevation="0"
+                                Gutters="false" Outlined="false" Dense="true">
                 <MudExpansionPanel Text="Details" Expanded="true" Gutters="false">
-                    <small style="word-break: break-all">
-                        <p>
-                            <strong>ID:</strong> @(Thing.Id ?? "Loading...")
-                        </p>
-                        <p>
-                            <strong>Type:</strong> @(Thing.GetType().FullName)
-                        </p>
-                    </small>
+                    @* Technical Details *@
+                    <div class="ml-4">
+                        <small style="word-break: break-all">
+                            <p>
+                                <strong>ID:</strong> @(Thing.Id ?? "Loading...")
+                            </p>
+                            <p>
+                                <strong>Type:</strong> @(Thing.GetType().FullName)
+                            </p>
+                        </small>
+                    </div>
                 </MudExpansionPanel>
             </MudExpansionPanels>
         </div>
