@@ -57,7 +57,7 @@
                                          Disabled="@(series.ThingId == null)"
                                          Required="false" />
 
-                    <MudColorPicker Label="Color" @bind-Text="@series.Color" Required="true" DisableAlpha="true" />
+                    <MudColorPicker Label="Color" @bind-Text="@series.Color" Required="true" ShowAlpha="false" />
 
                     <br />
                     <br />
@@ -132,7 +132,7 @@
                 }
             </span>
         }
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(null))" Class="px-10">Close</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => DialogInstance?.Close(DialogResult.Ok<object?>(null)))" Class="px-10">Close</MudButton>
     </DialogActions>
 </MudDialog>
 

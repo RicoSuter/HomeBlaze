@@ -1,12 +1,19 @@
-﻿@using Blazor.Diagrams.Components
+﻿@using System.Threading;
+
+@using MudBlazor;
+
+@using Blazor.Diagrams
+@using Blazor.Diagrams.Components
 @using Blazor.Diagrams.Core;
+@using Blazor.Diagrams.Core.Anchors
 @using Blazor.Diagrams.Core.Geometry;
 @using Blazor.Diagrams.Core.Models;
+@using Blazor.Diagrams.Core.Models.Base
+@using Blazor.Diagrams.Options
+
 @using HomeBlaze.Abstractions.Attributes
-@using HomeBlaze.Components.Dialogs;
-@using MudBlazor;
 @using HomeBlaze.Components;
-@using System.Threading;
+@using HomeBlaze.Components.Dialogs;
 
 @using static HomeBlaze.Dynamic.Automation;
 
@@ -73,11 +80,23 @@
         display: block;
         height: auto;
     }
+    
+    .diagram-node {
+        position: absolute !important;
+        pointer-events: visible !important;
+
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
 </style>
 
 @code {
     private bool _showDiagram = false;
-    private Diagram? _diagram;
+    private BlazorDiagram? _diagram;
 
     public override bool IsValid => true;
 
@@ -85,38 +104,42 @@
     {
         await base.OnInitializedAsync();
 
-        var options = new DiagramOptions
+        var options = new BlazorDiagramOptions
         {
-            DeleteKey = "Delete",
-
             AllowPanning = false,
             AllowMultiSelection = false,
 
-            Zoom = new DiagramZoomOptions
+            Zoom =
             {
                 Enabled = false
             }, 
 
             Links =
             {
-                Factory = (Diagram diagram, PortModel sourcePort) => new AutomationTransitionLinkModel(new AutomationTransition(), sourcePort)
+                Factory = (Diagram diagram, ILinkable source, Blazor.Diagrams.Core.Anchors.Anchor targetAnchor) => 
+                    new AutomationTransitionLinkModel(
+                        new AutomationTransition(), 
+                        (PortModel)source, 
+                        (PortModel)targetAnchor.Model!)
             },
 
             Constraints =
             {
                 ShouldDeleteNode = node => 
-                    node is AutomationStateNodeModel stateModel &&
-                    stateModel.State.Name != Thing.InitialState
+                    ValueTask.FromResult(
+                        node is AutomationStateNodeModel stateModel &&
+                        stateModel.State.Name != Thing.InitialState)
             }
         };
 
-        _diagram = new Diagram(options);
-        _diagram.RegisterModelComponent<AutomationStateNodeModel, AutomationStateNodeModelComponent>();
+        _diagram = new BlazorDiagram(options);
+        _diagram.RegisterComponent<AutomationStateNodeModel, AutomationStateNodeModelComponent>();
         _diagram.SelectionChanged += node =>
         {
             InvokeAsync(StateHasChanged);
         };
-        _diagram.MouseDoubleClick += async (model, args) =>
+
+        _diagram.PointerDoubleClick += async (model, args) =>
         {
             if (model is AutomationStateNodeModel stateModel)
             {
@@ -131,6 +154,10 @@
         foreach (var state in Thing!.States)
         {
             var node = new AutomationStateNodeModel(state);
+            node.AddPort(PortAlignment.Top);
+            node.AddPort(PortAlignment.Right);
+            node.AddPort(PortAlignment.Bottom);
+            node.AddPort(PortAlignment.Left);
             _diagram.Nodes.Add(node);
         }
 

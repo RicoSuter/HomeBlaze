@@ -17,7 +17,7 @@
     [CascadingParameter]
     public MudDialogInstance? DialogInstance { get; set; }
 
-    public static async Task<DialogResult> ShowAsync(IDialogService dialogService, string title, string defaultValue)
+    public static async Task<DialogResult?> ShowAsync(IDialogService dialogService, string title, string defaultValue)
     {
         return await dialogService.Show<PromptDialog>(title,
             new DialogParameters

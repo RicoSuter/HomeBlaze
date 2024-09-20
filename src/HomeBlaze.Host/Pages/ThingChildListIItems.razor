@@ -23,7 +23,7 @@
             @if (child == SelectedThing)
             {
                 <div style="float: right; line-height: 0">
-                    @if (Thing is GroupBase group)
+                    @if (Thing is GroupBase group && Thing is not SystemThing)
                     {
                         <MudIconButton OnClick="@(() => MoveThingUp(child, group))"
                                        Icon="@Icons.Material.Filled.ArrowUpward"
@@ -61,7 +61,7 @@
             @if (child is GroupBase group2)
             {
                 <span>&nbsp;</span>
-                <MudChip Color="Color.Default" Size="Size.Small">@group2.Things.Count()</MudChip>
+                <MudChip Color="Color.Dark" Size="Size.Small" T="string">@group2.Things.Count()</MudChip>
             }
         </MudListItem>
         <MudDivider />

@@ -4,24 +4,24 @@
 @using System.Reflection
 @using System.ComponentModel
 
-@using MudBlazor;
+@using MudBlazor
 
 @using HomeBlaze.Abstractions.Presentation
 @using HomeBlaze.Abstractions.Attributes
 @using HomeBlaze.Abstractions.Services
 @using HomeBlaze.Abstractions
-@using HomeBlaze.Components;
-@using HomeBlaze.Components.Dialogs;
+@using HomeBlaze.Components
+@using HomeBlaze.Components.Dialogs
 @using HomeBlaze.Host.Components
 @using HomeBlaze.Services
-@using HomeBlaze.Things;
+@using HomeBlaze.Things
 
-@using Toolbelt.Blazor.HotKeys2;
-@using Namotion.Reflection;
+@using Toolbelt.Blazor.HotKeys2
+@using Namotion.Reflection
 
 @page "/things/{*thingId}"
 @implements IThingEditPage
-@implements IDisposable
+@implements IAsyncDisposable
 
 @inject IThingManager ThingManager
 @inject ITypeManager TypeManager
@@ -75,9 +75,8 @@
             <MudItem xs="12" md="4" lg="3" Class="d-flex">
                 <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
                     <div style="height: calc(100vh - 110px); overflow-y: scroll">
-                        <MudList Clickable="true"
-                                 SelectedValue="_selectedThingType"
-                                 SelectedValueChanged="type => OnThingTypeChanged((Type)type)">
+                        <MudList SelectedValue="_selectedThingType" T="Type"
+                                 SelectedValueChanged="@(type => OnThingTypeChanged(type as Type))">
                             @foreach (var thingType in _thingTypes)
                             {
                                 <MudListItem Value="@thingType" Icon="@Icons.Material.Filled.Inbox">
@@ -88,7 +87,8 @@
                     </div>
                 </MudHidden>
                 <MudHidden Breakpoint="Breakpoint.MdAndUp">
-                    <MudSelect T="object" Label="Thing Type" Value="_selectedThingType" ValueChanged="type => OnThingTypeChanged((Type)type)">
+                    <MudSelect T="Type" Label="Thing Type" 
+                               Value="_selectedThingType" ValueChanged="type => OnThingTypeChanged(type)">
                         @foreach (var thingType in _thingTypes)
                         {
                             <MudSelectItem Value="@thingType" T="object">
@@ -168,7 +168,7 @@
 
     private Type[] _thingTypes = new Type[0];
     private RenderFragment? _thingSetupFragment;
-    private object? _selectedThingType;
+    private Type? _selectedThingType;
 
     private bool IsValid => _component?.IsValid == true;
 
@@ -219,8 +219,8 @@
         base.OnInitialized();
         _hotKeysContext = HotKeys
             .CreateContext()
-            .Add(ModCode.None, Code.Escape, async () => await GoBackAsync(CancellationToken.None))
-            .Add(ModCode.Ctrl, Code.S, async () => await UpsertAsync(CancellationToken.None));
+            .Add(ModCode.None, Code.Escape, (Func<Task>)(async() => await GoBackAsync(CancellationToken.None)))
+            .Add(ModCode.Ctrl, Code.S, (Func<Task>)(async() => await UpsertAsync(CancellationToken.None)));
 
         Thing = ThingManager.TryGetById(ThingId);
         Update();
@@ -294,7 +294,7 @@
     [Inject]
     public IServiceProvider? ServiceProvider { get; set; }
 
-    private void OnThingTypeChanged(Type thingType)
+    private void OnThingTypeChanged(Type? thingType)
     {
         _component = null;
 
@@ -435,8 +435,11 @@
         }
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        _hotKeysContext?.Dispose();
+        if (_hotKeysContext is not null)
+        {
+            await _hotKeysContext.DisposeAsync();
+        }
     }
 }

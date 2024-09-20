@@ -20,7 +20,7 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Time">@context?.Time.ToString("HH:mm:ss.fff")</MudTd>
-            <MudTd DataLabel="Level"><MudChip Color="@(GetLevelColor(context?.Level))">@context?.Level</MudChip></MudTd>
+            <MudTd DataLabel="Level"><MudChip T="string" Color="@(GetLevelColor(context?.Level))">@context?.Level</MudChip></MudTd>
             <MudTd DataLabel="Message">
                 @context?.Message
                 @if (context?.Exception is not null)

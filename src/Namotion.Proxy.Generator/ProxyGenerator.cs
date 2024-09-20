@@ -233,7 +233,7 @@ namespace {namespaceName}
         throw new InvalidOperationException("Unable to resolve type symbol.");
     }
 
-    static string GetFullTypeName(ITypeSymbol typeSymbol)
+    static string? GetFullTypeName(ITypeSymbol typeSymbol)
     {
         if (typeSymbol == null)
             return null;

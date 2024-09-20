@@ -33,7 +33,7 @@
     @if (_chargers.Length > 0)
     {
         <MudItem>
-            <MudList Clickable="true" @bind-SelectedValue="SerialNumber" >
+            <MudList @bind-SelectedValue="SerialNumber" >
                 <MudDivider />
                 @foreach (var charger in _chargers)
                 {
