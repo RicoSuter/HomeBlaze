@@ -34,11 +34,11 @@ namespace HomeBlaze.Philips.Hue
         IHubDevice,
         IPowerConsumptionSensor
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<HueBridge> _logger;
 
         private bool _isRefreshing = false;
         private LocalHueApi? _client;
+        private HttpClient? _httpClient;
 
         internal IEventManager EventManager { get; }
 
@@ -85,12 +85,11 @@ namespace HomeBlaze.Philips.Hue
 
         protected override TimeSpan FailureInterval => TimeSpan.FromSeconds(5);
 
-        public HueBridge(IThingManager thingManager, IEventManager eventManager, IHttpClientFactory httpClientFactory, ILogger<HueBridge> logger)
+        public HueBridge(IThingManager thingManager, IEventManager eventManager, ILogger<HueBridge> logger)
             : base(logger)
         {
             EventManager = eventManager;
 
-            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
@@ -142,7 +141,14 @@ namespace HomeBlaze.Philips.Hue
                         _client.StopEventStream();
                     }
 
-                    _client = new LocalHueApi(Bridge.IpAddress, AppKey, _httpClientFactory.CreateClient());
+                    _httpClient?.Dispose();
+                    _httpClient = new HttpClient(new HttpClientHandler()
+                    {
+                        ServerCertificateCustomValidationCallback = 
+                            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                    });
+
+                    _client = new LocalHueApi(Bridge.IpAddress, AppKey, _httpClient);
                     _client.OnEventStreamMessage += OnEventStreamMessage;
 
 #pragma warning disable CS4014
