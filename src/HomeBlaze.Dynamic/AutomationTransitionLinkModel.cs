@@ -6,8 +6,7 @@ namespace HomeBlaze.Dynamic
     {
         public AutomationTransition Transition { get; }
 
-        public AutomationTransitionLinkModel(
-            AutomationTransition transition, PortModel sourcePort, PortModel targetPort)
+        public AutomationTransitionLinkModel(AutomationTransition transition, PortModel sourcePort, PortModel targetPort)
             : base(sourcePort, targetPort)
         {
             TargetMarker = LinkMarker.Arrow;

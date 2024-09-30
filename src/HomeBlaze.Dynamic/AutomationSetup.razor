@@ -5,6 +5,7 @@
 @using Blazor.Diagrams
 @using Blazor.Diagrams.Components
 @using Blazor.Diagrams.Core;
+@using Blazor.Diagrams.Core.Anchors
 @using Blazor.Diagrams.Core.Geometry;
 @using Blazor.Diagrams.Core.Models;
 @using Blazor.Diagrams.Core.Models.Base
@@ -82,6 +83,7 @@
     
     .diagram-node {
         position: absolute !important;
+        pointer-events: visible !important;
 
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -89,8 +91,6 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
-
-        pointer-events: auto !important;
     }
 </style>
 
@@ -114,11 +114,14 @@
                 Enabled = false
             }, 
 
-            // Links =
-            // {
-            //     Factory = (Diagram diagram, ILinkable source, Blazor.Diagrams.Core.Anchors.Anchor targetAnchor) => 
-            //         new AutomationTransitionLinkModel(new AutomationTransition(), targetAnchor)
-            // },
+            Links =
+            {
+                Factory = (Diagram diagram, ILinkable source, Blazor.Diagrams.Core.Anchors.Anchor targetAnchor) => 
+                    new AutomationTransitionLinkModel(
+                        new AutomationTransition(), 
+                        (PortModel)source, 
+                        (PortModel)targetAnchor.Model!)
+            },
 
             Constraints =
             {
@@ -151,6 +154,10 @@
         foreach (var state in Thing!.States)
         {
             var node = new AutomationStateNodeModel(state);
+            node.AddPort(PortAlignment.Top);
+            node.AddPort(PortAlignment.Right);
+            node.AddPort(PortAlignment.Bottom);
+            node.AddPort(PortAlignment.Left);
             _diagram.Nodes.Add(node);
         }
 
