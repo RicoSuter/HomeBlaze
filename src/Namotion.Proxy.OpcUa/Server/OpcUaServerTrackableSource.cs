@@ -79,7 +79,7 @@ internal class OpcUaServerTrackableSource<TProxy> : BackgroundService, IProxySou
         }
     }
 
-    internal void UpdateProperty(ProxyPropertyReference property, string sourcePath, object value)
+    internal void UpdateProperty(ProxyPropertyReference property, string sourcePath, object? value)
     {
         _propertyUpdateAction?.Invoke(new ProxyPropertyPathReference(property, sourcePath, value));
     }
