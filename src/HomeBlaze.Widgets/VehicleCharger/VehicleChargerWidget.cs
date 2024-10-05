@@ -17,7 +17,8 @@ public class VehicleChargerWidget : IThing
     [Configuration(IsIdentifier = true)]
     public string Id { get; set; } = Guid.NewGuid().ToString();
 
-    public string? Title => (VehicleCharger as IThing)?.Title;
+    [Configuration]
+    public string Title { get; set; } = string.Empty;
 
     [Configuration]
     public string? VehicleChargerId { get; set; }

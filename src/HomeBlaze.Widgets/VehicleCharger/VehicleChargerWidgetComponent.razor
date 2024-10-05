@@ -10,8 +10,7 @@
 @inject IThingManager ThingManager
 
 <div style="height: @(Thing?.Scale * 100)px">
-    <div style="transform: scale(@(((Thing?.Scale * 100 - 20) / 80) ?? 1.0m)); transform-origin: top left; pointer-events: all"
-         @onclick="@(() => ShowHistoryAsync())" @ontouchend="@(() => ShowHistoryAsync())">
+    <div style="transform: scale(@(((Thing?.Scale * 100 - 20) / 80) ?? 1.0m)); transform-origin: top left; pointer-events: all">
         <div>
             @if (Thing?.VehicleCharger?.IsPluggedIn == false)
             {
@@ -286,7 +285,7 @@
                                             id="tspan1"
                                             style="font-size:133.333px;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke-width:10"
                                             x="1141.9248"
-                                            y="168.42162">@((Thing?.VehicleCharger as IPowerConsumptionSensor)?.PowerConsumption is decimal powerConsumption ? $"{Math.Round(powerConsumption / 1000, 1)} kW" : "")</tspan></text>
+                                            y="168.42162">@(Thing?.Title.Length > 0 ? Thing?.Title + ": " : string.Empty)@((Thing?.VehicleCharger as IPowerConsumptionSensor)?.PowerConsumption is decimal powerConsumption ? $"{Math.Round(powerConsumption / 1000, 1)} kW" : "")</tspan></text>
                 </svg>
             }
             else

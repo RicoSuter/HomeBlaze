@@ -50,10 +50,10 @@
 @code {
     private ChargerInformation[] _chargers = [];
 
-    private object? SerialNumber
+    private string? SerialNumber
     {
         get => Thing.SerialNumber;
-        set => Thing.SerialNumber = value?.ToString() ?? "n/a";
+        set => Thing.SerialNumber = value ?? "n/a";
     }
 
     public override bool IsValid => base.IsValid && !string.IsNullOrEmpty(Thing.SerialNumber);
