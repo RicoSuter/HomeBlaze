@@ -41,17 +41,33 @@
         ThingManager.TryGetPropertyState(Thing.ThingId, Thing.PropertyName, true) :
         null;
 
+    private bool _isDialogOpen = false;
+
     public async void ShowImage()
     {
-        var sourceThing = Thing?.Thing;
-        var propertyName = Thing?.PropertyName;
-        if (propertyName != null && sourceThing != null)
+        try
         {
-            await ImageDialog.ShowAsync(DialogService, sourceThing, propertyName);
+            if (_isDialogOpen)
+            {
+                return;
+            }
+
+            _isDialogOpen = true;
+
+            var sourceThing = Thing?.Thing;
+            var propertyName = Thing?.PropertyName;
+            if (propertyName != null && sourceThing != null)
+            {
+                await ImageDialog.ShowAsync(DialogService, sourceThing, propertyName);
+            }
+            else if (!string.IsNullOrEmpty(Thing?.ImageUrl))
+            {
+                await ImageDialog.ShowAsync(DialogService, Thing.ImageUrl);
+            }
         }
-        else if (!string.IsNullOrEmpty(Thing?.ImageUrl))
+        finally
         {
-            await ImageDialog.ShowAsync(DialogService, Thing.ImageUrl);
+            _isDialogOpen = false;
         }
     }
 }
