@@ -12,10 +12,13 @@
 <div style="height: @(Thing?.Scale * 100)px">
     <div style="transform: scale(@(((Thing?.Scale * 100 - 20) / 80) ?? 1.0m)); transform-origin: top left; pointer-events: all">
         <div>
+            <div style="margin-bottom: -20px; padding-left: 30px; text-align: center">
+                @(Thing?.Title.Length > 0 ? Thing?.Title + ": " : string.Empty)@((Thing?.VehicleCharger as IPowerConsumptionSensor)?.PowerConsumption is decimal powerConsumption ? $"{Math.Round(powerConsumption / 1000, 1)} kW" : "")
+            </div>
             @if (Thing?.VehicleCharger?.IsPluggedIn == false)
             {
                 <svg version="1.1"
-                     width="200"
+                     width="160"
                      height="100"
                      style="clip-rule:evenodd;fill-rule:evenodd;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
                      id="svg28"
@@ -88,7 +91,7 @@
             else if (Thing?.VehicleCharger?.IsPluggedIn == true)
             {
                 <svg version="1.1"
-                     width="200"
+                     width="160"
                      height="100"
                      style="clip-rule:evenodd;fill-rule:evenodd;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
                      id="svg28"
@@ -277,15 +280,6 @@
                                   id="path31" />
                         </g>
                     </g>
-                    <text xml:space="preserve"
-                          style="font-size:133.333px;text-align:end;text-anchor:end;fill:#ffffff;fill-opacity:1;stroke-width:10"
-                          x="1141.9248"
-                          y="168.42162"
-                          id="text1"><tspan sodipodi:role="line"
-                                            id="tspan1"
-                                            style="font-size:133.333px;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke-width:10"
-                                            x="1141.9248"
-                                            y="168.42162">@(Thing?.Title.Length > 0 ? Thing?.Title + ": " : string.Empty)@((Thing?.VehicleCharger as IPowerConsumptionSensor)?.PowerConsumption is decimal powerConsumption ? $"{Math.Round(powerConsumption / 1000, 1)} kW" : "")</tspan></text>
                 </svg>
             }
             else
