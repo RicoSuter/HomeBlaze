@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -15,7 +14,7 @@ using Namotion.Proxy;
 namespace Namotion.Shelly
 {
     [GenerateProxy]
-    public class ShellySwitchBase :
+    public partial class ShellySwitch :
         IThing,
         IIconProvider,
         ISwitchDevice,
@@ -37,13 +36,13 @@ namespace Namotion.Shelly
         public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
 
         [JsonPropertyName("id"), State]
-        public int? Index { get; set; }
+        public partial int? Index { get; set; }
 
         [JsonPropertyName("output"), State]
-        public bool? IsOn { get; set; }
+        public partial bool? IsOn { get; set; }
 
         [JsonPropertyName("source"), State]
-        public string? Source { get; set; }
+        public partial string? Source { get; set; }
 
         public async Task TurnOnAsync(CancellationToken cancellationToken = default)
         {

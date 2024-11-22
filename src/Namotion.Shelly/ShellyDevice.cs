@@ -20,7 +20,7 @@ namespace Namotion.Shelly
     [ThingType("HomeBlaze.Shelly.ShellyDevice")]
     [DisplayName("Shelly Device")]
     [GenerateProxy]
-    public abstract class ShellyDeviceBase :
+    public partial class ShellyDevice :
         PollingThing,
         IConnectedThing,
         INetworkAdapter,
@@ -32,30 +32,30 @@ namespace Namotion.Shelly
 
         public override string Title => $"Shelly: {Information?.Name ?? Information?.Application}";
 
-        public virtual DateTimeOffset? LastUpdated { get; protected set; }
+        public partial DateTimeOffset? LastUpdated { get; protected set; }
 
-        public virtual string IconName => "fas fa-box";
-
-        [Configuration]
-        public virtual string? IpAddress { get; set; }
+        public string IconName => "fas fa-box";
 
         [Configuration]
-        public virtual int RefreshInterval { get; set; } = 15 * 1000;
+        public string? IpAddress { get; set; }
+
+        [Configuration]
+        public int RefreshInterval { get; set; } = 15 * 1000;
 
         [State]
-        public virtual bool IsConnected { get; internal set; }
+        public partial bool IsConnected { get; internal set; }
 
         [ScanForState]
-        public virtual ShellyInformation? Information { get; protected set; }
+        public partial ShellyInformation? Information { get; protected set; }
 
         [State]
-        public virtual ShellyEnergyMeter? EnergyMeter { get; internal set; }
+        public partial ShellyEnergyMeter? EnergyMeter { get; internal set; }
 
         [State]
-        public virtual ShellySwitch? Switch0 { get; internal set; }
+        public partial ShellySwitch? Switch0 { get; internal set; }
 
         [State]
-        public virtual ShellySwitch? Switch1 { get; internal set; }
+        public partial ShellySwitch? Switch1 { get; internal set; }
 
         [State]
         public virtual ShellyCover? Cover { get; protected set; }
@@ -65,7 +65,7 @@ namespace Namotion.Shelly
 
         internal ShellyWebSocketClient? WebSocketClient { get; private set; }
 
-        public ShellyDeviceBase(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger) 
+        public ShellyDevice(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger) 
             : base( logger)
         {
             _httpClientFactory = httpClientFactory;

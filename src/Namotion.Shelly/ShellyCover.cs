@@ -14,7 +14,7 @@ using Namotion.Proxy;
 namespace Namotion.Shelly
 {
     [GenerateProxy]
-    public class ShellyCoverBase :
+    public partial class ShellyCover :
         IThing,
         IIconProvider,
         IPowerConsumptionSensor,
@@ -32,10 +32,12 @@ namespace Namotion.Shelly
 
         public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
 
+        [Derived]
         [State(Unit = StateUnit.Percent)]
-        public virtual decimal? Position => (100 - CurrentPosition) / 100m;
+        public decimal? Position => (100 - CurrentPosition) / 100m;
 
-        public virtual RollerShutterState State => LastState switch
+        [Derived]
+        public RollerShutterState State => LastState switch
         {
             "open" => RollerShutterState.Opening,
             "close" => RollerShutterState.Closing,
@@ -49,41 +51,42 @@ namespace Namotion.Shelly
         };
 
         [State]
-        public virtual bool? IsMoving => PowerConsumption > 1;
+        [Derived]
+        public  bool? IsMoving => PowerConsumption > 1;
 
         [State(Unit = StateUnit.Watt)]
         [JsonPropertyName("power")]
-        public virtual decimal? PowerConsumption { get; set; }
+        public partial decimal? PowerConsumption { get; set; }
 
         [JsonPropertyName("state"), State]
-        public virtual string? LastState { get; set; }
+        public partial string? LastState { get; set; }
 
         [JsonPropertyName("source"), State]
-        public virtual string? Source { get; set; }
+        public partial string? Source { get; set; }
 
         [JsonPropertyName("is_valid"), State]
-        public virtual bool? IsValid { get; set; }
+        public partial bool? IsValid { get; set; }
 
         [JsonPropertyName("safety_switch"), State]
-        public virtual bool? IsSafetySwitchTriggered { get; set; }
+        public partial bool? IsSafetySwitchTriggered { get; set; }
 
         [JsonPropertyName("overtemperature"), State]
-        public virtual bool? OvertemperatureOccurred { get; set; }
+        public partial bool? OvertemperatureOccurred { get; set; }
 
         [JsonPropertyName("stop_reason"), State]
-        public virtual string? StopReason { get; set; }
+        public partial string? StopReason { get; set; }
 
         [JsonPropertyName("last_direction"), State]
-        public virtual string? LastDirection { get; set; }
+        public partial string? LastDirection { get; set; }
 
         [JsonPropertyName("current_pos")]
-        public virtual int? CurrentPosition { get; set; }
+        public partial int? CurrentPosition { get; set; }
 
         [JsonPropertyName("calibrating"), State]
-        public virtual bool? IsCalibrating { get; set; }
+        public partial bool? IsCalibrating { get; set; }
 
         [JsonPropertyName("positioning"), State]
-        public virtual bool? IsPositioning { get; set; }
+        public partial bool? IsPositioning { get; set; }
 
         [Operation]
         public async Task OpenAsync(CancellationToken cancellationToken)

@@ -12,7 +12,7 @@ using Namotion.Proxy;
 namespace Namotion.Shelly
 {
     [GenerateProxy]
-    public class ShellyEnergyMeterBase :
+    public partial class ShellyEnergyMeter :
         IThing,
         IIconProvider,
         IPowerConsumptionSensor,
@@ -29,41 +29,43 @@ namespace Namotion.Shelly
 
         public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
 
-        public virtual decimal? PowerConsumption => TotalActivePower;
+        [Derived]
+        public decimal? PowerConsumption => TotalActivePower;
 
         [ScanForState]
-        public virtual ShellyEnergyData? EnergyData { get; internal set; }
+        public partial ShellyEnergyData? EnergyData { get; internal set; }
 
         [State]
-        public virtual ShellyEnergyMeterPhase PhaseA { get; protected set; } = new ShellyEnergyMeterPhase("a");
+        public partial ShellyEnergyMeterPhase PhaseA { get; protected set; }
 
         [State]
-        public virtual ShellyEnergyMeterPhase PhaseB { get; protected set; } = new ShellyEnergyMeterPhase("b");
+        public partial ShellyEnergyMeterPhase PhaseB { get; protected set; }
 
         [State]
-        public virtual ShellyEnergyMeterPhase PhaseC { get; protected set; } = new ShellyEnergyMeterPhase("c");
+        public partial ShellyEnergyMeterPhase PhaseC { get; protected set; }
 
         [State(Unit = StateUnit.WattHour, IsCumulative = true)]
+        [Derived]
         public decimal? TotalConsumedEnergy => EnergyData?.TotalActiveEnergy;
 
         /// <summary>
         /// Gets or sets the ID of the EM1 component.
         /// </summary>
         [JsonPropertyName("id")]
-        public int Id { get; set; }
+        public partial int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the total current in amperes.
         /// </summary>
         [JsonPropertyName("total_current"), State(Unit = StateUnit.Ampere)]
-        public double TotalCurrent { get; set; }
+        public partial double TotalCurrent { get; set; }
 
         /// <summary>
         /// Gets or sets the total active power in watts.
         /// Active power (real power) is the actual power consumed by electrical equipment to perform useful work, such as running a motor or lighting a bulb.
         /// </summary>
         [JsonPropertyName("total_act_power"), State(Unit = StateUnit.Watt)]
-        public decimal TotalActivePower { get; set; }
+        public partial decimal TotalActivePower { get; set; }
 
         /// <summary>
         /// Gets or sets the total apparent power in volt-amperes.
@@ -71,13 +73,20 @@ namespace Namotion.Shelly
         /// It represents the total power used by the electrical equipment to do work and sustain the magnetic and electric fields.
         /// </summary>
         [JsonPropertyName("total_aprt_power"), State(Unit = StateUnit.Watt)]
-        public double TotalApparentPower { get; set; }
+        public partial double TotalApparentPower { get; set; }
 
         /// <summary>
         /// Gets or sets the current of the neutral line in amperes.
         /// </summary>
         [JsonPropertyName("n_current"), State(Unit = StateUnit.Ampere)]
-        public double? NeutralCurrent { get; set; }
+        public partial double? NeutralCurrent { get; set; }
+
+        public ShellyEnergyMeter()
+        {
+            PhaseA = new ShellyEnergyMeterPhase("a");
+            PhaseB = new ShellyEnergyMeterPhase("b");
+            PhaseC = new ShellyEnergyMeterPhase("c");
+        }
 
         public void Update()
         {

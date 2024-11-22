@@ -7,62 +7,62 @@ using Namotion.Proxy;
 namespace Namotion.Shelly
 {
     [GenerateProxy]
-    public class ShellyEnergyDataBase
+    public partial class ShellyEnergyData
     {
         /// <summary>
         /// Gets the identifier.
         /// </summary>
         [JsonPropertyName("id")]
-        public virtual int Id { get; init; }
+        public partial int Id { get; internal set; }
 
         /// <summary>
         /// Gets the total active energy across all phases, measured in watt-hours.
         /// </summary>
         [State(Unit = StateUnit.WattHour)]
         [JsonPropertyName("total_act")]
-        public virtual decimal TotalActiveEnergy { get; init; }
+        public partial decimal TotalActiveEnergy { get; internal set; }
 
         /// <summary>
         /// Gets the total active returned energy across all phases, measured in watt-hours.
         /// </summary>
         [State(Unit = StateUnit.WattHour)]
         [JsonPropertyName("total_act_ret")]
-        public virtual double TotalActiveReturnedEnergy { get; init; }
+        public partial double TotalActiveReturnedEnergy { get; internal set; }
 
         /// <summary>
         /// Gets the total active energy for phase A, measured in watt-hours.
         /// </summary>
         [JsonPropertyName("a_total_act_energy")]
-        public virtual double PhaseATotalActiveEnergy { get; init; }
+        public partial double PhaseATotalActiveEnergy { get; internal set; }
 
         /// <summary>
         /// Gets the total active returned energy for phase A, measured in watt-hours.
         /// </summary>
         [JsonPropertyName("a_total_act_ret_energy")]
-        public virtual double PhaseATotalActiveReturnedEnergy { get; init; }
+        public partial double PhaseATotalActiveReturnedEnergy { get; internal set; }
 
         /// <summary>
         /// Gets the total active energy for phase B, measured in watt-hours.
         /// </summary>
         [JsonPropertyName("b_total_act_energy")]
-        public virtual double PhaseBTotalActiveEnergy { get; init; }
+        public partial double PhaseBTotalActiveEnergy { get; internal set; }
 
         /// <summary>
         /// Gets the total active returned energy for phase B, measured in watt-hours.
         /// </summary>
         [JsonPropertyName("b_total_act_ret_energy")]
-        public virtual double PhaseBTotalActiveReturnedEnergy { get; init; }
+        public partial double PhaseBTotalActiveReturnedEnergy { get; internal set; }
 
         /// <summary>
         /// Gets the total active energy for phase C, measured in watt-hours.
         /// </summary>
         [JsonPropertyName("c_total_act_energy")]
-        public virtual double PhaseCTotalActiveEnergy { get; init; }
+        public partial double PhaseCTotalActiveEnergy { get; internal set; }
 
         /// <summary>
         /// Gets the total active returned energy for phase C, measured in watt-hours.
         /// </summary>
         [JsonPropertyName("c_total_act_ret_energy")]
-        public virtual double PhaseCTotalActiveReturnedEnergy { get; init; }
+        public partial double PhaseCTotalActiveReturnedEnergy { get; internal set; }
     }
 }
