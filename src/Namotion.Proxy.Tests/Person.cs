@@ -20,6 +20,9 @@ namespace Namotion.Proxy.Tests
         [Derived]
         public string FullName => $"{FirstName} {LastName}";
 
+        [Derived]
+        public string FullNameWithPrefix => $"Mr. {FullName}";
+
         public partial Person? Father { get; set; }
 
         public partial Person? Mother { get; set; }
