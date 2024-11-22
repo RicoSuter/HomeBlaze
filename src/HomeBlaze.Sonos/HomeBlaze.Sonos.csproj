@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-		<PackageReference Include="MudBlazor" Version="7.7.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.8" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+		<PackageReference Include="MudBlazor" Version="7.15.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
 		<PackageReference Include="Rssdp" Version="4.0.4" />
 		<PackageReference Include="Sonos.Base" Version="0.2.0-beta0038" />
 		<PackageReference Include="Sonos.Base.Events.Http" Version="0.2.0-beta0038" />

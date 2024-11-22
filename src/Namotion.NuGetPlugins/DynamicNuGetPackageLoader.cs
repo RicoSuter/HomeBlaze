@@ -14,8 +14,8 @@ namespace Namotion.NuGetPlugins
 {
     public class DynamicNuGetPackageLoader : IDynamicNuGetPackageLoader
     {
-        private static readonly string[] TargetFrameworksOrder = new[]
-        {
+        private static readonly string[] TargetFrameworksOrder =
+        [
             "net10.0",
             "net9.0",
             "net8.0",
@@ -24,7 +24,7 @@ namespace Namotion.NuGetPlugins
             "net5.0",
             "netstandard2.1",
             "netstandard2.0"
-        };
+        ];
 
         private readonly string _cacheDirectory;
         private readonly Dictionary<string, NuGetPackageAssemblyLoadContext> _packages = new Dictionary<string, NuGetPackageAssemblyLoadContext>();
