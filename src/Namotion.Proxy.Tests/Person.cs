@@ -10,6 +10,8 @@ namespace Namotion.Proxy.Tests
             Children = [];
         }
 
+        public partial string? Id { get; init; }
+
         [MaxLength(4)]
         public partial string? FirstName { get; set; }
 

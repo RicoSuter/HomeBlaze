@@ -1,14 +1,17 @@
 ﻿{
+  "id": null,
   "firstName": "Child",
   "lastName": null,
   "fullName": "Child ",
   "father": null,
   "mother": {
+    "id": null,
     "firstName": "Susi",
     "lastName": null,
     "fullName": "Susi ",
     "father": null,
     "mother": {
+      "id": null,
       "firstName": "Susi2",
       "lastName": null,
       "fullName": "Susi2 ",

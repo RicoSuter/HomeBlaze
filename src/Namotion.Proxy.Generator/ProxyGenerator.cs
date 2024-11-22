@@ -37,7 +37,8 @@ public class ProxyGenerator : IIncrementalGenerator
                                 IsRequired = p.Modifiers.Any(m => m.IsKind(SyntaxKind.RequiredKeyword)),
                                 HasGetter = p.AccessorList?.Accessors.Any(a => a.IsKind(SyntaxKind.GetAccessorDeclaration)) == true ||
                                             p.ExpressionBody.IsKind(SyntaxKind.ArrowExpressionClause),
-                                HasSetter = p.AccessorList?.Accessors.Any(a => a.IsKind(SyntaxKind.SetAccessorDeclaration)) == true
+                                HasSetter = p.AccessorList?.Accessors.Any(a => a.IsKind(SyntaxKind.SetAccessorDeclaration)) == true,
+                                HasInit = p.AccessorList?.Accessors.Any(a => a.IsKind(SyntaxKind.InitAccessorDeclaration)) == true
                             })
                             .ToArray()
                     };
@@ -75,6 +76,7 @@ using System.Text.Json.Serialization;
 
 namespace {namespaceName} 
 {{
+    [System.CodeDom.Compiler.GeneratedCode(""Namotion.Proxy"", ""1.0.0"")]
     public partial class {baseClassName} : IProxy
     {{
         private IProxyContext? _context;
@@ -162,14 +164,18 @@ namespace {namespaceName}
 
                         }
 
-                        if (property.HasSetter)
+                        if (property.HasSetter || property.HasInit)
                         {
-                            var modifiers = string.Join(" ", property.Property.AccessorList?
-                                .Accessors.First(a => a.IsKind(SyntaxKind.SetAccessorDeclaration)).Modifiers.Select(m => m.Value) ?? []);
+                            var accessor = property.Property.AccessorList?
+                                .Accessors.Single(a => a.IsKind(SyntaxKind.SetAccessorDeclaration) || a.IsKind(SyntaxKind.InitAccessorDeclaration)) 
+                                ?? throw new InvalidOperationException("Accessor not found.");
+
+                            var accessorText = accessor.IsKind(SyntaxKind.InitAccessorDeclaration) ? "init" : "set";
+                            var modifiers = string.Join(" ", accessor.Modifiers.Select(m => m.Value) ?? []);
 
                             generatedCode +=
     $@"
-            {modifiers} set => SetProperty(nameof({propertyName}), value, () => _{propertyName}, v => _{propertyName} = ({fullyQualifiedName})v!);";
+            {modifiers} {accessorText} => SetProperty(nameof({propertyName}), value, () => _{propertyName}, v => _{propertyName} = ({fullyQualifiedName})v!);";
                         }
 
                         generatedCode +=
