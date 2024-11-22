@@ -28,10 +28,10 @@ public class ProxyRegistryTests
             FirstName = "Child",
             Mother = new Person
             {
-                FirstName = "Susi",
+                FirstName = "Mother",
                 Mother = new Person
                 {
-                    FirstName = "Susi2"
+                    FirstName = "Grandmother"
                 }
             }
         };
@@ -66,10 +66,10 @@ public class ProxyRegistryTests
 
         person.Mother = new Person
         {
-            FirstName = "Susi",
+            FirstName = "Mother",
             Mother = new Person
             {
-                FirstName = "Susi2"
+                FirstName = "Grandmother"
             }
         };
 
@@ -101,10 +101,10 @@ public class ProxyRegistryTests
             FirstName = "Child",
             Mother = new Person
             {
-                FirstName = "Susi",
+                FirstName = "Mother",
                 Mother = new Person
                 {
-                    FirstName = "Susi2"
+                    FirstName = "Grandmother"
                 }
             }
         };
@@ -208,10 +208,10 @@ public class ProxyRegistryTests
             FirstName = "Child",
             Mother = new Person
             {
-                FirstName = "Susi",
+                FirstName = "Mother",
                 Mother = new Person
                 {
-                    FirstName = "Susi2"
+                    FirstName = "Grandmother"
                 }
             }
         };
