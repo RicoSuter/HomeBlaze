@@ -1,17 +1,22 @@
 ﻿namespace Namotion.Proxy.SampleBlazor.Models
 {
     [GenerateProxy]
-    public abstract class GameBase
+    public partial class Game
     {
-        public virtual PlayerBase[] Players { get; protected set; } = [];
+        public partial Player[] Players { get; protected set; }
 
-        public void AddPlayer(PlayerBase player)
+        public Game()
+        {
+            Players = [];
+        }
+
+        public void AddPlayer(Player player)
         {
             lock (this)
                 Players = [.. Players, player];
         }
 
-        public void RemovePlayer(PlayerBase player)
+        public void RemovePlayer(Player player)
         {
             lock (this)
                 Players = Players.Where(p => p != player).ToArray();

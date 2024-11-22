@@ -9,43 +9,52 @@ using NSwag.Annotations;
 namespace Namotion.Trackable.SampleWeb
 {
     [GenerateProxy]
-    public abstract class CarBase
+    public partial class Car
     {
-        public CarBase()
+        [ProxySource("mqtt", "name")]
+        [ProxySource("opc", "Name")]
+        public partial string Name { get; set; }
+
+        [ProxySourcePath("mqtt", "tires")]
+        [ProxySourcePath("opc", "Tires")]
+        public partial Tire[] Tires { get; set; }
+
+        [Derived]
+        [ProxySource("mqtt", "averagePressure")]
+        [ProxySource("opc", "AveragePressure")]
+        public decimal AveragePressure => Tires.Average(t => t.Pressure);
+
+        public Car()
         {
             Tires = Enumerable
                 .Range(1, 4)
                 .Select(_ => new Tire())
                 .ToArray();
+
+            Name = "My Car";
         }
-
-        [ProxySource("mqtt", "name")]
-        [ProxySource("opc", "Name")]
-        public virtual string Name { get; set; } = "My Car";
-
-        [ProxySourcePath("mqtt", "tires")]
-        [ProxySourcePath("opc", "Tires")]
-        public virtual Tire[] Tires { get; set; }
-
-        [ProxySource("mqtt", "averagePressure")]
-        [ProxySource("opc", "AveragePressure")]
-        public virtual decimal AveragePressure => Tires.Average(t => t.Pressure);
     }
 
     [GenerateProxy]
-    public abstract class TireBase
+    public partial class Tire
     {
         [ProxySource("mqtt", "pressure")]
         [ProxySource("opc", "Pressure")]
         [Unit("bar")]
-        public virtual decimal Pressure { get; set; }
+        public partial decimal Pressure { get; set; }
 
         [Unit("bar")]
         [PropertyAttribute(nameof(Pressure), "Minimum")]
-        public virtual decimal Pressure_Minimum { get; set; } = 0.0m;
+        public partial decimal Pressure_Minimum { get; set; }
 
+        [Derived]
         [PropertyAttribute(nameof(Pressure), "Maximum")]
-        public virtual decimal Pressure_Maximum => 4 * Pressure;
+        public decimal Pressure_Maximum => 4 * Pressure;
+
+        public Tire()
+        {
+            Pressure_Minimum = 0.0m;
+        }
     }
 
     public class UnitAttribute : Attribute, IProxyPropertyInitializer
@@ -98,9 +107,10 @@ namespace Namotion.Trackable.SampleWeb
                 .AddTrackedGraphQL<Car>();
 
             // other asp services
-            builder.Services.AddHostedService<Simulator>();
             builder.Services.AddOpenApiDocument();
             builder.Services.AddAuthorization();
+
+            builder.Services.AddHostedService<Simulator>();
 
             var app = builder.Build();
 

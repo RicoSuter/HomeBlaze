@@ -15,7 +15,7 @@ public class ProxyGenerator : IIncrementalGenerator
     {
         var classWithAttributeProvider = context.SyntaxProvider
             .CreateSyntaxProvider(
-                predicate: (node, _) => node is ClassDeclarationSyntax cds && cds.AttributeLists.Count > 0 && cds.Identifier.Value?.ToString().EndsWith("Base") == true,
+                predicate: (node, _) => node is ClassDeclarationSyntax cds && cds.AttributeLists.Count > 0 && cds.AttributeLists.Any(a => a.ToString() == "[GenerateProxy]"),
                 transform: (ctx, ct) =>
                 {
                     var classDeclaration = (ClassDeclarationSyntax)ctx.Node;
@@ -27,11 +27,13 @@ public class ProxyGenerator : IIncrementalGenerator
                         ClassNode = (ClassDeclarationSyntax)ctx.Node,
                         Properties = classDeclaration.Members
                             .OfType<PropertyDeclarationSyntax>()
-                            .Where(p => p.Modifiers.Any(m => m.IsKind(SyntaxKind.VirtualKeyword)))
+                            .Where(p => p.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword)) || p.AttributeLists.Any(a => a.ToString() == "[Derived]"))
                             .Select(p => new
                             {
                                 Property = p,
                                 Type = model.GetTypeInfo(p.Type, ct),
+                                IsPartial = p.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword)),
+                                IsDerived = p.AttributeLists.Any(a => a.ToString() == "[Derived]"),
                                 IsRequired = p.Modifiers.Any(m => m.IsKind(SyntaxKind.RequiredKeyword)),
                                 HasGetter = p.AccessorList?.Accessors.Any(a => a.IsKind(SyntaxKind.GetAccessorDeclaration)) == true ||
                                             p.ExpressionBody.IsKind(SyntaxKind.ArrowExpressionClause),
@@ -56,7 +58,7 @@ public class ProxyGenerator : IIncrementalGenerator
                 {
                     var semanticModel = cls.First().Model;
                     var baseClassName = cls.First().ClassNode.Identifier.ValueText;
-                    var newClassName = baseClassName.Replace("Base", string.Empty);
+                    var newClassName = baseClassName; //.Replace("Base", string.Empty);
 
                     var namespaceName = (cls.First().ClassNode.Parent as NamespaceDeclarationSyntax)?.Name.ToString() ?? "YourDefaultNamespace";
 
@@ -73,7 +75,7 @@ using System.Text.Json.Serialization;
 
 namespace {namespaceName} 
 {{
-    public class {newClassName} : {baseClassName}, IProxy
+    public partial class {baseClassName} : IProxy
     {{
         private IProxyContext? _context;
         private ConcurrentDictionary<string, object?> _data = new ConcurrentDictionary<string, object?>();
@@ -92,8 +94,7 @@ namespace {namespaceName}
         IReadOnlyDictionary<string, ProxyPropertyInfo> IProxy.Properties => _properties;
 
         private static IReadOnlyDictionary<string, ProxyPropertyInfo> _properties = new Dictionary<string, ProxyPropertyInfo>
-        {{
-";
+        {{";
                     foreach (var property in cls.SelectMany(c => c.Properties))
                     {
                         //var fullyQualifiedName = property.Type.Type!.ToDisplayString(symbolDisplayFormat);
@@ -105,8 +106,7 @@ namespace {namespaceName}
             {{
                 ""{propertyName}"",       
                 new ProxyPropertyInfo(nameof({propertyName}), typeof({baseClassName}).GetProperty(nameof({propertyName})).PropertyType!, typeof({baseClassName}).GetProperty(nameof({propertyName})).GetCustomAttributes().ToArray()!, {(property.HasGetter ? ($"(o) => (({newClassName})o).{propertyName}") : "null")}, {(property.HasSetter ? ($"(o, v) => (({newClassName})o).{propertyName} = ({fullyQualifiedName})v") : "null")})
-            }},
-";
+            }},";
                     }
 
                     generatedCode +=
@@ -118,33 +118,29 @@ namespace {namespaceName}
                         .FirstOrDefault(m => m.IsKind(SyntaxKind.ConstructorDeclaration))
                         as ConstructorDeclarationSyntax;
 
-                    if (firstConstructor == null ||
-                        firstConstructor.ParameterList.Parameters.Count == 0)
+                    if (firstConstructor == null)
                     {
                         generatedCode +=
     $@"
         public {newClassName}()
         {{
         }}
+";
+                    }
 
-        public {newClassName}(IProxyContext context)
+                    if (firstConstructor == null ||
+                        firstConstructor.ParameterList.Parameters.Count == 0)
+                    {
+                        generatedCode +=
+    $@"
+        public {newClassName}(IProxyContext context) : this()
         {{
             this.SetContext(context);
         }}
 ";
                     }
-                    else
-                    {
-                        generatedCode +=
-    $@"
-        public {newClassName}({string.Join(", ", firstConstructor.ParameterList.Parameters.Select(p => $"{GetFullTypeName(p.Type, semanticModel)} {p.Identifier.Value}"))})
-            : base({string.Join(", ", firstConstructor.ParameterList.Parameters.Select(p => p.Identifier.Value))})
-        {{
-        }}
-";
-                    }
 
-                    foreach (var property in cls.SelectMany(c => c.Properties))
+                    foreach (var property in cls.SelectMany(c => c.Properties).Where(p => p.IsPartial))
                     {
                         //var fullyQualifiedName = property.Type.Type!.ToDisplayString(symbolDisplayFormat);
                         var fullyQualifiedName = property.Type.Type!.ToString();
@@ -152,32 +148,28 @@ namespace {namespaceName}
 
                         generatedCode +=
     $@"
-        public override {(property.IsRequired ? "required " : "")}{fullyQualifiedName} {propertyName}
-        {{
-";
+        private {fullyQualifiedName} _{propertyName};
+        public partial {(property.IsRequired ? "required " : "")}{fullyQualifiedName} {propertyName}
+        {{";
                         if (property.HasGetter)
                         {
                             var modifiers = string.Join(" ", property.Property.AccessorList?
-                                .Accessors.First(a => a.IsKind(SyntaxKind.GetAccessorDeclaration)).Modifiers.Select(m => m.Value) ??
-                                System.Array.Empty<string>());
+                                .Accessors.First(a => a.IsKind(SyntaxKind.GetAccessorDeclaration)).Modifiers.Select(m => m.Value) ?? []);
 
                             generatedCode +=
     $@"
-            {modifiers} get => GetProperty<{fullyQualifiedName}>(nameof({propertyName}), () => base.{propertyName});
-";
+            {modifiers} get => GetProperty<{fullyQualifiedName}>(nameof({propertyName}), () => _{propertyName});";
 
                         }
 
                         if (property.HasSetter)
                         {
                             var modifiers = string.Join(" ", property.Property.AccessorList?
-                                .Accessors.First(a => a.IsKind(SyntaxKind.SetAccessorDeclaration)).Modifiers.Select(m => m.Value) ??
-                                System.Array.Empty<string>());
+                                .Accessors.First(a => a.IsKind(SyntaxKind.SetAccessorDeclaration)).Modifiers.Select(m => m.Value) ?? []);
 
                             generatedCode +=
     $@"
-            {modifiers} set => SetProperty(nameof({propertyName}), value, () => base.{propertyName}, v => base.{propertyName} = ({fullyQualifiedName})v!);
-";
+            {modifiers} set => SetProperty(nameof({propertyName}), value, () => _{propertyName}, v => _{propertyName} = ({fullyQualifiedName})v!);";
                         }
 
                         generatedCode +=
@@ -188,7 +180,6 @@ namespace {namespaceName}
 
                     generatedCode +=
     $@"
-
         private T GetProperty<T>(string propertyName, Func<object?> readValue)
         {{
             return _context is not null ? (T?)_context.GetProperty(this, propertyName, readValue)! : (T?)readValue()!;

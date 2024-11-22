@@ -1,16 +1,18 @@
 ﻿namespace Namotion.Proxy.SampleBlazor.Models
 {
     [GenerateProxy]
-    public class PlayerBase : IDisposable
+    public partial class Player : IDisposable
     {
         private readonly Game _game;
 
-        public virtual string Name { get; set; } = Guid.NewGuid().ToString();
+        public partial string Name { get; set; }
 
-        public PlayerBase(Game game)
+        public Player(Game game)
         {
             _game = game;
             _game.AddPlayer(this);
+
+            Name = Guid.NewGuid().ToString();
         }
 
         public void Dispose()

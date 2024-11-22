@@ -2,6 +2,7 @@
 using Namotion.Proxy.Registry;
 using Namotion.Proxy.Registry.Abstractions;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Namotion.Proxy.Tests.Registry;
 
@@ -216,6 +217,6 @@ public class ProxyRegistryTests
         };
 
         // Assert
-        await Verify(person.ToJsonObject().ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        await Verify(person.ToJsonObject().ToJsonString(new JsonSerializerOptions(JsonSerializerOptions.Default) { WriteIndented = true }));
     }
 }

@@ -15,6 +15,10 @@
     "Namotion.Shelly": {
       "commandName": "DebugRoslynComponent",
       "targetProject": "..\\Namotion.Shelly\\Namotion.Shelly.csproj"
+    },
+    "Namotion.Proxy.Benchmark": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\Namotion.Proxy.Benchmark\\Namotion.Proxy.Benchmark.csproj"
     }
   }
 }
