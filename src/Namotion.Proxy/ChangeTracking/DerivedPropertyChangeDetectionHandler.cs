@@ -58,7 +58,7 @@ internal class DerivedPropertyChangeDetectionHandler : IProxyLifecycleHandler, I
                     var oldValue = usedByProperty.GetLastKnownValue();
 
                     TryStartRecordTouchedProperties();
-                  
+
                     var newValue = usedByProperty
                         .Proxy
                         .Properties[usedByProperty.Name]
@@ -67,14 +67,11 @@ internal class DerivedPropertyChangeDetectionHandler : IProxyLifecycleHandler, I
 
                     StoreRecordedTouchedProperties(usedByProperty);
                     TouchProperty(usedByProperty);
-                   
+
                     usedByProperty.SetLastKnownValue(newValue);
 
-                    var changedContext = new ProxyPropertyWriteContext(usedByProperty, oldValue, newValue, IsDerived: true, context.Context);
-                    foreach (var handler in _handlers.Value)
-                    {
-                        handler.WriteProperty(changedContext, delegate { });
-                    }
+                    var changedContext = new ProxyPropertyWriteContext(usedByProperty, oldValue, newValue, usedByProperty.Metadata.IsDerived, context.Context);
+                    changedContext.CallWriteProperty(newValue, delegate { }, _handlers.Value);
                 }
             }
         }

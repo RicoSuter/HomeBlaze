@@ -7,5 +7,5 @@ public record struct ProxyPropertyInfo(
     Func<object?, object?>? GetValue,
     Action<object?, object?>? SetValue)
 {
-    public readonly bool IsDerived => GetValue is not null && SetValue is null;
+    public readonly bool IsDerived => Attributes.Any(a => a is DerivedAttribute);
 }
