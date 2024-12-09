@@ -7,6 +7,7 @@ using MudBlazor.Services;
 using Namotion.NuGetPlugins;
 using Namotion.Storage;
 using Namotion.Storage.Azure.Storage.Blob;
+using Radzen;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace HomeBlaze.Host
@@ -16,6 +17,7 @@ namespace HomeBlaze.Host
         public static IServiceCollection AddHomeBlaze(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddMudServices();
+            services.AddRadzenComponents();
             services.AddHotKeys2();
 
             var storageType = configuration.GetValue<string>("Storage:Type");
