@@ -1,5 +1,5 @@
 # Stage 1: Base image
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
