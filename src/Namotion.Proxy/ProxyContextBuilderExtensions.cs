@@ -25,7 +25,6 @@ public static class ProxyContextBuilderExtensions
     public static IProxyContextBuilder WithDerivedPropertyChangeDetection(this IProxyContextBuilder builder)
     {
         return builder
-            .TryAddSingleHandler(new InitiallyLoadDerivedPropertiesHandler())
             .TryAddSingleHandler(new DerivedPropertyChangeDetectionHandler(builder.GetLazyHandlers<IProxyWriteHandler>()))
             .WithPropertyChangedObservable();
     }

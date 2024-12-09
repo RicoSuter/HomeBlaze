@@ -3,12 +3,18 @@
 namespace Namotion.Proxy.Benchmark
 {
     [GenerateProxy]
-    public abstract class TireBase
+    public partial class Tire
     {
-        public virtual decimal Pressure { get; set; }
+        public Tire()
+        {
+            Pressure_Minimum = 0.0m;
+            Pressure_Minimum = 4.0m;
+        }
 
-        public virtual decimal Pressure_Minimum { get; set; } = 0.0m;
+        public partial decimal Pressure { get; set; }
 
-        public virtual decimal Pressure_Maximum { get; set; } = 4.0m;
+        public partial decimal Pressure_Minimum { get; set; }
+
+        public partial decimal Pressure_Maximum { get; set; }
     }
 }

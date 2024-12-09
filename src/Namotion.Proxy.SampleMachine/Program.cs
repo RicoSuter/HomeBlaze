@@ -7,72 +7,90 @@ using NSwag.Annotations;
 namespace Namotion.Trackable.SampleMachine
 {
     [GenerateProxy]
-    public class RootBase
+    public partial class Root
     {
         [OpcUaNode("Machines", "http://opcfoundation.org/UA/Machinery/")]
         [OpcUaNodeReferenceType("Organizes")]
         [OpcUaNodeItemReferenceType("Organizes")]
-        public virtual IReadOnlyDictionary<string, Machine> Machines { get; set; } = new Dictionary<string, Machine>();
+        public partial IReadOnlyDictionary<string, Machine> Machines { get; set; }
+
+        public Root()
+        {
+            Machines = new Dictionary<string, Machine>();
+        }
     }
 
     [GenerateProxy]
     [OpcUaTypeDefinition("BaseObjectType")]
-    public class MachineBase
+    public partial class Machine
     {
         [OpcUaNode("Identification", "http://opcfoundation.org/UA/DI/")]
         [OpcUaNodeReferenceType("HasAddIn")]
-        public virtual Identification Identification { get; }
+        public partial Identification Identification { get; private set; }
 
         [OpcUaNode("MachineryBuildingBlocks", "http://opcfoundation.org/UA/")]
         [OpcUaNodeReferenceType("HasComponent")]
-        public virtual MachineryBuildingBlocks MachineryBuildingBlocks { get; }
+        public partial MachineryBuildingBlocks MachineryBuildingBlocks { get; private set; }
 
         [OpcUaNode("Monitoring", "http://opcfoundation.org/UA/")]
         [OpcUaNodeReferenceType("HasComponent")]
         [OpcUaNodeItemReferenceType("HasComponent")]
-        public virtual IReadOnlyDictionary<string, ProcessValueType> Monitoring { get; set; } = new Dictionary<string, ProcessValueType>();
+        public partial IReadOnlyDictionary<string, ProcessValueType> Monitoring { get; set; }
 
-        public MachineBase()
+        public Machine()
         {
             Identification = new Identification();
             MachineryBuildingBlocks = new MachineryBuildingBlocks(Identification);
+            Monitoring = new Dictionary<string, ProcessValueType>();
         }
     }
 
     [GenerateProxy]
     [OpcUaTypeDefinition("ProcessValueType", "http://opcfoundation.org/UA/Machinery/ProcessValues/")]
-    public class ProcessValueTypeBase
+    public partial class ProcessValueType
     {
         [OpcUaVariable("AnalogSignal", "http://opcfoundation.org/UA/PADIM/")]
-        public virtual AnalogSignalVariable AnalogSignal { get; } = new AnalogSignalVariable();
+        public partial AnalogSignalVariable AnalogSignal { get; private set; }
 
         [OpcUaVariable("SignalTag", "http://opcfoundation.org/UA/PADIM/")]
-        public virtual string? SignalTag { get; set; }
+        public partial string? SignalTag { get; set; }
+
+        public ProcessValueType()
+        {
+            AnalogSignal = new AnalogSignalVariable();
+        }
     }
 
     [GenerateProxy]
     [OpcUaTypeDefinition("AnalogSignalVariableType", "http://opcfoundation.org/UA/PADIM/")]
-    public class AnalogSignalVariableBase
+    public partial class AnalogSignalVariable
     {
         [OpcUaVariable("ActualValue", "http://opcfoundation.org/UA/")]
-        public virtual object? ActualValue { get; set; } = "My Manufacturer";
+        public partial object? ActualValue { get; set; }
 
         [OpcUaVariable("EURange", "http://opcfoundation.org/UA/")]
-        public virtual object? EURange { get; set; } = "My Manufacturer";
+        public partial object? EURange { get; set; }
 
         [OpcUaVariable("EngineeringUnits", "http://opcfoundation.org/UA/")]
-        public virtual object? EngineeringUnits { get; set; } = "My Manufacturer";
+        public partial object? EngineeringUnits { get; set; }
+
+        public AnalogSignalVariable()
+        {
+            ActualValue = "My value";
+            EURange = "My range";
+            EngineeringUnits = "My units";
+        }
     }
 
     [GenerateProxy]
     [OpcUaTypeDefinition("FolderType")]
-    public class MachineryBuildingBlocksBase
+    public partial class MachineryBuildingBlocks
     {
         [OpcUaNode("Identification", "http://opcfoundation.org/UA/DI/")]
         [OpcUaNodeReferenceType("HasAddIn")]
-        public virtual Identification Identification { get; }
+        public partial Identification Identification { get; private set; }
 
-        public MachineryBuildingBlocksBase(Identification identification)
+        public MachineryBuildingBlocks(Identification identification)
         {
             Identification = identification;
         }
@@ -80,13 +98,19 @@ namespace Namotion.Trackable.SampleMachine
 
     [GenerateProxy]
     [OpcUaTypeDefinition("MachineIdentificationType", "http://opcfoundation.org/UA/Machinery/")]
-    public class IdentificationBase
+    public partial class Identification
     {
         [OpcUaVariable("Manufacturer", "http://opcfoundation.org/UA/DI/")]
-        public virtual string? Manufacturer { get; set; } = "My Manufacturer";
+        public partial string? Manufacturer { get; set; }
 
         [OpcUaVariable("SerialNumber", "http://opcfoundation.org/UA/DI/")]
-        public virtual string? SerialNumber { get; set; } = "My Serial Number";
+        public partial string? SerialNumber { get; set; }
+
+        public Identification()
+        {
+            Manufacturer = "My Manufacturer";
+            SerialNumber = "My Serial Number";
+        }
     }
 
     public class Program
@@ -123,7 +147,7 @@ namespace Namotion.Trackable.SampleMachine
                                         SignalTag = "MySignal",
                                         AnalogSignal =
                                         {
-                                            ActualValue = 42.0,
+                                            ActualValue = 42,
                                         }
                                     }
                                 }
@@ -154,6 +178,8 @@ namespace Namotion.Trackable.SampleMachine
             builder.Services.AddOpenApiDocument();
             builder.Services.AddAuthorization();
 
+            builder.Services.AddHostedService<Simulator>();
+
             var app = builder.Build();
 
             app.UseHttpsRedirection();
@@ -174,6 +200,27 @@ namespace Namotion.Trackable.SampleMachine
         {
             public TrackablesController(TProxy proxy) : base(proxy)
             {
+            }
+        }
+
+        public class Simulator : BackgroundService
+        {
+            private readonly Root _root;
+
+            public Simulator(Root root)
+            {
+                _root = root;
+            }
+
+            protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+            {
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    var signal = _root.Machines.Single().Value.Monitoring.Single().Value.AnalogSignal;
+                    signal.ActualValue = ((int)signal.ActualValue!) + 1;
+
+                    await Task.Delay(1000, stoppingToken);
+                }
             }
         }
     }

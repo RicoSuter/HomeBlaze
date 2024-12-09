@@ -1,17 +1,23 @@
 ﻿{
+  "id": null,
   "firstName": "Child",
   "lastName": null,
   "fullName": "Child ",
+  "fullNameWithPrefix": "Mr. Child ",
   "father": null,
   "mother": {
-    "firstName": "Susi",
+    "id": null,
+    "firstName": "Mother",
     "lastName": null,
-    "fullName": "Susi ",
+    "fullName": "Mother ",
+    "fullNameWithPrefix": "Mr. Mother ",
     "father": null,
     "mother": {
-      "firstName": "Susi2",
+      "id": null,
+      "firstName": "Grandmother",
       "lastName": null,
-      "fullName": "Susi2 ",
+      "fullName": "Grandmother ",
+      "fullNameWithPrefix": "Mr. Grandmother ",
       "father": null,
       "mother": null,
       "children": []

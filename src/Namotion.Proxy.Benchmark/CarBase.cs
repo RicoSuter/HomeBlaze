@@ -3,9 +3,9 @@
 namespace Namotion.Proxy.Benchmark
 {
     [GenerateProxy]
-    public abstract class CarBase
+    public partial class Car
     {
-        public CarBase()
+        public Car()
         {
             Tires = new Tire[]
             {
@@ -14,14 +14,16 @@ namespace Namotion.Proxy.Benchmark
                 new Tire(),
                 new Tire()
             };
+
+            Name = "My Car";
         }
 
-        public virtual string Name { get; set; } = "My Car";
+        public partial string Name { get; set; }
 
-        public virtual Tire[] Tires { get; set; }
+        public partial Tire[] Tires { get; set; }
 
-        public virtual Car[]? PreviousCars { get; set; }
+        public partial Car[]? PreviousCars { get; set; }
 
-        public virtual decimal AveragePressure => Tires.Average(t => t.Pressure);
+        public decimal AveragePressure => Tires.Average(t => t.Pressure);
     }
 }

@@ -364,3 +364,7 @@ FodyWeavers.xsd
 
 /HomeBlaze/Config/History/*
 /Namotion.NuGetPlugins.Tests/Sample/netstandard2.0/Namotion.NuGetPlugins.Sample.dll
+
+# Verify
+*.received.*
+*.received/

@@ -5,3 +5,4 @@
 /.vs
 /src/HomeBlaze/Config/Root.json
 /src/Namotion.NuGetPlugins.Tests/Sample/netstandard2.0/Namotion.NuGetPlugins.Sample.deps.json
+/src/.idea/.idea.HomeBlaze/.idea

@@ -2,6 +2,7 @@
 using Namotion.Proxy.Registry;
 using Namotion.Proxy.Registry.Abstractions;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Namotion.Proxy.Tests.Registry;
 
@@ -27,10 +28,10 @@ public class ProxyRegistryTests
             FirstName = "Child",
             Mother = new Person
             {
-                FirstName = "Susi",
+                FirstName = "Mother",
                 Mother = new Person
                 {
-                    FirstName = "Susi2"
+                    FirstName = "Grandmother"
                 }
             }
         };
@@ -65,10 +66,10 @@ public class ProxyRegistryTests
 
         person.Mother = new Person
         {
-            FirstName = "Susi",
+            FirstName = "Mother",
             Mother = new Person
             {
-                FirstName = "Susi2"
+                FirstName = "Grandmother"
             }
         };
 
@@ -100,10 +101,10 @@ public class ProxyRegistryTests
             FirstName = "Child",
             Mother = new Person
             {
-                FirstName = "Susi",
+                FirstName = "Mother",
                 Mother = new Person
                 {
-                    FirstName = "Susi2"
+                    FirstName = "Grandmother"
                 }
             }
         };
@@ -207,15 +208,15 @@ public class ProxyRegistryTests
             FirstName = "Child",
             Mother = new Person
             {
-                FirstName = "Susi",
+                FirstName = "Mother",
                 Mother = new Person
                 {
-                    FirstName = "Susi2"
+                    FirstName = "Grandmother"
                 }
             }
         };
 
         // Assert
-        await Verify(person.ToJsonObject().ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        await Verify(person.ToJsonObject().ToJsonString(new JsonSerializerOptions(JsonSerializerOptions.Default) { WriteIndented = true }));
     }
 }

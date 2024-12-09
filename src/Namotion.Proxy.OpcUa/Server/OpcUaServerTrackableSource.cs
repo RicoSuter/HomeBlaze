@@ -81,7 +81,8 @@ internal class OpcUaServerTrackableSource<TProxy> : BackgroundService, IProxySou
 
     internal void UpdateProperty(ProxyPropertyReference property, string sourcePath, object? value)
     {
-        _propertyUpdateAction?.Invoke(new ProxyPropertyPathReference(property, sourcePath, value));
+        var convertedValue = Convert.ChangeType(value, property.Metadata.Type); // TODO: improve conversion here
+        _propertyUpdateAction?.Invoke(new ProxyPropertyPathReference(property, sourcePath, convertedValue));
     }
 
     public Task<IDisposable?> InitializeAsync(IEnumerable<ProxyPropertyPathReference> properties, Action<ProxyPropertyPathReference> propertyUpdateAction, CancellationToken cancellationToken)

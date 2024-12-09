@@ -11,10 +11,10 @@ namespace Namotion.Shelly
 {
     public class ShellyWebSocketClient : ReconnectingWebSocket
     {
-        private readonly ShellyDeviceBase _device;
+        private readonly ShellyDevice _device;
         private readonly ILogger _logger;
 
-        public ShellyWebSocketClient(ShellyDeviceBase device, ILogger logger)
+        public ShellyWebSocketClient(ShellyDevice device, ILogger logger)
             : base(logger)
         {
             _device = device;

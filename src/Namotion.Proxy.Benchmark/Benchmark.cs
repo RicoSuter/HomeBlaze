@@ -8,7 +8,7 @@ public class Benchmark
 {
 #pragma warning disable CS8618
 
-    private CarBase _object;
+    private Car _object;
     private ProxyContext? _context;
 
 #pragma warning restore CS8618
