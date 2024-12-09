@@ -44,26 +44,32 @@ namespace ConsoleApp1
                 child3
             ];
 
-            person.Children = Array.Empty<Person>();
+            person.Children = [];
 
-            Console.WriteLine(person.FirstName);
+            Console.WriteLine($"Person's first name is: {person.FirstName}");
         }
     }
 
     [GenerateProxy]
-    public abstract class PersonBase
+    public partial class Person
     {
-        public virtual required string FirstName { get; set; }
+        public partial string FirstName { get; set; }
 
-        public virtual string? LastName { get; set; }
+        public partial string? LastName { get; set; }
 
-        public virtual string FullName => $"{FirstName} {LastName}";
+        [Derived]
+        public string FullName => $"{FirstName} {LastName}";
 
-        public virtual Person? Father { get; set; }
+        public partial Person? Father { get; set; }
 
-        public virtual Person? Mother { get; set; }
+        public partial Person? Mother { get; set; }
 
-        public virtual Person[] Children { get; set; } = [];
+        public partial Person[] Children { get; set; }
+
+        public Person()
+        {
+            Children = [];
+        }
 
         public override string ToString()
         {
@@ -75,12 +81,12 @@ namespace ConsoleApp1
     {
         public void OnProxyAttached(ProxyLifecycleContext context)
         {
-            Console.WriteLine($"Attach Proxy: {context.Proxy}");
+            Console.WriteLine($"Attach proxy: {context.Proxy}");
         }
 
         public void OnProxyDetached(ProxyLifecycleContext context)
         {
-            Console.WriteLine($"Detach Proxy: {context.Proxy}");
+            Console.WriteLine($"Detach proxy: {context.Proxy}");
         }
     }
 }

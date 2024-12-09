@@ -19,9 +19,11 @@ public class DerivedPropertyChangeDetectionHandlerTests
             .Subscribe(changes.Add);
 
         // Act
-        var person = new Person(context);
-        person.FirstName = "Rico";
-        person.LastName = "Suter";
+        var person = new Person(context)
+        {
+            FirstName = "Rico",
+            LastName = "Suter"
+        };
 
         // Assert
         Assert.Contains(changes, c =>
