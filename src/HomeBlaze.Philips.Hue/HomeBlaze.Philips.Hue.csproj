@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
     <PackageReference Include="HueApi" Version="1.7.0" />
-    <PackageReference Include="HueApi.ColorConverters" Version="1.7.0" />
+    <PackageReference Include="HueApi.ColorConverters" Version="1.7.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />

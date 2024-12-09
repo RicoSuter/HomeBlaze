@@ -7,7 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DynamicExpresso.Core" Version="2.16.1" />
+		<PackageReference Include="DynamicExpresso.Core" Version="2.17.2" />
 		<PackageReference Include="MudBlazor" Version="7.15.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />

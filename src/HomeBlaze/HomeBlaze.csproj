@@ -7,6 +7,7 @@
 		<UserSecretsId>ffa65cd9-fd7a-4494-8709-3eabea0eb9f5</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<NoWarn>$(NoWarn);NU1902;NU1903</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -14,12 +15,12 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
 		<PackageReference Include="Namotion.Storage.Azure.Storage.Blob" Version="0.11.0" />
-		<PackageReference Include="Serilog" Version="4.0.1" />
+		<PackageReference Include="Serilog" Version="4.2.0" />
 		<PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0" />
-		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
 		<PackageReference Include="Seq.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="MudBlazor" Version="7.15.0" />
-		<PackageReference Include="Z.Blazor.Diagrams" Version="3.0.2" />
+		<PackageReference Include="Z.Blazor.Diagrams" Version="3.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
