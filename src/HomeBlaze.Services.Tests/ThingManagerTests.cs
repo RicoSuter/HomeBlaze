@@ -150,9 +150,7 @@ namespace HomeBlaze.Services.Tests
                 Assert.Single(_events
                     .OfType<ThingUnregisteredEvent>());
 
-                Assert.Single(_events
-                    .OfType<ThingUnregisteredEvent>()
-                    .Where(e => e.Source == mockThing1));
+                Assert.Single(_events.OfType<ThingUnregisteredEvent>(), e => e.Source == mockThing1);
             });
         }
 
@@ -185,9 +183,7 @@ namespace HomeBlaze.Services.Tests
             // Assert
             Test.Wait(() =>
             {
-                Assert.Single(_events
-                    .OfType<ThingStateChangedEvent>()
-                    .Where(e => e.Source == mockThing && Equals(e.NewValue, expectedValue)));
+                Assert.Single(_events.OfType<ThingStateChangedEvent>(), e => e.Source == mockThing && Equals(e.NewValue, expectedValue));
             });
 
             var valueAfterDetectChanges = _thingManager
