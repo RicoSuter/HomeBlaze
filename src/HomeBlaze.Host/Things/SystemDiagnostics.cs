@@ -42,6 +42,9 @@ namespace HomeBlaze.Things
         [State("OperatingSystem")]
         public string OperatingSystem => RuntimeInformation.OSDescription;
 
+        [State("FrameworkDescription")]
+        public string FrameworkDescription => RuntimeInformation.FrameworkDescription;
+
         [State]
         public int ProcessorCount { get; private set; }
 
