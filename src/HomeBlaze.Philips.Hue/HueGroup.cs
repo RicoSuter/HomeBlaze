@@ -16,6 +16,8 @@ namespace HomeBlaze.Philips.Hue
         IIconProvider,
         ILastUpdatedProvider,
         ILightbulb,
+        IColorLightbulb,
+        IColorTemperatureLightbulb,
         IDimmerLightbulb,
         IVirtualThing
     {
@@ -38,17 +40,42 @@ namespace HomeBlaze.Philips.Hue
         public DateTimeOffset? LastUpdated { get; internal set; }
 
         [State]
-        public HueLightbulb[] Lights { get; private set; } = new HueLightbulb[0];
+        public HueLightbulb[] Lights { get; private set; } = [];
 
         [State]
         public bool? IsOn => GroupedLight?.On.IsOn;
 
         [State]
-        public decimal? Brightness => (decimal?)GroupedLight?.Dimming?.Brightness / 100m;
+        public decimal? Lumen => Lights.Sum(d => d.Lumen);
+        
+        [State]
+        public string? Color => 
+            Lights
+                .GroupBy(l => l.Color)
+                .OrderBy(g => g.Count())
+                .FirstOrDefault(g => g.Count() == Lights.Count())?
+                .FirstOrDefault()?
+                .Color;
+        
+        [State]
+        public decimal? ColorTemperature => 
+            Lights
+                .GroupBy(l => l.Color)
+                .OrderBy(g => g.Count())
+                .FirstOrDefault(g => g.Count() == Lights.Count())?
+                .FirstOrDefault()?
+                .ColorTemperature;
 
         [State]
-        public decimal? Lumen => Lights.Sum(d => d.Lumen);
-
+        public decimal? Brightness => 
+            (decimal?)GroupedLight?.Dimming?.Brightness / 100m ??
+            Lights
+                .GroupBy(l => l.Color)
+                .OrderBy(g => g.Count())
+                .FirstOrDefault(g => g.Count() == Lights.Count())?
+                .FirstOrDefault()?
+                .Brightness;
+        
         public HueGroup(HueResource group, GroupedLight? groupedLight, HueLightbulb[] lights, HueBridge bridge)
         {
             Bridge = bridge;
@@ -65,7 +92,7 @@ namespace HomeBlaze.Philips.Hue
             GroupedLight = groupedLight;
 
             Lights = lights;
-            LastUpdated = group != null ? DateTimeOffset.Now : null;
+            LastUpdated = DateTimeOffset.Now;
 
             return this;
         }
@@ -129,6 +156,22 @@ namespace HomeBlaze.Philips.Hue
                     await Task.Delay(3000);
                     await TurnOffAsync(cancellationToken);
                 }
+            }
+        }
+        
+        public async Task ChangeColorAsync(string color, CancellationToken cancellationToken = default)
+        {
+            foreach (var light in Lights)
+            {
+                await light.ChangeColorAsync(color, cancellationToken);
+            }
+        }
+        
+        public async Task ChangeTemperatureAsync(decimal colorTemperature, CancellationToken cancellationToken = default)
+        {
+            foreach (var light in Lights)
+            {
+                await light.ChangeTemperatureAsync(colorTemperature, cancellationToken);
             }
         }
     }

@@ -69,7 +69,7 @@
     private decimal? _paneWidth;
     private bool _scrollToLastPane;
 
-    private List<IThing> _openedThings = new List<IThing>();
+    private List<IThing> _openedThings = new();
     private string? _selectedProperty;
 
     private IDisposable? _eventSubscription;
@@ -176,6 +176,10 @@
                 PropertyName = null;
 
                 ShowThing(thing, propertyName);
+            }
+            else
+            {
+                Logger.LogWarning("Thing ID from URL not found: {ThingId}.", ThingId);
             }
         }
 

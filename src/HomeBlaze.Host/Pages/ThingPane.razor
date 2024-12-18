@@ -28,7 +28,8 @@
 {
     var canExtend = Thing is not GroupBase && Thing is not IExtensionThing;
 
-    <MudPaper Width="@((PaneWidth - 15m) + "px")" Style="@("min-width: " + (PaneWidth - 15m) + "px; float: left; margin-right: 15px; height: calc(100% - 15px);")">
+    <MudPaper Width="@((PaneWidth - 15m) + "px")" 
+              Style="@("min-width: " + (PaneWidth - 15m) + "px; float: left; margin-right: 15px; height: calc(100% - 15px);")">
         @{
             var metadata = ThingManager.TryGetMetadata(Thing);
 
