@@ -52,8 +52,6 @@ namespace HomeBlaze.Dynamic
         [Operation]
         public void Execute()
         {
-            // TODO: Guard this
-            
             IsTriggered = true;
             LastExecution = DateTimeOffset.Now;
 
