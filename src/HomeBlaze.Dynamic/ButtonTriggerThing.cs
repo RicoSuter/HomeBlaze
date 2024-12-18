@@ -49,6 +49,30 @@ namespace HomeBlaze.Dynamic
             _logger = logger;
         }
 
+        [Operation]
+        public void Execute()
+        {
+            // TODO: Guard this
+            
+            IsTriggered = true;
+            LastExecution = DateTimeOffset.Now;
+
+            _thingManager.DetectChanges(this);
+
+            // TODO: Should this block message execution?
+            Task.Run(async () =>
+            {
+                _logger.LogInformation("Executing trigger operations.");
+
+                foreach (var operation in Operations)
+                {
+                    await operation.ExecuteAsync(_thingManager, _logger, CancellationToken.None);
+                }
+
+                _logger.LogInformation("Trigger operations executed.");
+            });
+        }
+
         public static bool CanExtend(IThing thing)
         {
             return thing
@@ -68,27 +92,6 @@ namespace HomeBlaze.Dynamic
             }
 
             await base.HandleMessageAsync(@event, cancellationToken);
-        }
-
-        private void Execute()
-        {
-            IsTriggered = true;
-            LastExecution = DateTimeOffset.Now;
-
-            _thingManager.DetectChanges(this);
-
-            // TODO: Should this block message execution?
-            Task.Run(async () =>
-            {
-                _logger.LogInformation("Executing trigger operations.");
-
-                foreach (var operation in Operations)
-                {
-                    await operation.ExecuteAsync(_thingManager, _logger, CancellationToken.None);
-                }
-
-                _logger.LogInformation("Trigger operations executed.");
-            });
         }
     }
 }
