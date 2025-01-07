@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using Namotion.Proxy;
 using Namotion.Proxy.AspNetCore.Controllers;
 using Namotion.Proxy.Attributes;
 using Namotion.Proxy.Registry.Abstractions;
 using Namotion.Proxy.Sources.Attributes;
 using NSwag.Annotations;
 
-namespace Namotion.Trackable.SampleWeb
+namespace Namotion.Proxy.SampleWeb
 {
     [GenerateProxy]
     public partial class Car
@@ -92,7 +91,7 @@ namespace Namotion.Trackable.SampleWeb
             builder.Services.AddSingleton(car);
 
             // trackable api controllers
-            builder.Services.AddProxyControllers<Car, TrackablesController<Car>>();
+            builder.Services.AddProxyControllers<Car, ProxiesController<Car>>();
 
             // trackable UPC UA
             builder.Services.AddOpcUaServerProxySource<Car>("opc", rootName: "Root");
@@ -128,9 +127,9 @@ namespace Namotion.Trackable.SampleWeb
 
         [OpenApiTag("Car")]
         [Route("/api/car")]
-        public class TrackablesController<TProxy> : ProxyControllerBase<TProxy> where TProxy : IProxy
+        public class ProxiesController<TProxy> : ProxyControllerBase<TProxy> where TProxy : IProxy
         {
-            public TrackablesController(TProxy proxy) : base(proxy)
+            public ProxiesController(TProxy proxy) : base(proxy)
             {
             }
         }

@@ -70,7 +70,9 @@ internal class DerivedPropertyChangeDetectionHandler : IProxyLifecycleHandler, I
 
                     usedByProperty.SetLastKnownValue(newValue);
 
-                    var changedContext = new ProxyPropertyWriteContext(usedByProperty, oldValue, newValue, usedByProperty.Metadata.IsDerived, context.Context);
+                    var changedContext = new ProxyPropertyWriteContext(usedByProperty, oldValue, newValue, 
+                        usedByProperty.Metadata.IsDerived, context.Context);
+                    
                     changedContext.CallWriteProperty(newValue, delegate { }, _handlers.Value);
                 }
             }

@@ -19,7 +19,7 @@ public class AttributeBasedSourcePathProvider : ISourcePathProvider
     public string? TryGetSourcePropertyName(ProxyPropertyReference property)
     {
         var propertyName = property.TryGetAttributeBasedSourcePropertyName(_sourceName);
-        return propertyName is not null ? propertyName : null;
+        return propertyName;
     }
 
     public string? TryGetSourcePath(ProxyPropertyReference property)

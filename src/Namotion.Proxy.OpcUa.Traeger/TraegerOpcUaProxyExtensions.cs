@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-
-using Namotion.Trackable.Sources;
 using Namotion.Proxy.Sources;
 using Namotion.Proxy;
 using Namotion.Proxy.OpcUa.Traeger.Server;

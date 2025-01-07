@@ -1,22 +1,20 @@
-﻿using Microsoft.Extensions.Hosting;
-using MQTTnet.Server;
-using MQTTnet;
-using System;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System.Reactive.Linq;
-using System.Linq;
-using System.Text.Json;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using Namotion.Proxy.Sources.Abstractions;
-using Namotion.Proxy;
-using Namotion.Proxy.Registry.Abstractions;
+using MQTTnet;
+using MQTTnet.Server;
 using Namotion.Proxy.Registry;
+using Namotion.Proxy.Registry.Abstractions;
+using Namotion.Proxy.Sources.Abstractions;
 
-namespace Namotion.Trackable.Mqtt
+namespace Namotion.Proxy.Mqtt
 {
     public class MqttServerTrackableSource<TProxy> : BackgroundService, IProxySource
         where TProxy : IProxy
@@ -79,6 +77,8 @@ namespace Namotion.Trackable.Mqtt
                 catch (Exception ex)
                 {
                     IsListening = false;
+
+                    if (ex is TaskCanceledException) return;
 
                     _logger.LogError(ex, "Error in MQTT server.");
                     await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);

@@ -8,7 +8,7 @@ using Namotion.Proxy.GraphQL;
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class TrackableGraphQLExtensions
+public static class ProxyGraphQLExtensions
 {
     public static void AddTrackedGraphQL<TProxy>(this IRequestExecutorBuilder builder)
         where TProxy : IProxy

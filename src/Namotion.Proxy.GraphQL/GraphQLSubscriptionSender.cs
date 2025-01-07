@@ -1,7 +1,5 @@
 ﻿using HotChocolate.Subscriptions;
 using Microsoft.Extensions.Hosting;
-using Namotion.Proxy.Abstractions;
-using System.Reactive.Linq;
 
 namespace Namotion.Proxy.GraphQL
 {
@@ -23,12 +21,14 @@ namespace Namotion.Proxy.GraphQL
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await _context
+            await foreach (var changes in _context
                 .GetPropertyChangedObservable()
-                .ForEachAsync(async (change) =>
-                {
-                    await _sender.SendAsync(nameof(Subscription<TProxy>.Root), _proxy, stoppingToken);
-                }, stoppingToken);
+                .ToAsyncEnumerable()
+                .WithCancellation(stoppingToken))
+            {
+                // TODO: Send only changed diff
+                await _sender.SendAsync(nameof(Subscription<TProxy>.Root), _proxy, stoppingToken);
+            }
         }
     }
 }

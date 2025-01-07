@@ -1,12 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
 using Microsoft.Extensions.Hosting;
-
-using Namotion.Trackable.Sources;
-using Namotion.Trackable.Mqtt;
-using Namotion.Proxy.Sources;
+using Microsoft.Extensions.Logging;
 using Namotion.Proxy;
-
-using System;
+using Namotion.Proxy.Mqtt;
+using Namotion.Proxy.Sources;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;

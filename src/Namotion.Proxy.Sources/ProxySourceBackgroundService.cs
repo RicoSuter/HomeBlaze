@@ -1,15 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Reactive.Linq;
 using Microsoft.Extensions.Hosting;
-
-using Namotion.Proxy.Sources;
-using Namotion.Proxy;
+using Microsoft.Extensions.Logging;
 using Namotion.Proxy.ChangeTracking;
-using Namotion.Proxy.Sources.Abstractions;
 using Namotion.Proxy.Registry.Abstractions;
+using Namotion.Proxy.Sources.Abstractions;
 
-using System.Reactive.Linq;
-
-namespace Namotion.Trackable.Sources;
+namespace Namotion.Proxy.Sources;
 
 public class ProxySourceBackgroundService<TProxy> : BackgroundService
     where TProxy : IProxy
@@ -61,7 +57,7 @@ public class ProxySourceBackgroundService<TProxy> : BackgroundService
 
                 lock (this)
                 {
-                    _initializedProperties = new HashSet<string>();
+                    _initializedProperties = [];
                 }
 
                 // subscribe first and mark all properties as initialized which are updated before the read has completed 
@@ -80,30 +76,33 @@ public class ProxySourceBackgroundService<TProxy> : BackgroundService
 
                     _initializedProperties = null;
                 }
+                
+                await foreach (var changes in _context
+                   .GetPropertyChangedObservable()
+                   .Where(change => !change.IsChangingFromSource(_source) && _source.TryGetSourcePath(change.Property) != null)
+                   .BufferChanges(_bufferTime)
+                   .Where(changes => changes.Any())
+                   .ToAsyncEnumerable()
+                   .WithCancellation(stoppingToken))
+                {
+                    var values = changes
+                        .Select(c => new ProxyPropertyPathReference(
+                            c.Property, _source.TryGetSourcePath(c.Property)!, c.NewValue));
 
-                await _context
-                    .GetPropertyChangedObservable()
-                    .Where(change => !change.IsChangingFromSource(_source) && _source.TryGetSourcePath(change.Property) != null)
-                    .BufferChanges(_bufferTime)
-                    .Where(changes => changes.Any())
-                    .ForEachAsync(async changes =>
-                    {
-                        var values = changes
-                            .Select(c => new ProxyPropertyPathReference(
-                                c.Property, _source.TryGetSourcePath(c.Property)!, c.NewValue));
-
-                        await _source.WriteAsync(values, stoppingToken);
-                    }, stoppingToken);
+                    await _source.WriteAsync(values, stoppingToken);
+                }
             }
             catch (Exception ex)
             {
+                if (ex is TaskCanceledException) return;
+                
                 _logger.LogError(ex, "Failed to listen for changes.");
                 await Task.Delay(_retryTime, stoppingToken);
             }
         }
     }
 
-    protected void UpdatePropertyValueFromSource(ProxyPropertyPathReference property)
+    private void UpdatePropertyValueFromSource(ProxyPropertyPathReference property)
     {
         try
         {
@@ -123,10 +122,7 @@ public class ProxySourceBackgroundService<TProxy> : BackgroundService
         {
             lock (this)
             {
-                if (_initializedProperties != null)
-                {
-                    _initializedProperties.Add(sourcePath);
-                }
+                _initializedProperties?.Add(sourcePath);
             }
         }
     }
