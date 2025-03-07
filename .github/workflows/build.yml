@@ -31,9 +31,12 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
-      - name: Run tests
-        run: dotnet test src/HomeBlaze.sln --configuration Release
-
+      - name: Build
+        run: dotnet build ./src/HomeBlaze.sln --configuration Release --no-restore
+      - name: Test
+        run: dotnet test ./src/HomeBlaze.sln --no-restore --verbosity normal
+#      - name: Run tests
+#        run: dotnet test src/HomeBlaze.sln --configuration Release
 
   build-and-push-image:
     runs-on: ubuntu-latest
@@ -97,7 +100,7 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - run: dotnet pack src/HomeBlaze.sln --configuration Release --output ${{ env.NuGetDirectory }} -p:PackageVersion=${{ github.event.release.tag_name }}
+      - run: dotnet pack src/HomeBlaze.sln --configuration Release --output ${{ env.NuGetDirectory }} -p:PackageVersion=1.0.0 #${{ github.event.release.tag_name }}
 
       - uses: actions/upload-artifact@v4
         with:
