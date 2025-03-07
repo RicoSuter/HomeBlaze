@@ -98,7 +98,8 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - run: dotnet pack src/HomeBlaze.sln --configuration Release --output ${{ env.NuGetDirectory }} -p:PackageVersion=1.0.0 #${{ github.event.release.tag_name }}
+      - run: dotnet build src/HomeBlaze.sln --configuration Release
+      - run: dotnet pack src/HomeBlaze.sln --configuration Release --no-build --output ${{ env.NuGetDirectory }} -p:PackageVersion=1.0.0 #${{ github.event.release.tag_name }}
 
       - uses: actions/upload-artifact@v4
         with:
