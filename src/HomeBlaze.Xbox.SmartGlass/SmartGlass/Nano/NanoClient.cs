@@ -267,9 +267,7 @@ namespace SmartGlass.Nano
         }
 
         /// <summary>
-        /// 
         /// </summary>
-        /// <typeparam name="TChannel"></typeparam>
         /// <returns></returns>
         private async Task<ChannelOpen> WaitForChannelOpenAsync(NanoChannel channel)
         {

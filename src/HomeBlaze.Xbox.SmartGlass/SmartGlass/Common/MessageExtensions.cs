@@ -92,7 +92,6 @@ namespace SmartGlass.Common
         /// <param name="transport">Transport.</param>
         /// <param name="readDuration">Read duration.</param>
         /// <param name="startAction">(Optional) Action to trigger before awaiting message.</param>
-        /// <param name="filter">(Optional) Filter.</param>
         /// <typeparam name="T">Expected message type.</typeparam>
         public static IEnumerable<T> ReadMessages<T>(
             this IMessageTransport<T> transport, TimeSpan readDuration, Func<Task> startAction = null)
