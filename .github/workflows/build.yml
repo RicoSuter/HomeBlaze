@@ -35,6 +35,8 @@ jobs:
         run: dotnet test src/HomeBlaze.sln --configuration Release
 
   build-and-push-image:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [ test ]
