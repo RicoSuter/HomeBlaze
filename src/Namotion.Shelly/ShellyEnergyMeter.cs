@@ -7,11 +7,11 @@ using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions;
 
-using Namotion.Proxy;
+using Namotion.Interceptor.Attributes;
 
 namespace Namotion.Shelly
 {
-    [GenerateProxy]
+    [InterceptorSubject]
     public partial class ShellyEnergyMeter :
         IThing,
         IIconProvider,
@@ -44,8 +44,8 @@ namespace Namotion.Shelly
         [State]
         public partial ShellyEnergyMeterPhase PhaseC { get; protected set; }
 
-        [State(Unit = StateUnit.WattHour, IsCumulative = true)]
         [Derived]
+        [State(Unit = StateUnit.WattHour, IsCumulative = true)]
         public decimal? TotalConsumedEnergy => EnergyData?.TotalActiveEnergy;
 
         /// <summary>

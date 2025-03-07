@@ -2,11 +2,11 @@
 
 using HomeBlaze.Abstractions.Attributes;
 
-using Namotion.Proxy;
+using Namotion.Interceptor.Attributes;
 
 namespace Namotion.Shelly
 {
-    [GenerateProxy]
+    [InterceptorSubject]
     public partial class ShellyEnergyData
     {
         /// <summary>

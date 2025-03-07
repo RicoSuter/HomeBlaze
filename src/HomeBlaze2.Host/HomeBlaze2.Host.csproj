@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="HotChocolate.AspNetCore" Version="14.1.0" />
+        <PackageReference Include="NSwag.AspNetCore" Version="14.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Namotion.Proxy.AspNetCore\Namotion.Proxy.AspNetCore.csproj" />
+        <ProjectReference Include="..\Namotion.Proxy.Generator\Namotion.Proxy.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\Namotion.Proxy.GraphQL\Namotion.Proxy.GraphQL.csproj" />
+        <ProjectReference Include="..\Namotion.Proxy.Mqtt\Namotion.Proxy.Mqtt.csproj" />
+        <ProjectReference Include="..\Namotion.Proxy.OpcUa\Namotion.Proxy.OpcUa.csproj" />
+        <ProjectReference Include="..\Namotion.Proxy.Sources\Namotion.Proxy.Sources.csproj" />
+        <ProjectReference Include="..\Namotion.Shelly\Namotion.Shelly.csproj" />
+    </ItemGroup>
+    
+</Project>

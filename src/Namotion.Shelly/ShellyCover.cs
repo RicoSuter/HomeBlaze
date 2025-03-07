@@ -9,11 +9,11 @@ using HomeBlaze.Abstractions.Sensors;
 using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Presentation;
 
-using Namotion.Proxy;
+using Namotion.Interceptor.Attributes;
 
 namespace Namotion.Shelly
 {
-    [GenerateProxy]
+    [InterceptorSubject]
     public partial class ShellyCover :
         IThing,
         IIconProvider,

@@ -1,0 +1,39 @@
+﻿@using Microsoft.Extensions.Logging
+@using Namotion.Shelly
+
+@inject Things Things
+@inject IHttpClientFactory HttpClientFactory
+@inject ILogger<ShellyDevice> Logger
+
+<h1>Things</h1>
+
+@foreach ((var name, var thing) in Things.AllThings)
+{
+    <h1>@name</h1>
+    if (thing is ShellyDevice shellyDevice)
+    {
+        <div>
+            @shellyDevice?.EnergyMeter?.PowerConsumption
+        </div>
+    }
+    else
+    {
+        <div>Unknown device: /@name.</div>
+    }
+}
+
+<button class="btn btn-primary" @onmouseup="IncrementCount" @onclick="IncrementCount">Click me</button>
+
+@code {
+
+    private void IncrementCount()
+    {
+        Things.AddThing("shelly", new ShellyDevice(HttpClientFactory, Logger)
+        {
+            IpAddress = "192.168.1.133"
+        });
+        
+        InvokeAsync(StateHasChanged);
+    }
+
+}

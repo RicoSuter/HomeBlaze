@@ -5,11 +5,11 @@ using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Abstractions;
 
-using Namotion.Proxy;
+using Namotion.Interceptor.Attributes;
 
 namespace Namotion.Shelly
 {
-    [GenerateProxy]
+    [InterceptorSubject]
     public partial class ShellyEnergyMeterPhase :
         IThing,
         IIconProvider,

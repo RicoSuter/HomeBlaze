@@ -4,12 +4,15 @@ using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Messages;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Namotion.Proxy;
 using Namotion.Reflection;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading.Tasks.Dataflow;
+using Namotion.Interceptor;
+using Namotion.Interceptor.Registry;
+using Namotion.Interceptor.Tracking;
+using Namotion.Interceptor.Validation;
 
 namespace HomeBlaze.Services
 {
@@ -29,7 +32,7 @@ namespace HomeBlaze.Services
         private readonly IEventManager _eventManager;
         private readonly ILogger<ThingManager> _logger;
 
-        private readonly ProxyContext _context;
+        private readonly IInterceptorSubjectContext _context;
         private IDisposable _subscription;
 
         public ThingManager(IThingStorage thingLoader, ITypeManager typeManager, IEventManager eventManager, ILogger<ThingManager> thingManager)
@@ -39,19 +42,18 @@ namespace HomeBlaze.Services
             _eventManager = eventManager;
             _logger = thingManager;
 
-            _context = ProxyContext
-               .CreateBuilder()
+            _context = InterceptorSubjectContext
+               .Create()
                .WithRegistry()
                .WithFullPropertyTracking()
-               .WithProxyLifecycle()
-               .WithDataAnnotationValidation()
-               .Build();
+               .WithLifecycle()
+               .WithDataAnnotationValidation();
 
             _subscription = _context
                 .GetPropertyChangedObservable()
                 .Subscribe((args) =>
                 {
-                    if (args.Property.Proxy is IThing thing)
+                    if (args.Property.Subject is IThing thing)
                     {
                         DetectChanges(thing);
                     }
@@ -370,9 +372,9 @@ namespace HomeBlaze.Services
                     return;
                 }
 
-                if (thing is IProxy proxy)
+                if (thing is IInterceptorSubject subject)
                 {
-                    proxy.SetContext(_context);
+                    subject.Context.AddFallbackContext(_context);
                 }
 
                 _thingIds[thing.Id] = thing;
@@ -438,9 +440,9 @@ namespace HomeBlaze.Services
                     .Where(c => c != null)
                     .ToArray()!;
 
-                if (thing is IProxy proxy)
+                if (thing is IInterceptorSubject subject)
                 {
-                    proxy.SetContext(null);
+                    subject.Context.RemoveFallbackContext(_context);
                 }
 
                 _things.Remove(thing);

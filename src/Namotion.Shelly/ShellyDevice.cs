@@ -13,13 +13,13 @@ using HomeBlaze.Abstractions.Presentation;
 using HomeBlaze.Services.Abstractions;
 
 using Namotion.Devices.Abstractions.Utilities;
-using Namotion.Proxy;
+using Namotion.Interceptor.Attributes;
 
 namespace Namotion.Shelly
 {
     [ThingType("HomeBlaze.Shelly.ShellyDevice")]
     [DisplayName("Shelly Device")]
-    [GenerateProxy]
+    [InterceptorSubject]
     public partial class ShellyDevice :
         PollingThing,
         IConnectedThing,

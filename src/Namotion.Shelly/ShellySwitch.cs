@@ -3,17 +3,18 @@ using System.Reactive.Subjects;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+
 using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Devices;
 using HomeBlaze.Abstractions.Inputs;
 using HomeBlaze.Abstractions.Presentation;
 
-using Namotion.Proxy;
+using Namotion.Interceptor.Attributes;
 
 namespace Namotion.Shelly
 {
-    [GenerateProxy]
+    [InterceptorSubject]
     public partial class ShellySwitch :
         IThing,
         IIconProvider,
