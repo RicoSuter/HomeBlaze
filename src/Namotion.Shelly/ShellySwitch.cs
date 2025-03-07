@@ -12,62 +12,61 @@ using HomeBlaze.Abstractions.Presentation;
 
 using Namotion.Interceptor.Attributes;
 
-namespace Namotion.Shelly
+namespace Namotion.Shelly;
+
+[InterceptorSubject]
+public partial class ShellySwitch :
+    IThing,
+    IIconProvider,
+    ISwitchDevice,
+    ILastUpdatedProvider,
+    IObservable<SwitchEvent>,
+    IDisposable
 {
-    [InterceptorSubject]
-    public partial class ShellySwitch :
-        IThing,
-        IIconProvider,
-        ISwitchDevice,
-        ILastUpdatedProvider,
-        IObservable<SwitchEvent>,
-        IDisposable
+    private readonly Subject<SwitchEvent> _switchEventSubject = new();
+
+    string IThing.Id => Parent!.Id + "/switch" + Index;
+
+    string? IThing.Title => "Switch " + Index;
+
+    string IIconProvider.IconName => "fas fa-bars";
+
+    [ParentThing]
+    internal ShellyDevice? Parent { get; set; }
+
+    public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
+
+    [JsonPropertyName("id"), State]
+    public partial int? Index { get; set; }
+
+    [JsonPropertyName("output"), State]
+    public partial bool? IsOn { get; set; }
+
+    [JsonPropertyName("source"), State]
+    public partial string? Source { get; set; }
+
+    public async Task TurnOnAsync(CancellationToken cancellationToken = default)
     {
-        private readonly Subject<SwitchEvent> _switchEventSubject = new();
+        await Parent!.CallHttpGetAsync("relay/" + Index + "?turn=on", cancellationToken);
+    }
 
-        string IThing.Id => Parent!.Id + "/switch" + Index;
+    public async Task TurnOffAsync(CancellationToken cancellationToken = default)
+    {
+        await Parent!.CallHttpGetAsync("relay/" + Index + "?turn=off", cancellationToken);
+    }
 
-        string? IThing.Title => "Switch " + Index;
+    internal void IsOnChanged(SwitchEvent switchEvent)
+    {
+        _switchEventSubject.OnNext(switchEvent);
+    }
 
-        string IIconProvider.IconName => "fas fa-bars";
+    public IDisposable Subscribe(IObserver<SwitchEvent> observer)
+    {
+        return _switchEventSubject.Subscribe(observer);
+    }
 
-        [ParentThing]
-        internal ShellyDevice? Parent { get; set; }
-
-        public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
-
-        [JsonPropertyName("id"), State]
-        public partial int? Index { get; set; }
-
-        [JsonPropertyName("output"), State]
-        public partial bool? IsOn { get; set; }
-
-        [JsonPropertyName("source"), State]
-        public partial string? Source { get; set; }
-
-        public async Task TurnOnAsync(CancellationToken cancellationToken = default)
-        {
-            await Parent!.CallHttpGetAsync("relay/" + Index + "?turn=on", cancellationToken);
-        }
-
-        public async Task TurnOffAsync(CancellationToken cancellationToken = default)
-        {
-            await Parent!.CallHttpGetAsync("relay/" + Index + "?turn=off", cancellationToken);
-        }
-
-        internal void IsOnChanged(SwitchEvent switchEvent)
-        {
-            _switchEventSubject.OnNext(switchEvent);
-        }
-
-        public IDisposable Subscribe(IObserver<SwitchEvent> observer)
-        {
-            return _switchEventSubject.Subscribe(observer);
-        }
-
-        public void Dispose()
-        {
-            _switchEventSubject.Dispose();
-        }
+    public void Dispose()
+    {
+        _switchEventSubject.Dispose();
     }
 }

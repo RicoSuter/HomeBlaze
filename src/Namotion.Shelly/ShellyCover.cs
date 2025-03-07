@@ -11,101 +11,99 @@ using HomeBlaze.Abstractions.Presentation;
 
 using Namotion.Interceptor.Attributes;
 
-namespace Namotion.Shelly
+namespace Namotion.Shelly;
+
+[InterceptorSubject]
+public partial class ShellyCover :
+    IThing,
+    IIconProvider,
+    IPowerConsumptionSensor,
+    IRollerShutter,
+    ILastUpdatedProvider
 {
-    [InterceptorSubject]
-    public partial class ShellyCover :
-        IThing,
-        IIconProvider,
-        IPowerConsumptionSensor,
-        IRollerShutter,
-        ILastUpdatedProvider
+    string IThing.Id => Parent!.Id + "/cover";
+
+    string? IThing.Title => "Cover";
+
+    string IIconProvider.IconName => "fas fa-bars";
+
+    [ParentThing]
+    internal ShellyDevice? Parent { get; set; }
+
+    public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
+
+    [Derived]
+    [State(Unit = StateUnit.Percent)]
+    public decimal? Position => (100 - CurrentPosition) / 100m;
+
+    [Derived]
+    public RollerShutterState State => LastState switch
     {
-        string IThing.Id => Parent!.Id + "/cover";
+        "open" => RollerShutterState.Opening,
+        "close" => RollerShutterState.Closing,
+        "stop" =>
+            ((IRollerShutter)this).IsFullyOpen == true ? RollerShutterState.Open :
+            ((IRollerShutter)this).IsFullyClosed == true ? RollerShutterState.Closed :
+            RollerShutterState.PartiallyOpen,
 
-        string? IThing.Title => "Cover";
+        _ => IsCalibrating == true ? RollerShutterState.Calibrating :
+            RollerShutterState.Unknown
+    };
 
-        string IIconProvider.IconName => "fas fa-bars";
+    [State]
+    [Derived]
+    public  bool? IsMoving => PowerConsumption > 1;
 
-        [ParentThing]
-        internal ShellyDevice? Parent { get; set; }
+    [State(Unit = StateUnit.Watt)]
+    [JsonPropertyName("power")]
+    public partial decimal? PowerConsumption { get; set; }
 
-        public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
+    [JsonPropertyName("state"), State]
+    public partial string? LastState { get; set; }
 
-        [Derived]
-        [State(Unit = StateUnit.Percent)]
-        public decimal? Position => (100 - CurrentPosition) / 100m;
+    [JsonPropertyName("source"), State]
+    public partial string? Source { get; set; }
 
-        [Derived]
-        public RollerShutterState State => LastState switch
-        {
-            "open" => RollerShutterState.Opening,
-            "close" => RollerShutterState.Closing,
-            "stop" =>
-                ((IRollerShutter)this).IsFullyOpen == true ? RollerShutterState.Open :
-                ((IRollerShutter)this).IsFullyClosed == true ? RollerShutterState.Closed :
-                RollerShutterState.PartiallyOpen,
+    [JsonPropertyName("is_valid"), State]
+    public partial bool? IsValid { get; set; }
 
-            _ => IsCalibrating == true ? RollerShutterState.Calibrating :
-                RollerShutterState.Unknown
-        };
+    [JsonPropertyName("safety_switch"), State]
+    public partial bool? IsSafetySwitchTriggered { get; set; }
 
-        [State]
-        [Derived]
-        public  bool? IsMoving => PowerConsumption > 1;
+    [JsonPropertyName("overtemperature"), State]
+    public partial bool? OvertemperatureOccurred { get; set; }
 
-        [State(Unit = StateUnit.Watt)]
-        [JsonPropertyName("power")]
-        public partial decimal? PowerConsumption { get; set; }
+    [JsonPropertyName("stop_reason"), State]
+    public partial string? StopReason { get; set; }
 
-        [JsonPropertyName("state"), State]
-        public partial string? LastState { get; set; }
+    [JsonPropertyName("last_direction"), State]
+    public partial string? LastDirection { get; set; }
 
-        [JsonPropertyName("source"), State]
-        public partial string? Source { get; set; }
+    [JsonPropertyName("current_pos")]
+    public partial int? CurrentPosition { get; set; }
 
-        [JsonPropertyName("is_valid"), State]
-        public partial bool? IsValid { get; set; }
+    [JsonPropertyName("calibrating"), State]
+    public partial bool? IsCalibrating { get; set; }
 
-        [JsonPropertyName("safety_switch"), State]
-        public partial bool? IsSafetySwitchTriggered { get; set; }
+    [JsonPropertyName("positioning"), State]
+    public partial bool? IsPositioning { get; set; }
 
-        [JsonPropertyName("overtemperature"), State]
-        public partial bool? OvertemperatureOccurred { get; set; }
+    [Operation]
+    public async Task OpenAsync(CancellationToken cancellationToken)
+    {
+        // https://shelly-api-docs.shelly.cloud/gen2/ComponentsAndServices/Cover#http-endpoint-rollerid
+        await Parent!.CallHttpGetAsync("roller/0?go=open", cancellationToken);
+    }
 
-        [JsonPropertyName("stop_reason"), State]
-        public partial string? StopReason { get; set; }
+    [Operation]
+    public async Task CloseAsync(CancellationToken cancellationToken)
+    {
+        await Parent!.CallHttpGetAsync("roller/0?go=close", cancellationToken);
+    }
 
-        [JsonPropertyName("last_direction"), State]
-        public partial string? LastDirection { get; set; }
-
-        [JsonPropertyName("current_pos")]
-        public partial int? CurrentPosition { get; set; }
-
-        [JsonPropertyName("calibrating"), State]
-        public partial bool? IsCalibrating { get; set; }
-
-        [JsonPropertyName("positioning"), State]
-        public partial bool? IsPositioning { get; set; }
-
-        [Operation]
-        public async Task OpenAsync(CancellationToken cancellationToken)
-        {
-            // https://shelly-api-docs.shelly.cloud/gen2/ComponentsAndServices/Cover#http-endpoint-rollerid
-
-            await Parent!.CallHttpGetAsync("roller/0?go=open", cancellationToken);
-        }
-
-        [Operation]
-        public async Task CloseAsync(CancellationToken cancellationToken)
-        {
-            await Parent!.CallHttpGetAsync("roller/0?go=close", cancellationToken);
-        }
-
-        [Operation]
-        public async Task StopAsync(CancellationToken cancellationToken)
-        {
-            await Parent!.CallHttpGetAsync("roller/0?go=stop", cancellationToken);
-        }
+    [Operation]
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await Parent!.CallHttpGetAsync("roller/0?go=stop", cancellationToken);
     }
 }
