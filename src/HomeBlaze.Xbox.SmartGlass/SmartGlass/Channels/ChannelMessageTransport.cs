@@ -10,7 +10,6 @@ namespace SmartGlass.Channels
     /// ChannelMessageTransport is the base class for specific channel
     /// implementations (e.g. BroadcastChannel, MediaChannel etc.).
     /// </summary>
-    /// <typeparam name="SessionMessageBase"></typeparam>
     internal class ChannelMessageTransport : IDisposable, IMessageTransport<SessionMessageBase>
     {
         private bool _disposed = false;

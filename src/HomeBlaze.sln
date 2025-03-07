@@ -75,7 +75,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeBlaze.Shelly", "HomeBla
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00 Build", "00 Build", "{448CDBC3-84DD-404D-96BD-CB259070DE3B}"
 	ProjectSection(SolutionItems) = preProject
-		..\.github\workflows\docker-publish.yml = ..\.github\workflows\docker-publish.yml
+		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Namotion.Shelly", "Namotion.Shelly\Namotion.Shelly.csproj", "{CC54A2BC-3582-4C6A-A52A-FBCF3D30E10B}"

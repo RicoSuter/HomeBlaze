@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
 		<Nullable>enable</Nullable>
+		<IsPackable>true</IsPackable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageOutputPath>../HomeBlaze/Config/Plugins</PackageOutputPath>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>

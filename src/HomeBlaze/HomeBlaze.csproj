@@ -7,6 +7,7 @@
 		<UserSecretsId>ffa65cd9-fd7a-4494-8709-3eabea0eb9f5</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<IsPackable>false</IsPackable>
 		<NoWarn>$(NoWarn);NU1902;NU1903</NoWarn>
 	</PropertyGroup>
 

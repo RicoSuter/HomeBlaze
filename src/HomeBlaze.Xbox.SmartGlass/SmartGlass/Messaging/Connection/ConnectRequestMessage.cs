@@ -55,6 +55,7 @@ namespace SmartGlass.Messaging.Connection
         /// Generates an anonymous connect request.
         /// </summary>
         /// <param name="deviceId">Client device id</param>
+        /// <param name="crypto"></param>
         /// <param name="initialSequenceNumber">Initial sequence number</param>
         /// <returns>Generated connect request</returns>
         public static ConnectRequestMessage GenerateAnonymousRequest(
@@ -80,6 +81,7 @@ namespace SmartGlass.Messaging.Connection
         /// </summary>
         /// <returns>An Enumerable of connect requests.</returns>
         /// <param name="deviceId">Client device Id.</param>
+        /// <param name="crypto"></param>
         /// <param name="xboxLiveUserHash">Xbox live user hash.</param>
         /// <param name="xboxLiveAuthorization">Xbox live authorization token (XToken).</param>
         /// <param name="initialSequenceNumber">Initial sequence number.</param>
