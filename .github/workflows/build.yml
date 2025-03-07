@@ -107,6 +107,10 @@ jobs:
           if-no-files-found: error
           retention-days: 7
           path: ${{ env.NuGetDirectory }}/*.nupkg
+#          path: |
+#            ${{ env.NuGetDirectory }}/Namotion.Shelly.nupkg
+#            ${{ env.NuGetDirectory }}/HomeBlaze.Abstractions.nupkg
+#            ${{ env.NuGetDirectory }}/Namotion.Devices.Abstractions.nupkg
 
   validate:
 #    if: github.event_name == 'release'
