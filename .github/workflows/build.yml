@@ -31,12 +31,8 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
-      - name: Build
-        run: dotnet build ./src/HomeBlaze.sln --configuration Release --no-restore
-      - name: Test
-        run: dotnet test ./src/HomeBlaze.sln --no-restore --verbosity normal
-#      - name: Run tests
-#        run: dotnet test src/HomeBlaze.sln --configuration Release
+      - name: Run tests
+        run: dotnet test src/HomeBlaze.sln --configuration Release
 
   build-and-push-image:
     runs-on: ubuntu-latest
