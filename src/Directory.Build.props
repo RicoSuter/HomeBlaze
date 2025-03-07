@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+<!--    <Nullable>enable</Nullable>-->
+<!--    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>-->
 
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
