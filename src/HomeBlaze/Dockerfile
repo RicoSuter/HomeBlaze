@@ -8,8 +8,6 @@ EXPOSE 443
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 COPY . .
-RUN dotnet restore "HomeBlaze.sln"
-COPY . .
 WORKDIR "/src/HomeBlaze"
 RUN dotnet build "HomeBlaze.csproj" -c Release -o /app/build
 
