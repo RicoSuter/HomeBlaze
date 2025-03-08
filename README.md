@@ -82,7 +82,7 @@ docker run -d --restart unless-stopped -v C:/HomeBlaze:/app/Config --name homebl
 docker run -d --restart unless-stopped -v /home/myuser/homeblaze:/app/Config --name homeblaze -p 9800:8080 ghcr.io/ricosuter/homeblaze:main
 ```
 
-All configuration and state history files are now written to your `C:/HomeBlaze` directory.
+All configuration and state history files are now written to the configured directory.
 
 To get the latest version, delete the docker instance and pull the latest version with:
 
