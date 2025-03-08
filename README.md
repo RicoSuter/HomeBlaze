@@ -110,7 +110,7 @@ services:
       - Storage__Container=...
       - Storage__ConnectionString=...
     ports:
-      - 9800:80
+      - 9800:8080
 ```
 
 Initial run: 
@@ -139,7 +139,7 @@ services:
     restart: always
     privileged: true
     ports:
-      - 9800:80
+      - 9800:8080
 ```
 
 **Support UDP**
