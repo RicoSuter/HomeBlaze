@@ -168,3 +168,7 @@ services:
     environment:
       - TZ=Europe/Zurich
 ```
+
+## Development
+
+Local Docker build: `podman build --file ./src/HomeBlaze/Dockerfile ./src`
