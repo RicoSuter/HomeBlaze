@@ -36,6 +36,7 @@ public partial class ShellyCover :
     [State(Unit = StateUnit.Percent)]
     public decimal? Position => (100 - CurrentPosition) / 100m;
 
+    [State]
     [Derived]
     public RollerShutterState State => LastState switch
     {
@@ -55,38 +56,47 @@ public partial class ShellyCover :
     public  bool? IsMoving => PowerConsumption > 1;
 
     [State(Unit = StateUnit.Watt)]
-    [JsonPropertyName("power")]
-    public partial decimal? PowerConsumption { get; set; }
+    [JsonPropertyName("power"), JsonInclude]
+    public partial decimal? PowerConsumption { get; internal set; }
 
-    [JsonPropertyName("state"), State]
-    public partial string? LastState { get; set; }
+    [State]
+    [JsonPropertyName("state"), JsonInclude]
+    public partial string? LastState { get; internal set; }
 
-    [JsonPropertyName("source"), State]
-    public partial string? Source { get; set; }
+    [State]
+    [JsonPropertyName("source"), JsonInclude]
+    public partial string? Source { get; internal set; }
 
-    [JsonPropertyName("is_valid"), State]
-    public partial bool? IsValid { get; set; }
+    [State]
+    [JsonPropertyName("is_valid"), JsonInclude]
+    public partial bool? IsValid { get; internal set; }
 
-    [JsonPropertyName("safety_switch"), State]
-    public partial bool? IsSafetySwitchTriggered { get; set; }
+    [State]
+    [JsonPropertyName("safety_switch"), JsonInclude]
+    public partial bool? IsSafetySwitchTriggered { get; internal set; }
 
-    [JsonPropertyName("overtemperature"), State]
-    public partial bool? OvertemperatureOccurred { get; set; }
+    [State]
+    [JsonPropertyName("overtemperature"), JsonInclude]
+    public partial bool? OvertemperatureOccurred { get; internal set; }
 
-    [JsonPropertyName("stop_reason"), State]
-    public partial string? StopReason { get; set; }
+    [State]
+    [JsonPropertyName("stop_reason"), JsonInclude]
+    public partial string? StopReason { get; internal set; }
 
-    [JsonPropertyName("last_direction"), State]
-    public partial string? LastDirection { get; set; }
+    [State]
+    [JsonPropertyName("last_direction"), JsonInclude]
+    public partial string? LastDirection { get; internal set; }
 
-    [JsonPropertyName("current_pos")]
-    public partial int? CurrentPosition { get; set; }
+    [JsonPropertyName("current_pos"), JsonInclude]
+    public partial int? CurrentPosition { get; internal set; }
 
-    [JsonPropertyName("calibrating"), State]
-    public partial bool? IsCalibrating { get; set; }
+    [State]
+    [JsonPropertyName("calibrating"), JsonInclude]
+    public partial bool? IsCalibrating { get; internal set; }
 
-    [JsonPropertyName("positioning"), State]
-    public partial bool? IsPositioning { get; set; }
+    [State]
+    [JsonPropertyName("positioning"), JsonInclude]
+    public partial bool? IsPositioning { get; internal set; }
 
     [Operation]
     public async Task OpenAsync(CancellationToken cancellationToken)

@@ -6,7 +6,7 @@ namespace Namotion.NuGetPlugins
 {
     public class NuGetPackage
     {
-        private IPackageSearchMetadata _metadata;
+        private readonly IPackageSearchMetadata _metadata;
 
         public NuGetPackage(IPackageSearchMetadata metadata)
         {

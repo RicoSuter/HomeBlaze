@@ -33,53 +33,55 @@ public partial class ShellyEnergyMeter :
     public decimal? PowerConsumption => TotalActivePower;
 
     [ScanForState]
-    public partial ShellyEnergyData? EnergyData { get; internal set; }
+    public partial ShellyEnergyMeterStatus? Status { get; internal set; }
 
     [State]
-    public partial ShellyEnergyMeterPhase PhaseA { get; protected set; }
+    public partial ShellyEnergyMeterPhase PhaseA { get; private set; }
 
     [State]
-    public partial ShellyEnergyMeterPhase PhaseB { get; protected set; }
+    public partial ShellyEnergyMeterPhase PhaseB { get; private set; }
 
     [State]
-    public partial ShellyEnergyMeterPhase PhaseC { get; protected set; }
+    public partial ShellyEnergyMeterPhase PhaseC { get; private set; }
 
-    [Derived]
     [State(Unit = StateUnit.WattHour, IsCumulative = true)]
-    public decimal? TotalConsumedEnergy => EnergyData?.TotalActiveEnergy;
+    public decimal? TotalConsumedEnergy { get; private set; }
 
     /// <summary>
     /// Gets or sets the ID of the EM1 component.
     /// </summary>
-    [JsonPropertyName("id")]
-    public partial int Id { get; set; }
+    [JsonPropertyName("id"), JsonInclude]
+    public partial int Id { get; internal set; }
 
     /// <summary>
     /// Gets or sets the total current in amperes.
     /// </summary>
-    [JsonPropertyName("total_current"), State(Unit = StateUnit.Ampere)]
-    public partial double TotalCurrent { get; set; }
+    [State(Unit = StateUnit.Ampere)]
+    [JsonPropertyName("total_current"), JsonInclude]
+    public partial double TotalCurrent { get; internal set; }
 
     /// <summary>
     /// Gets or sets the total active power in watts.
     /// Active power (real power) is the actual power consumed by electrical equipment to perform useful work, such as running a motor or lighting a bulb.
     /// </summary>
-    [JsonPropertyName("total_act_power"), State(Unit = StateUnit.Watt)]
-    public partial decimal TotalActivePower { get; set; }
+    [JsonPropertyName("total_act_power"), JsonInclude]
+    public partial decimal TotalActivePower { get; internal set; }
 
     /// <summary>
     /// Gets or sets the total apparent power in volt-amperes.
     /// Apparent power is the combination of active power (real power) and reactive power.
     /// It represents the total power used by the electrical equipment to do work and sustain the magnetic and electric fields.
     /// </summary>
-    [JsonPropertyName("total_aprt_power"), State(Unit = StateUnit.Watt)]
-    public partial double TotalApparentPower { get; set; }
+    [State(Unit = StateUnit.WattHour)]
+    [JsonPropertyName("total_aprt_power"), JsonInclude]
+    public partial double TotalApparentPower { get; internal set; }
 
     /// <summary>
     /// Gets or sets the current of the neutral line in amperes.
     /// </summary>
-    [JsonPropertyName("n_current"), State(Unit = StateUnit.Ampere)]
-    public partial double? NeutralCurrent { get; set; }
+    [State(Unit = StateUnit.Ampere)]
+    [JsonPropertyName("n_current"), JsonInclude]
+    public partial double? NeutralCurrent { get; internal set; }
 
     public ShellyEnergyMeter()
     {
@@ -88,8 +90,10 @@ public partial class ShellyEnergyMeter :
         PhaseC = new ShellyEnergyMeterPhase("c");
     }
 
-    public void Update()
+    internal void Update()
     {
+        TotalConsumedEnergy = Status?.TotalActiveEnergy;
+        
         PhaseA.Current = PhaseACurrent;
         PhaseA.Voltage = PhaseAVoltage;
         PhaseA.ActivePower = PhaseAActivePower;
@@ -97,8 +101,8 @@ public partial class ShellyEnergyMeter :
         PhaseA.PowerFactor = PhaseAPowerFactor;
         PhaseA.Frequency = PhaseAFrequency;
 
-        PhaseA.TotalActiveEnergy = EnergyData?.PhaseATotalActiveEnergy;
-        PhaseA.TotalActiveReturnedEnergy = EnergyData?.PhaseATotalActiveReturnedEnergy;
+        PhaseA.TotalActiveEnergy = Status?.PhaseATotalActiveEnergy;
+        PhaseA.TotalActiveReturnedEnergy = Status?.PhaseATotalActiveReturnedEnergy;
 
         PhaseB.Current = PhaseBCurrent;
         PhaseB.Voltage = PhaseBVoltage;
@@ -107,8 +111,8 @@ public partial class ShellyEnergyMeter :
         PhaseB.PowerFactor = PhaseBPowerFactor;
         PhaseB.Frequency = PhaseBFrequency;
 
-        PhaseB.TotalActiveEnergy = EnergyData?.PhaseBTotalActiveEnergy;
-        PhaseB.TotalActiveReturnedEnergy = EnergyData?.PhaseBTotalActiveReturnedEnergy;
+        PhaseB.TotalActiveEnergy = Status?.PhaseBTotalActiveEnergy;
+        PhaseB.TotalActiveReturnedEnergy = Status?.PhaseBTotalActiveReturnedEnergy;
 
         PhaseC.Current = PhaseCCurrent;
         PhaseC.Voltage = PhaseCVoltage;
@@ -117,8 +121,8 @@ public partial class ShellyEnergyMeter :
         PhaseC.PowerFactor = PhaseCPowerFactor;
         PhaseC.Frequency = PhaseCFrequency;
 
-        PhaseC.TotalActiveEnergy = EnergyData?.PhaseCTotalActiveEnergy;
-        PhaseC.TotalActiveReturnedEnergy = EnergyData?.PhaseCTotalActiveReturnedEnergy;
+        PhaseC.TotalActiveEnergy = Status?.PhaseCTotalActiveEnergy;
+        PhaseC.TotalActiveReturnedEnergy = Status?.PhaseCTotalActiveReturnedEnergy;
     }
 
     /// <summary>
@@ -237,10 +241,4 @@ public partial class ShellyEnergyMeter :
     /// </summary>
     [JsonPropertyName("c_freq"), JsonInclude]
     public double PhaseCFrequency { get; internal set; }
-
-    [JsonExtensionData]
-    public Dictionary<string, object>? ExtensionData { get; set; }
-
-    //[JsonPropertyName("user_calibrated_phase")]
-    //public List<object> UserCalibratedPhase { get; set; }
 }

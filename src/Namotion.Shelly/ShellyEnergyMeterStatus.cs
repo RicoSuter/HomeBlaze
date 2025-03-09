@@ -1,13 +1,11 @@
 ﻿using System.Text.Json.Serialization;
-
 using HomeBlaze.Abstractions.Attributes;
-
 using Namotion.Interceptor.Attributes;
 
 namespace Namotion.Shelly;
 
 [InterceptorSubject]
-public partial class ShellyEnergyData
+public partial class ShellyEnergyMeterStatus
 {
     /// <summary>
     /// Gets the identifier.

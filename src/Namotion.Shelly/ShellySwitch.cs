@@ -36,14 +36,17 @@ public partial class ShellySwitch :
 
     public DateTimeOffset? LastUpdated => Parent?.LastUpdated;
 
-    [JsonPropertyName("id"), State]
-    public partial int? Index { get; set; }
+    [State]
+    [JsonPropertyName("id"), JsonInclude]
+    public partial int? Index { get; internal set; }
 
-    [JsonPropertyName("output"), State]
-    public partial bool? IsOn { get; set; }
+    [State]
+    [JsonPropertyName("output"), JsonInclude]
+    public partial bool? IsOn { get; internal set; }
 
-    [JsonPropertyName("source"), State]
-    public partial string? Source { get; set; }
+    [State]
+    [JsonPropertyName("source"), JsonInclude]
+    public partial string? Source { get; internal set; }
 
     public async Task TurnOnAsync(CancellationToken cancellationToken = default)
     {

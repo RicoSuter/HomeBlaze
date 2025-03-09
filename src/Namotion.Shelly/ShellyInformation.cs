@@ -13,85 +13,85 @@ public partial class ShellyInformation
     /// <summary>
     /// Gets the ID of the device.
     /// </summary>
-    [JsonPropertyName("id")]
     [State]
+    [JsonPropertyName("id")]
     public partial string? Id { get; init; }
 
     /// <summary>
     /// Gets the name of the device.
     /// </summary>
-    [JsonPropertyName("name")]
     [State]
+    [JsonPropertyName("name")]
     public partial string? Name { get; init; }
 
     /// <summary>
     /// Gets the MAC address of the device.
     /// </summary>
-    [JsonPropertyName("mac")]
     [State]
+    [JsonPropertyName("mac")]
     public partial string? MacAddress { get; init; }
 
     /// <summary>
     /// Gets the slot of the device.
     /// </summary>
-    [JsonPropertyName("slot")]
     [State]
+    [JsonPropertyName("slot")]
     public partial int? Slot { get; init; }
 
     /// <summary>
     /// Gets the model of the device.
     /// </summary>
-    [JsonPropertyName("model")]
     [State]
+    [JsonPropertyName("model")]
     public partial string? Model { get; init; }
 
     /// <summary>
     /// Gets the generation of the device.
     /// </summary>
-    [JsonPropertyName("gen")]
     [State]
+    [JsonPropertyName("gen")]
     public partial int? Generation { get; init; }
 
     /// <summary>
     /// Gets the firmware identifier of the device.
     /// </summary>
-    [JsonPropertyName("fw_id")]
     [State]
+    [JsonPropertyName("fw_id")]
     public partial string? FirmwareIdentifier { get; init; }
 
     /// <summary>
     /// Gets the version of the firmware.
     /// </summary>
-    [JsonPropertyName("ver")]
     [State]
+    [JsonPropertyName("ver")]
     public partial string? Version { get; init; }
 
     /// <summary>
     /// Gets the application name.
     /// </summary>
-    [JsonPropertyName("app")]
     [State]
+    [JsonPropertyName("app")]
     public partial string? Application { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether authentication is enabled.
     /// </summary>
-    [JsonPropertyName("auth_en")]
     [State]
+    [JsonPropertyName("auth_en")]
     public partial bool? IsAuthenticationEnabled { get; init; }
 
     /// <summary>
     /// Gets the authentication domain.
     /// </summary>
-    [JsonPropertyName("auth_domain")]
     [State]
+    [JsonPropertyName("auth_domain")]
     public partial string? AuthenticationDomain { get; init; }
 
     /// <summary>
     /// Gets the profile of the device.
     /// </summary>
-    [JsonPropertyName("profile")]
     [State]
+    [JsonPropertyName("profile")]
     public partial string? Profile { get; init; }
 
     /// <summary>

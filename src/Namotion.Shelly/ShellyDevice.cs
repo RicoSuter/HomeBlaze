@@ -33,7 +33,7 @@ public partial class ShellyDevice :
 
     public override string Title => $"Shelly: {Information?.Name ?? Information?.Application}";
 
-    public partial DateTimeOffset? LastUpdated { get; protected set; }
+    public partial DateTimeOffset? LastUpdated { get; private set; }
 
     public string IconName => "fas fa-box";
 
@@ -47,7 +47,7 @@ public partial class ShellyDevice :
     public partial bool IsConnected { get; internal set; }
 
     [ScanForState]
-    public partial ShellyInformation? Information { get; protected set; }
+    public partial ShellyInformation? Information { get; private set; }
 
     [State]
     public partial ShellyEnergyMeter? EnergyMeter { get; internal set; }
@@ -59,7 +59,7 @@ public partial class ShellyDevice :
     public partial ShellySwitch? Switch1 { get; internal set; }
 
     [State]
-    public partial ShellyCover? Cover { get; protected set; }
+    public partial ShellyCover? Cover { get; internal set; }
 
     protected override TimeSpan PollingInterval =>
         TimeSpan.FromMilliseconds(Cover?.IsMoving == true ? 1000 : RefreshInterval);
@@ -152,7 +152,7 @@ public partial class ShellyDevice :
             {
                 var emDataStatusResponse = await httpClient.GetAsync($"http://{IpAddress}/rpc/EMData.GetStatus?id=0", cancellationToken);
                 json = await emDataStatusResponse.Content.ReadAsStringAsync(cancellationToken);
-                EnergyMeter.EnergyData = JsonUtilities.PopulateOrDeserialize(EnergyMeter.EnergyData, json);
+                EnergyMeter.Status = JsonUtilities.PopulateOrDeserialize(EnergyMeter.Status, json);
                 EnergyMeter.Update();
             }
         }
