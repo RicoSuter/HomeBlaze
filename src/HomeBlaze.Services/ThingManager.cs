@@ -335,17 +335,7 @@ namespace HomeBlaze.Services
                             !(newPair.Value.Value is IEnumerable<IThing>) &&
                             (metadata.CurrentFullState == null || !Equals(oldState.Value, newPair.Value.Value)))
                         {
-                            var message = new ThingStateChangedEvent(thing)
-                            {
-                                ChangeDate = now,
-
-                                PropertyName = newPair.Key,
-
-                                OldValue = oldState.Value,
-                                NewValue = newPair.Value.Value
-                            };
-
-                            _eventManager.Publish(message);
+                            PublishThingStateChangedEvent(thing, now, newPair.Key, newPair.Value, oldState.Value);
                         }
                     }
 
@@ -360,6 +350,19 @@ namespace HomeBlaze.Services
                     }
                 }
             }
+        }
+
+        private void PublishThingStateChangedEvent(IThing thing, DateTimeOffset time, string propertyName, object? newValue, object? oldValue)
+        {
+            var message = new ThingStateChangedEvent(thing)
+            {
+                ChangeDate = time,
+                PropertyName = propertyName,
+                OldValue = oldValue,
+                NewValue = newValue
+            };
+
+            _eventManager.Publish(message);
         }
 
         private void Register(IThing thing, CancellationToken cancellationToken)
