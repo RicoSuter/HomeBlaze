@@ -335,7 +335,7 @@ namespace HomeBlaze.Services
                             !(newPair.Value.Value is IEnumerable<IThing>) &&
                             (metadata.CurrentFullState == null || !Equals(oldState.Value, newPair.Value.Value)))
                         {
-                            PublishThingStateChangedEvent(thing, now, newPair.Key, newPair.Value, oldState.Value);
+                            PublishThingStateChangedEvent(thing, now, newPair.Key, newPair.Value.Value, oldState.Value);
                         }
                     }
 

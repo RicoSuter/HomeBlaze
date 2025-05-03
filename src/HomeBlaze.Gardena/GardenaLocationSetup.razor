@@ -59,7 +59,7 @@ else if (_locations != null)
     private string? _clientId = null;
 
     private Location[]? _locations = null;
-    private object? _selectedLocation;
+    private Location? _selectedLocation;
 
     private bool _loading;
 
@@ -77,11 +77,11 @@ else if (_locations != null)
 
     private void Update(GardenaLocation thing)
     {
-        if (_selectedLocation is Location selectedLocation)
+        if (_selectedLocation is not null)
         {
             thing.Username = _username;
             thing.Password = _password;
-            thing.LocationId = selectedLocation.Id;
+            thing.LocationId = _selectedLocation.Id;
             thing.Reset();
         }
     }
@@ -112,7 +112,7 @@ else if (_locations != null)
     {
         try
         {
-            if (_selectedLocation is Location selectedLocation)
+            if (_selectedLocation is not null)
             {
                 var thing = (GardenaLocation)ActivatorUtilities.CreateInstance(ServiceProvider, typeof(GardenaLocation));
                 Update(thing);

@@ -61,7 +61,7 @@ else
 }
 
 @code {
-    private object? _selectedBridge;
+    private BridgeModel? _selectedBridge;
 
     private BridgeModel[]? Bridges { get; set; }
 
@@ -78,7 +78,7 @@ else
             var response = await httpClient.GetAsync("https://api.nuki.io/discover/bridges");
             var result = JsonSerializer.Deserialize<DiscoverResult>(await response.Content.ReadAsStringAsync());
 
-            Bridges = result?.Bridges ?? new BridgeModel[0];
+            Bridges = result?.Bridges ?? [];
         }
         catch (Exception e)
         {
@@ -117,7 +117,7 @@ else
     {
         try
         {
-            if (_selectedBridge is BridgeModel selectedBridge)
+            if (_selectedBridge is { } selectedBridge)
             {
                 IsWaitingForButton = true;
                 await InvokeAsync(StateHasChanged);
