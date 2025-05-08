@@ -79,9 +79,9 @@ namespace HomeBlaze.Components
         {
             ThingSerializer!.PopulateThing(Thing!, EditedThing!);
            
-            if (EditedThing is PollingThing pollingThing) // TODO: Use interface with Reset method
+            if (EditedThing is not null)
             {
-                pollingThing.Reset();
+                EditedThing.Reset();
             }
 
             return Task.FromResult(true);

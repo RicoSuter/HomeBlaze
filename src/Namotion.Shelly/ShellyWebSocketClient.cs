@@ -57,7 +57,6 @@ public class ShellyWebSocketClient : ReconnectingWebSocket
                             {
                                 _device.EnergyMeter = JsonUtilities.PopulateOrDeserialize(_device.EnergyMeter, em0Object);
                                 _device.EnergyMeter.Update();
-                                _device.DetectChanges(_device);
 
                                 return Task.CompletedTask;
                             }
@@ -65,8 +64,6 @@ public class ShellyWebSocketClient : ReconnectingWebSocket
                             if (paramsObject["switch:0"] is JsonObject switch0Object)
                             {
                                 _device.Switch0 = JsonUtilities.PopulateOrDeserialize(_device.Switch0, switch0Object);
-                                _device.DetectChanges(_device);
-
                                 _device.Switch0.IsOnChanged(new SwitchEvent
                                 {
                                     Source = _device,
@@ -79,8 +76,6 @@ public class ShellyWebSocketClient : ReconnectingWebSocket
                             if (paramsObject["switch:1"] is JsonObject switch1Object)
                             {
                                 _device.Switch1 = JsonUtilities.PopulateOrDeserialize(_device.Switch1, switch1Object);
-                                _device.DetectChanges(_device);
-
                                 _device.Switch1.IsOnChanged(new SwitchEvent
                                 {
                                     Source = _device,
@@ -113,8 +108,6 @@ public class ShellyWebSocketClient : ReconnectingWebSocket
                 {
                     _device.Switch1 = JsonUtilities.PopulateOrDeserialize(_device.Switch1, switch1Object);
                 }
-
-                _device.DetectChanges(_device);
             }
         }
         catch (Exception ex)
@@ -128,7 +121,6 @@ public class ShellyWebSocketClient : ReconnectingWebSocket
     protected override Task HandleExceptionAsync(Exception exception, CancellationToken stoppingToken)
     {
         _device.IsConnected = false;
-        _device.DetectChanges(_device);
         return Task.CompletedTask;
     }
 }

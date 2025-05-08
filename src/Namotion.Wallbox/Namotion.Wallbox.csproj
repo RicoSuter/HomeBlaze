@@ -12,6 +12,7 @@
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\HomeBlaze.Services\HomeBlaze.Services.csproj" />
 		<ProjectReference Include="..\Namotion.Devices.Abstractions\Namotion.Devices.Abstractions.csproj" />
 		<ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj" />
 	</ItemGroup>

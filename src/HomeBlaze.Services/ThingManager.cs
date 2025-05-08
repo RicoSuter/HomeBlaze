@@ -1,39 +1,33 @@
-﻿using HomeBlaze.Abstractions;
+﻿using System.Collections;
+using System.Collections.Concurrent;
+using System.Reflection;
+using System.Threading.Tasks.Dataflow;
+using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Services;
 using HomeBlaze.Messages;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Namotion.Reflection;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Reflection;
-using System.Threading.Tasks.Dataflow;
 using Namotion.Interceptor;
-using Namotion.Interceptor.Registry;
-using Namotion.Interceptor.Tracking;
-using Namotion.Interceptor.Validation;
+using Namotion.Reflection;
 
 namespace HomeBlaze.Services
 {
     public class ThingManager : BackgroundService, IThingManager, IObserver<DetectChangesEvent>
     {
-        private readonly BufferBlock<IThing> _changeDetectionTriggers = new BufferBlock<IThing>();
-        private readonly HashSet<IThing> _thingsMarkedForChangeDetection = new HashSet<IThing>();
+        private readonly BufferBlock<IThing> _changeDetectionTriggers = new();
+        private readonly HashSet<IThing> _thingsMarkedForChangeDetection = new();
 
-        private static readonly ConcurrentDictionary<Type, Tuple<MethodInfo, OperationAttribute>[]> _operationCache
-            = new ConcurrentDictionary<Type, Tuple<MethodInfo, OperationAttribute>[]>();
+        private static readonly ConcurrentDictionary<Type, Tuple<MethodInfo, OperationAttribute>[]> OperationCache = new();
 
-        private readonly Dictionary<string, IThing> _thingIds = new Dictionary<string, IThing>();
-        private readonly Dictionary<IThing, ThingMetadata> _things = new Dictionary<IThing, ThingMetadata>();
+        private readonly Dictionary<string, IThing> _thingIds = new();
+        private readonly Dictionary<IThing, ThingMetadata> _things = new();
 
         private readonly IThingStorage _thingStorage;
         private readonly ITypeManager _typeManager;
         private readonly IEventManager _eventManager;
         private readonly ILogger<ThingManager> _logger;
-
-        private readonly IInterceptorSubjectContext _context;
-        private IDisposable _subscription;
+        private readonly ThingManager2 _thingManager2;
 
         public ThingManager(IThingStorage thingLoader, ITypeManager typeManager, IEventManager eventManager, ILogger<ThingManager> thingManager)
         {
@@ -41,23 +35,7 @@ namespace HomeBlaze.Services
             _typeManager = typeManager;
             _eventManager = eventManager;
             _logger = thingManager;
-
-            _context = InterceptorSubjectContext
-               .Create()
-               .WithRegistry()
-               .WithFullPropertyTracking()
-               .WithLifecycle()
-               .WithDataAnnotationValidation();
-
-            _subscription = _context
-                .GetPropertyChangedObservable()
-                .Subscribe((args) =>
-                {
-                    if (args.Property.Subject is IThing thing)
-                    {
-                        DetectChanges(thing);
-                    }
-                });
+            _thingManager2 = new ThingManager2(this);
         }
 
         public IGroupThing? RootThing { get; private set; }
@@ -88,8 +66,8 @@ namespace HomeBlaze.Services
 
         public override void Dispose()
         {
+            _thingManager2.Dispose();
             base.Dispose();
-            _subscription.Dispose();
         }
 
         public PropertyState? TryGetPropertyState(string? thingId, string? property, bool includeExtensions)
@@ -102,14 +80,14 @@ namespace HomeBlaze.Services
                 }
 
                 var state = GetState(thingId, includeExtensions: false);
-                if (state.TryGetValue(property, out var result) == true)
+                if (state.TryGetValue(property, out var result))
                 {
                     return result;
                 }
                 else if (includeExtensions)
                 {
                     state = GetExtensionState(thingId);
-                    if (state.TryGetValue(property, out var result2) == true)
+                    if (state.TryGetValue(property, out var result2))
                     {
                         return result2;
                     }
@@ -184,9 +162,9 @@ namespace HomeBlaze.Services
             }
 
             var type = thing.GetType();
-            if (!_operationCache.ContainsKey(type))
+            if (!OperationCache.ContainsKey(type))
             {
-                _operationCache[type] = thing.GetType()
+                OperationCache[type] = thing.GetType()
                     .GetInterfaces()
                     .SelectMany(t => t.GetMethods())
                     .Concat(thing.GetType().GetRuntimeMethods())
@@ -197,7 +175,7 @@ namespace HomeBlaze.Services
                     .ToArray();
             }
 
-            var operations = _operationCache[type]
+            var operations = OperationCache[type]
                 .Select(o => new ThingOperation(
                     thing,
                     o.Item1.Name.Replace("Async", ""),
@@ -335,7 +313,7 @@ namespace HomeBlaze.Services
                             !(newPair.Value.Value is IEnumerable<IThing>) &&
                             (metadata.CurrentFullState == null || !Equals(oldState.Value, newPair.Value.Value)))
                         {
-                            PublishThingStateChangedEvent(thing, now, newPair.Key, newPair.Value, oldState.Value);
+                            PublishThingStateChangedEvent(thing, now, newPair.Key, newPair.Value.Value, oldState.Value);
                         }
                     }
 
@@ -377,7 +355,7 @@ namespace HomeBlaze.Services
 
                 if (thing is IInterceptorSubject subject)
                 {
-                    subject.Context.AddFallbackContext(_context);
+                    _thingManager2.RegisterSubject(subject);
                 }
 
                 _thingIds[thing.Id] = thing;
@@ -445,7 +423,7 @@ namespace HomeBlaze.Services
 
                 if (thing is IInterceptorSubject subject)
                 {
-                    subject.Context.RemoveFallbackContext(_context);
+                    _thingManager2.UnregisterSubject(subject);
                 }
 
                 _things.Remove(thing);

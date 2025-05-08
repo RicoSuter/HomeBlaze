@@ -9,11 +9,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="InfluxDB.Client" Version="4.18.0" />
-		<PackageReference Include="Namotion.Interceptor" Version="0.0.9" />
-		<PackageReference Include="Namotion.Interceptor.Hosting" Version="0.0.9" />
-		<PackageReference Include="Namotion.Interceptor.Registry" Version="0.0.9" />
-		<PackageReference Include="Namotion.Interceptor.Tracking" Version="0.0.9" />
-		<PackageReference Include="Namotion.Interceptor.Validation" Version="0.0.9" />
+		<PackageReference Include="Namotion.Interceptor" Version="0.0.12" />
+		<PackageReference Include="Namotion.Interceptor.Hosting" Version="0.0.12" />
+		<PackageReference Include="Namotion.Interceptor.Registry" Version="0.0.12" />
+		<PackageReference Include="Namotion.Interceptor.Tracking" Version="0.0.12" />
+		<PackageReference Include="Namotion.Interceptor.Validation" Version="0.0.12" />
 		<PackageReference Include="System.Diagnostics.PerformanceCounter" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />

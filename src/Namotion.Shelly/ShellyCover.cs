@@ -53,7 +53,7 @@ public partial class ShellyCover :
 
     [State]
     [Derived]
-    public  bool? IsMoving => PowerConsumption > 1;
+    public bool? IsMoving => PowerConsumption > 1;
 
     [State(Unit = StateUnit.Watt)]
     [JsonPropertyName("power"), JsonInclude]

@@ -7,8 +7,8 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0"/>
-        <PackageReference Include="Namotion.Interceptor" Version="0.0.9" />
-        <PackageReference Include="Namotion.Interceptor.Generator" Version="0.0.9" />
+        <PackageReference Include="Namotion.Interceptor" Version="0.0.12" />
+        <PackageReference Include="Namotion.Interceptor.Generator" Version="0.0.12" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\HomeBlaze.Abstractions\HomeBlaze.Abstractions.csproj"/>

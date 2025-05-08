@@ -10,8 +10,7 @@ using HomeBlaze.Abstractions;
 using HomeBlaze.Abstractions.Attributes;
 using HomeBlaze.Abstractions.Networking;
 using HomeBlaze.Abstractions.Presentation;
-using HomeBlaze.Services.Abstractions;
-
+using Microsoft.Extensions.Hosting;
 using Namotion.Devices.Abstractions.Utilities;
 using Namotion.Interceptor.Attributes;
 
@@ -21,7 +20,8 @@ namespace Namotion.Shelly;
 [DisplayName("Shelly Device")]
 [InterceptorSubject]
 public partial class ShellyDevice :
-    PollingThing,
+    BackgroundService,
+    IThing,
     INetworkAdapter,
     IIconProvider,
     ILastUpdatedProvider
@@ -31,11 +31,14 @@ public partial class ShellyDevice :
 
     private ShellyWebSocketClient? _webSocketClient;
 
-    public override string Title => $"Shelly: {Information?.Name ?? Information?.Application}";
+    public string Title => $"Shelly: {Information?.Name ?? Information?.Application}";
 
     public partial DateTimeOffset? LastUpdated { get; private set; }
 
     public string IconName => "fas fa-box";
+    
+    [Configuration(IsIdentifier = true)]
+    public string Id { get; set; } = Guid.NewGuid().ToString();
 
     [Configuration]
     public string? IpAddress { get; set; }
@@ -61,17 +64,38 @@ public partial class ShellyDevice :
     [State]
     public partial ShellyCover? Cover { get; internal set; }
 
-    protected override TimeSpan PollingInterval =>
-        TimeSpan.FromMilliseconds(Cover?.IsMoving == true ? 1000 : RefreshInterval);
-    
     public ShellyDevice(IHttpClientFactory httpClientFactory, ILogger<ShellyDevice> logger) 
-        : base( logger)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
     }
 
-    public override async Task PollAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                await PollAsync(stoppingToken);
+                for (var x = 0; x < TimeSpan.FromMilliseconds(Cover?.IsMoving == true ? 1000 : RefreshInterval).TotalSeconds; x++)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Polling of thing {ThingType} with ID {ThingId} failed.", 
+                    GetType().FullName, Id);
+                
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+            }
+        }
+    }
+
+    private async Task PollAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -96,7 +120,7 @@ public partial class ShellyDevice :
         }
     }
 
-    public override void Reset()
+    public void Reset()
     {
         _webSocketClient?.Dispose();
         _webSocketClient = null;
@@ -106,8 +130,6 @@ public partial class ShellyDevice :
         Switch0 = null;
         Switch1 = null;
         EnergyMeter = null;
-
-        base.Reset();
     }
 
     public override void Dispose()

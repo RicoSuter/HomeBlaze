@@ -15,5 +15,12 @@ namespace HomeBlaze.Abstractions
         /// Gets the display title of the thing.
         /// </summary>
         string? Title { get; }
+        
+        /// <summary>
+        /// Resets the thing back to the after loaded state (e.g. to reload with new configuration).
+        /// </summary>
+        public void Reset()
+        {
+        }
     }
 }
