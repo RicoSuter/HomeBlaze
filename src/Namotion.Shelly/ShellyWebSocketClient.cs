@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Namotion.Shelly;
 
-public class ShellyWebSocketClient : ReconnectingWebSocket
+internal class ShellyWebSocketClient : ReconnectingWebSocket
 {
     private readonly ShellyDevice _device;
     private readonly ILogger _logger;
@@ -43,9 +43,8 @@ public class ShellyWebSocketClient : ReconnectingWebSocket
                 return Task.CompletedTask;
             }
 
-            if (jsonObject is not null && 
-                jsonObject["method"] is JsonNode methodProperty &&
-                methodProperty.GetValue<string>() is string method)
+            if (jsonObject["method"] is { } methodProperty &&
+                methodProperty.GetValue<string>() is { } method)
             {
                 _logger.LogTrace("WebSocket message received: {Method}", method);
                 switch (method)
@@ -90,8 +89,7 @@ public class ShellyWebSocketClient : ReconnectingWebSocket
 
                 _logger.LogTrace("Unknown WebSocket message received: {Method}", method);
             }
-            else if (jsonObject is not null &&
-                     jsonObject["result"] is JsonNode resultProperty)
+            else if (jsonObject["result"] is { } resultProperty)
             {
                 if (resultProperty["em:0"] is JsonObject em0Object)
                 {
